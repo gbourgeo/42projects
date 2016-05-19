@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/03/18 03:39:20 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/05/13 12:59:11 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/05/19 20:33:12 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -85,12 +85,12 @@ $(OBJ_DIR_2)%.o: $(SRC_DIR_2)%.c
 		$(FLAGS) -o $@ -c $< $(LIBFT_H)
 
 clean:
-#		make -C $(LIBFT) clean
+		make -C $(LIBFT) clean
 		@if test -d $(OBJ_DIR) ; then rm -r $(OBJ_DIR) ; echo rm -r $(OBJ_DIR) ; fi
 		@if test -d $(OBJ_DIR_2) ; then rm -r $(OBJ_DIR_2) ; echo rm -r $(OBJ_DIR_2) ; fi
 
 fclean: clean
-#		rm -f $(LIBFT)/libft.a
+		rm -f $(LIBFT)/libft.a
 		@if test -f $(NAME) ; then rm -f $(NAME) ; echo rm -f $(NAME) ; fi
 		@if test -f $(NAME_2) ; then rm -f $(NAME_2) ; echo rm -f $(NAME_2) ; fi
 
