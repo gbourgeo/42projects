@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/09/15 04:31:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/11 18:34:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 03:23:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@ static int			ft_options_error(char invalid, t_base *env)
 	ft_putchar_fd('\n', 2);
 	ft_putstr_fd("Usage: ", 2);
 	ft_putstr_fd(env->prog_name, 2);
-	ft_putendl_fd(" [-agnopruUmxjlfAP] [file ...]", 2);
+	ft_putstr_fd(" [", 2);
+	ft_putstr_fd(OPTIONS, 2);
+	ft_putstr_fd("] [file ...]\n", 2);
+	ft_putendl_fd(USAGE_ARGS, 2);
 	free(env->options);
 	return (-1);
 }

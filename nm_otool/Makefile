@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/03/18 03:39:20 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/05/19 20:33:12 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/05/20 10:34:36 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -15,6 +15,7 @@ NAME = ft_nm
 SRC_DIR = nm/
 
 SRC = ft_archive.c \
+		ft_check_arc.c \
 		ft_display.c \
 		ft_do_nm.c \
 		ft_error.c \
@@ -22,8 +23,11 @@ SRC = ft_archive.c \
 		ft_init.c \
 		ft_magic.c \
 		ft_nm.c \
+		ft_remove.c \
 		ft_sections.c \
 		ft_sort.c \
+		ft_sort_stabs.c \
+		ft_swap.c \
 		ft_symb.c \
 		ft_swap_bytes.c \
 		ft_types.c
@@ -65,12 +69,12 @@ LIBFT_H = -I $(LIBFT)/includes/
 
 all: lib $(NAME) $(NAME_2)
 
-.PHONY: clean fclean re all
-
 lib:
 	@make -C $(LIBFT)
 	@if ! test -d $(OBJ_DIR) ; then mkdir -p $(OBJ_DIR) ; echo mkdir -p $(OBJ_DIR) ; fi
 	@if ! test -d $(OBJ_DIR_2) ; then mkdir -p $(OBJ_DIR_2) ; echo mkdir -p $(OBJ_DIR_2) ; fi
+
+.PHONY: clean fclean re all
 
 $(NAME): $(OBJ)
 		$(FLAGS) -o $@ $^ -L $(LIBFT) -lft

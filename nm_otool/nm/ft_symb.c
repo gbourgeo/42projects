@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/18 04:00:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/12 15:46:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 07:26:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,13 @@ static void			ft_fill_symb(void *file, t_base *env)
 
 void				ft_get_symb(void *file, t_base *env)
 {
-	env->sect.elems = ft_new_elem((SYM *) env->sect.cmd);
+	env->sect.elems = ft_new_elem((SYM *)env->sect.cmd);
 	if (env->sect.elems == NULL)
 		return (ft_putendl_fd("error: first_elem malloc failed.", 2));
 	ft_fill_symb(file, env);
-	if (!env->options[opt_a])
-		ft_remove_extra(env);
+	if (!env->options[opt_a] || env->options[opt_g] || env->options[opt_u] ||
+		env->options[opt_U])
+		ft_remove(env);
 	if (!env->options[opt_p])
 		ft_sort_elems(env);
 	if (env->file_type != FILE_ARCHIVE && env->nb_files > 1)

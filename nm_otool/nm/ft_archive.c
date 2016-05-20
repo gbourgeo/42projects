@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 10:21:28 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/13 19:51:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 11:05:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
 
-static int				ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
+int					ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
 {
 	if (ft_strncmp(hdr->ar_name, AR_EFMT1, sizeof(AR_EFMT1) - 1))
 	{
@@ -27,41 +27,14 @@ static int				ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
 	return (1);
 }
 
-static void				ft_check_arc(t_base *env, void *file)
+static void			ft_aff(void *file, t_base *env, void *start)
 {
-	struct ar_hdr		*hdr;
-	t_arc				*tmp;
-	t_arc				*new;
-	char				*name;
-	size_t				len;
-
-	tmp = env->arc;
-	while (file < env->file + env->file_size && tmp)
-	{
-		hdr = (struct ar_hdr *)file;
-		ft_ar_name(hdr, &name, &len);
-		if (ft_strcmp(tmp->name, name) != 0)
-		{
-			new = ft_init(1, tmp->prev);
-			new->pos = -1;
-			new->name = name;
-			new->next = tmp;
-			if (tmp->prev)
-				tmp->prev->next = new;
-			tmp->prev = new;
-		}
-		else
-			tmp = tmp->next;
-		file += (ft_atoi(hdr->ar_size) + sizeof(*hdr));
-	}
-}
-
-static void				ft_aff(void *file, t_base *env, void *start)
-{
-	t_arc				*tmp;
+	t_arc			*tmp;
 
 	env->arc = ft_sort_arc(env->arc);
-	ft_check_arc(env, file);
+	ft_check_arc(file, env, start);
+	if (env->arc == NULL)
+		ft_double_check_arc(file, env, start);
 	tmp = env->arc;
 	while (tmp)
 	{
@@ -106,13 +79,13 @@ static t_arc		*ft_ar_symb(struct ar_hdr *hdr, int offset, void *start)
 	return (arc);
 }
 
-void					ft_archive(void *file, t_base *env)
+void				ft_archive(void *file, t_base *env)
 {
-	void				*start;
-	struct ar_hdr		*hdr;
-	int					is_bsd;
-	char				*name;
-	size_t				len;
+	void			*start;
+	struct ar_hdr	*hdr;
+	int				is_bsd;
+	char			*name;
+	size_t			len;
 
 	start = file;
 	file += SARMAG;

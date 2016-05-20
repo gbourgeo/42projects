@@ -6,12 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/31 03:58:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/13 12:58:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 06:03:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_OTOOL
-# define FT_OTOOL
+#ifndef FT_OTOOL_H
+# define FT_OTOOL_H
 
 # include "libft.h"
 # include <fcntl.h>
@@ -22,6 +22,14 @@
 # include <ar.h>
 
 # define OPTIONS "fahLt"
+# define ARGS0 " [-"OPTIONS"] <object file> ...\n"
+# define ARGS1 "	-f print the fat headers\n"
+# define ARGS2 "	-a print the archive header\n"
+# define ARGS3 "	-h print the mach header\n"
+# define ARGS4 "	-L print shared libraries used\n"
+# define ARGS5 "	-t print the text section\n"
+# define USAGE_ARGS ARGS0 ARGS1 ARGS2 ARGS3 ARGS4 ARGS5
+# define SWAP(x) ft_swap_bytes(x)
 
 enum							e_opt
 {
@@ -32,13 +40,6 @@ enum							e_opt
 	opt_t,
 	opt_none
 };
-
-# define USAGE_ARGS " [-"OPTIONS"] <object file> ...\n" \
-					"	-f print the fat headers\n" \
-					"	-a print the archive header\n" \
-					"	-h print the mach header\n" \
-					"	-L print shared libraries used\n" \
-					"	-t print the text section\n"
 
 enum							e_type
 {
@@ -100,14 +101,17 @@ void							ft_aff_tt(struct section *secz, char *data);
 void							ft_aff_sf(struct section_64 *sec, char *data);
 t_arc							*ft_sort_arc(t_arc *arc);
 t_arc							*ft_init_arc(uint32_t size, t_arc *prev);
+t_arc							*ft_init_missing_arc(void *start, void *file);
 void							ft_free_arc(t_arc **arc);
 int								ft_archive(void *file, t_env *env);
 void							ft_print_ar_hdr(struct ar_hdr *ar_hdr);
 void							ft_print_loadcmds(void *file, int filetype);
 void							ft_print_text_section(void *file, int filetype);
 void							ft_print_mach_header(void *file, int filetype);
-void							ft_print_shared_libraries(void *file, int filetype);
-void							ft_puthex(uint64_t numb, int len, int base_len, int aff_zero);
+void							ft_print_shared_libraries(void *file, \
+															int filetype);
+void							ft_puthex(uint64_t numb, int len, int base_len,\
+											int aff_zero);
 int								ft_power(int nb, int power);
 
 #endif

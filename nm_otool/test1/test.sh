@@ -1,10 +1,11 @@
 #!/bin/sh
 
-make re -C ../
+make -C ../
 rm -f their mine mine_err their_err 2>/dev/null
-TESTNM=0
-TESTOTOOL=1
-OPT=""
+TESTNM=1
+TESTOTOOL=0
+OPT=" -gnoprjU "
+OPT2=" -fahLt "
 
 if [ $TESTNM != 0 ]; then
 	echo "Test NM 32bits on 32/:"
@@ -100,7 +101,7 @@ if [ $TESTNM != 0 ]; then
 #		FILE1=$filename
 		FILE1=$OPT$filename
 		[ $? == 1 ] && exit 0;
-		if [ "$filename" != "" -a "$filename" != "/usr/lib/libnetsnmp.5.2.1.dylib" -a "$filename" != "/usr/lib/libsqlite3.dylib" ]; then
+		if [ "$filename" != "" ]; then
 			nm $FILE1 2>/dev/null > their 
 			../ft_nm  $FILE1 2>/dev/null > mine
 			COUNT=$(cat their mine | sort | uniq -u | wc -l)
@@ -174,7 +175,6 @@ if [ $TESTNM != 0 ]; then
 	done
 fi
 
-OPT2=" -t "
 
 if [ $TESTOTOOL != 0 ]; then
 	echo "Test OTOOL 32bits on 32/:"
@@ -267,7 +267,9 @@ if [ $TESTOTOOL != 0 ]; then
 	while IFS='' read -r -d '' filename; do
 		FILE1=$OPT2$filename
 		[ $? == 1 ] && exit 0;
-		if [ "$filename" != "/usr/lib/libkmodc++.a" -a "$filename" != "/usr/lib/libnetsnmp.5.2.1.dylib" -a "$filename" != "/usr/lib/libsqlite3.dylib" ]; then
+		if [ "$filename" != "" \
+			-a "$filename" != "/usr/lib/libnetsnmp.5.2.1.dylib" \
+			-a "$filename" != "/usr/lib/libkmodc++.a" ]; then
 			otool $FILE1 2>/dev/null > their 
 			../ft_otool $FILE1 2>/dev/null > mine
 			COUNT=$(cat their mine | sort | uniq -u | wc -l)
@@ -336,4 +338,4 @@ if [ $TESTOTOOL != 0 ]; then
 		fi
 	done
 fi
-rm -f their mine mine_err their_err 2>/dev/null
+rm -f their mine mine_err their_err 2> /dev/null

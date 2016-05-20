@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/18 03:45:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/09 06:33:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/14 19:26:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,10 @@ static void				ft_get_name32(t_sec *sect)
 
 static void				ft_get_size(t_sec *sect)
 {
-	unsigned int		i;
-	LOA					*cmds;
+	struct load_command	*cmds;
 	SEG_32				*seg;
 	SEG_64				*segz;
+	unsigned int		i;
 
 	i = 0;
 	cmds = sect->cmd;

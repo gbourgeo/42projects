@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_power.c                                         :+:      :+:    :+:   */
+/*   ft_swap.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/04/16 15:35:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/14 19:01:11 by gbourgeo         ###   ########.fr       */
+/*   Created: 2016/05/20 02:14:08 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/05/20 02:14:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_otool.h"
+#include "ft_nm.h"
 
-int				ft_power(int nb, int power)
+t_el				*ft_swap_elems(t_el *elems)
 {
-	int			ret;
-
-	ret = 1;
-	while (power--)
-		ret *= nb;
-	return (ret);
+	if (elems->prev->prev)
+		elems->prev->prev->next = elems;
+	if (elems->next)
+		elems->next->prev = elems->prev;
+	elems->prev->next = elems->next;
+	elems->next = elems->prev;
+	elems->prev = elems->next->prev;
+	elems->next->prev = elems;
+	return (elems->prev);
 }

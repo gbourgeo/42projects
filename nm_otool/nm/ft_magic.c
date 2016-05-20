@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/18 03:28:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/12 15:09:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 11:33:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ static void					ft_mach(void *file, int type, t_base *env, size_t i)
 
 static uint32_t				ft_fat(void *file, t_base *env)
 {
+	int						nb_arch;
 	int						i;
 	unsigned int			cputype;
 	struct fat_header		*hdr;
@@ -51,9 +52,9 @@ static uint32_t				ft_fat(void *file, t_base *env)
 		env->file_type = FILE_FAT;
 	hdr = (struct fat_header *)file;
 	arc = (struct fat_arch *)(file + sizeof(struct fat_header));
-	i = (hdr->magic == FAT_MAGIC) ?
-		hdr->nfat_arch : ft_swap_bytes(hdr->nfat_arch);
-	while (i-- > 0)
+	nb_arch = (hdr->magic == FAT_MAGIC) ? hdr->nfat_arch : SWAP(hdr->nfat_arch);
+	i = -1;
+	while (++i < nb_arch)
 	{
 		cputype = (hdr->magic == FAT_MAGIC) ? arc[i].cputype :
 			ft_swap_bytes(arc[i].cputype);

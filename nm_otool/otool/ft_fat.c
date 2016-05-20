@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/12 02:19:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/16 17:02:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 05:52:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ static void				ft_print_fat_header(int size, struct fat_header *fat,
 
 void					*ft_fat(void *file, t_env *env)
 {
+	int					nb_arch;
 	int					i;
 	uint32_t			cputype;
 	struct fat_header	*fat;
@@ -86,14 +87,14 @@ void					*ft_fat(void *file, t_env *env)
 	env->file_type = (env->file_type == NONE) ? FILE_FAT : env->file_type;
 	fat = (struct fat_header *)file;
 	arch = (struct fat_arch *)(file + sizeof(*fat));
-	i = (fat->magic == FAT_MAGIC) ?
-		fat->nfat_arch : ft_swap_bytes(fat->nfat_arch);
+	nb_arch = (fat->magic == FAT_MAGIC) ? fat->nfat_arch : SWAP(fat->nfat_arch);
 	if (env->options[opt_f])
-		ft_print_fat_header(i, fat, arch);
-	while (i-- > 0)
+		ft_print_fat_header(nb_arch, fat, arch);
+	i = -1;
+	while (++i < nb_arch)
 	{
-		cputype = (fat->magic == FAT_MAGIC) ? arch[i].cputype :
-			ft_swap_bytes(arch[i].cputype);
+		cputype = (fat->magic == FAT_MAGIC) ?
+			arch[i].cputype : SWAP(arch[i].cputype);
 		if (cputype == CPU_TYPE_X86_64)
 		{
 			file += (fat->magic == FAT_MAGIC) ? arch[i].offset :
@@ -103,4 +104,3 @@ void					*ft_fat(void *file, t_env *env)
 	}
 	return (0);
 }
-

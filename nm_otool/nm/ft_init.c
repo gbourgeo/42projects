@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/11 22:02:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/11 22:03:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 11:32:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,40 @@ t_arc					*ft_init(uint32_t size, t_arc *prev)
 		ret->name = NULL;
 		ret->prev = prev;
 		ret->next = ft_init(--size, ret);
+	}
+	return (ret);
+}
+
+t_arc					*ft_init_plus(void *start, void *file, t_arc *tmp)
+{
+	t_arc				*ret;
+
+	ret = (t_arc *)malloc(sizeof(*ret));
+	if (ret != NULL)
+	{
+		ft_memset(ret, '\0', sizeof(*ret));
+		ret->pos = -1;
+		ret->off = file - start;
+		ret->ar_hdr = start + ret->off;
+		ret->next = tmp;
+		ret->prev = tmp->prev;
+	}
+	return (ret);
+}
+
+t_arc					*ft_init_miss(void *start, void *file, t_arc *tmp)
+{
+	t_arc				*ret;
+
+	ret = (t_arc *)malloc(sizeof(*ret));
+	if (ret != NULL)
+	{
+		ft_memset(ret, '\0', sizeof(*ret));
+		ret->pos = -1;
+		ret->off = file - start;
+		ret->ar_hdr = start + ret->off;
+		ret->next = NULL;
+		ret->prev = tmp;
 	}
 	return (ret);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/12 21:08:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/14 00:02:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/14 19:03:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static void			ft_print_text_section_tt(void *file)
 	}
 }
 
-void			ft_print_text_section(void *file, int filetype)
+void				ft_print_text_section(void *file, int filetype)
 {
 	if (filetype == FILE_MACH_32)
 		ft_print_text_section_tt(file);

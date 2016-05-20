@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/18 03:32:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/11 22:54:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 02:33:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void			ft_stab_value(unsigned int i, int base)
 	j = base;
 	while (j-- > 0)
 	{
-		res[j] = (i % 10) + '0';
+		res[j] = (i % 16) + '0';
 		i /= 10;
 	}
 	write(1, res, base);
@@ -31,7 +31,7 @@ static void			ft_stab(t_el *el)
 {
 	unsigned int	i;
 	unsigned int	j;
-	t_stab			p[] = { STAB };
+	static t_stab	p[] = { STAB };
 
 	ft_stab_value(el->n_sect & 0xff, 2);
 	ft_stab_value(el->n_desc & 0xffff, 4);
@@ -56,7 +56,7 @@ static void			ft_value(int len, t_el *elem, t_base *env)
 	char			res[len];
 	char			*base;
 
-	if (elem->type == 'U')// || elem->type == 'I')
+	if (elem->type == 'U')
 		write(1, "                 ", len);
 	else
 	{
@@ -87,35 +87,30 @@ static void			ft_do(t_el *elem, t_base *env)
 			ft_putchar(':');
 			ft_putstr(env->arch_obj_name);
 		}
-		ft_putstr(": ");				
+		ft_putstr(": ");
 	}
 	if (!env->options[opt_u] && !env->options[opt_j])
 		ft_value(env->sect.type, elem, env);
 	ft_putstr(elem->name);
-/* 	if (elem->type == 'I' && !env->options[opt_j]) */
-/* 	{ */
-/* 		ft_putstr(" (indirect for "); */
-/* 		ft_putstr(elem->indr_name); */
-/* 		ft_putchar(')'); */
-/* 	} */
 	ft_putchar('\n');
 }
 
 void				ft_display(t_el *elem, t_base *env)
 {
-	while (env->options[opt_r] && elem->next)
+	while (!env->options[opt_p] && env->options[opt_r] && elem->next)
 		elem = elem->next;
 	while (elem != NULL)
 	{
-		if (!env->options[opt_none] || env->options[opt_a] || env->options[opt_j] ||
-			env->options[opt_n] || env->options[opt_p] || env->options[opt_o] ||
+		if (!env->options[opt_none] || env->options[opt_o] ||
 			(env->options[opt_g] && elem->type >= 'A' && elem->type <= 'Z') ||
 			(env->options[opt_u] && (elem->type == 'u' || elem->type == 'U')) ||
 			(env->options[opt_U] && elem->type != 'u' && elem->type != 'U') ||
-			env->options[opt_A] || env->options[opt_r])
+			env->options[opt_j] || env->options[opt_n] || env->options[opt_p] ||
+			env->options[opt_a] || env->options[opt_A] || env->options[opt_r])
 		{
 			ft_do(elem, env);
 		}
-		elem = (env->options[opt_r]) ? elem->prev : elem->next;
+		elem = (!env->options[opt_p] && env->options[opt_r]) ?
+				elem->prev : elem->next;
 	}
 }

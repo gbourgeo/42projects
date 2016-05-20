@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/18 03:29:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/08 18:40:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 11:34:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,44 +60,6 @@ t_arc				*ft_sort_arc(t_arc *arc)
 	return (ft_remove_duplicata(ret));
 }
 
-void				ft_remove_extra(t_base *env)
-{
-	t_el			*el;
-	t_el			*tmp;
-
-	el = env->sect.elems;
-	while (el)
-	{
-		if (el->type == '-')
-		{
-			if (el->prev != NULL)
-				el->prev->next = el->next;
-			else
-				env->sect.elems = el->next;
-			if (el->next != NULL)
-				el->next->prev = el->prev;
-			tmp = el->next;
-			ft_memset(el, '\0', sizeof(*el));
-			free(el);
-			el = tmp;
-		}
-		else
-			el = el->next;
-	}
-}
-
-static void			ft_swap_elems(t_el *elems)
-{
-	if (elems->prev->prev)
-		elems->prev->prev->next = elems;
-	if (elems->next)
-		elems->next->prev = elems->prev;
-	elems->prev->next = elems->next;
-	elems->next = elems->prev;
-	elems->prev = elems->next->prev;
-	elems->next->prev = elems;
-}
-
 void				ft_sort_elems(t_base *env)
 {
 	t_el			*elems;
@@ -105,10 +67,11 @@ void				ft_sort_elems(t_base *env)
 	elems = env->sect.elems;
 	while (elems)
 	{
-		while (elems->prev && ft_strcmp(elems->prev->name, elems->name) > 0)
+		while (elems->prev && (ft_strcmp(elems->prev->name, elems->name) > 0 ||
+							(ft_strcmp(elems->prev->name, elems->name) == 0 &&
+							elems->n_value < elems->prev->n_value)))
 		{
-			ft_swap_elems(elems);
-			if (elems->prev == NULL)
+			if (ft_swap_elems(elems) == NULL)
 				env->sect.elems = elems;
 		}
 		elems = elems->next;
@@ -116,10 +79,10 @@ void				ft_sort_elems(t_base *env)
 	elems = env->sect.elems;
 	while (env->options[opt_n] && elems)
 	{
-		while (elems->prev && elems->prev->n_value > elems->n_value)
+		while (elems->prev && (elems->prev->n_value > elems->n_value ||
+							(elems->type == 'U' && elems->prev->type != 'U')))
 		{
-			ft_swap_elems(elems);
-			if (elems->prev == NULL)
+			if (ft_swap_elems(elems) == NULL)
 				env->sect.elems = elems;
 		}
 		elems = elems->next;

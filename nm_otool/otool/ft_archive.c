@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/04 14:17:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/13 19:50:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/20 11:56:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int				ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
 	return (1);
 }
 
-static void				ft_check_arc(void *file, t_env *env)
+static void				ft_check_arc(void *file, t_env *env, void *start)
 {
 	t_arc				*tmp;
 	t_arc				*new;
@@ -42,10 +42,10 @@ static void				ft_check_arc(void *file, t_env *env)
 		ft_ar_name(env->ar_hdr, &name, &len);
 		if (ft_strcmp(tmp->name, name) != 0)
 		{
-			new = ft_init_arc(1, tmp->prev);
-			new->pos = -1;
-			new->name = name;
+			new = ft_init_missing_arc(start, file);
+			ft_ar_name(env->ar_hdr, &new->name, &new->len);
 			new->next = tmp;
+			new->prev = tmp->prev;
 			if (tmp->prev)
 				tmp->prev->next = new;
 			tmp->prev = new;
@@ -62,7 +62,7 @@ static void				ft_aff_arch(void *file, t_env *env, void *start)
 	void				*test;
 
 	env->arc = ft_sort_arc(env->arc);
-	ft_check_arc(file, env);
+	ft_check_arc(file, env, start);
 	tmp = env->arc;
 	while (tmp)
 	{
@@ -71,7 +71,7 @@ static void				ft_aff_arch(void *file, t_env *env, void *start)
 		ft_putstr(env->file_name);
 		ft_putchar('(');
 		ft_putstr(tmp->name);
-		ft_putstr("):");
+		ft_putendl("):");
 		test = start + tmp->off + sizeof(struct ar_hdr) + tmp->len;
 		ft_treat_file(test, env);
 		tmp = tmp->next;
