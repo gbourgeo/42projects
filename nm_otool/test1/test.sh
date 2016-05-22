@@ -2,10 +2,12 @@
 
 make -C ../
 rm -f their mine mine_err their_err 2>/dev/null
-TESTNM=1
-TESTOTOOL=0
-OPT=" -gnoprjU "
-OPT2=" -fahLt "
+TESTNM=0
+TESTOTOOL=1
+# -agnopruUjA
+OPT=" -r "
+# fahLtd
+OPT2=" -fathd "
 
 if [ $TESTNM != 0 ]; then
 	echo "Test NM 32bits on 32/:"
@@ -170,7 +172,24 @@ if [ $TESTNM != 0 ]; then
 			echo "/usr/sbin tests NM: FAILED! : "$FILE1": see their, mine."
 			exit 1
 		else
-			echo "/usr/bin tests NM: SUCCESS! :"$FILE1
+			echo "/usr/sbin tests NM: SUCCESS! :"$FILE1
+		fi
+	done
+
+	echo "Test NM on /usr/share:"
+	find "/usr/share" -type f -print0 | \
+	while IFS='' read -r -d '' filename; do
+		[ $? == 1 ] && exit 0;
+#		FILE1=$filename
+		FILE1=$OPT$filename
+		nm $FILE1 2> their_err  > their  
+		../ft_nm $FILE1  2> mine_err  > mine
+		COUNT=$(cat their mine | sort | uniq -u | wc -l)
+		if [ $COUNT != 0 ]; then
+			echo "/usr/share tests NM: FAILED! : "$FILE1": see their, mine."
+			exit 1
+		else
+			echo "/usr/share tests NM: SUCCESS! :"$FILE1
 		fi
 	done
 fi
@@ -267,9 +286,7 @@ if [ $TESTOTOOL != 0 ]; then
 	while IFS='' read -r -d '' filename; do
 		FILE1=$OPT2$filename
 		[ $? == 1 ] && exit 0;
-		if [ "$filename" != "" \
-			-a "$filename" != "/usr/lib/libnetsnmp.5.2.1.dylib" \
-			-a "$filename" != "/usr/lib/libkmodc++.a" ]; then
+		if [ "$filename" != "" ]; then
 			otool $FILE1 2>/dev/null > their 
 			../ft_otool $FILE1 2>/dev/null > mine
 			COUNT=$(cat their mine | sort | uniq -u | wc -l)

@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/04 14:17:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/20 11:56:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/22 09:54:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_otool.h"
 
-static int				ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
+int						ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
 {
 	if (ft_strncmp(hdr->ar_name, AR_EFMT1, sizeof(AR_EFMT1) - 1))
 	{
@@ -27,35 +27,6 @@ static int				ft_ar_name(struct ar_hdr *hdr, char **name, size_t *len)
 	return (1);
 }
 
-static void				ft_check_arc(void *file, t_env *env, void *start)
-{
-	t_arc				*tmp;
-	t_arc				*new;
-	char				*name;
-	size_t				len;
-
-	tmp = env->arc;
-	file += (ft_atoi(env->ar_hdr->ar_size) + sizeof(*env->ar_hdr));
-	while (file < env->file + env->file_size && tmp)
-	{
-		env->ar_hdr = (struct ar_hdr *)file;
-		ft_ar_name(env->ar_hdr, &name, &len);
-		if (ft_strcmp(tmp->name, name) != 0)
-		{
-			new = ft_init_missing_arc(start, file);
-			ft_ar_name(env->ar_hdr, &new->name, &new->len);
-			new->next = tmp;
-			new->prev = tmp->prev;
-			if (tmp->prev)
-				tmp->prev->next = new;
-			tmp->prev = new;
-		}
-		else
-			tmp = tmp->next;
-		file += (ft_atoi(env->ar_hdr->ar_size) + sizeof(*env->ar_hdr));
-	}
-}
-
 static void				ft_aff_arch(void *file, t_env *env, void *start)
 {
 	t_arc				*tmp;
@@ -63,17 +34,22 @@ static void				ft_aff_arch(void *file, t_env *env, void *start)
 
 	env->arc = ft_sort_arc(env->arc);
 	ft_check_arc(file, env, start);
+	if (env->arc == NULL)
+		ft_double_check_arc(file, env, start);
 	tmp = env->arc;
 	while (tmp)
 	{
 		if (env->options[opt_a])
 			ft_print_ar_hdr(tmp->ar_hdr);
-		ft_putstr(env->file_name);
-		ft_putchar('(');
-		ft_putstr(tmp->name);
-		ft_putendl("):");
-		test = start + tmp->off + sizeof(struct ar_hdr) + tmp->len;
-		ft_treat_file(test, env);
+		if (OPT_THDL)
+		{
+			ft_putstr(env->file_name);
+			ft_putchar('(');
+			ft_putstr(tmp->name);
+			ft_putstr("):");
+			test = start + tmp->off + sizeof(struct ar_hdr) + tmp->len;
+			ft_treat_file(test, env);
+		}
 		tmp = tmp->next;
 	}
 	ft_free_arc(&env->arc);

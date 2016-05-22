@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/04 14:13:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/13 22:12:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/22 01:46:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_otool.h"
 
-static void				ft_aff_addr(size_t addr, int base)
+static void				ft_aff_addr(size_t addr, int base, int sector)
 {
 	int					i;
 	int					j;
@@ -29,7 +29,10 @@ static void				ft_aff_addr(size_t addr, int base)
 		addr /= 16;
 	}
 	write(1, res, base);
-	ft_putchar(' ');
+	if (sector == DATA_SEC)
+		ft_putchar('\t');
+	else
+		ft_putchar(' ');
 }
 
 static void				ft_aff_data(unsigned char value, int base)
@@ -52,7 +55,7 @@ static void				ft_aff_data(unsigned char value, int base)
 	ft_putchar(' ');
 }
 
-void					ft_aff_sf(struct section_64 *sec, char *data)
+void					ft_aff_sf(struct section_64 *sec, char *data, int sect)
 {
 	uint64_t			i;
 	uint64_t			j;
@@ -60,10 +63,13 @@ void					ft_aff_sf(struct section_64 *sec, char *data)
 
 	addr = sec->addr;
 	i = 0;
-	ft_putendl("(__TEXT,__text) section");
+	if (sect == TS)
+		ft_putendl("(__TEXT,__text) section");
+	if (sect == DATA_SEC)
+		ft_putendl("(__DATA,__data) section");
 	while (i < sec->size)
 	{
-		ft_aff_addr(addr, 16);
+		ft_aff_addr(addr, 16, sect);
 		j = 0;
 		while (j < 16 && i + j < sec->size)
 		{
@@ -76,7 +82,7 @@ void					ft_aff_sf(struct section_64 *sec, char *data)
 	}
 }
 
-void					ft_aff_tt(struct section *secz, char *data)
+void					ft_aff_tt(struct section *secz, char *data, int sect)
 {
 	uint64_t			i;
 	uint64_t			j;
@@ -84,10 +90,13 @@ void					ft_aff_tt(struct section *secz, char *data)
 
 	addr = secz->addr;
 	i = 0;
-	ft_putendl("(__TEXT,__text) section");
+	if (sect == TS)
+		ft_putendl("(__TEXT,__text) section");
+	if (sect == DATA_SEC)
+		ft_putendl("(__DATA,__data) section");
 	while (i < secz->size)
 	{
-		ft_aff_addr(addr, 8);
+		ft_aff_addr(addr, 8, sect);
 		j = 0;
 		while (j < 16 && i + j < secz->size)
 		{

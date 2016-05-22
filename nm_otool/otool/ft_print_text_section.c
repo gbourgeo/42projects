@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/12 21:08:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/14 19:03:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/05/22 01:15:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static void			ft_print_text_section_sf(void *file)
 			{
 				if (!ft_strcmp(sf.sec[j].segname, "__TEXT") &&
 					!ft_strcmp(sf.sec[j].sectname, "__text"))
-					return (ft_aff_sf(&sf.sec[j], file + sf.sec[j].offset));
+					return (ft_aff_sf(&sf.sec[j], file + sf.sec[j].offset, TS));
 				j++;
 			}
 		}
@@ -60,7 +60,7 @@ static void			ft_print_text_section_tt(void *file)
 			{
 				if (!ft_strcmp(sf.sec[j].segname, "__TEXT") &&
 					!ft_strcmp(sf.sec[j].sectname, "__text"))
-					return (ft_aff_tt(&sf.sec[j], file + sf.sec[j].offset));
+					return (ft_aff_tt(&sf.sec[j], file + sf.sec[j].offset, TS));
 				j++;
 			}
 		}

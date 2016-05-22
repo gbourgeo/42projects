@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/03/18 03:39:20 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/05/20 10:34:36 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/05/21 23:48:27 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -39,6 +39,7 @@ SRC_DIR_2 = otool/
 SRC_2 = ft_aff.c \
 		ft_aff_arch.c \
 		ft_archive.c \
+		ft_check_arc.c \
 		ft_fat.c \
 		ft_free.c \
 		ft_init.c \
@@ -48,6 +49,7 @@ SRC_2 = ft_aff.c \
 		ft_print_mach_header.c \
 		ft_print_shared_libraries.c \
 		ft_print_text_section.c \
+		ft_print_data_section.c \
 		ft_puthex.c \
 		ft_swap_bytes.c \
 		ft_power.c \
