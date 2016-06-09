@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 06:26:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 06:41:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/06/09 19:52:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void			ft_signals(void)
 	signal(SIGTERM, &ft_do);
 	signal(SIGUSR1, &ft_do);
 	signal(SIGUSR2, &ft_do);
-	signal(SIGCHLD, &ft_do);
 	signal(SIGCONT, &ft_do);
 	signal(SIGSTOP, &ft_do);
 	signal(SIGTSTP, &ft_do);

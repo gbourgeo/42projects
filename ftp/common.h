@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 09:46:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/06/09 17:21:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ char					**ft_split_whitespaces(char *str);
 char					*ft_strndup(const char *s1, int size);
 char					*ft_get_path(char *dest, char *home, char *lpwd, \
 										char *oldpwd);
+char					*ft_get_command(char *cmd, char **dirs, int n);
 int						file_error(char *msg, t_envi *e, int caller, int fd);
 void					ft_putendn(int nb);
 void					ft_free(char ***tab);

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/06/09 06:40:18 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/06/09 16:42:32 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -26,7 +26,7 @@ SRC_S	= sv_main.c sv_loop.c sv_launch_client.c sv_ls.c sv_cd.c sv_get.c \
 		sv_put.c sv_client_end.c sv_mkdir_rmdir_unlink.c \
 
 SRC_X	= messages.c ft_error.c ft_free.c ft_aff_ip.c \
-		ft_split_whitespaces.c ft_getenv.c \
+		ft_split_whitespaces.c ft_getenv.c ft_get_command.c \
 		ft_get_path.c ft_strndup.c file_error.c ft_putendn.c
 
 OBJ_C	= $(addprefix $(OBJ_DIR), $(SRC_C:.c=.o))

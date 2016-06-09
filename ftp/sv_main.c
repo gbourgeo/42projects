@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 09:51:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/06/09 15:51:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,21 +83,23 @@ static void				ft_getaddrinfo(char *port, t_envi *e)
 	freeaddrinfo(results);
 }
 
-static void				init_server(char *port, t_envi *e)
+static void				init_server(char *port, t_envi *e, char **env)
 {
 	ft_getaddrinfo(port, e);
 	if (listen(e->ip[v4], CLIENTS_MAX) == -1)
 		ft_error("ERROR: listen(sock[0]: AF_INET).");
 	if (listen(e->ip[v6], CLIENTS_MAX) == -1)
 		ft_error("ERROR: listen(sock[1]: AF_INET6).");
+	if ((e->path = ft_getenv("PATH=", env)) == NULL)
+		e->path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
 	e->home = getcwd(NULL, 0);
 	e->pwd = ft_strdup("");
 	e->oldpwd = ft_strdup("");
-	if (!e->home || !e->pwd || !e->oldpwd)
+	if (!e->path || !e->home || !e->pwd || !e->oldpwd)
 		ft_error("ERROR: init_server() failed.");
 }
 
-int						main(int ac, char **av)
+int						main(int ac, char **av, char **environ)
 {
 	t_envi				sv;
 
@@ -106,7 +108,7 @@ int						main(int ac, char **av)
 	if (av[2] && ft_strcmp(av[2], "-i") != 0)
 		return (usage(av[0], SERVER));
 	ft_memset(&sv, 0, sizeof(t_envi));
-	init_server(av[1], &sv);
+	init_server(av[1], &sv, environ);
 	if (av[2] && !ft_strcmp(av[2], "-i"))
 		sv.success = 1;
 	sv_loop(&sv);

@@ -6,62 +6,38 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/30 03:30:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/06/09 19:49:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static int		sv_ls_ok(int fd, DIR *ret)
-{
-	struct dirent	*dir;
-	char			*colored;
-
-	while ((dir = readdir(ret)))
-	{
-		if (ft_strcmp(dir->d_name, ".") && ft_strcmp(dir->d_name, ".."))
-		{
-			if (dir->d_type == DT_DIR)
-				colored = ft_strjoin("\033[34m", dir->d_name);
-			else
-				colored = (access(dir->d_name, F_OK | X_OK) == 0) ?
-					ft_strjoin("\033[31m", dir->d_name) :
-					ft_strjoin("\033[0m", dir->d_name);
-			if (colored == NULL)
-				return (send(fd, "\2ERROR: server lack of memory", 29, 0));
-			send(fd, colored, ft_strlen(colored), 0);
-			send(fd, "\n", 1, 0);
-			free(colored);
-		}
-	}
-	closedir(ret);
-	send(fd, "\033[32mSUCCESS\033[0m\n\1", 18, 0);
-	return (0);
-}
-
 int				sv_ls(char **cmds, t_envi *sv)
 {
-	DIR				*directory;
-	char			*file;
-	char			*tmp;
+	int			fd;
+	pid_t		pid;
 
-	tmp = NULL;
-	file = NULL;
-	if (!cmds[1])
-		sv->rec = sv_ls_ok(sv->fd, opendir("."));
-	else if ((tmp = ft_get_path(cmds[1], "/", sv->pwd, sv->oldpwd)) == NULL)
-		sv->rec = file_error("\2ERROR: server: get_path().", sv, SERVER, 1);
-	else if ((file = ft_strjoin(sv->home, tmp)) == NULL)
-		sv->rec = file_error("\2ERROR: server: No memory.", sv, SERVER, 1);
-	else if ((directory = opendir(file)) == NULL)
-		sv->rec = file_error("\2ERROR: ls :No such file...", sv, SERVER, 1);
-	else
-		sv->rec = sv_ls_ok(sv->fd, directory);
-	if (tmp)
-		free(tmp);
-	if (file)
-		free(file);
-	return (sv->rec);
+	fd = -1;
+	cmds[0] = ft_get_command(cmds[0], ft_strsplit(sv->path, ':'), 0);
+	pid = fork();
+	if (pid > 0)
+	{
+		if (wait4(pid, &sv->rec, 0, NULL) != pid)
+			return (file_error("\2ERROR: server: wait4()", sv, SERVER, 1));
+		sv->buff[0] = '\1';
+		sv->buff[1] = (sv->rec != 0) ? 1 : 0;
+		send(sv->fd, sv->buff, 2, 0);
+		return (sv->rec);
+	}
+	else if (pid == 0)
+	{
+		if (dup2(sv->fd, STDOUT_FILENO) < 0 || dup2(sv->fd, STDERR_FILENO) < 0)
+			exit(file_error("\2ERROR: server: dup2() fail.", sv, SERVER, 1));
+		sv->rec = execv(cmds[0], cmds);
+		file_error("\2ERROR: server: execv() returned.", sv, SERVER, 1);
+		exit(127 + sv->rec);
+	}
+	return (file_error("\2ERROR: server: fork() error.", sv, SERVER, 1));
 }
 
 int				sv_pwd(char **cmds, t_envi *sv)
@@ -71,6 +47,6 @@ int				sv_pwd(char **cmds, t_envi *sv)
 		send(sv->fd, sv->pwd, ft_strlen(sv->pwd), 0);
 	else
 		send(sv->fd, "/", 1, 0);
-	send(sv->fd, "\n\033[32mSUCCESS\033[0m\n\1", 19, 0);
+	send(sv->fd, "\n\1\0", 3, 0);
 	return (0);
 }
