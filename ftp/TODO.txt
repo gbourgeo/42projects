@@ -1,0 +1,14 @@
+********************************************************************************
+                                                                                
+                                                          :::      ::::::::     
+     TODO.txt                                           :+:      :+:    :+:     
+                                                      +:+ +:+         +:+       
+     By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+          
+                                                  +#+#+#+#+#+   +#+             
+     Created: 2014/06/13 03:20:56 by gbourgeo          #+#    #+#               
+     Updated: 2014/06/18 12:47:09 by gbourgeo         ###   ########.fr         
+                                                                                
+********************************************************************************
+TERMCAPS
+- bloquer les deplacements de souris || historique + edition de lignes
+- auto-completion
