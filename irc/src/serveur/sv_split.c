@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/31 23:26:28 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/27 18:12:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/06/30 06:14:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ static int	tab_lines(t_buf *s)
 	str = s->head;
 	while (str != s->tail)
 	{
-		if (*str != ' ' && (*str < 9 || *str > 13))
+		if (*str != ' ')
 		{
 			lines += 1;
-			while (*str != ' ' && (*str < 9 || *str > 13) && str != s->tail)
+			while (*str != ' ' && str != s->tail)
 			{
 				if (str >= s->end)
 					str = s->start;
@@ -44,7 +44,7 @@ static int	line_len(char *str, t_buf *buf)
 	int		i;
 
 	i = 0;
-	while (*str != ' ' && (*str < 9 || *str > 13) && str != buf->tail)
+	while (*str != ' ' && str != buf->tail)
 	{
 		if (str >= buf->end)
 			str = buf->start;
@@ -95,11 +95,11 @@ char		**sv_split(t_buf *buf)
 	tmp = buf->head;
 	while (tmp != buf->tail)
 	{
-		if (*tmp != ' ' && (*tmp < 9 || *tmp > 11))
+		if (*tmp != ' ')
 		{
 			if ((tab[j++] = fill_tab(tmp, buf)) == NULL)
 				break ;
-			while (*tmp != ' ' && (*tmp < 9 || *tmp > 11) && tmp != buf->tail)
+			while (*tmp != ' ' && tmp != buf->tail)
 				tmp = (tmp >= buf->end) ? buf->start : tmp + 1;
 		}
 		else

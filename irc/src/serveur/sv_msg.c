@@ -6,50 +6,56 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/27 15:47:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/31 18:58:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_private_msg(int user, char **cmds, t_env *e, int id)
+static void		sv_private_msg(t_fd *to, char **cmds, char *from)
 {
+	int			fd;
 	int			i;
 
+	fd = to->fd;
 	i = 2;
-	send(e->fds[user].fd, "\n", 1, 0);
-	send(e->fds[user].fd, "\e[34;1m", 7, 0);
-	send(e->fds[user].fd, "(pv)", 4, 0);
-	send(e->fds[user].fd, e->fds[id].name, NAME_SIZE, 0);
-	send(e->fds[user].fd, " > \e[0m", 7, 0);
+	send(fd, "\n\e[34;1m(pv)", 12, 0);
+	send(fd, from, NAME_SIZE, 0);
+	send(fd, "\e[0m", 4, 0);
 	while (cmds[i])
 	{
-		send(e->fds[user].fd, cmds[i], ft_strlen(cmds[i]), 0);
-		send(e->fds[user].fd, " ", 1, 0);
+		send(fd, " ", 1, 0);
+		send(fd, cmds[i], ft_strlen(cmds[i]), 0);
 		i++;
 	}
-	send(e->fds[user].fd, "\n", 1, 0);
-	send(e->fds[user].fd, END_CHECK, END_CHECK_LEN, 0);
+	send(fd, "\r\n", 2, 0);
+	sv_cl_prompt(to);
 }
 
-void			sv_msg(char **cmds, t_env *e, size_t i)
+void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 {
-	size_t		user;
+	t_user		*us;
+	t_fd		*to;
 
-	user = 0;
-	if (!cmds[1])
-		send(e->fds[i].fd, "\e[31mUsage: /msg <nick> [...]\n\e[0m", 34, 0);
-	else
+	if (cl->chan == NULL)
+		return ;
+	us = cl->chan->user;
+	if (!cmds[1] || *cmds[1] == '\0')
+		return (sv_err(cmds[0], ":Not enough parameters", cl->fd));
+	if (!cmds[2])
+		return (sv_err(cmds[0], ":No text to send", cl->fd));
+	while (us)
 	{
-		while (user < e->maxfd)
-		{
-			if (e->fds[user].type == FD_CLIENT &&
-				!ft_strcmp(e->fds[user].chan, e->fds[i].chan) &&
-				!ft_strcmp(e->fds[user].name, cmds[1]))
-				return (sv_private_msg(user, cmds, e, i));
-			user++;
-		}
-		send(e->fds[i].fd, "\e[31m/msg: User not found\n\e[0m", 30, 0);
+		to = (t_fd *)us->is;
+		if (to->fd != cl->fd &&
+			!ft_strncmp(to->nick, cmds[1], NAME_SIZE))
+			return ((to->flags & FLAGS_AWAY) ?
+					sv_err(to->nick, (to->away) ? to->away : "Gone",
+							cl->fd) :
+					sv_private_msg((t_fd *)us->is, cmds, cl->nick));
+		us = us->next;
 	}
+	sv_err(cmds[1], ":No such nick", cl->fd);
+	(void)e;
 }

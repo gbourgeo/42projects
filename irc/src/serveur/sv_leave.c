@@ -6,25 +6,28 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:37:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/26 23:39:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/14 07:18:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-void			sv_leave(char **cmds, t_env *e, size_t i)
+void			sv_leave(char **cmds, t_env *e, t_fd *cl)
 {
-	if (!cmds[1])
-		send(e->fds[i].fd, "\e[31m/leave: Missing argument\n\e[0m", 34, 0);
-	else if (ft_strcmp(cmds[1], e->fds[i].chan))
-		send(e->fds[i].fd, "\e[31m/leave: Bad channel name\n\e[0m", 34, 0);
-	else
-	{
-		sv_leave_chan(e, i);
-		e->chan->users++;
-		ft_strncpy(e->fds[i].chan, "Global", CHAN_SIZE);
-		send(e->fds[i].fd, "\e[33mChannel leaved, you joined [", 33, 0);
-		send(e->fds[i].fd, "\e[0mGlobal\e[33m] channel.\n\e[0m", 30, 0);
-	}
+	t_chan		*ch;
+
+	if (!cmds[1] || *cmds[1] == '\0')
+		return (sv_err(cmds[0], ":Not enough parameters", cl->fd));
+	ch = e->chan;
+	while (ch && ft_strncmp(cmds[1], ch->name, CHAN_SIZE))
+		ch = ch->next;
+	if (ch == NULL)
+		return (sv_err(cmds[1], ":No such channel", cl->fd));
+	if (!cl->chan || ft_strncmp(cmds[1], cl->chan->name, CHAN_SIZE))
+		return (sv_err(cmds[1], ":Not on channel", cl->fd));
+	sv_sendto_chan_msg(" :leaved the channel.", cl);
+	sv_leave_chan(e, cl);
+	send(cl->fd, ":Channel leaved.", 16, 0);
+	send(cl->fd, "\r\n", 2, 0);
 }

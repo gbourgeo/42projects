@@ -6,27 +6,63 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/27 15:28:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/31 20:59:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
+#include <stdio.h>
 
-void			sv_cl_end(char **cmds, t_env *e, size_t i)
+static int		sv_move_head(t_buf *wr)
 {
-	send(e->fds[i].fd, "Disconnected.\n", 14, 0);
-	close(e->fds[i].fd);
-	FD_CLR(e->fds[i].fd, &e->fd_read);
-	FD_CLR(e->fds[i].fd, &e->fd_write);
-	sv_leave_chan(e, i);
-	ft_memset(&e->fds[i], 0, sizeof(*e->fds));
-	e->members--;
-	if (e->verb)
+	while (*wr->head && *wr->head == ' ')
 	{
-		ft_putstr("\n\e[31mClient #\e[0m");
-		ft_putnbr(i);
-		ft_putendl("\e[31m left the server.\e[0m");
+		wr->head++;
+		if (wr->head >= wr->end)
+			wr->head = wr->start;
 	}
-	(void)cmds;
+	while (*wr->head && *wr->head != ' ')
+	{
+		wr->head++;
+		if (wr->head >= wr->end)
+			wr->head = wr->start;
+	}
+	while (*wr->head && *wr->head == ' ')
+	{
+		wr->head++;
+		if (wr->head >= wr->end)
+			wr->head = wr->start;
+	}
+	return ((wr->head == wr->tail) ? 1 : 0);
+}
+
+void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
+{
+	if (e->verb)
+		printf("\e[31mCLIENT\e[0m %s %s \e[31mleft\e[0m\n", cl->addr, cl->port);
+	if (cl->chan)
+	{
+		if (cmds == NULL || !cmds[1] || sv_move_head(&cl->wr))
+			sv_sendto_chan_msg(" :Disconnected.", cl);
+		else
+			sv_sendto_chan(cl);
+		sv_leave_chan(e, cl);
+	}
+	FD_CLR(cl->fd, &e->fd_read);
+	FD_CLR(cl->fd, &e->fd_write);
+	close(cl->fd);
+	if (cl->away)
+		free(cl->away);
+	if (cl->user)
+		free(cl->user);
+	if (cl->prev)
+		cl->prev->next = cl->next;
+	else
+		e->fds = cl->next;
+	if (cl->next)
+		cl->next->prev = cl->prev;
+	ft_memset(cl, 0, sizeof(*cl));
+	free(cl);
+	e->members--;
 }

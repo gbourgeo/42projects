@@ -6,59 +6,86 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/17 19:48:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/28 01:10:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/14 07:16:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-void			sv_send_msg(char *msg, t_env *e, size_t i)
+void			sv_sendto_chan_new(t_fd *cl)
 {
-	size_t		all;
+	t_user		*us;
+
+	send(cl->fd, cl->chan->name, CHAN_SIZE, 0);
+	send(cl->fd, " ", 1, 0);
+	if (*cl->chan->topic != ':')
+		send(cl->fd, ":", 1, 0);
+	if (*cl->chan->topic)
+		send(cl->fd, cl->chan->topic, TOPIC_SIZE, 0);
+	else
+		send(cl->fd, "No topic is set.", 17, 0);
+	send(cl->fd, "\t", 1, 0);
+	us = cl->chan->user;
+	while (us)
+	{
+		send(cl->fd, ((t_fd *)us->is)->nick, NAME_SIZE, 0);
+		if (((t_fd *)us->is)->flags & CHFL_CHANOP)
+			send(cl->fd, "@", 1, 0);			
+		if ((us = us->next))
+			send(cl->fd, " ", 1, 0);
+	}
+	send(cl->fd, "\r\n", 2, 0);
+}
+
+void			sv_sendto_chan_msg(char *msg, t_fd *cl)
+{
+	int			fd;
+	t_user		*us;
 	size_t		len;
 
-	all = 0;
+	us = cl->chan->user;
 	len = ft_strlen(msg);
-	while (all < e->maxfd)
+	while (us)
 	{
-		if (e->fds[all].type == FD_CLIENT && all != i &&
-			!ft_strcmp(e->fds[i].chan, e->fds[all].chan))
+		fd = ((t_fd *)us->is)->fd;
+		if (fd != cl->fd)
 		{
-			send(e->fds[all].fd, "\n", 1, 0);
-			send(e->fds[all].fd, e->fds[i].name, NAME_SIZE, 0);
-			send(e->fds[all].fd, msg, len, 0);
-			send(e->fds[all].fd, END_CHECK, END_CHECK_LEN, 0);
+			send(fd, "\n", 1, 0);
+			send(fd, cl->nick, NAME_SIZE, 0);
+			send(fd, msg, len, 0);
+			send(fd, "\r\n", 2, 0);
+			sv_cl_prompt((t_fd *)us->is);
 		}
-		all++;
+		us = us->next;
 	}
 }
 
-void			sv_send_to_chan(char *head, t_env *e, size_t i)
+void			sv_sendto_chan(t_fd *cl)
 {
-	size_t		len[5];
+	t_user		*us;
+	size_t		len[3];
 
-	len[0] = 0;
-	len[1] = ft_strlen(head);
-	len[2] = e->fds[i].wr.tail - e->fds[i].wr.head + 1;
-	len[3] = e->fds[i].wr.end - e->fds[i].wr.head + 1;
-	len[4] = e->fds[i].wr.tail - e->fds[i].wr.start + 1;
-	while (len[0] < e->maxfd)
+	us = cl->chan->user;
+	len[0] = cl->wr.tail - cl->wr.head + 1;
+	len[1] = cl->wr.end - cl->wr.head + 1;
+	len[2] = cl->wr.tail - cl->wr.start + 1;
+	while (us)
 	{
-		if (e->fds[len[0]].type == FD_CLIENT && len[0] != i &&
-			!ft_strcmp(e->fds[i].chan, e->fds[len[0]].chan))
+		if (((t_fd *)us->is)->fd != cl->fd)
 		{
-			send(e->fds[len[0]].fd, head, len[1], 0);
-			if (e->fds[i].wr.tail > e->fds[i].wr.head)
-				send(e->fds[len[0]].fd, e->fds[i].wr.head, len[2], 0);
+			send(((t_fd *)us->is)->fd, "\n", 1, 0);
+			send(((t_fd *)us->is)->fd, cl->nick, NAME_SIZE, 0);
+			send(((t_fd *)us->is)->fd, " ", 1, 0);
+			if (cl->wr.tail > cl->wr.head)
+				send(((t_fd *)us->is)->fd, cl->wr.head, len[0], 0);
 			else
 			{
-				send(e->fds[len[0]].fd, e->fds[i].wr.head, len[3], 0);
-				send(e->fds[len[0]].fd, e->fds[i].wr.start, len[4], 0);
-				send(e->fds[len[0]].fd, END_CHECK, END_CHECK_LEN, 0);
+				send(((t_fd *)us->is)->fd, cl->wr.head, len[1], 0);
+				send(((t_fd *)us->is)->fd, cl->wr.start, len[2], 0);
 			}
-			send(e->fds[len[0]].fd, END_CHECK, END_CHECK_LEN, 0);
+			sv_cl_prompt((t_fd *)us->is);
 		}
-		len[0]++;
+		us = us->next;
 	}
 }

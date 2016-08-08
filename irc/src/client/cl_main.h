@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/26 23:15:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/08/02 18:41:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,21 @@
 
 typedef struct	s_client
 {
+	int			first;
 	int			sock;
 	fd_set		fds;
 	char		name[NAME_SIZE + 1];
 	char		read[BUFF + 1];
-	t_buf		wr;
 	char		write[BUFF + 1];
 }				t_client;
 
-int				cl_getaddrinfo(char *addr, char *port, t_client *cl, int on);
+typedef struct	s_com
+{
+	char		*name;
+	void		(*fct)(char **, t_client *);
+}				t_com;
+
+int				cl_getaddrinfo(char *addr, char *port, t_client *cl);
 int				cl_error(const char *err, t_client *cl);
 void			cl_loop(t_client *cl);
 void			read_client(t_client *cl);

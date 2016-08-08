@@ -6,96 +6,75 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/28 02:06:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/08/02 10:00:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-void			sv_nick(char **cmds, t_env *e, size_t i)
+void			sv_who(char **cmds, t_env *e, t_fd *cl)
 {
-	size_t		all;
+	t_user		*us;
 
-	all = 0;
-	if (cmds[1])
+	if (cl->chan == NULL)
+		return (sv_err("", ":Not connected to a channel.", cl->fd));
+	us = cl->chan->user;
+	send(cl->fd, "\e[33mChannel Nick Host Hostname Away\e[0m", 40, 0);
+	while (us)
 	{
-		while (all < e->maxfd)
+		send(cl->fd, "\n", 1, 0);
+		send(cl->fd, ((t_fd *)us->is)->chan->name, CHAN_SIZE, 0);
+		send(cl->fd, " ", 1, 0);
+		send(cl->fd, ((t_fd *)(us->is))->nick, NAME_SIZE, 0);
+		if (((t_fd *)us->is)->flags & CHFL_CHANOP)
+			send(cl->fd, "@", 1, 0);
+		send(cl->fd, " ", 1, 0);
+		send(cl->fd, ((t_fd *)us->is)->addr, 1025, 0);
+		send(cl->fd, " ", 1, 0);
+		send(cl->fd, e->name, NAME_SIZE, 0);
+		if (((t_fd *)us->is)->flags & FLAGS_AWAY)
+			send(cl->fd, " G", 2, 0);
+		else
+			send(cl->fd, " H", 2, 0);
+		us = us->next;
+	}
+	send(cl->fd, "\n:End of /WHO list.\r\n", 21, 0);
+	(void)cmds;
+}
+
+void			sv_list(char **cmds, t_env *e, t_fd *cl)
+{
+	t_chan		*ch;
+	t_user		*us;
+	char		*nb;
+
+	ch = e->chan;
+	send(cl->fd, "\e[33mChannel :Users	Name\e[0m", 28, 0);
+	nb = ft_itoa(ch->nbusers - 1);
+	while (ch)
+	{
+		us = ch->user;
+		send(cl->fd, "\n", 1, 0);
+		send(cl->fd, ch->name, CHAN_SIZE, 0);
+		send(cl->fd, " :", 2, 0);
+		send(cl->fd, nb, ft_strlen(nb), 0);
+		while (us)
 		{
-			if (e->fds[all].type == FD_CLIENT &&
-				!ft_strncmp(e->fds[all].name, cmds[1], NAME_SIZE))
-			{
-				send(e->fds[i].fd, "\e[31mNick already taken.\n\e[0m", 29, 0);
-				return ;
-			}
-			all++;
+			send(cl->fd, " ", 1, 0);
+			send(cl->fd, ((t_fd *)us->is)->nick, NAME_SIZE, 0);
+			us = us->next;
 		}
-		ft_strncpy(e->fds[i].name, cmds[1], NAME_SIZE + 1);
-		return ;
+		if ((ch = ch->next))
+			nb = ft_itoa(ch->nbusers);
 	}
-	send(e->fds[i].fd, "\e[31mUsage: /nick [name]\n\e[0m", 29, 0);
-}
-
-void			sv_who(char **cmds, t_env *e, size_t i)
-{
-	size_t		all;
-
-	all = 0;
-	send(e->fds[i].fd, "\e[33m[\e[0m", 10, 0);
-	send(e->fds[i].fd, e->fds[i].chan, CHAN_SIZE, 0);
-	send(e->fds[i].fd, "\e[33m] users:\n\e[0m", 18, 0);
-	while (all < e->maxfd)
-	{
-		if (e->fds[all].type == FD_CLIENT &&
-			!ft_strcmp(e->fds[all].chan, e->fds[i].chan))
-		{
-			send(e->fds[i].fd, "- ", 2, 0);
-			send(e->fds[i].fd, e->fds[all].name, NAME_SIZE, 0);
-			send(e->fds[i].fd, "\n", 1, 0);
-		}
-		all++;
-	}
+	send(cl->fd, "\n:End of /LIST\r\n", 16, 0);
 	(void)cmds;
 }
 
-void			sv_list(char **cmds, t_env *e, size_t i)
-{
-	t_chan		*tmp;
-
-	tmp = e->chan;
-	send(e->fds[i].fd, "\e[33mChannels list:\n\e[0m", 24, 0);
-	while (tmp)
-	{
-		send(e->fds[i].fd, "\e[33m- \e[0m", 11, 0);
-		send(e->fds[i].fd, tmp->name, CHAN_SIZE, 0);
-		if (!ft_strcmp(tmp->name, e->fds[i].chan))
-			send(e->fds[i].fd, "*", 1, 0);
-		send(e->fds[i].fd, "\n", 1, 0);
-		tmp = tmp->next;
-	}
-	(void)cmds;
-}
-
-void			sv_help(char **cmds, t_env *e, size_t i)
-{
-	int			fd;
-
-	fd = e->fds[i].fd;
-	send(fd, "\e[33mFT_IRC commands :\n\e[0m", 27, 0);
-	send(fd, "/nick    <nickname>\n", 20, 0);
-	send(fd, "/join    <channel>\n", 19, 0);
-	send(fd, "/leave   <channel>\n", 19, 0);
-	send(fd, "/msg     <client> <message>\n", 28, 0);
-	send(fd, "/connect <_host_[:port]>\n", 25, 0);
-	send(fd, "/who     : list the current channel users.\n", 43, 0);
-	send(fd, "/list    : list the IRC channels.\n", 34, 0);
-	send(fd, "/quit    : quit the server.\n", 29, 0);
-	(void)cmds;
-}
-
-void			sv_connect(char **cmds, t_env *e, size_t i)
+void			sv_connect(char **cmds, t_env *e, t_fd *cl)
 {
 	(void)cmds;
 	(void)e;
-	(void)i;
+	(void)cl;
 }

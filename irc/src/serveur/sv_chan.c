@@ -6,47 +6,75 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/27 15:37:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/14 14:38:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void			sv_leave_chan(t_env *e, size_t i)
+static void		sv_remove_chan(t_env *e, t_fd *cl)
 {
-	t_chan		*tmp;
-
-	tmp = e->chan;
-	while (tmp)
-	{
-		if (!ft_strcmp(tmp->name, e->fds[i].chan))
-		{
-			tmp->users--;
-			if (tmp->users == 0)
-				return (sv_remove_chan(tmp->name, e));
-			sv_send_msg(" \e[33mleaved the channel.\e[0m\n", e, i);
-			return ;
-		}
-		tmp = tmp->next;
-	}
+	if (cl->chan->next)
+		cl->chan->next->prev = cl->chan->prev;
+	if (cl->chan->prev)
+		cl->chan->prev->next = cl->chan->next;
+	else
+		e->chan = cl->chan->next;
+	ft_memset(cl->chan, 0, sizeof(*cl->chan));
+	free(cl->chan);
+	cl->chan = NULL;
+	cl->user->next = NULL;
+	cl->user->prev = NULL;
 }
 
-void			sv_remove_chan(char *name, t_env *e)
+void			sv_leave_chan(t_env *e, t_fd *cl)
 {
-	t_chan		*tmp;
-	t_chan		*stock;
+	t_user		*us;
 
-	tmp = e->chan;
-	while (tmp->next)
-	{
-		if (!ft_strcmp(tmp->next->name, name))
-		{
-			stock = tmp->next->next;
-			ft_memset(tmp->next, 0, sizeof(*tmp));
-			free(tmp->next);
-			tmp->next = stock;
-			return ;
-		}
-		tmp = tmp->next;
-	}
+	cl->flags &= ~CHFL_CHANOP;
+	if (--cl->chan->nbusers == 0)
+		return (sv_remove_chan(e, cl));
+	us = cl->chan->user;
+	while (((t_fd *)us->is)->fd != cl->fd)
+		us = us->next;
+	if (us->next)
+		us->next->prev = us->prev;
+	if (us->prev)
+		us->prev->next = us->next;
+	else
+		cl->chan->user = us->next;
+	cl->user->next = NULL;
+	cl->user->prev = NULL;
+	cl->chan = NULL;
+}
+
+t_user			*sv_new_user(t_fd *id)
+{
+	t_user		*new;
+
+	new = (t_user *)malloc(sizeof(*new));
+	if (new == NULL)
+		return (NULL);
+	new->is = id;
+	new->next = NULL;
+	new->prev = NULL;
+	return (new);
+}
+
+t_user			*sv_add_chan_user(t_chan *chan, t_user *new)
+{
+	t_user		*end;
+
+	if (chan == NULL)
+		return (NULL);
+	if (new == NULL)
+		return (chan->user);
+	end = chan->user;
+	if (end == NULL)
+		return (new);
+	while (end->next)
+		end = end->next;
+	end->next = new;
+	new->prev = end;
+	return (chan->user);
 }

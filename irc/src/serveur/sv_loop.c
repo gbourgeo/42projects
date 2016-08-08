@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/25 18:58:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/14 04:57:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,46 +15,52 @@
 
 static void			sv_check_fd(t_env *e, int ret)
 {
-	size_t			i;
-	int				fd;
+	t_fd			*cl;
 
-	i = 0;
-	while (i < e->maxfd && ret > 0)
+	cl = e->fds;
+	if (FD_ISSET(e->ipv4, &e->fd_read))
+		sv_accept(e, 0);
+	if (FD_ISSET(e->ipv6, &e->fd_read))
+		sv_accept(e, 1);
+	while (cl && ret > 0)
 	{
-		fd = e->fds[i].fd;
-		if (e->fds[i].type != FD_FREE)
+		if (cl->type != FD_FREE)
 		{
-			if (FD_ISSET(fd, &e->fd_write))
-				e->fds[i].fct_write(e, i);
-			if (FD_ISSET(fd, &e->fd_read))
-				e->fds[i].fct_read(e, i);
-			if (FD_ISSET(fd, &e->fd_read) || FD_ISSET(fd, &e->fd_write))
+			if (FD_ISSET(cl->fd, &e->fd_write))
+				cl->fct_write(e, cl);
+			if (FD_ISSET(cl->fd, &e->fd_read))
+				cl->fct_read(e, cl);
+			if (FD_ISSET(cl->fd, &e->fd_read) ||
+				FD_ISSET(cl->fd, &e->fd_write))
 				ret--;
 		}
-		i++;
+		cl = cl->next;
 	}
 }
 
 static int			sv_init_fd(t_env *e)
 {
-	size_t			i;
+	t_fd			*cl;
 	int				max;
 
-	i = 0;
-	max = 0;
+	cl = e->fds;
+	max = (e->ipv4 > e->ipv6) ? e->ipv4 : e->ipv6;
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);
-	while (i < e->maxfd)
+	FD_SET(e->ipv4, &e->fd_read);
+	FD_SET(e->ipv6, &e->fd_read);
+	while (cl)
 	{
-		if (e->fds[i].type != FD_FREE)
+		if (cl->type != FD_FREE)
 		{
-			FD_SET(e->fds[i].fd, &e->fd_read);
-			if (e->fds[i].fct_write)
-				FD_SET(e->fds[i].fd, &e->fd_write);
-			if (e->fds[i].fd > max)
-				max = e->fds[i].fd;
+			if (cl->fct_read)
+				FD_SET(cl->fd, &e->fd_read);
+			if (cl->fct_write)
+				FD_SET(cl->fd, &e->fd_write);
+			if (cl->fd > max)
+				max = cl->fd;
 		}
-		i++;
+		cl = cl->next;
 	}
 	return (max);
 }

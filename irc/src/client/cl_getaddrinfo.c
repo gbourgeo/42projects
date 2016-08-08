@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:51:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/26 20:20:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/08/02 18:41:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,13 @@ static int			cl_init_addrinfo(char *ad, char *pt, struct addrinfo **res)
 	return (0);
 }
 
-int					cl_getaddrinfo(char *addr, char *port, t_client *cl, int on)
+int					cl_getaddrinfo(char *addr, char *port, t_client *cl)
 {
 	struct addrinfo	*results;
 	struct addrinfo	*tmp;
 
 	if (cl_init_addrinfo(addr, port, &results))
-		return (cl_error("Fail. (getaddrinfo())", NULL));
+		return (cl_error("getaddrinfo() failed.", NULL));
 	tmp = results;
 	while (tmp != NULL)
 	{
@@ -55,9 +55,7 @@ int					cl_getaddrinfo(char *addr, char *port, t_client *cl, int on)
 	}
 	freeaddrinfo(results);
 	if (tmp == NULL)
-		return (cl_error("Fail: No server found.", NULL));
-	if (setsockopt(cl->sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
-		return (cl_error("Fail: setsockopt(SO_REUSEADDR)", NULL));
+		return (cl_error("No server found.", NULL));
 	ft_putendl("\e[32mOK\e[0m");
 	return (0);
 }

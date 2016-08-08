@@ -6,13 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/27 18:53:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/14 04:50:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/resource.h>
 #include <signal.h>
+#include <time.h>
 
 static void			ft_usage(char *prog_name)
 {
@@ -56,35 +57,44 @@ static void			sv_init_env(t_env *e)
 	i = 0;
 	if (getrlimit(RLIMIT_NOFILE, &rlp) == -1)
 		sv_error("ERROR: Getrlimit(RLIMIT_NOFILE)", e);
+	if (MAX_CLIENT > rlp.rlim_cur)
+		sv_error("MAX_CLIENT > rlim_cur. Check MAX_CLIENT and reduce it.", e);
 	e->members = 0;
-	e->maxfd = (MAX_CLIENT < rlp.rlim_cur) ? MAX_CLIENT : rlp.rlim_cur;
-	while (i <= e->maxfd)
-		ft_memset(&e->fds[i++], 0, sizeof(*e->fds));
+	e->fds = NULL;
 	e->chan = (t_chan *)malloc(sizeof(*e->chan));
 	if (e->chan == NULL)
 		sv_error("ERROR: malloc() of chan", e);
-	ft_strncpy(e->chan->name, "Global", CHAN_SIZE + 1);
-	e->chan->users = 1;
-	e->chan->next = NULL;
+	ft_memset(e->chan, 0, sizeof(*e->chan));
+	ft_strncpy(e->chan->name, "#Global", CHAN_SIZE + 1);
+	ft_strncpy(e->chan->topic, "Home Sweet Home !", TOPIC_SIZE + 1);
+	e->chan->nbusers = 1;
+}
+
+static void			sv_signals(void)
+{
+	signal(SIGWINCH, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGALRM, SIG_IGN);
+//	signal(SIGHUP, sv_rehash);
+//	signal(SIGINT, sv_restart);
+//	signal(SIGTERM, sv_quit);
+	signal(SIGUSR1, SIG_IGN);
 }
 
 int					main(int ac, char **av)
 {
 	t_env			e;
+	time_t			date;
 
 	if (ac < 2 || ac > 3)
 		ft_usage(av[0]);
+	ft_memset(&e, 0, sizeof(e));
 	sv_verbose(av, &e);
 	sv_init_env(&e);
-	signal(SIGPIPE, SIG_IGN);
-	if (av[1][0] != '-')
-		sv_getaddrinfo(av[1], &e, 1);
-	else
-		sv_getaddrinfo(av[2], &e, 1);
-	e.fds[0].type = FD_SERVER;
-	ft_strcpy(e.fds[0].name, "** GOD **");
-	e.fds[0].fct_read = sv_accept;
-	e.fds[0].fct_write = NULL;
+	sv_signals();
+	sv_init_server(av, &e);
+	date = time(NULL);
+	e.creation = ctime(&date);
 	sv_loop(&e);
 	return (0);
 }

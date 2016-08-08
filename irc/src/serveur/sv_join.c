@@ -6,57 +6,76 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/26 18:42:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/07/14 14:34:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		add_chan(char *name, t_env *e)
+static t_chan	*sv_new_chan(char *name, t_env *e, t_fd *cl)
 {
 	t_chan		*new;
 	t_chan		*tmp;
 
 	if ((new = (t_chan*)malloc(sizeof(*new))) == NULL)
-		return ;
+		return (NULL);
+	ft_memset(new, 0, sizeof(*new));
 	ft_strncpy(new->name, name, CHAN_SIZE);
-	new->users = 1;
-	new->next = NULL;
+	new->nbusers = 1;
+	new->user = cl->user;
 	tmp = e->chan;
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new;
+	new->prev = tmp;
+	return (new);
 }
 
-static void		sv_join_chan(char *name, t_env *e)
+static t_chan	*sv_join_chan(char *name, t_env *e, t_fd *cl)
 {
 	t_chan		*tmp;
 
 	tmp = e->chan;
 	while (tmp)
 	{
-		if (!ft_strcmp(tmp->name, name))
+		if (!ft_strncmp(tmp->name, name, CHAN_SIZE))
 		{
-			tmp->users++;
-			return ;
+			tmp->nbusers++;
+			tmp->user = sv_add_chan_user(tmp, cl->user);
+			return (tmp);
 		}
 		tmp = tmp->next;
 	}
-	add_chan(name, e);
+	tmp = sv_new_chan(name, e, cl);
+	if (tmp != NULL)
+		cl->flags |= CHFL_CHANOP;
+	return (tmp);
 }
 
-void			sv_join(char **cmds, t_env *e, size_t i)
+void			sv_join(char **cmds, t_env *e, t_fd *cl)
 {
-	if (!cmds[1])
-		send(e->fds[i].fd, "\e[31mNot enought argument\n\e[0m", 31, 0);
-	else
+	char		*s;
+
+	if (!cmds[1] || *cmds[1] == '\0')
+		return (sv_err(cmds[0], ":Not enough parameters", cl->fd));
+	if (!ISCHAN(cmds[1]) || (*cmds[1] == '!' && ISCHAN(cmds[1])))
+		return (sv_err(cmds[1], ":No such channel", cl->fd));
+	if ((s = ft_strchr(cmds[1], '\007')))
+		*s = '\0';
+	if (!*cmds[1] ||
+		(cl->chan && !ft_strncmp(cmds[1], cl->chan->name, CHAN_SIZE)))
+		return ;
+	if (cl->chan)
 	{
-		sv_leave_chan(e, i);
-		sv_join_chan(cmds[1], e);
-		ft_strncpy(e->fds[i].chan, cmds[1], CHAN_SIZE);
-		send(e->fds[i].fd, "\e[33mYou joined [\e[0m", 21, 0);
-		send(e->fds[i].fd, e->fds[i].chan, CHAN_SIZE, 0);
-		send(e->fds[i].fd, "\e[33m]\e[0m\n", 11, 0);
+		sv_sendto_chan_msg(" :leaved the channel.", cl);
+		sv_leave_chan(e, cl);
 	}
+	cl->chan = sv_join_chan(cmds[1], e, cl);
+	ft_putendl("OK");
+	if (cl->chan == NULL)
+		return (sv_err("SERVER", ":Out of memory.", cl->fd));
+	if (cl->chan->nbusers > 1)
+		sv_sendto_chan_msg(" :joined the channel.", cl);
+	sv_sendto_chan_new(cl);
 }

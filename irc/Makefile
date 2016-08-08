@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/06/26 18:48:42 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/08/02 16:27:17 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -24,9 +24,10 @@ SERVEUR	= serveur
 SV_DIR	= src/serveur/
 
 SV_SRC	= sv_accept.c sv_chan.c sv_cl_end.c sv_cl_read.c sv_cl_write.c \
-		sv_command_client.c sv_error.c sv_getaddrinfo.c sv_join.c \
+		sv_command_client.c sv_error.c sv_init_server.c sv_join.c \
 		sv_leave.c sv_loop.c sv_main.c sv_msg.c sv_send.c sv_split.c \
-		sv_strchr.c
+		sv_topic.c sv_err.c sv_strchr.c sv_cl_prompt.c sv_nick.c \
+		sv_away.c sv_new_client.c sv_help.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 

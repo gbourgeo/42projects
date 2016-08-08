@@ -6,65 +6,75 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/27 18:13:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/08/02 16:42:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_aff_wr(int i, char *wr)
+static void		sv_aff_wr(t_fd *cl)
 {
 	write(1, "\nClient ", 8);
-	ft_putnbr(i);
+	write(1, cl->addr, ft_strlen(cl->addr));
+	write(1, " ", 1);
+	write(1, cl->port, ft_strlen(cl->port));
 	write(1, " wr: ", 5);
-	write(1, wr, BUFF);
+	write(1, cl->wr.start, BUFF);
 }
 
-static void		sv_null(char **cmds, t_env *e, size_t i)
+static void		sv_null(char **cmds, t_env *e, t_fd *cl)
 {
-	if (ft_strcmp(cmds[0], "/connect"))
-		send(e->fds[i].fd, "\e[31mCommand not found.\n\e[0m", 28, 0);
+	(void)e;
+	send(cl->fd, cmds[0], ft_strlen(cmds[0]), 0);
+	send(cl->fd, " :Unknown command.", 18, 0);
+	send(cl->fd, "\r\n", 2, 0);
 }
 
-static void		sv_cmd_client(t_env *e, int i)
+static void		sv_cmd_client(t_env *e, t_fd *cl)
 {
 	char		**cmds;
 	int			nb;
-	static void	(*fct[])(char **, t_env *, size_t) = { SV_FUNCT1, SV_FUNCT2 };
-	static char	*name[] = { COMMANDS1, COMMANDS2 };
+	static t_com	com[] = { { "/away", sv_away }, {"/connect", sv_connect },
+							  { "/help", sv_help }, { "/join", sv_join },
+							  { "/leave", sv_leave }, { "/list", sv_list },
+							  { "/msg", sv_msg }, { "/nick", sv_nick },
+							  { "/quit", sv_cl_end }, { "/topic", sv_topic },
+							  { "/who", sv_who }, { NULL, sv_null } };
 
 	nb = 0;
-	if ((cmds = sv_split(&e->fds[i].wr)) == NULL)
-		return (sv_error("Server: splitting command failed\n", NULL));
-	while (name[nb] && ft_strcmp(name[nb], cmds[0]))
+	if ((cmds = sv_split(&cl->wr)) == NULL)
+		return (sv_error("Server: split failed.\r\n", e));
+	while (com[nb].name && ft_strcmp(com[nb].name, cmds[0]))
 		nb++;
-	fct[nb](cmds, e, i);
+	com[nb].fct(cmds, e, cl);
 	ft_free(&cmds);
-	if (nb == 7)
-		return ;
-	send(e->fds[i].fd, END_CHECK, END_CHECK_LEN, 0);
 }
 
-void			sv_cl_write(t_env *e, size_t i)
+static void		sv_clean_buf(t_buf *wr)
 {
-	char		tmp[NAME_SIZE + 14];
-
-	if (e->fds[i].wr.tail && *e->fds[i].wr.tail == '\n')
+	while (wr->head && *wr->head == ' ')
 	{
-		if (*e->fds[i].wr.head == '/')
-			sv_cmd_client(e, i);
-		else if (*e->fds[i].wr.head != '\n')
-		{
-			tmp[0] = '\n';
-			ft_strncpy(&tmp[1], e->fds[i].name, NAME_SIZE);
-			ft_strcat(tmp, " \e[31m<\e[0m ");
-			sv_send_to_chan(tmp, e, i);
-		}
-		if (e->fds[i].wr.tail)
-			*e->fds[i].wr.tail = '\0';
+		wr->head++;
+		if (wr->head >= wr->end)
+			wr->head = wr->start;
+	}
+}
+
+void			sv_cl_write(t_env *e, t_fd *cl)
+{
+	if (cl->wr.tail && (*cl->wr.tail == '\n' || *cl->wr.tail == '\r'))
+	{
+		sv_clean_buf(&cl->wr);
+		if (*cl->wr.head == '/')
+			sv_cmd_client(e, cl);
+		else if (cl->wr.head != cl->wr.tail && cl->chan)
+			sv_sendto_chan(cl);
+		if (cl->wr.tail)
+			*cl->wr.tail = '\0';
 		if (e->verb)
-			sv_aff_wr(i, e->fds[i].wr.start);
-		e->fds[i].wr.head = e->fds[i].wr.tail;
+			sv_aff_wr(cl);
+		cl->wr.head = cl->wr.tail;
+		sv_cl_prompt(cl);
 	}
 }
