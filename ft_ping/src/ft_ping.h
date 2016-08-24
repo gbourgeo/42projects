@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/03 22:56:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/10 10:24:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/08/24 16:43:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,11 @@
 # include "libft.h"
 # include <stdlib.h>
 # include <netinet/in.h>
+# include <netinet/ip.h>
 
 # define OPTIONS "vh"
-# define PORT 1025
-# define MAXPACKETSIZE (65536 - 60 - 8)
-# define DEFDATALEN 56
-# define MAXWAIT 10
+# define DEFDATALEN		56
+
 enum					e_options
 {
 	opt_v,
@@ -31,21 +30,26 @@ enum					e_options
 typedef struct			s_env
 {
 	char				*prog;
-	char				*hostname;
-	size_t				datalen;
-	int					interval;
-	int					sock;
-	struct sockaddr_in	source;
-	char				srcname[1025];
 	char				options[opt_len];
+	int					sock;
+	char				*hostname;
+	int					interval;
+	int					datalen;
+	int					ident;
+	char				srcname[255];
+	char				srcip[INET_ADDRSTRLEN];
+	struct sockaddr_in	source;
+	struct timeval		start;
 	struct timeval		start_time;
-	char				outpack[MAXPACKETSIZE];
-	size_t				npackets;
-	size_t				ntransmitted;
-	size_t				nreceived;
-	long				tmin;
-	long				tmax;
-	u_long				tsum;
+	struct timeval		end_time;
+	u_char				*outpack;
+	u_char				outpackhdr[IP_MAXPACKET];
+	u_char				inpack[IP_MAXPACKET];
+	char				ctrl[CMSG_SPACE(sizeof(struct timeval))];
+	long				ntransmitted;
+	long				nreceived;
+	double				tmin;
+	double				tmax;
 }						t_env;
 
 t_env					e;
@@ -53,5 +57,9 @@ t_env					e;
 void					ft_init(void);
 void					ft_signals(void);
 void					ft_setup(void);
+void					ft_finish(int sig);
+void					ft_alarm(int sig);
+void					ft_pinger(void);
+void					ft_analyse(char *buf, int cc, struct sockaddr_in *from);
 
 #endif
