@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/08/26 12:25:22 by root              #+#    #+#              #
-#    Updated: 2016/09/19 01:22:13 by root             ###   ########.fr        #
+#    Updated: 2016/09/26 17:37:37 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,8 +14,8 @@ NAME = ft_traceroute
 
 SRC_D = src/
 
-SRC = main.c ft_options.c ft_init.c ft_loop.c ft_atod.c ft_taballoc.c ft_err.c \
-	ft_getaddr.c ft_send.c ft_sockets.c ft_recv.c ft_parse_reply.c
+SRC = main.c ft_options.c ft_init.c ft_loop.c ft_atod.c ft_err.c \
+	ft_getaddr.c ft_send.c ft_recv.c ft_parse_reply.c ft_print.c
 
 OBJ_D = obj/
 
@@ -34,7 +34,7 @@ $(OBJ_D):
 	mkdir -p $(OBJ_D)
 
 $(NAME): $(OBJ)
-	$(WWW) -o $(NAME) $^ -L $(LIB_D) -lft -g
+	$(WWW) -o $(NAME) $^ -L $(LIB_D) -lft
 
 $(OBJ_D)%.o: $(SRC_D)%.c
 	$(WWW) -o $@ -c $< -I $(LIB_H)

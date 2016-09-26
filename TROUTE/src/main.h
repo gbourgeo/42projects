@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:42:00 by root              #+#    #+#             */
-/*   Updated: 2016/09/19 02:02:59 by root             ###   ########.fr       */
+/*   Updated: 2016/09/26 17:37:24 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,7 @@
 
 # include "libft.h"
 # include <netinet/ip.h>
-# include <netinet/ip6.h>
 # include <linux/udp.h>
-# include <time.h>
 
 # define DEF_DATALEN	40
 # define MAX_DATALEN	65000
@@ -43,13 +41,6 @@ enum					modules
 	ICMP
 };
 
-typedef struct			s_addr_any
-{
-	struct sockaddr		sa;
-	struct sockaddr_in	sin;
-	struct sockaddr_in6	sin6;
-}						t_addr_any;
-
 typedef struct			s_probe
 {
 	int					fd;
@@ -58,7 +49,7 @@ typedef struct			s_probe
 	int					final;
 	double				send_time;
 	double				recv_time;
-	t_addr_any			res;
+	struct sockaddr_in	res;
 	char				err_str[10];
 }						t_probe;
 
@@ -82,14 +73,15 @@ typedef struct			s_env
 	double				wait;
 	size_t				port;
 	int					ident;
-	t_addr_any			source;
+	struct sockaddr_in	source;
+	struct sockaddr_in	dest;
 	char				srcname[INET6_ADDRSTRLEN];
 	char				srcip[INET6_ADDRSTRLEN];
 	t_probe				*probes;
 	u_char				*outpack;
 	int					sendsk;
 	u_char				inpack[1280];
-	t_addr_any			from;
+	struct sockaddr_in	from;
 	int					done;
 }						t_env;
 
@@ -99,20 +91,21 @@ void					ft_usage(void);
 int						ft_options(char **av);
 void					ft_getaddr(void);
 double					ft_atod(char *str);
-void					*ft_taballoc(size_t nmemb, size_t size);
-void					ft_init_default(void);
-void					ft_init_icmp(void);
 void					ft_init_udp(void);
-void					ft_tune_socket(int fd);
-void					ft_set_ttl(int fd, int ttl);
-void					ft_recverr(int fd);
+void					ft_init_icmp(void);
 void					ft_loop(void);
 void					ft_send_udp(t_probe *pb, int ttl);
 void					ft_send_icmp(t_probe *pb, int ttl);
 void					ft_recv_udp(fd_set *fds);
 void					ft_recv_icmp(fd_set *fds);
+void					ft_recv_udp6(fd_set *fds);
+void					ft_recv_icmp6(fd_set *fds);
 void					ft_err(char *msg, char *err_msg);
-void					ft_parse_reply(t_probe *pb, int ret);
+void					ft_parse(t_probe *pb, int cc);
+void					ft_reply_err(t_probe *pb, int type, int code, int info);
+void					ft_reply_err6(t_probe *pb, int type, int code, int info);
 double					ft_get_time(void);
+void					ft_print_probe(t_probe *pb);
+void					ft_print_probe6(t_probe *pb);
 
 #endif

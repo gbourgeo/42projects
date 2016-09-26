@@ -6,15 +6,13 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 16:32:47 by root              #+#    #+#             */
-/*   Updated: 2016/09/19 02:26:36 by root             ###   ########.fr       */
+/*   Updated: 2016/09/26 17:29:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 #include <sys/time.h>
 #include <stdio.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <errno.h>
 
 double				ft_get_time(void)
@@ -25,75 +23,6 @@ double				ft_get_time(void)
 	gettimeofday(&tv, NULL);
 	ret = ((double)tv.tv_usec / 1000000. + (unsigned long)tv.tv_sec);
 	return (ret);
-}
-
-static void			ft_print_addr(t_addr_any *res)
-{
-	char			numeric[INET6_ADDRSTRLEN];
-	char			name[INET6_ADDRSTRLEN];
-
-	if (!res->sa.sa_family)
-		return ;
-	*numeric = 0;
-	getnameinfo(&res->sa, sizeof(*res), numeric, sizeof(numeric),
-				0, 0, NI_NUMERICHOST);
-	*name = 0;
-	getnameinfo(&res->sa, sizeof(*res), name, sizeof(name),
-				0, 0, 0);
-	printf(" %s (%s)", *name ? name : numeric, numeric);
-}
-
-static int			ft_check_addr(t_addr_any *a, t_addr_any *b)
-{
-	if (!a->sa.sa_family)
-		return (0);
-	if (a->sa.sa_family != b->sa.sa_family)
-		return (0);
-	if (a->sa.sa_family == AF_INET)
-		return (!ft_memcmp(&a->sin.sin_addr, &b->sin.sin_addr,
-							sizeof(a->sin.sin_addr)));
-	else
-		return (!ft_memcmp(&a->sin6.sin6_addr, &b->sin6.sin6_addr,
-							sizeof(a->sin6.sin6_addr)));
-	return (0);
-}
-
-static void			ft_print_probe(t_probe *pb)
-{
-	int				idx;
-	int				ttl;
-	int				np;
-	int				prn;
-	t_probe			*p;
-
-	idx = pb - e.probes;
-	ttl = idx / e.nprobes + 1;
-	np = idx % e.nprobes;
-	if (np == 0)
-		printf("\n%2d ", ttl);
-	if (!pb->res.sa.sa_family)
-		printf(" *");
-	else
-	{
-		prn = !np;
-		if (np)
-		{
-			p = pb - 1;
-			while (np && !p->res.sa.sa_family)
-			{
-				p--;
-				np--;
-			}
-			if (!np || !ft_check_addr(&p->res, &pb->res))
-				prn = 1;
-		}
-		if (prn)
-			ft_print_addr(&pb->res);
-	}
-	if (pb->recv_time)
-		printf("  %.3f ms", (pb->recv_time - pb->send_time) * 1000);
-	if (*pb->err_str)
-		printf(" %s", pb->err_str);
 }
 
 static void			ft_init_select(int *maxfd, fd_set *fds)
@@ -117,9 +46,7 @@ static void			ft_init_select(int *maxfd, fd_set *fds)
 
 static void			ft_do_select(double timeout)
 {
-	static void		(*ft_recv[])(fd_set *) = { ft_recv_udp,
-											   ft_recv_udp,
-											   ft_recv_icmp };
+	static void		(*ft_recv[])(fd_set *) = { ft_recv_udp, ft_recv_udp, ft_recv_icmp };
 	fd_set			fds;
 	int				maxfd;
 	int				ret;
@@ -140,6 +67,8 @@ static void			ft_do_select(double timeout)
 		}
 		ft_recv[e.module](&fds);
 		ft_init_select(&maxfd, &fds);
+		wait.tv_sec = 0;
+		wait.tv_usec = 0;
 	}
 }
 
@@ -164,7 +93,7 @@ void				ft_loop(void)
 	printf("%s to %s (%s), %d hops max, %d byte packets",
 		   e.prog, e.src, e.srcip, e.max_hops, e.headerlen + e.datalen);
 	fflush(stdout);
-//	exit(0);
+
 	while (start < end)
 	{
 		n = start - 1;
@@ -231,7 +160,5 @@ void				ft_loop(void)
 				timeout = 0;
 			ft_do_select(timeout);
 		}
-		if (e.done)
-			return ;
 	}
 }

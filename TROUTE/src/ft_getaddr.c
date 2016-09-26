@@ -6,13 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/17 23:39:21 by root              #+#    #+#             */
-/*   Updated: 2016/09/17 23:39:53 by root             ###   ########.fr       */
+/*   Updated: 2016/09/26 17:25:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
 
 void				ft_getaddr(void)
@@ -38,8 +36,12 @@ void				ft_getaddr(void)
 	}
 	if (tmp == NULL)
 		tmp = res;
-	ft_memcpy(&e.source, tmp->ai_addr, tmp->ai_addrlen);
-	getnameinfo(&e.source.sa, sizeof(e.source),
-				e.srcip, sizeof(e.srcip), 0, 0, NI_NUMERICHOST);
+	e.af = tmp->ai_family;
+	if (tmp->ai_family == AF_INET)
+	{
+		ft_memcpy(&e.dest, tmp->ai_addr, tmp->ai_addrlen);
+		getnameinfo((struct sockaddr *)&e.dest, sizeof(e.dest),
+					e.srcip, sizeof(e.srcip), 0, 0, NI_NUMERICHOST);
+	}
 	freeaddrinfo(res);
 }

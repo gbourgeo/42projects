@@ -6,12 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:35:30 by root              #+#    #+#             */
-/*   Updated: 2016/09/17 23:47:57 by root             ###   ########.fr       */
+/*   Updated: 2016/09/26 17:08:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
-#include "libft.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -19,11 +18,10 @@ void			ft_usage(void)
 {
 	ft_putstr("Usage:\n  ");
 	ft_putstr(e.prog);
-	ft_putstr(" [ -46 ] [ -f first_ttl ] [ -m max_ttl ] [ -N squeries ]");
+	ft_putstr(" [ -4 ] [ -f first_ttl ] [ -m max_ttl ] [ -N squeries ]");
 	ft_putstr(" [ -p port ] [ -w waittime ] [ -q nqueries ] [ -z sendwait ]");
 	ft_putstr(" host [ packetlen ]\n");
 	ft_putendl("  -4                          Use IPv4");
-	ft_putendl("  -6                          Use IPv6");
 	ft_putendl("  -I                          Use ICMP ECHO for tracerouting");
 	ft_putendl("  -f first_ttl                Start from the first_ttl hop (instead from 1)");
 	ft_putendl("  -m max_ttl                  Set the max number of hops (max TTL to be");
@@ -80,10 +78,10 @@ static void		ft_clean(void)
 	printf("\n");
 }
 
-// 46fmNpwqzhIU
+// 4fmNpwqzhIU
 int				main(int ac, char **av)
 {
-	static void	(*ft_init[])(void) = { ft_init_default, ft_init_udp, ft_init_icmp };
+	static void	(*ft_init[])(void) = { ft_init_udp, ft_init_udp, ft_init_icmp };
 
 	ft_memset(&e, 0, sizeof(e));
 	e.prog = ft_strrchr(av[0], '/');
@@ -122,8 +120,9 @@ int				main(int ac, char **av)
 	if (e.send_secs >= 10)
 		e.send_secs /= 1000;
 	ft_getaddr();
-	e.af = e.source.sa.sa_family;
-	e.headerlen = (e.af == AF_INET ? sizeof(struct iphdr) : sizeof(struct ip6_hdr));
+	if (e.af == AF_INET6)
+		ft_err(e.prog, "AF_INET6 not supported");
+	e.headerlen = sizeof(struct iphdr);
 	ft_init[e.module]();
 	ft_loop();
 	ft_clean();

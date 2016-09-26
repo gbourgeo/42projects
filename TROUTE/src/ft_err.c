@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/07 17:03:28 by root              #+#    #+#             */
-/*   Updated: 2016/09/15 15:30:05 by root             ###   ########.fr       */
+/*   Updated: 2016/09/20 18:20:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,5 +24,6 @@ void				ft_err(char *msg, char *err_msg)
 		free(e.outpack);
 	if (e.probes != NULL)
 		free(e.probes);
+	ft_bzero(&e, sizeof(e));
 	exit(2);
 }

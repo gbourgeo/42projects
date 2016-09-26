@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/30 19:46:21 by root              #+#    #+#             */
-/*   Updated: 2016/09/18 14:33:57 by root             ###   ########.fr       */
+/*   Updated: 2016/09/26 17:05:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,6 @@ int				ft_options(char **av)
 					ft_usage();
 				else if (av[i][j] == '4')
 					e.af = AF_INET;
-				else if (av[i][j] == '6')
-					e.af = AF_INET6;
 				else if (av[i][j] == 'I')
 					e.module = ICMP;
 				else if (av[i][j] == 'U')
