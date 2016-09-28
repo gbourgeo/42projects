@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:42:00 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 13:45:37 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 21:57:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,15 @@
 # define DEF_SOCKTYPE	SOCK_DGRAM
 # define DEF_PROTOCOL	IPPROTO_UDP
 
+# define INIT_MODULE	ft_init_udp, ft_init_udp, ft_init_icmp
+# define SEND_MODULE	ft_send_udp, ft_send_udp, ft_send_icmp
+# define RECV_MODULE	ft_recv_udp, ft_recv_udp, ft_recv_icmp
+
 enum					modules
 {
 	DEFAULT,
 	UDP,
-	ICMP
+	ICMP,
 };
 
 typedef struct			s_probe
@@ -75,6 +79,7 @@ typedef struct			s_env
 	int					ident;
 	struct sockaddr_in	source;
 	struct sockaddr_in	dest;
+	char				local;
 	char				srcname[INET6_ADDRSTRLEN];
 	char				srcip[INET6_ADDRSTRLEN];
 	t_probe				*probes;
@@ -93,6 +98,7 @@ void					ft_getaddr(void);
 double					ft_atod(char *str);
 void					ft_init_udp(void);
 void					ft_init_icmp(void);
+void					ft_init_tcp(void);
 void					ft_loop(void);
 void					ft_send_udp(t_probe *pb, int ttl);
 void					ft_send_icmp(t_probe *pb, int ttl);

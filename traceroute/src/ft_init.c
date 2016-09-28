@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/29 02:29:04 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:24:20 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 21:55:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,16 @@ static void			ft_find_socket(void)
 	int				on;
 	socklen_t		sk;
 	struct ip		*ip;
+	u_char			*outp;
 
 	e.sendsk = socket(e.af, SOCK_RAW, IPPROTO_RAW);
 	if (e.sendsk < 0)
 		ft_err("socket", NULL);
-	sk = sizeof(e.source);
-	if (getsockname(e.sendsk, (struct sockaddr *)&e.source, &sk) < 0)
-		ft_err("getsockname", NULL);
-	e.ident = ntohs(e.source.sin_port);
+	e.ident = (getpid() & 0xffff) | 0x8000;
 	ip = (struct ip *)e.outpack;
 	ip->ip_v = IPVERSION;
-	ip->ip_hl = 5;
+	outp = (u_char *)(ip + 1);
+	ip->ip_hl = (outp - (u_char *)ip) >> 2;
 	ip->ip_tos = 0;
 	ip->ip_len = htons(e.datalen);
 	ip->ip_id = htons(e.ident);
@@ -37,8 +36,10 @@ static void			ft_find_socket(void)
 	ip->ip_p = e.protocol;
 	ip->ip_sum = 0;
 	inet_pton(e.af, "0.0.0.0", &ip->ip_src);
-//	ip->ip_src = (e.af == AF_INET) ? e.source.sin_addr : e.source6.sin6_addr;
 	ip->ip_dst = e.dest.sin_addr;
+	sk = sizeof(e.source);
+	if (getsockname(e.sendsk, (struct sockaddr *)&e.source, &sk) < 0)
+		ft_err("getsockname", NULL);
 	on = 1;
 	if (setsockopt(e.sendsk, SOL_SOCKET, SO_SNDBUF, &e.datalen, sizeof(e.datalen)) < 0)
 		ft_err("setsockopt SO_SNDBUF", NULL);
@@ -75,6 +76,8 @@ void				ft_init_icmp(void)
 
 void				ft_init_udp(void)
 {
+	struct in_addr	addr;
+
 	e.headerlen += sizeof(struct udphdr);
 	if (e.packetlen < 0)
 	{
@@ -97,4 +100,6 @@ void				ft_init_udp(void)
 	ft_bzero(e.outpack, e.datalen);
 	e.protocol = IPPROTO_UDP;
 	ft_find_socket();
+	inet_pton(e.af, "127.0.0.1", &addr);
+	e.local = addr.s_addr != e.dest.sin_addr.s_addr;
 }

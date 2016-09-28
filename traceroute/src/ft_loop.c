@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 16:32:47 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 13:52:31 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 21:56:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void			ft_init_select(int *maxfd, fd_set *fds)
 
 static void			ft_do_select(double timeout)
 {
-	static void		(*ft_recv[])(fd_set *) = { ft_recv_udp, ft_recv_udp, ft_recv_icmp };
+	static void		(*ft_recv[])(fd_set *) = { RECV_MODULE };
 	fd_set			fds;
 	int				maxfd;
 	int				ret;
@@ -74,7 +74,7 @@ static void			ft_do_select(double timeout)
 
 void				ft_loop(void)
 {
-	static void		(*ft_send[])(t_probe *, int) = { ft_send_udp, ft_send_udp, ft_send_icmp };
+	static void		(*ft_send[])(t_probe *, int) = { SEND_MODULE };
 	int				start;
 	int				end;
 	double			now_time;

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 00:35:46 by root              #+#    #+#             */
-/*   Updated: 2016/09/27 14:21:23 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 21:47:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,10 @@ void					ft_send_udp(t_probe *pb, int ttl)
 	udp->dest = htons(e.port);
 	udp->len = htons((u_short)(e.datalen - sizeof(*ip)));
 	udp->check = 0;
-	if (!(udp->check = p_cksum(ip, (u_short *)udp, e.datalen - sizeof(*ip))))
+	if ((udp->check = p_cksum(ip, (u_short *)udp, e.datalen - sizeof(*ip))) == 0)
 		udp->check = 0xffff;
 	pb->send_time = ft_get_time();
-	if (ft_do_send(e.sendsk) < 0)
+	if (ft_do_send((e.local) ? e.sendsk : fd) < 0)
 	{
 		close(fd);
 		pb->send_time = 0;

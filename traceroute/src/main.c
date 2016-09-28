@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:35:30 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:08:14 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 21:57:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static void		ft_clean(void)
 // 4fmNpwqzhIU
 int				main(int ac, char **av)
 {
-	static void	(*ft_init[])(void) = { ft_init_udp, ft_init_udp, ft_init_icmp };
+	static void	(*ft_init[])(void) = { INIT_MODULE };
 
 	ft_memset(&e, 0, sizeof(e));
 	e.prog = ft_strrchr(av[0], '/');
