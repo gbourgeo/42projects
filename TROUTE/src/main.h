@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:42:00 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:37:24 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 13:45:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@
 # define DEF_PROBES		3
 # define MAX_PROBES		10
 # define DEF_SIM_QUERIE	16
-# define DEF_SEND_SECS	0
+# define DEF_SEND_SECS	0.0001
 # define DEF_START_PORT	33434
 # define DEF_UDP_PORT	53
-# define DEF_AF			AF_UNSPEC
+# define DEF_AF			AF_INET
 # define DEF_SOCKTYPE	SOCK_DGRAM
 # define DEF_PROTOCOL	IPPROTO_UDP
 

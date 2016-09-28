@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 16:32:47 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:29:00 by root             ###   ########.fr       */
+/*   Updated: 2016/09/28 13:52:31 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void				ft_loop(void)
 				pb->send_time &&
 				now_time - pb->send_time >= e.wait)
 			{
-				if (pb->fd && pb->fd != e.sendsk)
+				if (pb->fd)
 					close(pb->fd);
 				pb->fd = 0;
 				pb->seq = 0;

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 00:35:46 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:25:15 by root             ###   ########.fr       */
+/*   Updated: 2016/09/27 14:21:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void					ft_send_udp(t_probe *pb, int ttl)
 	struct ip			*ip;
 	struct udphdr		*udp;
 
-	fd = socket(e.af, SOCK_RAW, IPPROTO_UDP);
+	fd = socket(e.af, SOCK_RAW, IPPROTO_ICMP);
 	if (fd < 0)
 		ft_err("socket", NULL);
 	ip = (struct ip *)e.outpack;
