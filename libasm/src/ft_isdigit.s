@@ -14,5 +14,5 @@ ret_false:
 	ret
 
 ret_true:
-	mov rax, 1
+	mov rax, 2048
 	ret

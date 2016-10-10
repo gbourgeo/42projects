@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/06 15:55:31 by root              #+#    #+#             */
-/*   Updated: 2016/10/10 00:23:43 by root             ###   ########.fr       */
+/*   Updated: 2016/10/10 18:03:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <ctype.h>
+#include <unistd.h>
 
 # define NAMES  "bzero", "strcat", "isalpha", "isdigit", "isalnum", \
 		"isascii", "isprint", "toupper", "tolower", "puts", \
@@ -31,10 +33,10 @@ static void	check_it(int i)
 {
 	if (i)
 	{
-		write(1, "\ntest FAILED\n", 15);
+		printf("\ntest FAILED\n");
 		exit(i);
 	}
-	write(1, "\ntest OK", 8);
+	printf("\ntest OK");
 }
 
 static void test1(void)
@@ -42,12 +44,9 @@ static void test1(void)
 	char	str[10] = "coucou";
 
 	printf("\033[31m\n**** TEST FT_BZERO ****\033[0m\n");
-	write(1, "str: ", 5);
-	write(1, str, 6);
-	write(1, "\n", 1);
-	write(1, "bzero: ", 7);
+	printf("str: %s\nbzero: ", str);
 	_ft_bzero(str, 6);
-	write(1, str, 6);
+	printf("%s", str);
 	check_it(*str);
 }
 static void test2(void)
@@ -56,95 +55,74 @@ static void test2(void)
 	char	plus[30] = " le plus beau";
 
 	printf("\033[31m\n**** TEST FT_STRCAT ****\033[0m\n");
-	write(1, "str: ", 5);
-	write(1, cat, 30);
-	write(1, "\n", 1);
-	write(1, "strcat: ", 8);
+	printf("str: %s\nstrcat: ", cat);
 	_ft_strcat(cat, plus);
-	write(1, cat, 30);
+	printf("%s", cat);
 	check_it(strlen(cat) < 20);
 }
 static void test3(void)
 {
-	int	i = ' ';
+	int	i = -127;
 
-	printf("\033[31m");
-	write(1, "\n\n**** TEST FT_ISALPHA ****\n", 27);
-	printf("\033[0m");
+	printf("\033[31m\n**** TEST FT_ISALPHA ****\n\033[0m");
 	while (i < 127)
 	{
-		write(1, &i, 1);
-		if (_ft_isalpha(i))
-			write(1, " is alpha", 9);
-		else
-			write(1, " isn't alpha", 12);
+		if (_ft_isalpha(i) != isalpha(i))
+		{
+			printf("ERROR: %d != %d\n", _ft_isalpha(i), isalpha(i));
+			exit(1);
+		}
 		i++;
-		if (i % 4 == 0)
-			write (1, "\n", 1);
-		else
-			write(1, "\t", 1);
 	}
-	write (1, "\n", 1);
+	printf("TEST OK !\n");
 }
 static void test4(void)
 {
-	int i = ' ';
+	int i = -128;
 
 	printf("\033[31m\n**** TEST FT_ISDIGIT ****\033[0m\n");
 	while (i < 127)
 	{
-		write(1, &i, 1);
-		if (_ft_isdigit(i))
-			write(1, " is digit", 9);
-		else
-			write(1, " isn't digit", 12);
+		if (_ft_isdigit(i) != isdigit(i))
+		{
+			printf("ERROR: %d != %d\n", _ft_isdigit(i), isdigit(i));
+			exit(1);
+		}
 		i++;
-		if (i % 4 == 0)
-			write (1, "\n", 1);
-		else
-			write(1, "\t", 1);
 	}
-	write (1, "\n", 1);
+	printf("TEST OK !\n");
 }
 static void test5(void)
 {
-	int i = ' ';
+	int i = -128;
 
 	printf("\033[31m\n**** TEST FT_ISALNUM ****\033[0m\n");
 	while (i < 127)
 	{
-		write(1, &i, 1);
-		if (_ft_isalnum(i))
-			write(1, " is alnum", 9);
-		else
-			write(1, " isn't alnum", 12);
+		if (_ft_isalnum(i) != isalnum(i))
+		{
+			printf("ERROR: %d != %d\n", _ft_isalnum(i), isalnum(i));
+			exit(1);
+		}
 		i++;
-		if (i % 4 == 0)
-			write (1, "\n", 1);
-		else
-			write(1, "\t", 1);
 	}
-	write (1, "\n", 1);
+	printf("TEST OK !\n");
 }
 static void test6(void)
 {
-	int i = -10;
+	int i = -128;
 
 	printf("\033[31m\n**** TEST FT_ISASCII ****\033[0m\n");
 	while (i < 130)
 	{
-		write(1, &i, 1);
-		if (_ft_isascii(i))
-			write(1, " is ascii", 9);
-		else
-			write(1, " isn't ascii", 12);
+		if (_ft_isascii(i) != isascii(i))
+		{
+			printf("ERROR: %d != %d\n", _ft_isascii(i), isascii(i));
+			exit(1);
+		}
 		i++;
-		if (i % 4 == 0)
-			write (1, "\n", 1);
-		else
-			write(1, "\t", 1);
 	}
-	write (1, "\n", 1);
+	printf("TEST OK !\n");
 }
 static void test7(void)
 {
@@ -153,18 +131,14 @@ static void test7(void)
 	printf("\033[31m\n**** TEST FT_ISPRINT ****\033[0m\n");
 	while (i < 128)
 	{
-		write(1, &i, 1);
-		if (_ft_isprint(i))
-			write(1, " is print", 9);
-		else
-			write(1, " isn't print", 12);
+		if (_ft_isprint(i) != isprint(i))
+		{
+			printf("ERROR: %d != %d\n", _ft_isprint(i), isprint(i));
+			exit(1);
+		}
 		i++;
-		if (i % 4 == 0)
-			write (1, "\n", 1);
-		else
-			write(1, "\t", 1);
 	}
-	write (1, "\n", 1);
+	printf("TEST OK !\n");
 }
 static void test8(void)
 {
@@ -192,7 +166,7 @@ static void test9(void)
 }
 static void test10(void)
 {
-	int i, j;
+	int i;
 	char test[10] = "";
 
 	printf("\033[31m\n**** TEST FT_PUTS ****\033[0m\n");
@@ -209,12 +183,10 @@ static void test10(void)
 }
 static void test11(void)
 {
-	int i, j;
-
 	printf("\033[31m\n**** TEST FT_STRLEN ****\033[0m\n");
-	printf("'%s' : ret=%d \t real=%d\n", "aaaa", _ft_strlen("aaaa"), strlen("aaaa"));
-	printf("'%s' : ret=%d \t real=%d\n", "", _ft_strlen(""), strlen(""));
-	printf("'%s' : ret=%d \t real=%d\n", "zqfesxdcfhbjncds eiuhg efug",
+	printf("'%s' : ret=%d \t real=%ld\n", "aaaa", _ft_strlen("aaaa"), strlen("aaaa"));
+	printf("'%s' : ret=%d \t real=%ld\n", "", _ft_strlen(""), strlen(""));
+	printf("'%s' : ret=%d \t real=%ld\n", "zqfesxdcfhbjncds eiuhg efug",
 		   _ft_strlen("zqfesxdcfhbjncds eiuhg efug"), strlen("zqfesxdcfhbjncds eiuhg efug"));
 }
 
@@ -224,21 +196,21 @@ static void	test12(void)
 	char	test2[50];
 
 	printf("\033[31m\n**** TEST FT_MEMSET ****\033[0m\n");
-	printf("ft_memset: %s\n", _ft_memset(NULL, 0, 30));
+	printf("ft_memset: %s\n", (char *)_ft_memset(NULL, 0, 30));
 	_ft_memset(test, 'a', 30);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'a', 30));
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'a', 30));
 	_ft_memset(test, 'b', 25);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'b', 25));
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'b', 25));
 	_ft_memset(test, 'c', 20);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'c', 20));
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'c', 20));
 	_ft_memset(test, 'd', 15);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'd', 15));
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'd', 15));
 	_ft_memset(test, 'e', 10);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'e', 10));
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'e', 10));
 	_ft_memset(test, 'f', 5);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'f', 5));
-	_ft_memset(test, 'g', 0);
-	printf("ft_memset: %s \t memset: %s\n", test, memset(test2, 'g', 0));	
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'f', 5));
+	_ft_memset(test, 'g', 1);
+	printf("ft_memset: %s \t memset: %s\n", test, (char *)memset(test2, 'g', 1));
 }
 static void	test13(void)
 {
@@ -301,10 +273,11 @@ static void test15(void)
 
 	printf("\033[31m\n**** TEST FT_CAT ****\033[0m\n");
 	printf("\033[32mtest with a fd < 0...\033[0m");
-	_ft_cat(-1);
+	fflush(stdout);
+	_ft_cat(-42);
 	printf(" OK\n");
 	fd = open("auteur", O_RDONLY);
-	printf("\033[32mtest on 'auteur' (fd=%d)...\033[0m\n", fd);
+	printf("\033[32mtest on 'auteur' (fd=%d)\033[0m\n", fd);
 	_ft_cat(fd);
 	close(fd);
 	fd = open("Makefile", O_RDONLY);
@@ -312,7 +285,7 @@ static void test15(void)
 	_ft_cat(fd);
 	close(fd);
 	fd = 0;
-	printf("\033[32mtest on fd = 0...\033[0m\n", fd);
+	printf("\033[32mtest on fd = 0...\033[0m\n");
 	_ft_cat(fd);
 }
 
@@ -326,22 +299,22 @@ static void test16(void)
 	i = 'l';
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
 	ret = _ft_memchr(str, i, 50);
-	printf("result: '%s'\nmemchr: '%s'\n", ret, memchr(str, i, 50));
+	printf("result: '%s'\nmemchr: '%s'\n", ret, (char *)memchr(str, i, 50));
 	i = 's';
 	printf("\033[32mRecherche '%c' dans '%s' (5 premiers caracteres)\033[0m\n", i, str);
 	ret = _ft_memchr(str, i, 5);
-	printf("result: '%s'\nmemchr: '%s'\n", ret, memchr(str, i, 5));
+	printf("result: '%s'\nmemchr: '%s'\n", ret, (char *)memchr(str, i, 5));
 	printf("\033[32mRecherche '%c' dans '%s' (15 premiers caracteres)\033[0m\n", i, str);
 	ret = _ft_memchr(str, i, 15);
-	printf("result: '%s'\nmemchr: '%s'\n", ret, memchr(str, i, 15));
+	printf("result: '%s'\nmemchr: '%s'\n", ret, (char *)memchr(str, i, 15));
 	i = 'F';
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
 	ret = _ft_memchr(str, i, 50);
-	printf("result: '%s'\nmemchr: '%s'\n", ret, memchr(str, i, 50));
+	printf("result: '%s'\nmemchr: '%s'\n", ret, (char *)memchr(str, i, 50));
 	i = 0;
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
 	ret = _ft_memchr(str, i, 50);
-	printf("result: '%s'\nmemchr: '%s'\n", ret, memchr(str, i, 50));
+	printf("result: '%s'\nmemchr: '%s'\n", ret, (char *)memchr(str, i, 50));
 }
 static void test17(void)
 {
@@ -352,20 +325,20 @@ static void test17(void)
 	printf("\033[31m\n**** TEST FT_MEMRCHR ****\033[0m\n");
 	i = 'l';
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
-	printf("result: '%s'\n", _ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
+	printf("result: '%s'\n", (char *)_ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
 	printf("\033[32mRecherche '%c' dans '%s' (en Commencant a 10)\033[0m\n", i, str);
-	printf("result: '%s'\n", _ft_memrchr(str, i, 10));//, memrchr(str, i, 50));
+	printf("result: '%s'\n", (char *)_ft_memrchr(str, i, 10));//, memrchr(str, i, 50));
 	i = 'o';
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
-	printf("result: '%s'\n", _ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
+	printf("result: '%s'\n", (char *)_ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
 	printf("\033[32mRecherche '%c' dans '%s' (en Commencant a 5)\033[0m\n", i, str);
-	printf("result: '%s'\n", _ft_memrchr(str, i, 5));//, memrchr(str, i, 5));
+	printf("result: '%s'\n", (char *)_ft_memrchr(str, i, 5));//, memrchr(str, i, 5));
 	i = 'F';
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
-	printf("result: '%s'\n", _ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
+	printf("result: '%s'\n", (char *)_ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
 	i = 0;
 	printf("\033[32mRecherche '%c' dans '%s'\033[0m\n", i, str);
-	printf("result: '%s'\n", _ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
+	printf("result: '%s'\n", (char *)_ft_memrchr(str, i, 50));//, memrchr(str, i, 50));
 }
 static void test18(void)
 {
@@ -384,7 +357,7 @@ static void test18(void)
 	printf("\e[32mComparaison des 2 strings d'une longueur de %d\e[0m\n", i);
 	printf("ft_mem: %d\n", _ft_memcmp(str, ste, i));
 	printf("memcmp: %d\n", memcmp(str, ste, i));
-	i = 21;
+	i = 22;
 	printf("\e[32mComparaison des 2 strings d'une longueur de %d\e[0m\n", i);
 	printf("ft_mem: %d\n", _ft_memcmp(str, ste, i));
 	printf("memcmp: %d\n", memcmp(str, ste, i));
@@ -429,8 +402,9 @@ static void	get_opt(char **av)
 			if (strcmp(av[i], name[j]) == 0)
 			{
 				fct[j]();
-				write(0, "\nDONE\nPress any key to continue", 31);
-//				read(0, buf, 5);
+				printf("\nPress any key to continue");
+				fflush(stdout);
+				read(0, buf, 5);
 				break ;
 			}
 			j++;
@@ -441,13 +415,12 @@ static void	get_opt(char **av)
 
 int main(int ac, char **av)
 {
-	int		opt = 0;
 	char	*name[] = { NAMES };
 
 	if (ac == 1)
 		get_opt(name);
 	else
 		get_opt(av);
-	write(1, "End.\n", 5);
+	printf("\nEnd.\n");
 	return (0);
 }

@@ -4,5 +4,14 @@
 	global	_ft_memcmp
 
 _ft_memcmp:
-	mov rax, 0
+	mov 	rax, 0
+	mov 	rcx, rdx
+	cld
+	repe	cmpsb
+	je		_same
+	mov 	al, byte [rdi - 1]
+	sub 	al, byte [rsi - 1]
+	movsx	rax, al
+
+_same:
 	ret

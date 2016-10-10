@@ -8,7 +8,7 @@ _ft_isprint:
 	jl ret_false
 	cmp rdi, 126
 	jg ret_false
-	mov rax, 1
+	mov rax, 16384
 	ret
 
 ret_false:

@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/01 23:37:59 by root              #+#    #+#              #
-#    Updated: 2016/10/10 00:12:06 by root             ###   ########.fr        #
+#    Updated: 2016/10/10 17:14:35 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -35,7 +35,7 @@ $(NAME): $(OBJ)
 	ranlib $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.s
-#	@nasm -f macho64 $< -o $@
+#	nasm -f macho64 $< -o $@
 	nasm -f elf64 $< -o $@
 
 clean:
@@ -48,4 +48,4 @@ fclean: clean
 re: fclean all
 
 test: re
-	gcc main.c $(NAME) -I $(HDR)
+	gcc -Wall -Werror -Wextra test.c $(NAME) -I $(HDR)
