@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/06 15:55:31 by root              #+#    #+#             */
-/*   Updated: 2016/10/10 18:03:26 by root             ###   ########.fr       */
+/*   Updated: 2016/10/13 18:31:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,17 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <limits.h>
 
 # define NAMES  "bzero", "strcat", "isalpha", "isdigit", "isalnum", \
 		"isascii", "isprint", "toupper", "tolower", "puts", \
 		"strlen", "memset", "memcpy", "strdup", "cat", \
-		"memchr", "memrchr", "memcmp", NULL
+		"memchr", "memrchr", "memcmp", "putnbr", "iter", NULL
 
 # define FUNCTIONS  test1, test2, test3, test4, test5, \
 		test6, test7, test8, test9, test10, \
 		test11, test12, test13, test14, test15, \
-		test16, test17, test18, NULL
+		test16, test17, test18, test19, test20, NULL
 
 static void	check_it(int i)
 {
@@ -387,11 +388,52 @@ static void test18(void)
 	printf("ft_mem: %d\n", _ft_memcmp(ste, stt, i));
 	printf("memcmp: %d\n", memcmp(ste, stt, i));
 }
+static void test19(void)
+{
+	printf("\033[31m\n**** TEST FT_PUTNBR ****\033[0m\n");
+	_ft_putnbr(-35);
+	printf("\n");
+	_ft_putnbr(-1);
+	printf("\n");
+	_ft_putnbr(0);
+	printf("\n");
+	_ft_putnbr(1);
+	printf("\n");
+	_ft_putnbr(1078);
+	printf("\n");
+	_ft_putnbr(INT_MIN);
+	printf("\n");
+	_ft_putnbr(INT_MAX);
+	printf("\n");
+}
+static void test_iter(char *s)
+{
+	if (*s >= 'a' && *s <= 'z')
+		*s -= 32;
+}
+static void test_iter2(char *s)
+{
+	if (*s >= 'A' && *s <= 'Z')
+		*s += 32;
+}
+static void test20(void)
+{
+	char	tst[50] = "hello my name is Kwame !";
+
+	printf("\033[31m\n**** TEST FT_ITER ****\033[0m\n");
+	printf("ft_iter(%s, %s): test_iter is equal to toupper()\n", tst, "test_iter");
+	_ft_iter(tst, &test_iter);
+	printf("-> %s\n", tst);
+	printf("ft_iter(%s, %s): test_iter2 is equal to tolower()\n", tst, "test_iter2");
+	_ft_iter(tst, &test_iter2);
+	printf("-> %s\n", tst);
+}
+
 static void	get_opt(char **av)
 {
 	static char	*name[] = { NAMES };
 	static void	(*fct[])(void) = { FUNCTIONS };
-	char	buf[6];
+//	char	buf[6];
 	int		i = 1, j;
 
 	while (av[i])
@@ -404,7 +446,7 @@ static void	get_opt(char **av)
 				fct[j]();
 				printf("\nPress any key to continue");
 				fflush(stdout);
-				read(0, buf, 5);
+//				read(0, buf, 5);
 				break ;
 			}
 			j++;

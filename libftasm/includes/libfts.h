@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/03 16:52:08 by root              #+#    #+#             */
-/*   Updated: 2016/10/10 00:04:06 by root             ###   ########.fr       */
+/*   Updated: 2016/10/13 18:13:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,7 @@ void		_ft_cat(int fd);
 void		*_ft_memchr(const void *s, int c, size_t n);
 void		*_ft_memrchr(const void *s, int c, size_t n);
 int			_ft_memcmp(const void *s1, const void *s2, size_t n);
+void		_ft_putnbr(int n);
+void		_ft_iter(char *s, void (*f)(char *));
 
 #endif
