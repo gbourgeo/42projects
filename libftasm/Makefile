@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/01 23:37:59 by root              #+#    #+#              #
-#    Updated: 2016/10/13 18:24:36 by root             ###   ########.fr        #
+#    Updated: 2016/11/06 05:03:12 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -35,17 +35,17 @@ $(NAME): $(OBJ)
 	ranlib $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.s
-#	nasm -f macho64 $< -o $@
-	nasm -f elf64 $< -o $@
+	/usr/local/Cellar/nasm/2.12.02/bin/nasm -f macho64 $< -o $@
+#	nasm -f elf64 $< -o $@
 
 clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
 	rm -f $(NAME)
-	rm -f a.out
+	rm -f test
 
 re: fclean all
 
 test: re
-	gcc -Wall -Werror -Wextra test.c $(NAME) -I $(HDR)
+	gcc -Wall -Werror -Wextra -o test test.c $(NAME) -I $(HDR)

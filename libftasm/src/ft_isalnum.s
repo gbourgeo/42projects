@@ -1,7 +1,7 @@
 	;; int isalnum(int c);
 
 	segment .text
-	global _ft_isalnum
+	global 	_ft_isalnum
 
 _ft_isalnum:
 	cmp rdi, "0"
@@ -22,5 +22,5 @@ ret_false:
 	ret
 
 ret_true:
-	mov rax, 8
+	mov rax, 1
 	ret

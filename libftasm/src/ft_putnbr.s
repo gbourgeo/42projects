@@ -1,6 +1,6 @@
 	;; void ft_putnbr(int n)
 
-	%define SYS_WRITE	1
+	%define SYS_WRITE	0x2000004
 	%define STDOUT		1
 
 	segment	.data

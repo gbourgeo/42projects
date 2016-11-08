@@ -1,7 +1,7 @@
 	;; void *memcpy(void *dest, const void *src, size_t n);
 
 	segment .text
-	global _ft_memcpy
+	global 	_ft_memcpy
 
 _ft_memcpy:
 	mov		r10, rdi

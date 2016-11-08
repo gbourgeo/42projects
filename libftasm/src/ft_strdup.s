@@ -1,9 +1,9 @@
 	;; char *strdup(const char *s);
 
 	segment .text
-	global _ft_strdup
-	extern _ft_strlen
-	extern malloc
+	global 	_ft_strdup
+	extern 	_ft_strlen
+	extern 	_malloc
 
 _ft_strdup:
 	mov		rbx, rdi
@@ -13,7 +13,7 @@ _ft_strdup:
 	mov		edi, eax
 	mov		ecx, eax
 	push	rcx
-	call	malloc
+	call	_malloc
 	pop		rcx
 	test	rax, rax
 	jz		return

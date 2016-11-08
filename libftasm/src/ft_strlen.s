@@ -1,12 +1,12 @@
 	;; size_t strlen(const char *s);
 
 	segment .text
-	global _ft_strlen
+	global 	_ft_strlen
 
 _ft_strlen:
-	mov rax, 0
-	cmp rdi, byte 0
-	je return_false
+	mov 	rax, 0
+	cmp 	rdi, byte 0
+	je 		return_false
 	sub		rcx, rcx			; mise a 0 du compteur
 	sub		al, al				; mise a 0 du char de comparaison
 	not		rcx					; inverse le binaire (surement protect overflow)

@@ -13,5 +13,5 @@ _ft_memset:
 	rep		stosb
 
 return:
-	mov rax, r10
+	mov 	rax, r10
 	ret

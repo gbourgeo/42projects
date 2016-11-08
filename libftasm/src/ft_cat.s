@@ -1,8 +1,8 @@
 	;; void cat(int fd);
 	;; All registers, except rcx and r11, are preserved during the syscall.
 
-	%define SYS_READ	0
-	%define SYS_WRITE	1
+	%define SYS_READ	0x2000003
+	%define SYS_WRITE	0x2000004
 	%define STDOUT		1
 	%define BUFFER_SIZE 255
 
@@ -13,6 +13,9 @@
 	global 	_ft_cat
 
 _ft_cat:
+	test	edi, edi
+	js		_return
+	;; We stock rdi in rbx so we can reuse the fd in the _read_write loop if the buffer is too low
 	mov 	rbx, rdi
 
 _read_write:
