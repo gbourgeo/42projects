@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/31 18:58:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:40:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,14 @@ void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 	while (us)
 	{
 		to = (t_fd *)us->is;
-		if (to->fd != cl->fd &&
-			!ft_strncmp(to->nick, cmds[1], NAME_SIZE))
-			return ((to->flags & FLAGS_AWAY) ?
-					sv_err(to->nick, (to->away) ? to->away : "Gone",
-							cl->fd) :
-					sv_private_msg((t_fd *)us->is, cmds, cl->nick));
+		if (to->fd != cl->fd && !ft_strncmp(to->nick, cmds[1], NAME_SIZE))
+		{
+			if (to->flags & FLAGS_AWAY)
+				sv_err(to->nick, (to->away) ? to->away : "Gone", cl->fd);
+			else
+				sv_private_msg((t_fd *)us->is, cmds, cl->nick);
+			return ;
+		}
 		us = us->next;
 	}
 	sv_err(cmds[1], ":No such nick", cl->fd);

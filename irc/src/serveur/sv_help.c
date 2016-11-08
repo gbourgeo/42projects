@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 17:10:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 20:10:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,17 @@
 
 static void		sv_explain(int nb, t_fd *cl)
 {
-	static char	*msg[] = { "Mark yourself as being away. <message> is a messag"\
-						"e that will be\nautomatically sent to anyone who trie"\
-						"s sending you a private message.\nIf you are already "\
-						"marked as being away, /away will change your status\n"\
-						"back to \"here\".",
-						"Request the server to establish a connection to <host"\
-						">.\nIt is only available to IRC Operators.",
-						"/help without parameters lists all IRC commands.\n/he"\
-						"lp with a command name prints info about that command",
-						"Leave the current channel and join a new one.",
-						"Leave the current channel.",
-						"Lists all active channels and, if set, their topics.",
-						"Send a private message.",
-						"Change your nickname. You can't choose a nickname al"\
-						"ready in use.\nPlus, some characters are forbiden.",
-						"Exit from FT_IRC.",
-						"Sets the topic for the channel you're on.",
-						"Without parameters lists users on all channels.\n"\
-						"Followed by a channel, lists users on that channel.\n"\
-						"/who * lists users on the same channel as you." };
+	static char	*msg[] = {	AWAY_MSG,
+							CONNECT_MSG,
+							HELP_MSG,
+							JOIN_MSG,
+							LEAVE_MSG,
+							LIST_MSG,
+							MSG_MSG,
+							NICK_MSG,
+							QUIT_MSG,
+							TOPIC_MSG,
+							WHO_MSG };
 
 	send(cl->fd, msg[nb], ft_strlen(msg[nb]), 0);
 }

@@ -6,13 +6,33 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/31 20:59:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:17:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 #include <stdio.h>
+
+static void		ft_clear(t_env *e, t_fd *cl)
+{
+	FD_CLR(cl->fd, &e->fd_read);
+	FD_CLR(cl->fd, &e->fd_write);
+	close(cl->fd);
+	if (cl->away)
+		free(cl->away);
+	if (cl->user)
+		free(cl->user);
+	if (cl->prev)
+		cl->prev->next = cl->next;
+	else
+		e->fds = cl->next;
+	if (cl->next)
+		cl->next->prev = cl->prev;
+	ft_memset(cl, 0, sizeof(*cl));
+	free(cl);
+	e->members--;
+}
 
 static int		sv_move_head(t_buf *wr)
 {
@@ -49,20 +69,5 @@ void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
 			sv_sendto_chan(cl);
 		sv_leave_chan(e, cl);
 	}
-	FD_CLR(cl->fd, &e->fd_read);
-	FD_CLR(cl->fd, &e->fd_write);
-	close(cl->fd);
-	if (cl->away)
-		free(cl->away);
-	if (cl->user)
-		free(cl->user);
-	if (cl->prev)
-		cl->prev->next = cl->next;
-	else
-		e->fds = cl->next;
-	if (cl->next)
-		cl->next->prev = cl->prev;
-	ft_memset(cl, 0, sizeof(*cl));
-	free(cl);
-	e->members--;
+	ft_clear(e, cl);
 }

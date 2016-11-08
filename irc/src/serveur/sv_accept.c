@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:16:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/26 17:46:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:44:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ void				sv_accept(t_env *e, int ip)
 	new.fd = accept((!ip) ? e->ipv4 : e->ipv6, &new.csin, &len);
 	if (new.fd == -1)
 		return ;
-/* 	if (getpeername(fd, &csin , &cslength) == -1) */
-/* 		send(fd, "ERROR: getpeername\r\n", 20, 0); */
 	e->members++;
 	if (e->members >= MAX_CLIENT)
 		send(new.fd, "Maximum clients reached. Try again later.\r\n", 43, 0);

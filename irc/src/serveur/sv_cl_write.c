@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 16:42:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:43:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_aff_wr(t_fd *cl)
+static void			sv_aff_wr(t_fd *cl)
 {
 	write(1, "\nClient ", 8);
 	write(1, cl->addr, ft_strlen(cl->addr));
@@ -23,7 +23,7 @@ static void		sv_aff_wr(t_fd *cl)
 	write(1, cl->wr.start, BUFF);
 }
 
-static void		sv_null(char **cmds, t_env *e, t_fd *cl)
+static void			sv_null(char **cmds, t_env *e, t_fd *cl)
 {
 	(void)e;
 	send(cl->fd, cmds[0], ft_strlen(cmds[0]), 0);
@@ -31,16 +31,16 @@ static void		sv_null(char **cmds, t_env *e, t_fd *cl)
 	send(cl->fd, "\r\n", 2, 0);
 }
 
-static void		sv_cmd_client(t_env *e, t_fd *cl)
+static void			sv_cmd_client(t_env *e, t_fd *cl)
 {
-	char		**cmds;
-	int			nb;
+	char			**cmds;
+	int				nb;
 	static t_com	com[] = { { "/away", sv_away }, {"/connect", sv_connect },
-							  { "/help", sv_help }, { "/join", sv_join },
-							  { "/leave", sv_leave }, { "/list", sv_list },
-							  { "/msg", sv_msg }, { "/nick", sv_nick },
-							  { "/quit", sv_cl_end }, { "/topic", sv_topic },
-							  { "/who", sv_who }, { NULL, sv_null } };
+							{ "/help", sv_help }, { "/join", sv_join },
+							{ "/leave", sv_leave }, { "/list", sv_list },
+							{ "/msg", sv_msg }, { "/nick", sv_nick },
+							{ "/quit", sv_cl_end }, { "/topic", sv_topic },
+							{ "/who", sv_who }, { NULL, sv_null } };
 
 	nb = 0;
 	if ((cmds = sv_split(&cl->wr)) == NULL)
@@ -51,7 +51,7 @@ static void		sv_cmd_client(t_env *e, t_fd *cl)
 	ft_free(&cmds);
 }
 
-static void		sv_clean_buf(t_buf *wr)
+static void			sv_clean_buf(t_buf *wr)
 {
 	while (wr->head && *wr->head == ' ')
 	{
@@ -61,7 +61,7 @@ static void		sv_clean_buf(t_buf *wr)
 	}
 }
 
-void			sv_cl_write(t_env *e, t_fd *cl)
+void				sv_cl_write(t_env *e, t_fd *cl)
 {
 	if (cl->wr.tail && (*cl->wr.tail == '\n' || *cl->wr.tail == '\r'))
 	{

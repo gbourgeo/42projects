@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 07:20:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:42:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_sendto_chan_topic(t_fd *cl)
+static void		sv_sendto_chan_topic(t_fd *cl, t_env *e)
 {
 	t_user		*us;
 
@@ -31,6 +31,7 @@ static void		sv_sendto_chan_topic(t_fd *cl)
 			sv_cl_prompt(us->is);
 		us = us->next;
 	}
+	(void)e;
 }
 
 void			sv_topic(char **cmds, t_env *e, t_fd *cl)
@@ -59,6 +60,5 @@ void			sv_topic(char **cmds, t_env *e, t_fd *cl)
 		ft_strncat(cl->chan->topic, cmds[j], TOPIC_SIZE);
 		j++;
 	}
-	sv_sendto_chan_topic(cl);
-	(void)e;
+	sv_sendto_chan_topic(cl, e);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/17 19:48:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 07:16:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:30:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void			sv_sendto_chan_new(t_fd *cl)
 	{
 		send(cl->fd, ((t_fd *)us->is)->nick, NAME_SIZE, 0);
 		if (((t_fd *)us->is)->flags & CHFL_CHANOP)
-			send(cl->fd, "@", 1, 0);			
+			send(cl->fd, "@", 1, 0);
 		if ((us = us->next))
 			send(cl->fd, " ", 1, 0);
 	}

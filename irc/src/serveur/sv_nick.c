@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/26 17:13:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:41:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 
 	err = sv_check_if_valid(cmds, cl);
 	if (err == 1)
-		return (sv_err(cmds[0], ":No nickname given", cl->fd));		
+		return (sv_err(cmds[0], ":No nickname given", cl->fd));
 	if (err == 2)
 		return (sv_err(cmds[1], ":Erroneus Nickname", cl->fd));
 	if (cl->chan)

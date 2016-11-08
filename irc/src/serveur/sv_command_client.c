@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 10:00:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:29:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void			sv_who(char **cmds, t_env *e, t_fd *cl)
 {
 	t_user		*us;
 
-	if (cl->chan == NULL)
+	if (cl->chan == NULL || !cmds)
 		return (sv_err("", ":Not connected to a channel.", cl->fd));
 	us = cl->chan->user;
 	send(cl->fd, "\e[33mChannel Nick Host Hostname Away\e[0m", 40, 0);
@@ -40,7 +40,6 @@ void			sv_who(char **cmds, t_env *e, t_fd *cl)
 		us = us->next;
 	}
 	send(cl->fd, "\n:End of /WHO list.\r\n", 21, 0);
-	(void)cmds;
 }
 
 void			sv_list(char **cmds, t_env *e, t_fd *cl)

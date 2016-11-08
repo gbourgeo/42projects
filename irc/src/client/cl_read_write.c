@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/01 22:53:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 16:50:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:13:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ static void			read_client_command(t_client *cl)
 	char			**cmds;
 	int				i;
 	static t_com	com[] = { { "/away", cl_void }, {"/connect", cl_connect },
-							  { "/help", cl_help }, { "/join", cl_void },
-							  { "/leave", cl_void }, { "/list", cl_void },
-							  { "/msg", cl_void }, { "/nick", cl_nick },
-							  { "/quit", cl_quit }, { "/topic", cl_void },
-							  { "/who", cl_void }, { NULL, cl_void } };
+							{ "/help", cl_help }, { "/join", cl_void },
+							{ "/leave", cl_void }, { "/list", cl_void },
+							{ "/msg", cl_void }, { "/nick", cl_nick },
+							{ "/quit", cl_quit }, { "/topic", cl_void },
+							{ "/who", cl_void }, { NULL, cl_void } };
 
 	i = 0;
 	if ((cmds = ft_split_whitespaces(cl->read)) == NULL)
@@ -48,7 +48,7 @@ void				read_client(t_client *cl)
 	if (cl->sock == -1)
 		read_client_command(cl);
 	else if (send(cl->sock, cl->read, ret, 0) < 0)
-			cl_error("Client: send() error.", cl);
+		cl_error("Client: send() error.", cl);
 }
 
 void				read_server(t_client *cl)

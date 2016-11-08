@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 16:50:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 20:16:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,15 @@
 # define MAX_CLIENT_BY_IP 2
 
 /*
-** SERV_SIZE		The maximum lenght a servers' name can be. Over this value, a
-**					server name will be truncated.
+** SERV_SIZE		The maximum lenght a servers' name can be. Over this value,
+**					a server name will be truncated.
 */
 
 # define SERV_SIZE	20
 
 /*
-** CHAN_SIZE		The maximum lenght a channels' name can be. Over this value, a
-**					channel name will be truncated.
+** CHAN_SIZE		The maximum lenght a channels' name can be. Over this value,
+**					a channel name will be truncated.
 */
 
 # define CHAN_SIZE	50
@@ -83,6 +83,35 @@
 
 # define CHFL_CHANOP 0x0001
 # define FLAGS_AWAY  0x0020
+
+/*
+** Here are the defined Messages displayed in help <command>
+*/
+
+# define AWAY_1 "Mark yourself as being away. <message> is a message that will"
+# define AWAY_2	" be\nautomatically sent to anyone who tries sending you a "
+# define AWAY_3	"private message.\nIf you are already marked as being away, "
+# define AWAY_4	"/away will change your status\nback to \"here\"."
+# define AWAY_MSG AWAY_1 AWAY_2 AWAY_3 AWAY_4
+# define CONNECT_1 "Request the server to establish a connection to <host>.\n"
+# define CONNECT_2 "It is only available to IRC Operators."
+# define CONNECT_MSG CONNECT_1 CONNECT_2
+# define HELP_1 "/help without parameters lists all IRC commands.\n"
+# define HELP_2 "/help with a command name prints info about that command"
+# define HELP_MSG HELP_1 HELP_2
+# define JOIN_MSG "Leave the current channel and join a new one."
+# define LEAVE_MSG "Leave the current channel."
+# define LIST_MSG "Lists all active channels and, if set, their topics."
+# define MSG_MSG "Send a private message."
+# define NICK_1 "Change your nickname. You can't choose a nickname already in "
+# define NICK_2 "use.\nPlus, some characters are forbiden."
+# define NICK_MSG NICK_1 NICK_2
+# define QUIT_MSG "Exit from FT_IRC."
+# define TOPIC_MSG "Sets the topic for the channel you're on."
+# define WHO_1 "Without parameters lists users on all channels.\n"
+# define WHO_2 "Followed by a channel, lists users on that channel.\n"
+# define WHO_3 "/who * lists users on the same channel as you."
+# define WHO_MSG WHO_1 WHO_2 WHO_3
 
 # define ISVALID(c) (((c) >= 'A' && (c) <= '~') || ft_isdigit(c) || (c) == '-')
 # define ISCHAN(c) (*c == '#' || *c == '&' || *c == '+' || *c == '!')
@@ -167,7 +196,9 @@ void					sv_cl_prompt(t_fd *cl);
 void					sv_cl_read(t_env *e, t_fd *cl);
 void					sv_cl_write(t_env *e, t_fd *cl);
 void					sv_cl_end(char **cmds, t_env *e, t_fd *cl);
-//int						sv_flood_protect(t_env *e, int id);
+/*
+** int						sv_flood_protect(t_env *e, int id);
+*/
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_join(char **cmds, t_env *e, t_fd *cl);
 void					sv_leave(char **cmds, t_env *e, t_fd *cl);

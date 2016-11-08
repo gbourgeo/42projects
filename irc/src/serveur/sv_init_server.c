@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/26 12:45:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 19:35:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,9 +122,3 @@ void					sv_init_server(char **av, t_env *e)
 	if (e->ipv6 >= 0 && listen(e->ipv6, MAX_CLIENT) == -1)
 		sv_error("Error: listen() on ipv6.", e);
 }
-
-/* 	on = BUFF; */
-/* 	if (setsockopt(e->fds[0].fd, SOL_SOCKET, SO_RCVBUF, &on, sizeof(on)) < 0) */
-/* 		sv_error("Error: setsockopt(SO_RCVBUF) failed.", e); */
-/* 	if (setsockopt(e->fds[0].fd, SOL_SOCKET, SO_SNDBUF, &on, sizeof(on)) < 0) */
-/* 		sv_error("Error: setsockopt(SO_SNDBUF) failed.", e); */
