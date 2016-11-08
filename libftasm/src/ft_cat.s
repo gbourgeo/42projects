@@ -21,7 +21,7 @@ _ft_cat:
 _read_write:
 	mov 	rax, SYS_READ
 	mov 	rdi, rbx
-	mov 	rsi, file_buffer
+	lea		rsi, [rel file_buffer]
 	mov 	rdx, BUFFER_SIZE
 	syscall
 	cmp		rax, 0
@@ -30,7 +30,7 @@ _read_write:
 	mov 	rdx, rax
 	mov 	rax, SYS_WRITE
 	mov 	rdi, STDOUT
-	mov 	rsi, file_buffer
+	lea		rsi, [rel file_buffer]
 	syscall
 	cmp		rax, 0
 	jle		_return

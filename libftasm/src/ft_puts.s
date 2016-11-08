@@ -31,7 +31,7 @@ do_print:
 	jmp 	do_end
 
 do_end:
-	mov 	rsi, new_line
+	lea		rsi, [rel new_line]
 	mov 	rdi, STDOUT
 	mov 	rdx, 1
 	mov 	rax, SYS_WRITE

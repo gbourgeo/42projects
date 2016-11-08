@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/01 23:37:59 by root              #+#    #+#              #
-#    Updated: 2016/11/06 05:03:12 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/11/08 21:19:42 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -35,7 +35,7 @@ $(NAME): $(OBJ)
 	ranlib $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.s
-	/usr/local/Cellar/nasm/2.12.02/bin/nasm -f macho64 $< -o $@
+	/Users/gbourgeo/homebrew/Cellar/nasm/2.12.02/bin/nasm -f macho64 $< -o $@
 #	nasm -f elf64 $< -o $@
 
 clean:

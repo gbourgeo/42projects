@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/06 15:55:31 by root              #+#    #+#             */
-/*   Updated: 2016/11/08 05:46:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/08 21:35:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -481,7 +481,7 @@ static void	get_opt(char **av)
 {
 	static char	*name[] = { NAMES };
 	static void	(*fct[])(void) = { FUNCTIONS };
-//	char	buf[6];
+	char	buf[6];
 	int		i = 1, j;
 
 	while (av[i])
@@ -494,7 +494,7 @@ static void	get_opt(char **av)
 				fct[j]();
 				printf("\nPress any key to continue");
 				fflush(stdout);
-//				read(0, buf, 5);
+				read(0, buf, 5);
 				break ;
 			}
 			j++;

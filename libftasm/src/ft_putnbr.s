@@ -23,7 +23,7 @@ _modulo:
 	cmp		eax, 0				; if eax = 0, then edi was < 9, so we can print.
 	je		_print
 	mov		edi, eax			; else
-	mov		rsi, result			; we go to the right address or our 'result'
+	lea		rsi, [rel result]	; we go to the right address or our 'result'
 	add		rsi, r8				; adding r8
 	mov		byte [rsi], "0"		; We write "0" to it then either we had either we sub
 	cmp		eax, 0
@@ -40,7 +40,7 @@ _continue:
 
 _print:
 	mov 	rax, SYS_WRITE
-	mov		rsi, result
+	lea		rsi, [rel result]
 	add 	rsi, r8
 	mov		byte [rsi], "0"
 	cmp		edx, 0
@@ -62,7 +62,7 @@ _print_neg:
 	mov		rbx, rdi
 	mov 	rax, SYS_WRITE
 	mov 	rdi, STDOUT
-	mov 	rsi, negat
+	lea 	rsi, [rel negat]
 	mov 	rdx, 1
 	syscall
 
