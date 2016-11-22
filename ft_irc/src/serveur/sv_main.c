@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 04:50:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/17 01:42:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,15 @@ static void			sv_signals(void)
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGALRM, SIG_IGN);
 //	signal(SIGHUP, sv_rehash);
-//	signal(SIGINT, sv_restart);
-//	signal(SIGTERM, sv_quit);
+	signal(SIGINT, sv_quit);
+	signal(SIGTERM, sv_quit);
+	signal(SIGBUS, sv_quit);
 	signal(SIGUSR1, SIG_IGN);
 }
 
 int					main(int ac, char **av)
 {
-	t_env			e;
+//	t_env			e;
 	time_t			date;
 
 	if (ac < 2 || ac > 3)

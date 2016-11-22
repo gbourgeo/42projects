@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 18:42:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/21 12:11:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void			cl_connect(char **cmds, t_client *cl)
 	if (!cmds[1])
 		return (ft_putendl_fd("Missing parameters.", 2));
 	port = (cmds[2] == NULL) ? ft_strrchr(cmds[1], ':') : cmds[2];
+	if (port == NULL)
+		return (ft_putendl_fd("Missing parameters.", 2));
 	ft_strclr(cl->read);
 	if (fd != -1)
 		send(fd, "/quit\n", 6, 0);

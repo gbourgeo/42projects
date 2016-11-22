@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/08/02 16:27:17 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/11/12 01:36:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -27,7 +27,7 @@ SV_SRC	= sv_accept.c sv_chan.c sv_cl_end.c sv_cl_read.c sv_cl_write.c \
 		sv_command_client.c sv_error.c sv_init_server.c sv_join.c \
 		sv_leave.c sv_loop.c sv_main.c sv_msg.c sv_send.c sv_split.c \
 		sv_topic.c sv_err.c sv_strchr.c sv_cl_prompt.c sv_nick.c \
-		sv_away.c sv_new_client.c sv_help.c
+		sv_away.c sv_new_client.c sv_help.c sv_signals.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 
@@ -62,11 +62,11 @@ $(OBJ_DIR):
 	@mkdir -p $@
 
 $(CLIENT): $(OBJ_CL) $(OBJ_COM) | lib
-	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses
+	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses -g
 	@echo CREATED: $@
 
 $(SERVEUR): $(OBJ_SV) $(OBJ_COM) | lib
-	@$(WWW) -o $@ $^ -L $(LIBFT) -lft
+	@$(WWW) -o $@ $^ -L $(LIBFT) -lft -g
 	@echo CREATED: $@
 
 $(OBJ_DIR)%.o: $(CL_DIR)%.c $(CL_DIR)cl_main.h $(COM_DIR)common.h | $(OBJ_DIR)

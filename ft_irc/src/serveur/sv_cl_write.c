@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 19:43:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/17 02:35:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,10 @@ void				sv_cl_write(t_env *e, t_fd *cl)
 			sv_sendto_chan(cl);
 		if (cl->wr.tail)
 			*cl->wr.tail = '\0';
+		cl->wr.head = cl->wr.tail;
+		if (!cl->leaved)
+			sv_cl_prompt(cl);
 		if (e->verb)
 			sv_aff_wr(cl);
-		cl->wr.head = cl->wr.tail;
-		sv_cl_prompt(cl);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 04:57:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/17 02:30:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,20 @@ static int			sv_init_fd(t_env *e)
 	return (max);
 }
 
+static void			sv_check_clients(t_env *e)
+{
+	t_fd			*cl;
+
+	cl = e->fds;
+	while (cl)
+	{
+		if (cl->leaved)
+			cl = sv_clear_client(e, cl);
+		else
+			cl = cl->next;
+	}
+}
+
 int					sv_loop(t_env *e)
 {
 	int				ret;
@@ -74,6 +88,7 @@ int					sv_loop(t_env *e)
 		ft_putendl("\e[1;33mSERVEUR: Waiting for clients...\e[0m");
 	while (1)
 	{
+		sv_check_clients(e);
 		max = sv_init_fd(e);
 		ret = select(max + 1, &e->fd_read, &e->fd_write, NULL, NULL);
 		if (ret == -1)

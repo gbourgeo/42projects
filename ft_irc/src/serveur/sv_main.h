@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 20:16:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/17 02:30:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ typedef struct			s_chan
 
 typedef struct			s_fd
 {
+	int					leaved;
 	int					fd;
 	struct sockaddr		csin;
 	char				addr[1025];
@@ -187,6 +188,8 @@ typedef struct			s_com
 	void				(*fct)(char **, t_env *, t_fd *);
 }						t_com;
 
+t_env					e;
+
 void					sv_error(char *str, t_env *e);
 void					sv_init_server(char **av, t_env *e);
 void					sv_accept(t_env *e, int ip);
@@ -196,6 +199,7 @@ void					sv_cl_prompt(t_fd *cl);
 void					sv_cl_read(t_env *e, t_fd *cl);
 void					sv_cl_write(t_env *e, t_fd *cl);
 void					sv_cl_end(char **cmds, t_env *e, t_fd *cl);
+t_fd					*sv_clear_client(t_env *e, t_fd *cl);
 /*
 ** int						sv_flood_protect(t_env *e, int id);
 */
@@ -218,5 +222,6 @@ char					*sv_strchr(const t_buf *b, int c);
 void					sv_err(char *nick, char *err, int fd);
 t_user					*sv_add_chan_user(t_chan *chan, t_user *new);
 t_user					*sv_new_user(t_fd *id);
+void					sv_quit(int sig);
 
 #endif

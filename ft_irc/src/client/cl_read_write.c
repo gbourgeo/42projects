@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/01 22:53:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 19:13:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/21 12:17:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ static void			read_client_command(t_client *cl)
 		i++;
 	if (!com[i].name && cl->sock == -1)
 		ft_putendl("\e[31mCommand unavailable\e[0m");
-	com[i].fct(cmds, cl);
+	if (cl->sock == -1)
+		com[i].fct(cmds, cl);
 	ft_free(&cmds);
 }
 
@@ -57,7 +58,7 @@ void				read_server(t_client *cl)
 
 	ret = recv(cl->sock, cl->write, BUFF, 0);
 	if (ret == -1)
-		cl_error("Client: recv(read_server) failed", cl);
+		cl_error("Client: read_server: recv() failed", cl);
 	if (ret == 0)
 		cl_error("Connection closed by foreign host.", cl);
 	write(1, cl->write, ret);

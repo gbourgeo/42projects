@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 19:29:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/22 14:39:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,8 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 
 void			sv_connect(char **cmds, t_env *e, t_fd *cl)
 {
-	(void)cmds;
+	if (!cmds[1] || !*cmds[1])
+		return (sv_err(cmds[0], ":Not enough parameters", cl->fd));
+	send(cl->fd, "/connect :Already connected to FT_IRC\n", 38, 0);
 	(void)e;
-	(void)cl;
 }
