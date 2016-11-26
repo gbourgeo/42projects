@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/26 15:56:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/17 01:42:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ static void			sv_signals(void)
 
 int					main(int ac, char **av)
 {
+//	t_env			e;
 	time_t			date;
 
 	if (ac < 2 || ac > 3)

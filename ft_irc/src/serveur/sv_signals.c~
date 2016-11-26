@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/26 15:53:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/11/17 01:43:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,12 @@ void		sv_quit(int sig)
 	if (e.verb)
 	{
 		if (sig == SIGTERM)
-			ft_putstr_fd("\nServer Killed By SIGTERM", 2);
+			ft_putendl_fd("Server Killed By SIGTERM", 2);
 		if (sig == SIGINT)
-			ft_putstr_fd("\nServer Killed By SIGINT", 2);
+			ft_putendl_fd("Server Killed By SIGINT", 2);
 		if (sig == SIGBUS)
-			ft_putstr_fd("\nServer Killed By SIGBUS", 2);
+			ft_putendl_fd("Server Killed By SIGBUS", 2);
 	}
-	write(2, "\n", 1);
 	ft_kill_connections(e.fds);
 	ft_kill_channels(e.chan);
 	FD_ZERO(&e.fd_read);
