@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/14 12:17:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/12/10 13:50:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,11 +82,11 @@ void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 t_list				*ft_lstnew(void const *content, size_t content_size);
 void				ft_lstswap(t_list *one, t_list *two);
-char				**ft_tabdup(char **tab);
-int					ft_tablen(char **tab);
-void				ft_puttab(char **tab);
-void				ft_puttab_fd(char **tab, int fd);
-void				ft_tabdel(char **tab);
+char				**ft_tabdup(char **table);
+int					ft_tablen(char **table);
+void				ft_puttab(char **table);
+void				ft_puttab_fd(char **table, int fd);
+void				ft_tabdel(char **table);
 char				**ft_split(char *str, char *charset);
 char				**ft_split_whitespaces(char *str);
 char				*ft_str2join(char const *s1, char const *s2, \
@@ -96,5 +96,7 @@ char				*ft_strcharset(char *s1, char *s2);
 void				ft_stricpy(char *s1, const char *s2, int pos);
 char				*ft_strndup(const char *s1, int size);
 char				*ft_strrcdup(char *str, char c);
+
+char				*ft_getenv(char *var, char **env);
 
 #endif

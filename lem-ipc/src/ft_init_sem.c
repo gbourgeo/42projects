@@ -1,31 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_init_sem.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/10 13:44:39 by gbourgeo         ###   ########.fr       */
+/*   Created: 2016/12/01 02:35:51 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/12/09 16:36:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "lemipc.h"
+#include <sys/sem.h>
+#include <stdio.h>
 
-char		**ft_tabdup(char **table)
+void				ft_lock(void)
 {
-	char	**cpy;
-	int		i;
+	struct sembuf	sem;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = 0;
-	return (cpy);
+	sem.sem_num = 0;
+	sem.sem_op = -1;
+	sem.sem_flg = 0;
+	if (semop(e.semid, &sem, 1) == -1)
+		perror("semop lock");
+}
+
+void				ft_unlock(void)
+{
+	struct sembuf	sem;
+
+	sem.sem_num = 0;
+	sem.sem_op = 1;
+	sem.sem_flg = 0;
+	if (semop(e.semid, &sem, 1) == -1)
+		perror("semop unlock");
 }

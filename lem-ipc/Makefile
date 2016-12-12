@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2016/10/22 18:34:29 by root             ###   ########.fr        #
+#    Updated: 2016/12/12 12:12:12 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,7 +14,8 @@ NAME = lemipc
 
 SRC_D = src/
 
-SRC = main.c ft_err.c ft_signal.c
+SRC = main.c ft_exit.c ft_signal.c ft_create_join.c ft_init_sem.c ft_loop.c \
+		ft_termcaps.c
 
 OBJ_D = obj/
 
@@ -33,9 +34,9 @@ preall:
 	make -C $(LIBFT)
 
 $(NAME): $(OBJ)
-	$(WWW) -o $@ $^ -L $(LIBFT) -lft
+	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses
 
-$(OBJ_D)%.o: $(SRC_D)%.c
+$(OBJ_D)%.o: $(SRC_D)%.c $(SRC_D)lemipc.h
 	$(WWW) -o $@ -c $< -I $(LIBFTH)
 
 clean:

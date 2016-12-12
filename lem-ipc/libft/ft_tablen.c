@@ -6,16 +6,16 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/28 00:19:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:44:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/12/10 13:42:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int			ft_tablen(char **tab)
+int			ft_tablen(char **table)
 {
 	int		i;
 
 	i = 0;
-	while (tab && tab[i])
+	while (table && table[i])
 		i++;
 	return (i);
 }
