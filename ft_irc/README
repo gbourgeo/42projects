@@ -1,0 +1,24 @@
+Résumé: Ce projet consiste à implémenter un client et un serveur IRC permettant l’échange de messages en réseau TCP/IP.
+
+Ce projet consiste à faire un client et un serveur IRC (Internet Relay Chat) qui per-
+mettent d’envoyer et recevoir des messages entre plusieurs personnes, au sein de groupes
+de discussion appelés “channel”.
+Vous êtes néammoins libre du choix du protocole à utiliser (vous n’êtes pas obligé de
+respecter les RFC définissant IRC, vous pouvez inventer votre propre protocol de chat).
+Vous devrez par contre quelque soit votre choix absolument obtenir une cohérence entre
+votre client et votre serveur. Ils doivent communiquer correctement ensemble.
+La communication entre le client et le serveur se fera en TCP/IP (v4).
+
+Vous devrez implémenter les fonctionnalités suivantes :
+• /nick <nickname>: Implémenter la notion de nickname (un surnom, le login par
+défaut, maximum 9 charactères, comme dans la RFC).
+• /join <#chan>, /leave [#channel], etc... : Implémenter la notion de channel
+• /who : Qui est loggué sur le channel ?
+• /msg <nick> <message>: Envoi de messages à un utilisateur particulier sur le
+serveur.
+• /connect <machine> [port]: Connexion au serveur depuis le client.
+• Passage du code en mode non-bloquant.
+• Gestion d’un prompt dans le client.
+• Respect de la RFC 2813.
+• Support de l’IPv6.
+
