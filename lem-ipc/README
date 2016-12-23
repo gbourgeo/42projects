@@ -1,0 +1,7 @@
+Résumé: Faire communiquer des processus en local.
+        Vous allez découvrir ces outils via la création d’un client de jeu de plateau basique.
+        
+Le projet a pour but de vous faire utiliser les communications inter-processus (IPC),
+de vous faire comprendre la notion de mémoire partagée, les sémaphores... Tout en créant
+un jeu !
+
