@@ -1,0 +1,20 @@
+Résumé: Ce projet consiste à coder un simple packer !
+
+Les "Packers" sont des utilitaires dont la tâche consiste à compresser un programme
+exécutable (.exe, .dll, .ocx ...) et à le chiffrer simultanément. Au moment de son exécution,
+un programme ainsi passé entre les mains d’un packer est chargé en mémoire compressé
+et chiffré, puis il se décompresse (et se déchiffre) pour, enfin, s’exécuter.
+La création de ce genre de programme est liée au fait que les antivirus analysent
+généralement un programme au moment de son chargement en mémoire, avant qu’il ne
+s’exécute. Ainsi, le chiffrement et la compression du packer permettent de contourner
+simplement ces mesures en obfusquant le contenu de l’exécutable jusqu’à son exécution.
+
+Le but du projet est de coder un programme qui aura pour tâche, dans un premier
+temps, de chiffrer un programme passé en paramètre. Seuls les ELF 64 bits seront traités
+ici.
+Un nouveau programme "woody" sera alors généré à la fin de l’exécution du pro-
+gramme. Lorsque ce nouveau programme (woody) sera exécuté, il devra se déchiffrer
+pour pouvoir se lancer. Son exécution sera identique en tout point avec le premier pro-
+gramme passé en paramétre à l’étape précédente.
+Bien que nous n’allons pas voir, dans ce projet, la capacité de compression directement,
+vous êtes fortement encouragés à explorer les méthodes possibles !
