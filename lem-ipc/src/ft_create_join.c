@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/12 12:43:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/12/21 23:23:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
-#include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/msg.h>
 
@@ -31,9 +30,7 @@ void				ft_create_game(void)
 	e.data = shmat(e.shmid, NULL, 0);
 	if (e.data == (void *)-1)
 		ft_exit_server(1, "shmat");
-	ft_memset(e.data, -1, e.size);
-	ft_memset(e.data, 0, sizeof(*e.data));
-	e.data->connected += 1;
+	ft_memset(e.data, 0, e.size);
 	*((int *)e.data + e.team) += 1;
 	e.map = (char *)e.data + sizeof(*e.data);
 	e.semid = semget(e.key, 1, IPC_CREAT | IPC_EXCL | SHM_R | SHM_W);
@@ -60,13 +57,13 @@ void				ft_join_game(void)
 	e.data = shmat(e.shmid, NULL, 0);
 	if (e.data == (void *)-1)
 		ft_exit_client(1, "shmat");
-	if (e.data->connected >= MIN_PLAYERS)
-		ft_exit_client(0, "Game already full.");
-	e.data->connected += 1;
+	if (TEAMS_SUMM >= MIN_PLAYERS)
+		ft_exit_client(0, "Game already full.\nBye.");
+	if (e.data->game_in_process)
+		ft_exit_client(0, "Game in process.\nCan't join the battle.");
 	*((int *)e.data + e.team) += 1;
 	e.map = (char *)e.data + sizeof(*e.data);
 	e.msgqid = msgget(e.key, SHM_R | SHM_W);
 	if (e.msgqid < 0)
 		ft_exit_client(1, "msgget");
 }
-

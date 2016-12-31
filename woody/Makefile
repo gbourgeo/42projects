@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/06/11 12:24:47 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/12/29 12:41:06 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -39,11 +39,11 @@ $(OBJ_DIR)%.o: %.c woody.h
 	$(WWW) -o $@ -c $< -I $(LIBFT_H)
 
 clean:
-#	@make -C $(LIBFT) clean
+	@make -C $(LIBFT) clean
 	@if test -d $(OBJ_DIR) ; then /bin/rm -rf $(OBJ_DIR) ; echo rm -f $(OBJ) ; fi
 
 fclean: clean
-#	@make -C $(LIBFT) fclean
+	@make -C $(LIBFT) fclean
 	@if test -f $(NAME) ; then /bin/rm -f $(NAME) ; echo rm -f $(NAME) ; fi
 
 re: fclean all

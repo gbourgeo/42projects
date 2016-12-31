@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 18:30:37 by root              #+#    #+#             */
-/*   Updated: 2016/12/12 11:22:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/12/19 17:33:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,21 @@ void		ft_exit_client(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
+	ft_unlock();
 	if (e.data != (void *)-1 && shmdt(e.data) == -1)
 		perror("shmdt");
+	ft_restore_term();
+	ft_bzero(&e, sizeof(e));
+	exit(1);
+}
+
+void		ft_exit(int print_err, char *err)
+{
+	fprintf(stderr, "%s: ", e.prog);
+	if (print_err)
+		perror(err);
+	else
+		fprintf(stderr, "%s\n", err);
 	ft_restore_term();
 	ft_bzero(&e, sizeof(e));
 	exit(1);

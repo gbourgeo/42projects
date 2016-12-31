@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/10 14:21:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2016/12/19 17:59:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,41 +15,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void			ft_exit(int i, char *err)
-{
-	fprintf(stderr, "%s: ", e.prog);
-	if (i)
-		perror(err);
-	else
-		fprintf(stderr, "%s\n", err);
-	exit(1);
-}
-
 void				ft_termcaps(char **env)
 {
 	char			*name;
 	struct termios	term;
 
+	printf("Initializing TERMCAPS...\n");
 	if ((name = ft_getenv("TERM", env)) == NULL)
 		ft_exit(0, "Unable to get TERM variable");
 	if (tgetent(NULL, name) != 1)
-		ft_exit(0, "tgetent() returned.");
+		ft_exit(0, "termcaps: tgetent() returned.");
 	if (tcgetattr(0, &e.term) == -1)
-		ft_exit(1, "tcgetattr");
+		ft_exit(1, "termcaps: tcgetattr()");
 	ft_memcpy(&term, &e.term, sizeof(term));
 	term.c_lflag &= ~(ICANON);
 	term.c_lflag &= ~(ECHO);
 	term.c_cc[VMIN] = 1;
 	term.c_cc[VTIME] = 0;
 	if (tcsetattr(0, TCSADRAIN, &term) == -1)
-		ft_exit(1, "tcsetattr");
+		ft_exit(1, "termcaps: tcsetattr()");
 	ft_termdo("cl");
-	printf("Initializing TERMCAPS... Done\n");
 }
 
 void				ft_restore_term(void)
 {
-	if (tcsetattr(0, 0, &e.term) == -1)
+	if (e.term.c_iflag != (tcflag_t)-1 && tcsetattr(0, 0, &e.term) == -1)
 		perror("tcsetattr");
 }
 

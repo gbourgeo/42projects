@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2016/12/12 12:12:12 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/12/22 13:48:30 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,8 +14,16 @@ NAME = lemipc
 
 SRC_D = src/
 
-SRC = main.c ft_exit.c ft_signal.c ft_create_join.c ft_init_sem.c ft_loop.c \
-		ft_termcaps.c
+SRC = main.c \
+		ft_exit.c \
+		ft_signal.c \
+		ft_create_join.c \
+		ft_init_sem.c \
+		ft_wait_players.c \
+		ft_termcaps.c \
+		ft_strategy.c \
+		ft_msg.c \
+		ft_game.c
 
 OBJ_D = obj/
 
