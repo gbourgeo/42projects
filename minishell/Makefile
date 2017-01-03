@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/02 18:59:08 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/01/03 22:17:38 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,6 +18,7 @@ SRC		= main.c			\
 			ft_free.c		\
 			ft_fork.c		\
 			ft_envcpy.c		\
+			ft_env_options.c \
 			ft_getenv.c		\
 			ft_setenv.c		\
 			ft_cd.c			\
@@ -26,7 +27,6 @@ SRC		= main.c			\
 			ft_getcwd.c		\
 			ft_exit.c		\
 			ft_unsetenv.c	\
-			ft_strndup.c	\
 			ft_stralnum.c 	\
 			ft_split_whitespaces.c	\
 			ft_strerror.c

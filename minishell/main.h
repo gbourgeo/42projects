@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/02 18:56:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/03 23:14:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,19 @@
 
 # define BUILTINS "cd", "setenv", "unsetenv", "env", "exit", NULL
 # define FUNCTION ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
+
+typedef struct	s_opt
+{
+	char		**cpy;
+	int			i;
+	int			v;
+	int			p;
+	int			s;
+	int			u;
+	char		**ptr;
+	char		*path;
+	char		**extra;
+}				t_opt;
 
 typedef struct	s_env
 {
@@ -37,6 +50,10 @@ void			ft_shell(t_env *e);
 int				fork_function(char **args, char **env);
 int				ft_exit(char **args, t_env *e);
 int				ft_env(char **command, t_env *e);
+int				ft_enverror(char *err, char c, t_opt *opt);
+int				ft_opt_u(t_opt *opt);
+int				ft_opt_i(t_opt *opt);
+int				ft_opt_extra(t_opt *opt);
 int				ft_setenv(char **entry, t_env *e);
 int				ft_unsetenv(char **entry, t_env *e);
 int				ft_cd(char **args, t_env *e);
