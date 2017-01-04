@@ -6,19 +6,26 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/03 22:17:38 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/01/04 21:53:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= minishell
 
+SRC_D 	= src/
+
+HDR		= includes/
+
 SRC		= main.c			\
 			ft_minishell.c	\
+			ft_echo.c		\
 			ft_env.c		\
 			ft_free.c		\
 			ft_fork.c		\
 			ft_envcpy.c		\
 			ft_env_options.c \
+			ft_env_check.c	\
+			ft_env_extra.c	\
 			ft_getenv.c		\
 			ft_setenv.c		\
 			ft_cd.c			\
@@ -54,8 +61,8 @@ $(OBJ_D):
 $(NAME): $(OBJ) | $(LIBFT)
 	gcc $(FLAGS) -o $@ $^ -L $(LIBFT) -lft
 
-$(OBJ_D)%.o: %.c main.h | $(OBJ_D)
-	gcc $(FLAGS) -o $@ -c $< -I $(LIBFT_H)
+$(OBJ_D)%.o: $(SRC_D)%.c $(HDR)main.h | $(OBJ_D)
+	gcc $(FLAGS) -o $@ -c $< -I $(LIBFT_H) -I $(HDR)
 
 clean:
 	@make -C $(LIBFT) clean

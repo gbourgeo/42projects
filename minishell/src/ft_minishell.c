@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/02 18:04:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/04 15:37:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void			ft_shell(t_env *e)
 
 	command = NULL;
 	prompt(e->env);
-	while ((e->ret = get_next_line(0, &command)) > 0)
+	while (get_next_line(0, &command) > 0)
 	{
 		if (*command)
 		{

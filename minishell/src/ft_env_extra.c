@@ -1,75 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env_options.c                                   :+:      :+:    :+:   */
+/*   ft_env_extra.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/03 23:36:43 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/01/04 16:34:49 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/01/04 16:35:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
-
-static char		**ft_new_env(t_opt *opt, int k)
-{
-	char		**new;
-	int			i;
-
-	if ((new = (char **)malloc(ft_tablen(opt->cpy) - 1)) == NULL)
-		return (NULL);
-	i = 0;
-	while (opt->cpy && opt->cpy[i])
-	{
-		if (i < k)
-			new[i] = opt->cpy[i];
-		else if (i > k)
-			new[i - 1] = opt->cpy[i];
-		i++;
-	}
-	if (i > 0)
-		new[i - 1] = NULL;
-	else
-		new[i] = NULL;
-	return (new);
-}
-
-int				ft_opt_u(t_opt *opt)
-{
-	int			i;
-	int			j;
-
-	i = 0;
-	if (opt->ptr == NULL || opt->ptr[0] == NULL)
-		return (ft_enverror("option requires an argument", 'u', opt));
-	while (opt->ptr[i])
-	{
-		if (opt->v)
-		{
-			ft_putstr("#env unset:\t");
-			ft_putendl(opt->ptr[i]);
-		}
-		j = 0;
-		while (opt->cpy && opt->cpy[j])
-		{
-			if (ft_strcmp(opt->cpy[j], opt->ptr[i]) == '=' &&
-				(opt->cpy = ft_new_env(opt, i)) == NULL)
-				return (ft_enverror("malloc failed", 0, opt));
-			j++;
-		}
-		i++;
-	}
-	return (0);
-}
-
-int				ft_opt_i(t_opt *opt)
-{
-	if (opt->v)
-		ft_putendl("#env clearing environ");
-	ft_free(&opt->cpy);
-	return (0);
-}
 
 static int		ft_change_var(int i, char *new_p, t_opt *opt)
 {

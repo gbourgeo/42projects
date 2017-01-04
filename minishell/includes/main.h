@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/03 23:14:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/04 16:52:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # include <sys/stat.h>
 # include <unistd.h>
 
-# define BUILTINS "cd", "setenv", "unsetenv", "env", "exit", NULL
-# define FUNCTION ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
+# define BUILTINS "echo", "cd", "setenv", "unsetenv", "env", "exit", NULL
+# define FUNCTION ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
 
 typedef struct	s_opt
 {
@@ -28,10 +28,11 @@ typedef struct	s_opt
 	int			i;
 	int			v;
 	int			p;
+	char		*path;
+	char		*cmd;
 	int			s;
 	int			u;
 	char		**ptr;
-	char		*path;
 	char		**extra;
 }				t_opt;
 
@@ -48,11 +49,15 @@ int				ft_tablen(char **tab);
 char			**ft_tabdup(char **tab);
 void			ft_shell(t_env *e);
 int				fork_function(char **args, char **env);
+int				ft_echo(char **args, t_env *e);
 int				ft_exit(char **args, t_env *e);
 int				ft_env(char **command, t_env *e);
+int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j);
+int				ft_env_check_opt_plus(char **cmd, t_opt *opt, int i);
 int				ft_enverror(char *err, char c, t_opt *opt);
-int				ft_opt_u(t_opt *opt);
 int				ft_opt_i(t_opt *opt);
+int				ft_opt_u(t_opt *opt);
+int				ft_opt_p(t_opt *opt, char **cmd);
 int				ft_opt_extra(t_opt *opt);
 int				ft_setenv(char **entry, t_env *e);
 int				ft_unsetenv(char **entry, t_env *e);

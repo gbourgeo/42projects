@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/03 23:47:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/04 21:38:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,25 +97,26 @@ int				fork_function(char **args, char **env)
 	int			status;
 	char		*path;
 
-	status = -1;
+	status = 127;
 	if ((path = get_path(args, env)) != NULL)
 	{
 		pid = fork();
 		if (pid > 0)
 		{
 			if (waitpid(pid, &status, 0) < 0)
-				ft_putendl_fd("ft_sh1: waitpid error.", 2);
+				ft_putendl_fd("minishell: waitpid error.", 2);
 		}
 		else if (pid == 0)
 		{
 			execve(path, args, env);
-			ft_putendl_fd("ft_sh1: check your arguments.", 2);
+			ft_putendl_fd("minishell: check your arguments.", 2);
+			exit(1);
 		}
 		else
-			ft_putendl_fd("ft_sh1: Fork error.", 2);
+			ft_putendl_fd("minishell: Fork error.", 2);
 		free(path);
 	}
 	else
-		ft_putendl_fd("ft_sh1: command not found.", 2);
+		ft_putendl_fd("minishell: command not found.", 2);
 	return (status);
 }
