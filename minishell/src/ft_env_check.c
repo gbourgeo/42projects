@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:25:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/04 16:46:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 18:41:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,19 @@ static char		**ft_env_opt_u(char **cmd, int *i, int j, t_opt *opt)
 	char		**tab;
 	int			k;
 
-	if ((tab = (char **)malloc(ft_tablen(opt->ptr) + 2)) == NULL)
+	if (!(tab = (char **)malloc(sizeof(*tab) * (ft_tablen(opt->ptr) + 2))))
 		return (opt->ptr);
 	k = 0;
 	while (opt->ptr && opt->ptr[k])
 	{
-		tab[k] = opt->ptr[k];
+		tab[k] = ft_strdup(opt->ptr[k]);
 		k++;
 	}
-	tab[k] = (cmd[*i][j] == '\0') ? cmd[++(*i)] : &cmd[*i][j];
+	tab[k] = (cmd[*i][j] == '\0') ?
+		ft_strdup(cmd[++(*i)]) : ft_strdup(&cmd[*i][j]);
 	tab[k + 1] = NULL;
-	free(opt->ptr);
+	if (opt->ptr)
+		ft_free(&opt->ptr);
 	return (tab);
 }
 
@@ -57,6 +59,9 @@ static char		*ft_env_opt_p(char **cmd, int *i, int j, t_opt *opt)
 
 int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 {
+	char		**old;
+	char		*tmp;
+
 	while (cmd[++i] && cmd[i][0] == '-')
 	{
 		if (!cmd[i][1])
@@ -73,14 +78,16 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 			else if (cmd[i][j] == 'P')
 			{
 				opt->p = 1;
-				if ((opt->path = ft_env_opt_p(cmd, &i, j + 1, opt)) == NULL)
+				tmp = opt->path;
+				if ((opt->path = ft_env_opt_p(cmd, &i, j + 1, opt)) == tmp)
 					return (ft_enverror("malloc failed", 0, opt));
 				break ;
 			}
 			else if (cmd[i][j] == 'u')
 			{
 				opt->u = 1;
-				if ((opt->ptr = ft_env_opt_u(cmd, &i, j + 1, opt)) == NULL)
+				old = opt->ptr;
+				if ((opt->ptr = ft_env_opt_u(cmd, &i, j + 1, opt)) == old)
 					return (ft_enverror("malloc failed", 0, opt));
 				break ;
 			}

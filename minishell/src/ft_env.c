@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-//   Updated: 2017/01/04 21:41:16 by gbourgeo         ###   ########.fr       //
+/*   Updated: 2017/01/05 19:23:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int				ft_env(char **command, t_env *e)
 		if ((i = check(command, &opt)) < 0)
 			return (1);
 		if (command[i])
-			e->ret = fork_function(&command[i], opt.cpy);
+			e->ret = check_and_exec(&command[i], opt.cpy, e);
 		else
 			ft_puttab(opt.cpy);		
 	}

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/04 15:37:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 19:09:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,45 +34,50 @@ static void		prompt(char **env)
 	ft_putstr("\033[37m > \033[0m");
 }
 
-static void		check_and_exec(char **command, t_env *e)
+int				check_and_exec(char **command, char **env, t_env *e)
 {
 	static char	*builtins[] = { BUILTINS };
 	static int	(*function[])(char **, t_env *) = { FUNCTION };
+	char		**old;
 	int			i;
 
 	i = 0;
+	old = e->env;
+	e->env = env;
 	while (builtins[i])
 	{
 		if (ft_strcmp(*command, builtins[i]) == 0)
 		{
 			e->ret = function[i](command, e);
-			return (ft_free(&command));
+			break ;
 		}
 		i++;
 	}
-	if (*command)
-		e->ret = fork_function(command, e->env);
-	ft_free(&command);
+	if (!builtins[i] && *command)
+		e->ret = fork_function(command, env);
+	e->env = old;
+	return (e->ret);
 }
 
 void			ft_shell(t_env *e)
 {
-	char		*command;
 	char		**arg;
 
-	command = NULL;
+	e->command = NULL;
 	prompt(e->env);
-	while (get_next_line(0, &command) > 0)
+	while (get_next_line(0, &e->command) > 0)
 	{
-		if (*command)
+		if (*e->command)
 		{
-			arg = ft_split_whitespaces(command);
+			arg = ft_split_whitespaces(e->command);
 			if (arg == NULL)
 				ft_putendl_fd("Memory space insufficiant.", 2);
 			else
-				check_and_exec(arg, e);
+				e->ret = check_and_exec(arg, e->env, e);
+			ft_free(&arg);
 		}
-		free(command);
+		free(e->command);
+		e->command = NULL;
 		prompt(e->env);
 	}
 }

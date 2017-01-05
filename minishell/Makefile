@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/04 21:53:10 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/01/05 19:29:31 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -48,6 +48,8 @@ LIBFT	= libft/
 
 LIBFT_H	= $(LIBFT)includes/
 
+LIBFT_A	= $(LIBFT)libft.a
+
 all: $(LIBFT) $(OBJ_D) $(NAME)
 
 .PHONY: $(LIBFT) clean fclean re
@@ -58,8 +60,9 @@ $(LIBFT):
 $(OBJ_D):
 	@mkdir -p $@
 
-$(NAME): $(OBJ) | $(LIBFT)
-	gcc $(FLAGS) -o $@ $^ -L $(LIBFT) -lft
+$(NAME): $(OBJ) $(LIBFT_A)
+	@gcc $(FLAGS) -o $@ $^ -L $(LIBFT) -lft
+	@echo "CREATED:" $(NAME)
 
 $(OBJ_D)%.o: $(SRC_D)%.c $(HDR)main.h | $(OBJ_D)
 	gcc $(FLAGS) -o $@ -c $< -I $(LIBFT_H) -I $(HDR)

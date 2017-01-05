@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 12:41:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/02 16:49:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 16:25:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static void		free_and_exit(char **args, t_env *e)
 {
 	ft_free(&e->env);
 	ft_free(&e->path);
+	free(e->command);
 	ft_free(&args);
 	ft_putendl("exit");
 	exit(e->ret);

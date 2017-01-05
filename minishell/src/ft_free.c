@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:47:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/30 03:58:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 18:24:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,23 @@
 
 void	ft_free(char ***str)
 {
+	char	**tab;
 	int		i;
 
 	i = 0;
-	if (str && *str)
+	if (str != NULL)
 	{
-		while ((*str)[i] != 0)
+		tab = *str;
+		if (tab != NULL)
 		{
-			free((*str)[i]);
-			(*str)[i] = NULL;
-			++i;
+			while (tab[i] != NULL)
+			{
+				free(tab[i]);
+				tab[i] = NULL;
+				i++;
+			}
+			free(tab);
+			*str = NULL;
 		}
-		free(*str);
-		*str = NULL;
 	}
 }

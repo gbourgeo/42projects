@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/30 22:37:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 16:36:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,14 @@ static int		cd_error(char *pwd, char *entry)
 		if (ret == -1)
 		{
 			if (lstat(pwd, &buffer) != -1)
-				ft_putstr("sh1: cd: too many levels of symbolic links: ");
+				ft_putstr("cd: too many levels of symbolic links: ");
 			else
-				ft_putstr("sh1: cd: no such file or directory: ");
+				ft_putstr("cd: no such file or directory: ");
 		}
 		else if (!S_ISDIR(buffer.st_mode))
-			ft_putstr("sh1: cd: not a directory: ");
+			ft_putstr("cd: not a directory: ");
 		else
-			ft_putstr("sh1: cd: permission denied: ");
+			ft_putstr("cd: permission denied: ");
 		ft_putendl(entry);
 		free(pwd);
 	}
@@ -78,7 +78,7 @@ static int		cd_search_in_pwd(char **args, t_env *e)
 	pwd = ft_getenv("PWD", e->env);
 	if ((tmp = ft_strstr(pwd, args[1])) == NULL)
 	{
-		ft_putstr_fd("sh1: cd: string not in pwd: ", 2);
+		ft_putstr_fd("cd: string not in pwd: ", 2);
 		ft_putendl_fd(args[1], 2);
 		return (1);
 	}
@@ -102,9 +102,9 @@ int				ft_cd(char **args, t_env *e)
 	{
 		if (ft_strchr(args[i], 'P') == NULL && ft_strchr(args[i], 'L') == NULL)
 		{
-			ft_putstr_fd("sh1: cd: invalid option: ", 2);
+			ft_putstr_fd("cd: invalid option: ", 2);
 			ft_putstr_fd(args[1], 2);
-			ft_putendl_fd("sh1: usage: cd [-L|-P] [dir]", 2);
+			ft_putendl_fd("\nusage: cd [-L|-P] [dir]", 2);
 			return (1);
 		}
 		i++;
@@ -113,7 +113,7 @@ int				ft_cd(char **args, t_env *e)
 		return (cd_write_in_pwd(args, e, i));
 	if (!args[i + 2])
 		return (cd_search_in_pwd(args + i - 1, e));
-	ft_putstr_fd("sh1: cd: too much arguments: ", 2);
+	ft_putstr_fd("cd: too much arguments: ", 2);
 	ft_putendl_fd(args[1], 2);
 	return (1);
 }

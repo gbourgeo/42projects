@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/04 21:49:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 18:51:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,48 +17,52 @@ static char		**ft_new_env(t_opt *opt, int k)
 	char		**new;
 	int			i;
 
-	if ((new = (char **)malloc(ft_tablen(opt->cpy) - 1)) == NULL)
-		return (NULL);
+	if (!(new = (char **)malloc(sizeof(*new) * ft_tablen(opt->cpy))))
+		return (opt->cpy);
 	i = 0;
 	while (opt->cpy && opt->cpy[i])
 	{
 		if (i < k)
-			new[i] = opt->cpy[i];
+			new[i] = ft_strdup(opt->cpy[i]);
 		else if (i > k)
-			new[i - 1] = opt->cpy[i];
+			new[i - 1] = ft_strdup(opt->cpy[i]);
 		i++;
 	}
 	if (i > 0)
 		new[i - 1] = NULL;
 	else
 		new[i] = NULL;
+	ft_free(&opt->cpy);
 	return (new);
 }
 
 int				ft_opt_u(t_opt *opt)
 {
+	char		**old;
 	int			i;
 	int			j;
 
-	i = 0;
+	i = -1;
 	if (opt->ptr == NULL || opt->ptr[0] == '\0')
 		return (ft_enverror("option requires an argument", 'u', opt));
-	while (opt->ptr[i])
+	while (opt->ptr[++i])
 	{
 		if (opt->v)
 		{
 			ft_putstr("#env unset:\t");
 			ft_putendl(opt->ptr[i]);
 		}
-		j = 0;
-		while (opt->cpy && opt->cpy[j])
+		old = opt->cpy;
+		j = -1;
+		while (opt->cpy && opt->cpy[++j])
 		{
-			if (ft_strcmp(opt->cpy[j], opt->ptr[i]) == '=' &&
-				(opt->cpy = ft_new_env(opt, i)) == NULL)
-				return (ft_enverror("malloc failed", 0, opt));
-			j++;
+			if (ft_strcmp(opt->cpy[j], opt->ptr[i]) == '=')
+			{
+				if ((opt->cpy = ft_new_env(opt, j)) == old)
+					return (ft_enverror("malloc failed", 0, opt));
+				break ;
+			}
 		}
-		i++;
 	}
 	return (0);
 }
@@ -84,18 +88,15 @@ static char		*ft_search_path(char *cmd, t_opt *opt)
 	while (paths[i])
 	{
 		tmp = (paths[i][ft_strlen(paths[i]) - 1] != '/') ?
-			ft_strjoin(paths[i], "/") : ft_strdup(paths[i]);
-		cmd = ft_strjoin(tmp, cmd);
-		if (tmp)
-			free(tmp);
-		if (stat(cmd, &buffer) != -1 && access(cmd, F_OK) == 0)
+			ft_str2join(paths[i], "/", cmd) : ft_strjoin(paths[i], cmd);
+		if (stat(tmp, &buffer) != -1 && access(tmp, F_OK) == 0)
 			break ;
-		free(cmd);
-		cmd = NULL;
+		free(tmp);
+		tmp = NULL;
 		i++;
 	}
 	ft_free(&paths);
-	return (cmd);
+	return (tmp);
 }
 
 int				ft_opt_p(t_opt *opt, char **cmd)

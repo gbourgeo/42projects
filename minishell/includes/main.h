@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/04 16:52:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 19:09:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct	s_env
 {
 	char		**env;
 	char		**path;
+	char		*command;
 	int			ret;
 }				t_env;
 
@@ -48,6 +49,7 @@ char			*ft_getenv(char *str, char **env);
 int				ft_tablen(char **tab);
 char			**ft_tabdup(char **tab);
 void			ft_shell(t_env *e);
+int				check_and_exec(char **command, char **env, t_env *e);
 int				fork_function(char **args, char **env);
 int				ft_echo(char **args, t_env *e);
 int				ft_exit(char **args, t_env *e);

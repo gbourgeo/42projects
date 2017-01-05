@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/26 09:56:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/31 00:20:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/05 16:40:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static char		*ft_get_path(char *path, char *pwd)
 	if (new && list)
 		new = recreate_path(new, list);
 	else
-		ft_putendl_fd("sh1: cd: memory insufficiant.", 2);
+		ft_putendl_fd("cd: memory insufficiant.", 2);
 	if (list)
 		ft_free(&list);
 	return (new);
@@ -63,7 +63,7 @@ char			*cd_check(char **args, char **env, int i)
 	{
 		pwd = ft_getenv("HOME", env);
 		if (pwd == NULL)
-			ft_putendl_fd("sh1: cd: HOME not defined", 2);
+			ft_putendl_fd("cd: HOME not defined", 2);
 		else if (!ft_strcmp(args[i], "~"))
 			return (ft_get_path(pwd, &args[1][1]));
 	}
@@ -73,10 +73,10 @@ char			*cd_check(char **args, char **env, int i)
 		if (pwd)
 			ft_putendl(pwd);
 		else
-			ft_putendl_fd("sh1: cd: OLDPWD not defined", 2);
+			ft_putendl_fd("cd: OLDPWD not defined", 2);
 	}
 	else if (*args[i] == '/')
-		return (ft_strdup(args[i]));
+		return (ft_get_path("/", args[i]));
 	else
 		return (ft_get_path(ft_getenv("PWD", env), args[i]));
 	return (ft_strdup(pwd));
