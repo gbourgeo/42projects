@@ -1,0 +1,14 @@
+Résumé: Ce projet a pour but de vous faire coder en C une bibliothèque de fonctions
+	usuelles que vous pourrez utiliser dans tous vos projets.
+
+Vous devez recoder les fonctions suivantes :
+
+•memset •bzero •memcpy •memccpy •memmove
+•memchr •memcmp •strlen •strdup •strcpy 
+•strncpy strcat •strncat •strlcat •strchr 
+•strrchr •strstr •strnstr •strcmp •strncmp 
+•atoi •isalpha •isdigit •isalnum •isascii 
+•isprint •toupper •tolower
+etc... 
+
+Regardez les fichiers pour plus de fonctions.

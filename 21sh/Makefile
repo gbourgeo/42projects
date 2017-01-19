@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/07 18:43:15 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/01/19 16:47:09 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -17,6 +17,14 @@ SRC_D 	= src/
 HDR		= includes/
 
 SRC		= main.c			\
+			check_and_exec.c	\
+			keypad_command.c	\
+			ctrl_command.c	\
+			shift_command.c	\
+			ctrl_shft_command.c	\
+			historic_command.c	\
+			ft_signals.c	\
+			ft_termcaps.c	\
 			ft_minishell.c	\
 			ft_echo.c		\
 			ft_env.c		\
@@ -36,6 +44,7 @@ SRC		= main.c			\
 			ft_unsetenv.c	\
 			ft_stralnum.c 	\
 			ft_split_whitespaces.c	\
+			ft_realloc.c	\
 			ft_strerror.c
 
 OBJ_D 	= obj/
@@ -60,8 +69,8 @@ $(LIBFT):
 $(OBJ_D):
 	@mkdir -p $@
 
-$(NAME): $(OBJ) $(LIBFT_A)
-	@$(FLAGS) -o $@ $^ -L $(LIBFT) -lft
+$(NAME): $(OBJ) | $(LIBFT_A)
+	@$(FLAGS) -o $@ $^ -L $(LIBFT) -lft -ltermcap
 	@echo "CREATED:" $(NAME)
 
 $(OBJ_D)%.o: $(SRC_D)%.c $(HDR)main.h | $(OBJ_D)
