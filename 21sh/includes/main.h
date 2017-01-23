@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/19 20:49:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/23 21:25:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@
 # define CMD_SIZE	256
 # define READ_SIZE	8
 
-# define K_COPY		
-# define K_CUT		
-# define K_PASTE	
+# define COPY_KEY	e.buf[0] < 0
+# define K_CUT		e.buf[0] == -30 && e.buf[1] == -119 && e.buf[2] == -120
+# define K_COPY		e.buf[0] == -62 && e.buf[1] == -87
+# define K_PASTE	e.buf[0] == -30 && e.buf[1] == -105 && e.buf[2] == -118
+
 # define CTRL_C		e.buf[0] == 3
 # define CTRL_D		e.buf[0] == 4
 # define ENTER		e.buf[0] == 10
@@ -80,7 +82,7 @@ typedef struct		s_opt
 typedef struct		s_hist
 {
 	struct s_hist	*prev;
-	char			*command;
+	char			*cmd;
 	size_t			cmd_size;
 	struct s_hist	*next;
 }					t_hist;
@@ -94,6 +96,8 @@ typedef struct		s_env
 	char			buf[READ_SIZE];
 	size_t			pos;
 	int				cpy;
+	int				cut;
+	char			*cpystr;
 	long int		shft;
 	t_hist			*hist;
 	int				ret;
@@ -143,8 +147,10 @@ void				ctrl_shift_command(void);
 void				keypad_command(void);
 void				historic_command(void);
 t_hist				*new_hist(void);
-void				treat_command(void);
+//void				treat_command(void);
+//void				read_command(int len);
 void				rewrite_command(void);
 void				prompt(char **env);
+void				copy_command(void);
 
 #endif

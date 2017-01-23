@@ -1,0 +1,72 @@
+src/copy_command.c:		ft_strncpy(e.cpystr, &e.hist->command[e.shft], len);
+src/copy_command.c:		ft_strncpy(e.cpystr, &e.hist->command[e.pos], len);
+src/copy_command.c:			ft_strncpy(&e.hist->command[e.shft], &e.hist->command[e.pos], e.hist->cmd_size - e.shft);
+src/copy_command.c:			ft_strncpy(&e.hist->command[e.pos], &e.hist->command[e.shft], e.hist->cmd_size - e.pos);
+src/copy_command.c:			if (ft_strlen(e.cpystr) + ft_strlen(e.hist->command) >= e.hist->cmd_size)
+src/ctrl_command.c:	while (e.pos < size && e.hist->command[e.pos] == ' ')
+src/ctrl_command.c:	while (e.pos < size && e.hist->command[e.pos] != ' ')
+src/ctrl_command.c:	while (e.pos > 0 && e.hist->command[e.pos - 1] == ' ')
+src/ctrl_command.c:	while (e.pos > 0 && e.hist->command[e.pos - 1] != ' ')
+src/ctrl_command.c:		ctrl_right(ft_strlen(e.hist->command));
+src/ctrl_shft_command.c:	while (e.pos < size && e.hist->command[e.pos] == ' ')
+src/ctrl_shft_command.c:		write(e.fd, &e.hist->command[e.pos], 1);
+src/ctrl_shft_command.c:	while (e.pos < size && e.hist->command[e.pos] != ' ')
+src/ctrl_shft_command.c:		write(e.fd, &e.hist->command[e.pos], 1);
+src/ctrl_shft_command.c:	write(e.fd, &e.hist->command[e.pos], 1);
+src/ctrl_shft_command.c:	while (e.pos > 0 && e.hist->command[e.pos - 1] == ' ')
+src/ctrl_shft_command.c:	while (e.pos > 0 && e.hist->command[e.pos - 1] != ' ')
+src/ctrl_shft_command.c:		ct_sh_right(ft_strlen(e.hist->command));
+src/ctrl_shft_command.c:		ct_sh_left(ft_strlen(e.hist->command));
+src/ft_minishell.c:	i = ft_strlen(e.hist->command);
+src/ft_minishell.c:	write(e.fd, e.hist->command, i);
+src/ft_minishell.c:	if (ft_strlen(e.hist->command) + len > e.hist->cmd_size)
+src/ft_minishell.c:		e.hist->cmd_size += CMD_SIZE;
+src/ft_minishell.c:		e.hist->command = ft_realloc(e.hist->command, e.hist->cmd_size);
+src/ft_minishell.c:	size = ft_strlen(&e.hist->command[e.pos]);
+src/ft_minishell.c:	end = ft_strlen(e.hist->command);
+src/ft_minishell.c:		e.hist->command[end + buf] = e.hist->command[e.pos + size];
+src/ft_minishell.c:		e.hist->command[e.pos + size] = e.buf[size];
+src/ft_minishell.c:	if (*e.hist->command)
+src/ft_minishell.c:		args = ft_split_whitespaces(e.hist->command);
+src/ft_minishell.c:		if (e.hist->prev)
+src/ft_minishell.c:			e.hist->prev->next = e.hist;
+src/ft_minishell.c:		else if (CTRL_D && !*e.hist->command)
+src/ft_minishell.c~:	i = ft_strlen(e.hist->command);
+src/ft_minishell.c~:	write(e.fd, e.hist->command, i);
+src/ft_minishell.c~:	if (ft_strlen(e.hist->command) + len > e.hist->cmd_size)
+src/ft_minishell.c~:		e.hist->cmd_size += CMD_SIZE;
+src/ft_minishell.c~:		e.hist->command = ft_realloc(e.hist->command, e.hist->cmd_size);
+src/ft_minishell.c~:	size = ft_strlen(&e.hist->command[e.pos]);
+src/ft_minishell.c~:	end = ft_strlen(e.hist->command);
+src/ft_minishell.c~:		e.hist->command[end + buf] = e.hist->command[e.pos + size];
+src/ft_minishell.c~:		e.hist->command[e.pos + size] = e.buf[size];
+src/ft_minishell.c~:	if (*e.hist->command)
+src/ft_minishell.c~:		args = ft_split_whitespaces(e.hist->command);
+src/ft_minishell.c~:		if (e.hist->prev)
+src/ft_minishell.c~:			e.hist->prev->next = e.hist;
+src/ft_minishell.c~:		else if (CTRL_D && !*e.hist->command)
+src/historic_command.c:	if (e.hist == NULL || e.hist->next == NULL)
+src/historic_command.c:	while (e.hist->next)
+src/historic_command.c:		e.hist = e.hist->next;
+src/historic_command.c:	if (K_UP && e.hist->prev)
+src/historic_command.c:		e.hist = e.hist->prev;
+src/historic_command.c:		e.pos = ft_strlen(e.hist->command);
+src/historic_command.c:		write(e.fd, e.hist->command, e.pos);
+src/historic_command.c:	else if (K_DOWN && e.hist->next)
+src/historic_command.c:		e.hist = e.hist->next;
+src/historic_command.c:		e.pos = ft_strlen(e.hist->command);
+src/historic_command.c:		write(e.fd, e.hist->command, e.pos);
+src/keypad_command.c:	if (K_RIGHT && e.pos < ft_strlen(e.hist->command))
+src/keypad_command.c:		ft_strcpy(e.hist->command + e.pos, e.hist->command + e.pos + 1);
+src/keypad_command.c:		ft_strcpy(e.hist->command + e.pos, e.hist->command + e.pos + 1);
+src/keypad_command.c:	if (*e.hist->command && e.hist->next == NULL)
+src/keypad_command.c:		ft_bzero(e.hist->command, e.hist->cmd_size);
+src/keypad_command.c:	while (e.hist->next)
+src/keypad_command.c:		e.hist = e.hist->next;
+src/keypad_command.c:	if (*e.hist->command && (e.hist = new_hist()) == NULL)
+src/keypad_command.c:	if (e.hist->prev)
+src/keypad_command.c:		e.hist->prev->next = e.hist;
+src/shift_command.c:	write(e.fd, &e.hist->command[e.pos], 1);
+src/shift_command.c:	write(e.fd, &e.hist->command[e.pos], 1);
+src/shift_command.c:		if (e.pos < ft_strlen(e.hist->command) - 1)
+src/shift_command.c:	if (SHFT_RIGHT && e.pos < ft_strlen(e.hist->command))

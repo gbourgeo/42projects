@@ -1,0 +1,30 @@
+Résumé: Repartons du minishell et rendons-le plus robuste pour nous approcher petit à petit
+d’un vrai shell fonctionnel. En outre il y aura divers features, telles que la gestion du
+multi-commande, des différentes redirections, ainsi que l’édition de ligne qui vous permettra
+d’utiliser les flèches du clavier par exemple.
+
+Fonction supplementaires au projet 'minishell':
+• Une édition de la ligne de commande à l’aide de la bibliothèque termcaps:
+  • Editer la ligne à l’endroit où se trouve le curseur.
+  • Déplacer le curseur vers la gauche et vers la droite pour pouvoir éditer la ligne à
+  	un endroit précis. Les nouveaux caractères doivent bien entendu s’insérer entre les
+	caractères existants de la même manière que dans un shell ordinaire.
+  • Utiliser les fleches du haut et du bas pour naviguer dans l’historique des commandes que
+  	l’on pourra alors éditer si le coeur nous en dit (la ligne, pas l’historique, hein).
+  • Couper, copier et/ou coller tout ou partie d’une ligne avec (ici) shift et/ou ctrl+shift.
+  • Se déplacer par "mot" vers la gauche et vers la droite avec ctrl+LEFT et ctrl+RIGHT ou
+  	toute autre combinaison de touche raisonnable.
+
+A FAIRE :
+  • Aller directement au début et à la fin d’une ligne avec home et end.
+  • Ecrire ET éditer une commande sur plusieurs lignes. Dans ce cas, on apprecierait que
+  	ctrl+UP et ctrl+DOWN permettent de passer d’une ligne à l’autre de la commande en restant
+	sur la même colonne ou la colonne la plus appropriée sinon.
+  • Gérer complètement les quotes et doubles quotes, même sur plusieurs lignes (hors expansions).
+
+• Les fonctionnalités des combinaisons de touches ctrl+D et ctrl+C dans l’édition
+  de la ligne et l’éxecution d’un processus.
+• Le séparateur de commandes “;”
+• Les pipes “|”
+• Les quatre redirections “<”, “>”, “<<” et “>>”
+• Les aggrégations de descripteurs de fichiers, par exemple pour fermer la sortie d’erreur...

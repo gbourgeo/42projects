@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 16:44:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/19 20:52:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/23 20:23:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@ t_hist			*new_hist(void)
 		if (new == NULL)
 			return (NULL);
 		new->prev = e.hist;
-		new->command = (char *)malloc(sizeof(*new->command) * CMD_SIZE);
-		if (new->command == NULL)
+		new->cmd = (char *)malloc(sizeof(*new->cmd) * CMD_SIZE);
+		if (new->cmd == NULL)
 		{
 			free(new);
 			return (NULL);
 		}
-		ft_bzero(new->command, CMD_SIZE);
+		ft_bzero(new->cmd, CMD_SIZE);
 		new->cmd_size = CMD_SIZE;
 		new->next = NULL;
 		return (new);
@@ -45,18 +45,18 @@ void			historic_command(void)
 	{
 		e.hist = e.hist->prev;
 		e.cpy = 0;
-		e.pos = ft_strlen(e.hist->command);
+		e.pos = ft_strlen(e.hist->cmd);
 		tputs(ft_tgetstr("rc"), 1, ft_pchar);
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		write(e.fd, e.hist->command, e.pos);
+		write(e.fd, e.hist->cmd, e.pos);
 	}
 	else if (K_DOWN && e.hist->next)
 	{
 		e.hist = e.hist->next;
 		e.cpy = 0;
-		e.pos = ft_strlen(e.hist->command);
+		e.pos = ft_strlen(e.hist->cmd);
 		tputs(ft_tgetstr("rc"), 1, ft_pchar);
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		write(e.fd, e.hist->command, e.pos);
+		write(e.fd, e.hist->cmd, e.pos);
 	}
 }

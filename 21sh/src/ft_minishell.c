@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/19 20:53:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/23 20:24:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ void			rewrite_command(void)
 {
 	size_t		i;
 
-	i = ft_strlen(e.hist->command);
+	i = ft_strlen(e.hist->cmd);
 	tputs(ft_tgetstr("rc"), 1, ft_pchar);
 	tputs(ft_tgetstr("cd"), 1, ft_pchar);
-	write(e.fd, e.hist->command, i);
+	write(e.fd, e.hist->cmd, i);
 	while (i-- > e.pos)
 		tputs(ft_tgetstr("le"), 1, ft_pchar);
 	e.cpy = 0;
@@ -53,36 +53,37 @@ static void		read_command(int len)
 	int			end;
 	int			buf;
 
-	if (ft_strlen(e.hist->command) + len > e.hist->cmd_size)
+	if (ft_strlen(e.hist->cmd) + len > e.hist->cmd_size)
 	{
 		e.hist->cmd_size += CMD_SIZE;
-		e.hist->command = ft_realloc(e.hist->command, e.hist->cmd_size);
+		if (!(e.hist->cmd = ft_realloc(e.hist->cmd, e.hist->cmd_size)))
+			ft_exit_all("Malloc failed.");
 	}
-	size = ft_strlen(&e.hist->command[e.pos]);
-	end = ft_strlen(e.hist->command);
+	size = ft_strlen(&e.hist->cmd[e.pos]);
+	end = ft_strlen(e.hist->cmd);
 	buf = len;
 	while (size--)
 	{
 		buf--;
-		e.hist->command[end + buf] = e.hist->command[e.pos + size];
+		e.hist->cmd[end + buf] = e.hist->cmd[e.pos + size];
 	}
 	write(e.fd, e.buf, len);
 	size = len;
 	while (size--)
-		e.hist->command[e.pos + size] = e.buf[size];
+		e.hist->cmd[e.pos + size] = e.buf[size];
 	e.pos += len;
 }
 
-void			treat_command(void)
+static void		treat_command(void)
 {
 	char		**args;
 
 	rewrite_command();
 	write(e.fd, "\n", 1);
 	e.pos = 0;
-	if (*e.hist->command)
+	if (*e.hist->cmd)
 	{
-		args = ft_split_whitespaces(e.hist->command);
+		args = ft_split_whitespaces(e.hist->cmd);
 		if (args == NULL)
 			ft_exit_all("Can't parse your command.");
 		restore_term();
@@ -110,10 +111,12 @@ void			ft_shell(void)
 			treat_command();
 		else if (KEYPAD || K_SUPPR || CTRL_C)
 			keypad_command();
-		else if (CTRL_D && !*e.hist->command)
+		else if (COPY_KEY)
+			copy_command();
+		else if (CTRL_D && !*e.hist->cmd)
 			break ;
 		if (!SHFT_KEY && !CT_SH_KEY && e.cpy != 0)
 			rewrite_command();
-		ft_bzero(e.buf, READ_SIZE);
+		ft_memset(e.buf, 0, len);
 	}
 }

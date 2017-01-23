@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/19 16:47:09 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/01/23 20:24:43 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,6 +23,7 @@ SRC		= main.c			\
 			shift_command.c	\
 			ctrl_shft_command.c	\
 			historic_command.c	\
+			copy_command.c	\
 			ft_signals.c	\
 			ft_termcaps.c	\
 			ft_minishell.c	\

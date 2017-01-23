@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/19 20:50:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/23 22:21:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@ void			ft_exit_all(char *err)
 	ft_putendl_fd(err, STDERR_FILENO);
 	ft_free(&e.env);
 	ft_free(&e.path);
+	if (e.cpystr)
+		free(e.cpystr);
+	ft_free_hist(&e.hist);
+	restore_term();
 	exit(EXIT_FAILURE);
 }
 
