@@ -6,24 +6,27 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/23 20:24:43 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/01/27 01:41:45 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
-NAME	= minishell
+NAME	= 21sh
 
 SRC_D 	= src/
 
 HDR		= includes/
 
 SRC		= main.c			\
+			prompt.c		\
 			check_and_exec.c	\
+			read_command.c	\
 			keypad_command.c	\
 			ctrl_command.c	\
 			shift_command.c	\
 			ctrl_shft_command.c	\
 			historic_command.c	\
 			copy_command.c	\
+			pos_function.c	\
 			ft_signals.c	\
 			ft_termcaps.c	\
 			ft_minishell.c	\
@@ -46,6 +49,7 @@ SRC		= main.c			\
 			ft_stralnum.c 	\
 			ft_split_whitespaces.c	\
 			ft_realloc.c	\
+			ft_insert_str.c	\
 			ft_strerror.c
 
 OBJ_D 	= obj/

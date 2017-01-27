@@ -6,16 +6,18 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 16:46:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/09 21:39:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/26 17:53:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 #include <fcntl.h>
+#include <sys/ioctl.h>
 
 void				restore_term(void)
 {
     tputs(ft_tgetstr("ei"), 1, ft_pchar);
+//    tputs(ft_tgetstr("SA"), 1, ft_pchar);
     if ((tcsetattr(e.fd, TCSANOW, &e.old_term)) == -1)
 		ft_putendl_fd("Fatal error: tcsetattr() returned.", 2);
 }
@@ -24,15 +26,16 @@ void				redefine_term(void)
 {
     struct termios  termios;
 
-    if (tcgetattr(e.fd, &e.old_term) != 0)
+	if (tcgetattr(e.fd, &e.old_term) != 0)
 		ft_exit_all("Fatal error: tcgetattr() returned.");
 	ft_memcpy(&termios, &e.old_term, sizeof(termios));
-    termios.c_lflag &= ~(ICANON | ECHO | ISIG);
-    termios.c_cc[VMIN] = 1;
-    termios.c_cc[VTIME] = 0;
-    tputs(ft_tgetstr("im"), 1, ft_pchar);
-    if (tcsetattr(e.fd, TCSANOW, &termios) == -1)
+	termios.c_lflag &= ~(ICANON | ECHO | ISIG);
+	termios.c_cc[VMIN] = 1;
+	termios.c_cc[VTIME] = 0;
+	if (tcsetattr(e.fd, TCSANOW, &termios) == -1)
 		ft_exit_all("Fatal error: tcsetattr() returned.");
+	tputs(ft_tgetstr("im"), 1, ft_pchar);
+//	tputs(ft_tgetstr("RA"), 1, ft_pchar);
 }
 
 void				init_termcaps(char *term_name, int ret)
@@ -56,6 +59,8 @@ void				init_termcaps(char *term_name, int ret)
     else if (ret == 0)
         ft_exit_all("Terminal not defined in database.");
 	redefine_term();
+	if (ioctl(e.fd, TIOCGWINSZ, &e.sz) == -1)
+		ft_exit_all("ioctl(TIOCGWINSZ) failed.");
 }
 
 char				*ft_tgetstr(char *str)

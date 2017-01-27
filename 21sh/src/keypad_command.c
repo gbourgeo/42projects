@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/23 20:22:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/27 02:30:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,41 @@
 
 static void		move_command(void)
 {
-	if (K_RIGHT && e.pos < ft_strlen(e.hist->cmd))
+	if (K_RIGHT && (size_t)e.pos.x < ft_strlen(e.hist->cmd))
 	{
-		tputs(ft_tgetstr("nd"), 1, ft_pchar);
-		e.pos++;
+		ft_pos(1);
+//		e.pos.x++;
 	}
-	else if (K_LEFT && e.pos > 0)
+	else if (K_LEFT && e.pos.x > 0)
 	{
-		tputs(ft_tgetstr("le"), 1, ft_pchar);
-		e.pos--;
+		ft_pos(-1);
+//		e.pos.x--;
 	}
 }
 
 static void		suppr_command(void)
 {
-	if (K_DEL)
+	size_t		x;
+
+	if (K_DEL && e.hist->cmd[e.pos.x])
 	{
-		ft_strcpy(e.hist->cmd + e.pos, e.hist->cmd + e.pos + 1);
-		tputs(ft_tgetstr("dc"), 1, ft_pchar);
+		ft_strcpy(e.hist->cmd + e.pos.x, e.hist->cmd + e.pos.x + 1);
+		tputs(ft_tgetstr("cd"), 1, ft_pchar);
+		ft_putstr_fd(&e.hist->cmd[e.pos.x], e.fd);
+		x = ft_strlen(&e.hist->cmd[e.pos.x]);
+		e.pos.x += x;
+		ft_pos(-x);
 	}
-	else if (K_SUPPR && e.pos > 0)
+	else if (K_SUPPR && e.pos.x > 0)
 	{
-		e.pos--;
-		ft_strcpy(e.hist->cmd + e.pos, e.hist->cmd + e.pos + 1);
-		tputs(ft_tgetstr("le"), 1, ft_pchar);
-		tputs(ft_tgetstr("dc"), 1, ft_pchar);
+		ft_pos(-1);
+//		e.pos.x--;
+		ft_strcpy(&e.hist->cmd[e.pos.x], &e.hist->cmd[e.pos.x + 1]);
+		tputs(ft_tgetstr("cd"), 1, ft_pchar);
+		ft_putstr_fd(&e.hist->cmd[e.pos.x], e.fd);
+		x = ft_strlen(&e.hist->cmd[e.pos.x]);
+		e.pos.x += x;
+		ft_pos(-x);
 	}
 }
 
@@ -54,7 +64,8 @@ static void		ctrl_c(void)
 	if (e.hist->prev)
 		e.hist->prev->next = e.hist;
 	write(e.fd, "\n", 1);
-	e.pos = 0;
+	e.pos.x = 0;
+	e.pos.y = 0;
 	prompt(e.env);
 }
 

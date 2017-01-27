@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/23 21:25:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/27 01:57:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define FUNCTION	ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
 
 # define CMD_SIZE	256
-# define READ_SIZE	8
+# define READ_SIZE	10
 
 # define COPY_KEY	e.buf[0] < 0
 # define K_CUT		e.buf[0] == -30 && e.buf[1] == -119 && e.buf[2] == -120
@@ -87,19 +87,32 @@ typedef struct		s_hist
 	struct s_hist	*next;
 }					t_hist;
 
+typedef struct		s_copy
+{
+	int				cpy;
+	int				cut;
+	char			*str;
+	long int		shft;
+}					t_copy;
+
+typedef struct		s_pos
+{
+	size_t			x;
+	size_t			y;
+}					t_pos;
+
 typedef struct		s_env
 {
 	char			**env;
 	char			**path;
 	int				fd;
 	struct termios	old_term;
+	struct winsize	sz;
 	char			buf[READ_SIZE];
-	size_t			pos;
-	int				cpy;
-	int				cut;
-	char			*cpystr;
-	long int		shft;
+	t_pos			origin;
+	t_pos			pos;
 	t_hist			*hist;
+	t_copy			cpy;
 	int				ret;
 }					t_env;
 
@@ -148,9 +161,11 @@ void				keypad_command(void);
 void				historic_command(void);
 t_hist				*new_hist(void);
 //void				treat_command(void);
-//void				read_command(int len);
+void				read_command(int len);
 void				rewrite_command(void);
 void				prompt(char **env);
 void				copy_command(void);
+void				ft_pos(int len);
+void				ft_insert_str(char *str, int len);
 
 #endif

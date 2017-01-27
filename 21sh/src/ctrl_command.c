@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:18:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/23 20:22:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/27 02:18:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,29 @@
 
 static void		ctrl_right(size_t size)
 {
-	while (e.pos < size && e.hist->cmd[e.pos] == ' ')
+	while (e.pos.x < size && e.hist->cmd[e.pos.x] == ' ')
 	{
-		e.pos++;
-		tputs(ft_tgetstr("nd"), 1, ft_pchar);
+//		e.pos.x++;
+		ft_pos(1);
 	}
-	while (e.pos < size && e.hist->cmd[e.pos] != ' ')
+	while (e.pos.x < size && e.hist->cmd[e.pos.x] != ' ')
 	{
-		e.pos++;
-		tputs(ft_tgetstr("nd"), 1, ft_pchar);
+//		e.pos.x++;
+		ft_pos(1);
 	}
 }
 
 static void		ctrl_left(void)
 {
-	while (e.pos > 0 && e.hist->cmd[e.pos - 1] == ' ')
+	while (e.pos.x > 0 && e.hist->cmd[e.pos.x - 1] == ' ')
 	{
-		e.pos--;
-		tputs(ft_tgetstr("le"), 1, ft_pchar);
+//		e.pos.x--;
+		ft_pos(-1);
 	}
-	while (e.pos > 0 && e.hist->cmd[e.pos - 1] != ' ')
+	while (e.pos.x > 0 && e.hist->cmd[e.pos.x - 1] != ' ')
 	{
-		e.pos--;
-		tputs(ft_tgetstr("le"), 1, ft_pchar);
+//		e.pos.x--;
+		ft_pos(-1);
 	}
 }
 

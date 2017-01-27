@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 16:44:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/23 20:23:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/27 02:12:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,30 @@ t_hist			*new_hist(void)
 
 void			historic_command(void)
 {
+	int			y;
+
 	if (K_UP && e.hist->prev)
 	{
 		e.hist = e.hist->prev;
-		e.cpy = 0;
-		e.pos = ft_strlen(e.hist->cmd);
+		e.cpy.cpy = 0;
+		e.pos.x = ft_strlen(e.hist->cmd);
 		tputs(ft_tgetstr("rc"), 1, ft_pchar);
+		y = e.pos.y;
+		while (y--)
+			tputs(ft_tgetstr("up"), 1, ft_pchar);			
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		write(e.fd, e.hist->cmd, e.pos);
+		write(e.fd, e.hist->cmd, e.pos.x);
 	}
 	else if (K_DOWN && e.hist->next)
 	{
 		e.hist = e.hist->next;
-		e.cpy = 0;
-		e.pos = ft_strlen(e.hist->cmd);
+		e.cpy.cpy = 0;
+		e.pos.x = ft_strlen(e.hist->cmd);
 		tputs(ft_tgetstr("rc"), 1, ft_pchar);
+		y = e.pos.y;
+		while (y--)
+			tputs(ft_tgetstr("up"), 1, ft_pchar);			
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		write(e.fd, e.hist->cmd, e.pos);
+		write(e.fd, e.hist->cmd, e.pos.x);
 	}
 }

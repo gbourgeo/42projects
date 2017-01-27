@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_signals.c                                       :+:      :+:    :+:   */
+/*   ft_insert_str.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/09 21:41:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/25 00:50:13 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/01/26 04:40:30 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/01/27 02:15:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
-#include <sys/ioctl.h>
 
-static void			sig_handler(int signum)
+void			ft_insert_str(char *str, int len)
 {
-	if (signum == SIGSEGV)
-		ft_exit_all("SEGFAULT !");
-	if (signum == SIGINT)
-		write(e.fd, "\n", 1);
-	if (signum == SIGWINCH && ioctl(e.fd, TIOCGWINSZ, &e.sz) == -1)
-		ft_exit_all("ioctl(TIOCGWINSZ) failed.");
-}
+	int			size;
+	int			end;
 
-void				init_signals(void)
-{
-	signal(SIGSEGV, &sig_handler);
-	signal(SIGINT, &sig_handler);
-	signal(SIGWINCH, &sig_handler);
+	if (e.hist->cmd[e.pos.x])
+	{
+		size = ft_strlen(&e.hist->cmd[e.pos.x]);
+		end = ft_strlen(e.hist->cmd);
+		while (size--)
+		{
+			len--;
+			e.hist->cmd[end + len] = e.hist->cmd[e.pos.x + size];
+		}
+	}
+	ft_strncpy(&e.hist->cmd[e.pos.x], str, ft_strlen(str));
 }
