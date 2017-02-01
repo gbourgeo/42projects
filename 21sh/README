@@ -11,9 +11,14 @@ Fonction supplementaires au projet 'minishell':
     caractères existants de la même manière que dans un shell ordinaire.
   > Utiliser les fleches du haut et du bas pour naviguer dans l’historique des commandes que
     l’on pourra alors éditer si le coeur nous en dit (la ligne, pas l’historique, hein).
-  > Couper, copier et/ou coller tout ou partie d’une ligne avec (ici) shift et/ou ctrl+shift.
+  > Couper, copier et/ou coller tout ou partie d’une ligne. (alt+X, alt+C, alt+V) shift et/ou ctrl+shift.
   > Se déplacer par "mot" vers la gauche et vers la droite avec ctrl+LEFT et ctrl+RIGHT ou
     toute autre combinaison de touche raisonnable.
+
+  > Bonus: Sélectionner tout ou partie de la commande, sur plusieurs lignes si besoin,
+    avec les touches shift+RIGHT et shift+LEFT, ctrl+shift+RIGHT et ctrl+shift+LEFT quand à eux
+    sélectionneront par mot.
+
 A FAIRE :
   > Aller directement au début et à la fin d’une ligne avec home et end.
   > Ecrire ET éditer une commande sur plusieurs lignes. Dans ce cas, on apprecierait que
