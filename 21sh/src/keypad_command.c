@@ -6,67 +6,77 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/27 02:30:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:57:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
+/*
+** "sc"		Save cursor position.
+** "cd"		Clear the line the cursor is on, and all the lines below it,
+**			down to the bottom of the screen.
+** "rc"		Restore cursor position.
+*/
+
 static void		move_command(void)
 {
-	if (K_RIGHT && (size_t)e.pos.x < ft_strlen(e.hist->cmd))
-	{
+	if (K_RIGHT && (size_t)e.pos < ft_strlen(e.hist->cmd))
 		ft_pos(1);
-//		e.pos.x++;
-	}
-	else if (K_LEFT && e.pos.x > 0)
-	{
+	else if (K_LEFT && e.pos > 0)
 		ft_pos(-1);
-//		e.pos.x--;
-	}
 }
 
 static void		suppr_command(void)
 {
-	size_t		x;
-
-	if (K_DEL && e.hist->cmd[e.pos.x])
+	if (K_DEL && e.hist->cmd[e.pos])
 	{
-		ft_strcpy(e.hist->cmd + e.pos.x, e.hist->cmd + e.pos.x + 1);
+		ft_strcpy(e.hist->cmd + e.pos, e.hist->cmd + e.pos + 1);
+		tputs(ft_tgetstr("sc"), 1, ft_pchar);
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		ft_putstr_fd(&e.hist->cmd[e.pos.x], e.fd);
-		x = ft_strlen(&e.hist->cmd[e.pos.x]);
-		e.pos.x += x;
-		ft_pos(-x);
+		ft_putstr_fd(&e.hist->cmd[e.pos], e.fd);
+		tputs(ft_tgetstr("rc"), 1, ft_pchar);
 	}
-	else if (K_SUPPR && e.pos.x > 0)
+	else if (K_SUPPR && e.pos > 0)
 	{
 		ft_pos(-1);
-//		e.pos.x--;
-		ft_strcpy(&e.hist->cmd[e.pos.x], &e.hist->cmd[e.pos.x + 1]);
+		ft_strcpy(&e.hist->cmd[e.pos], &e.hist->cmd[e.pos + 1]);
+		tputs(ft_tgetstr("sc"), 1, ft_pchar);
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		ft_putstr_fd(&e.hist->cmd[e.pos.x], e.fd);
-		x = ft_strlen(&e.hist->cmd[e.pos.x]);
-		e.pos.x += x;
-		ft_pos(-x);
+		ft_putstr_fd(&e.hist->cmd[e.pos], e.fd);
+		tputs(ft_tgetstr("rc"), 1, ft_pchar);
 	}
+}
+
+static void		goto_eol(void)
+{
+	char		*str;
+	t_pos		pos;
+
+	pos.x = e.cursor.x + ft_strlen(&e.hist->cmd[e.pos]);
+	pos.y = e.cursor.y;
+	while (pos.x >= e.sz.ws_col)
+	{
+		pos.x -= e.sz.ws_col;
+		pos.y++;
+	}
+	str = tgoto(ft_tgetstr("cm"), pos.x, pos.y);
+	tputs(str, 1, ft_pchar);
 }
 
 static void		ctrl_c(void)
 {
 	rewrite_command();
-	if (*e.hist->cmd && e.hist->next == NULL)
-		ft_bzero(e.hist->cmd, e.hist->cmd_size);
-	while (e.hist->next)
-		e.hist = e.hist->next;
-	if (*e.hist->cmd && (e.hist = new_hist()) == NULL)
-		ft_exit_all("Malloc failed.");
-	if (e.hist->prev)
-		e.hist->prev->next = e.hist;
+	goto_eol();
 	write(e.fd, "\n", 1);
-	e.pos.x = 0;
-	e.pos.y = 0;
+	hist_clean();
+	while (e.hist->prev)
+		e.hist = e.hist->prev;
+	ft_bzero(e.hist->cmd, e.hist->cmd_size);
+	e.pos = 0;
 	prompt(e.env);
+	cursor_position(&e.origin);
+	ft_memcpy(&e.cursor, &e.origin, sizeof(e.cursor));
 }
 
 void			keypad_command(void)

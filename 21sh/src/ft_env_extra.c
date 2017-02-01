@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:34:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/04 16:35:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:54:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int		ft_add_env(int i, char *new_p, t_opt *opt)
 	return (1);
 }
 
-int				ft_opt_extra(t_opt *opt)
+int				ft_env_extra(t_opt *opt)
 {
 	char		*tmp;
 	int			i;
@@ -86,7 +86,7 @@ int				ft_opt_extra(t_opt *opt)
 		*tmp = '\0';
 		if (!ft_change_var(i, tmp + 1, opt) &&
 			!ft_add_env(i, tmp + 1, opt))
-			return (ft_enverror("malloc failed", 0, opt));
+			return (ft_env_error("malloc failed", 0, opt));
 		i++;
 	}
 	return (0);

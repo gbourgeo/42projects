@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/09 17:13:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:54:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ static int		check(char **command, t_opt *opt)
 		return (-1);
 	if ((i = ft_env_check_opt_plus(command, opt, i)) == -1)
 		return (-1);
-	if (opt->u && ft_opt_u(opt) == -1)
+	if (opt->u && ft_env_u(opt) == -1)
 		return (-1);
 	if (opt->i)
-		ft_opt_i(opt);
+		ft_env_i(opt);
 	if (opt->extra)
-		ft_opt_extra(opt);
-	if (opt->p && ft_opt_p(opt, &command[i]) == -1)
+		ft_env_extra(opt);
+	if (opt->p && ft_env_p(opt, &command[i]) == -1)
 		return (-1);
 	return (i);
 }
@@ -38,7 +38,7 @@ int				ft_env(char **command)
 
 	ft_memset(&opt, 0, sizeof(opt));
 	if ((opt.cpy = ft_tabdup(e.env)) == NULL)
-		return (ft_enverror("malloc failed", 0, &opt));
+		return (ft_env_error("malloc failed", 0, &opt));
 	if (!command[1])
 		ft_puttab(e.env);
 	else
@@ -60,7 +60,7 @@ int				ft_env(char **command)
 	return (e.ret);
 }
 
-int				ft_enverror(char *err, char c, t_opt *opt)
+int				ft_env_error(char *err, char c, t_opt *opt)
 {
 	ft_putstr_fd("env: ", 2);
 	ft_putstr_fd(err, 2);

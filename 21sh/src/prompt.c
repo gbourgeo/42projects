@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 01:37:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/27 01:41:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/31 04:58:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 ** "sc"			Save cursor position.
 */
 
-static void			cursor_position(t_pos *pos)
+void			cursor_position(t_pos *pos)
 {
 	char		buf[11];
 	int			l;
@@ -28,23 +28,27 @@ static void			cursor_position(t_pos *pos)
 		ft_exit_all("Cursor position read failed.");
 	if ((str = ft_strchr(buf, '[')) == NULL)
 		ft_exit_all("Cursor position data corrupted ('[' missing)");
-	pos->y = ft_atoi(str + 1);
+	pos->y = ft_atoi(str + 1) - 1;
 	if ((str = ft_strchr(buf, ';')) == NULL)
 		ft_exit_all("Cursor position data corrupted (';' missing)");
-	pos->x = ft_atoi(str + 1);
+	pos->x = ft_atoi(str + 1) - 1;
 }
 
 void			prompt(char **env)
 {
+	char		*user;
 	char		*pwd;
 	char		*home;
+	char		*tild;
 
-	ft_putstr_fd("\033[33m", e.fd);
-	ft_putstr_fd(ft_getenv("USER", env), e.fd);
-	ft_putstr_fd("\033[31m ", e.fd);
+	user = ft_getenv("USER", env);
 	pwd = ft_getenv("PWD", env);
 	home = ft_getenv("HOME", env);
-	if (ft_strstr(pwd, home) != NULL)
+	tild = ft_strstr(pwd, home);
+	ft_putstr_fd("\033[33m", e.fd);
+	ft_putstr_fd(user, e.fd);
+	ft_putstr_fd("\033[31m ", e.fd);
+	if (tild != NULL)
 	{
 		write(e.fd, "~", 1);
 		ft_putstr_fd(&pwd[ft_strlen(home)], e.fd);
@@ -52,6 +56,4 @@ void			prompt(char **env)
 	else
 		ft_putstr_fd(pwd, e.fd);
 	ft_putstr_fd("\033[37m > \033[0m", e.fd);
-	tputs(ft_tgetstr("sc"), 1, ft_pchar);
-	cursor_position(&e.origin);
 }

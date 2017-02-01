@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/26 04:30:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:56:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 void			ft_exit_all(char *err)
 {
 	ft_putendl_fd(err, STDERR_FILENO);
-/* 	ft_free(&e.env); */
-/* 	ft_free(&e.path); */
-/* 	if (e.cpy.str) */
-/* 		free(e.cpy.str); */
-/* 	ft_free_hist(&e.hist); */
+	ft_free(&e.env);
+	ft_free(&e.path);
+	if (e.cpy.str)
+		free(e.cpy.str);
+	ft_free_hist(&e.hist);
 	restore_term();
 	exit(EXIT_FAILURE);
 }
@@ -30,14 +30,11 @@ static void		init_environment(char **environ)
 	int			i;
 
 	i = 0;
-	e.env = ft_envcpy(environ);
-	if (e.env == NULL)
+	if ((e.env = ft_envcpy(environ)) == NULL)
 		ft_exit_all("Can't copy environnement.");
-	path = ft_strsplit(ft_getenv("PATH", e.env), ':');
-	if (path == NULL)
+	if ((path = ft_strsplit(ft_getenv("PATH", e.env), ':')) == NULL)
 		ft_exit_all("Can't split PATH.");
-	e.path = malloc(sizeof(*e.path) * (ft_tablen(path) + 1));
-	if (e.path == NULL)
+	if ((e.path = malloc(sizeof(*e.path) * (ft_tablen(path) + 1))) == NULL)
 		ft_exit_all("Can't copy PATH.");
 	while (path[i])
 	{
@@ -46,8 +43,7 @@ static void		init_environment(char **environ)
 	}
 	e.path[i] = NULL;
 	ft_free(&path);
-	if ((e.hist = new_hist()) == NULL)
-		ft_exit_all("Malloc failed.");
+	e.hist = hist_new(NULL, CMD_SIZE);
 }
 
 int				main(int ac, char **av, char **environ)
@@ -58,7 +54,7 @@ int				main(int ac, char **av, char **environ)
 	init_environment(environ);
 	init_termcaps(NULL, 0);
 	init_signals();
-	ft_shell();
+	ft_minishell();
 	ft_exit(NULL);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:25:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/09 17:05:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:44:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 				opt->p = 1;
 				tmp = opt->path;
 				if ((opt->path = ft_env_opt_p(cmd, &i, j + 1, opt)) == tmp)
-					return (ft_enverror("malloc failed", 0, opt));
+					return (ft_env_error("malloc failed", 0, opt));
 				break ;
 			}
 			else if (cmd[i][j] == 'u')
@@ -87,11 +87,11 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 				opt->u = 1;
 				old = opt->ptr;
 				if ((opt->ptr = ft_env_opt_u(cmd, &i, j + 1, opt)) == old)
-					return (ft_enverror("malloc failed", 0, opt));
+					return (ft_env_error("malloc failed", 0, opt));
 				break ;
 			}
 			else
-				return (ft_enverror("illegal option", cmd[i][j], opt));
+				return (ft_env_error("illegal option", cmd[i][j], opt));
 		}
 	}
 	return (i);
@@ -105,7 +105,7 @@ int				ft_env_check_opt_plus(char **cmd, t_opt *opt, int i)
 	while (ft_strchr(cmd[i], '='))
 	{
 		if ((table = (char **)malloc(ft_tablen(opt->extra) + 2)) == NULL)
-			return (ft_enverror("malloc failed", 0, opt));
+			return (ft_env_error("malloc failed", 0, opt));
 		k = 0;
 		while (opt->extra && opt->extra[k])
 		{

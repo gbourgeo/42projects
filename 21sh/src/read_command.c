@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 03:37:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/27 01:52:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/31 22:42:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 ** "cr"		Move the cursor to the beginning of the line it is on.
 */
 
-void			read_command(int len)
+void			read_command(char *buf, int len)
 {
 	if (ft_strlen(e.hist->cmd) + len > e.hist->cmd_size)
 	{
@@ -25,13 +25,8 @@ void			read_command(int len)
 		if (!(e.hist->cmd = ft_realloc(e.hist->cmd, e.hist->cmd_size)))
 			ft_exit_all("Malloc failed.");
 	}
-	ft_insert_str(e.buf, len);
-	write(e.fd, &e.hist->cmd[e.pos.x], len);
-	e.pos.x += len;
-	if ((e.origin.x + e.pos.x) % e.sz.ws_col == 1)
-	{
-		tputs(ft_tgetstr("sf"), 1, ft_pchar);
-		tputs(ft_tgetstr("cr"), 1, ft_pchar);
-		e.pos.y++;
-	}
+	ft_insert_str(&e.hist->cmd[e.pos], buf, len);
+	tputs(ft_tgetstr("cd"), 1, ft_pchar);
+	ft_putstr_fd(&e.hist->cmd[e.pos], e.fd);
+	ft_pos(len);
 }

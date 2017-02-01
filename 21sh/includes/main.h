@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/27 01:57:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:55:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ typedef struct		s_hist
 	struct s_hist	*prev;
 	char			*cmd;
 	size_t			cmd_size;
+	char			*save;
 	struct s_hist	*next;
 }					t_hist;
 
@@ -110,7 +111,8 @@ typedef struct		s_env
 	struct winsize	sz;
 	char			buf[READ_SIZE];
 	t_pos			origin;
-	t_pos			pos;
+	t_pos			cursor;
+	size_t			pos;
 	t_hist			*hist;
 	t_copy			cpy;
 	int				ret;
@@ -118,54 +120,58 @@ typedef struct		s_env
 
 t_env				e;
 
-void				init_termcaps(char *term_name, int ret);
-void				redefine_term(void);
-void				restore_term(void);
-char				*ft_tgetstr(char *str);
-int					ft_pchar(int nb);
-void				init_signals(void);
-void				ft_exit_all(char *err);
-char				**ft_envcpy(char **env);
-char				*ft_getenv(char *str, char **env);
-void				ft_shell(void);
 int					check_and_exec(char **command, char **env);
+void				copy_command(void);
+void				ctrl_command(void);
+void				ctrl_shift_command(void);
+void				cursor_position(t_pos *pos);
 int					fork_function(char **args, char **env);
+int					ft_cd(char **args);
+char				*ft_cd_check(char **args, char **env, int i);
+void				ft_change_pwds(char *pwd);
 int					ft_echo(char **args);
+char				**ft_envcpy(char **env);
 int					ft_exit(char **args);
+void				ft_exit_all(char *err);
 int					ft_env(char **command);
 int					ft_env_check_opt(char **cmd, t_opt *opt, int i, int j);
 int					ft_env_check_opt_plus(char **cmd, t_opt *opt, int i);
-int					ft_enverror(char *err, char c, t_opt *opt);
-int					ft_opt_i(t_opt *opt);
-int					ft_opt_u(t_opt *opt);
-int					ft_opt_p(t_opt *opt, char **cmd);
-int					ft_opt_extra(t_opt *opt);
-int					ft_setenv(char **entry);
-int					ft_unsetenv(char **entry);
-int					ft_cd(char **args);
-char				*cd_check(char **args, char **env, int i);
-char				*ft_getcwd(char *dir, char **env);
-void				ft_change_pwds(char *pwd);
+int					ft_env_error(char *err, char c, t_opt *opt);
+int					ft_env_extra(t_opt *opt);
+int					ft_env_i(t_opt *opt);
+int					ft_env_p(t_opt *opt, char **cmd);
+int					ft_env_u(t_opt *opt);
+void				ft_insert_str(char *s1, char *s2, int len);
 void				ft_free(char ***env);
 void				ft_free_hist(t_hist **hist);
+char				*ft_getcwd(char *dir, char **env);
+char				*ft_getenv(char *str, char **env);
+void				ft_minishell(void);
+int					ft_pchar(int nb);
 void				ft_perror(const char *comment);
-char				*ft_strndup(const char *s1, int size);
-void				ft_strerror(char *str);
+void				ft_pos(int len);
+char				*ft_realloc(char *str, size_t size);
+int					ft_setenv(char **entry);
 char				**ft_split_whitespaces(char *str);
 int					ft_stralnum(char *str);
-char				*ft_realloc(char *str, size_t size);
-void				shift_command(void);
-void				ctrl_command(void);
-void				ctrl_shift_command(void);
-void				keypad_command(void);
+void				ft_strerror(char *str);
+char				*ft_strndup(const char *s1, int size);
+char				*ft_tgetstr(char *str);
+int					ft_unsetenv(char **entry);
 void				historic_command(void);
-t_hist				*new_hist(void);
-//void				treat_command(void);
-void				read_command(int len);
-void				rewrite_command(void);
+t_hist				*hist_new(t_hist *next, size_t size);
+t_hist				*hist_add(t_hist *new);
+void				hist_clean(void);
+void				init_signals(void);
+void				init_termcaps(char *term_name, int ret);
+void				keypad_command(void);
 void				prompt(char **env);
-void				copy_command(void);
-void				ft_pos(int len);
-void				ft_insert_str(char *str, int len);
+void				read_command(char *buf, int len);
+void				redefine_term(void);
+void				restore_term(void);
+void				rewrite_command(void);
+void				rewrite_prompt(void);
+void				shift_command(void);
+void				treat_command(void);
 
 #endif

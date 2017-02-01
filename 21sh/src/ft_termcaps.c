@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 16:46:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/26 17:53:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/31 17:43:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 void				restore_term(void)
 {
     tputs(ft_tgetstr("ei"), 1, ft_pchar);
-//    tputs(ft_tgetstr("SA"), 1, ft_pchar);
     if ((tcsetattr(e.fd, TCSANOW, &e.old_term)) == -1)
 		ft_putendl_fd("Fatal error: tcsetattr() returned.", 2);
 }
@@ -35,7 +34,6 @@ void				redefine_term(void)
 	if (tcsetattr(e.fd, TCSANOW, &termios) == -1)
 		ft_exit_all("Fatal error: tcsetattr() returned.");
 	tputs(ft_tgetstr("im"), 1, ft_pchar);
-//	tputs(ft_tgetstr("RA"), 1, ft_pchar);
 }
 
 void				init_termcaps(char *term_name, int ret)
@@ -61,6 +59,8 @@ void				init_termcaps(char *term_name, int ret)
 	redefine_term();
 	if (ioctl(e.fd, TIOCGWINSZ, &e.sz) == -1)
 		ft_exit_all("ioctl(TIOCGWINSZ) failed.");
+	e.sz.ws_col--;
+	e.sz.ws_row--;
 }
 
 char				*ft_tgetstr(char *str)

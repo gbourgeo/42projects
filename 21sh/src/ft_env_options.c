@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 18:51:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:48:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static char		**ft_new_env(t_opt *opt, int k)
 	return (new);
 }
 
-int				ft_opt_u(t_opt *opt)
+int				ft_env_u(t_opt *opt)
 {
 	char		**old;
 	int			i;
@@ -44,7 +44,7 @@ int				ft_opt_u(t_opt *opt)
 
 	i = -1;
 	if (opt->ptr == NULL || opt->ptr[0] == '\0')
-		return (ft_enverror("option requires an argument", 'u', opt));
+		return (ft_env_error("option requires an argument", 'u', opt));
 	while (opt->ptr[++i])
 	{
 		if (opt->v)
@@ -59,7 +59,7 @@ int				ft_opt_u(t_opt *opt)
 			if (ft_strcmp(opt->cpy[j], opt->ptr[i]) == '=')
 			{
 				if ((opt->cpy = ft_new_env(opt, j)) == old)
-					return (ft_enverror("malloc failed", 0, opt));
+					return (ft_env_error("malloc failed", 0, opt));
 				break ;
 			}
 		}
@@ -67,7 +67,7 @@ int				ft_opt_u(t_opt *opt)
 	return (0);
 }
 
-int				ft_opt_i(t_opt *opt)
+int				ft_env_i(t_opt *opt)
 {
 	if (opt->v)
 		ft_putendl("#env clearing environ");
@@ -99,15 +99,15 @@ static char		*ft_search_path(char *cmd, t_opt *opt)
 	return (tmp);
 }
 
-int				ft_opt_p(t_opt *opt, char **cmd)
+int				ft_env_p(t_opt *opt, char **cmd)
 {
 	int			i;
 
 	i = 0;
 	if (opt->path == NULL || opt->path[0] == '\0')
-		return (ft_enverror("option requires an argument", 'P', opt));
+		return (ft_env_error("option requires an argument", 'P', opt));
 	if ((opt->cmd = ft_search_path(cmd[0], opt)) == NULL)
-		return (ft_enverror("No such file or directory", 0, opt));
+		return (ft_env_error("No such file or directory", 0, opt));
 	free(cmd[0]);
 	cmd[0] = opt->cmd;
 	opt->cmd = NULL;

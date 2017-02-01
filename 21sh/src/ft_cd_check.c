@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/26 09:56:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 16:40:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/01 23:46:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static char		*ft_get_path(char *path, char *pwd)
 	return (new);
 }
 
-char			*cd_check(char **args, char **env, int i)
+char			*ft_cd_check(char **args, char **env, int i)
 {
 	char	*pwd;
 

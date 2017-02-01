@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:18:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/27 02:18:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/01/31 17:28:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,20 @@
 
 static void		ctrl_right(size_t size)
 {
-	while (e.pos.x < size && e.hist->cmd[e.pos.x] == ' ')
-	{
-//		e.pos.x++;
+	while (e.pos < size && e.hist->cmd[e.pos] == ' ')
 		ft_pos(1);
-	}
-	while (e.pos.x < size && e.hist->cmd[e.pos.x] != ' ')
-	{
-//		e.pos.x++;
+	while (e.pos < size && e.hist->cmd[e.pos] != ' ')
 		ft_pos(1);
-	}
 }
 
 static void		ctrl_left(void)
 {
-	while (e.pos.x > 0 && e.hist->cmd[e.pos.x - 1] == ' ')
-	{
-//		e.pos.x--;
+	while (e.pos > 0 && e.hist->cmd[e.pos - 1] == ' ')
 		ft_pos(-1);
-	}
-	while (e.pos.x > 0 && e.hist->cmd[e.pos.x - 1] != ' ')
-	{
-//		e.pos.x--;
+	while (e.pos > 0 && e.hist->cmd[e.pos - 1] != ' ')
 		ft_pos(-1);
-	}
+/* 	if (e.pos == 0) { */
+/* 		ft_putnbr(e.cursor.y); ft_putnbr(e.origin.y); ft_putnbr(e.sz.ws_row - 1); } */
 }
 
 void			ctrl_command(void)
