@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:57:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/02 22:56:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,4 +95,8 @@ void			keypad_command(void)
 		ctrl_shift_command();
 	else if (CTRL_C)
 		ctrl_c();
+	else if (K_HOME)
+		k_home();
+	else if (K_END)
+		k_end();
 }

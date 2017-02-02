@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/02 18:19:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/02 22:51:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void			ft_minishell(void)
 	ft_memcpy(&e.cursor, &e.origin, sizeof(e.cursor));
 	while ((len = read(e.fd, e.buf, READ_SIZE)) > 0)
 	{
+
 //		printf("%d %d %d %d %d %d %d %d\n", e.buf[0], e.buf[1], e.buf[2], e.buf[3], e.buf[4], e.buf[5], e.buf[6], e.buf[7]);
 		if (K_PRINT)
 			read_command(e.buf, len);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/02 19:19:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/02 22:57:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@
 # define K_PRINT	e.buf[0] >= 32 && e.buf[0] <= 126
 # define K_SUPPR	e.buf[0] == 127
 
-# define K_HOME		???
-# define K_END		???
+# define K_HOME		!ft_strcmp(e.buf, "\x1B[5~")
+# define K_END		!ft_strcmp(e.buf, "\x1B[6~")
 
 typedef struct		s_opt
 {
@@ -164,6 +164,8 @@ t_hist				*hist_add(t_hist *new);
 void				hist_clean(void);
 void				init_signals(void);
 void				init_termcaps(char *term_name, int ret);
+void				k_home(void);
+void				k_end(void);
 void				keypad_command(void);
 void				prompt(char **env);
 void				read_command(char *buf, int len);
