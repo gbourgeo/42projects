@@ -11,7 +11,7 @@ Fonction supplementaires au projet 'minishell':
     caractères existants de la même manière que dans un shell ordinaire.
   > Utiliser les fleches du haut et du bas pour naviguer dans l’historique des commandes que
     l’on pourra alors éditer si le coeur nous en dit (la ligne, pas l’historique, hein).
-  > Couper, copier et/ou coller tout ou partie d’une ligne. (alt+X, alt+C, alt+V) shift et/ou ctrl+shift.
+  > Couper, copier et/ou coller tout ou partie d’une ligne. (ici alt+X, alt+C, alt+V).
   > Se déplacer par "mot" vers la gauche et vers la droite avec ctrl+LEFT et ctrl+RIGHT ou
     toute autre combinaison de touche raisonnable.
 
