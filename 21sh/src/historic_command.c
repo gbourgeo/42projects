@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 16:44:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:56:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/02 22:02:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,15 +75,14 @@ static void		aff_cmd(void)
 	tputs(str, 1, ft_pchar);
 	tputs(ft_tgetstr("cd"), 1, ft_pchar);
 	write(e.fd, e.hist->cmd, e.pos);
-	if (e.pos)
-		e.cursor.x += e.pos;
+	e.cursor.x += e.pos;
 	while (e.cursor.x >= e.sz.ws_col)
 	{
 		if (e.cursor.y == e.sz.ws_row)
 			e.origin.y--;
 		else
 			e.cursor.y++;
-		e.cursor.x -= e.sz.ws_col;
+		e.cursor.x -= (e.sz.ws_col + 1);
 	}
 	if (e.hist->save == NULL)
 		e.hist->save = ft_strdup(e.hist->cmd);

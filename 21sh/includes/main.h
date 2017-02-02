@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:55:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/02 19:19:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@
 # define SHFT_LEFT	!ft_strcmp(e.buf, "\x1B[1;2D")
 
 # define CTRL_KEY	!ft_strncmp(e.buf, "\x1B[1;5", 5)
-/* # define CTRL_UP	!ft_strcmp(e.buf, "\x1B[1;5A") */
-/* # define CTRL_DOWN	!ft_strcmp(e.buf, "\x1B[1;5B") */
+# define CTRL_UP	!ft_strcmp(e.buf, "\x1B[1;5A")
+# define CTRL_DOWN	!ft_strcmp(e.buf, "\x1B[1;5B")
 # define CTRL_RIGHT	!ft_strcmp(e.buf, "\x1B[1;5C")
 # define CTRL_LEFT	!ft_strcmp(e.buf, "\x1B[1;5D")
 
