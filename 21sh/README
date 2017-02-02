@@ -17,13 +17,13 @@ Fonction supplementaires au projet 'minishell':
   > Ecrire ET éditer une commande sur plusieurs lignes. Dans ce cas, on apprecierait que
     ctrl+UP et ctrl+DOWN permettent de passer d’une ligne à l’autre de la commande en restant
     sur la même colonne ou la colonne la plus appropriée sinon.
+  > Aller directement au début et à la fin d’une ligne avec HOME et END.
 
   > Bonus: Sélectionner tout ou partie de la commande, sur plusieurs lignes si besoin,
     avec les touches shift+RIGHT et shift+LEFT, ctrl+shift+RIGHT et ctrl+shift+LEFT quand à eux
     sélectionneront par mot.
 
 A FAIRE :
-  > Aller directement au début et à la fin d’une ligne avec home et end.
   > Gérer complètement les quotes et doubles quotes, même sur plusieurs lignes (hors expansions).
 
 • Les fonctionnalités des combinaisons de touches ctrl+D et ctrl+C dans l’édition
