@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:48:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 02:17:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,22 @@ static char		**ft_new_env(t_opt *opt, int k)
 	char		**new;
 	int			i;
 
-	if (!(new = (char **)malloc(sizeof(*new) * ft_tablen(opt->cpy))))
-		return (opt->cpy);
+	if (!(new = (char **)malloc(sizeof(*new) * ft_tablen(opt->env))))
+		return (opt->env);
 	i = 0;
-	while (opt->cpy && opt->cpy[i])
+	while (opt->env && opt->env[i])
 	{
 		if (i < k)
-			new[i] = ft_strdup(opt->cpy[i]);
+			new[i] = ft_strdup(opt->env[i]);
 		else if (i > k)
-			new[i - 1] = ft_strdup(opt->cpy[i]);
+			new[i - 1] = ft_strdup(opt->env[i]);
 		i++;
 	}
 	if (i > 0)
 		new[i - 1] = NULL;
 	else
 		new[i] = NULL;
-	ft_free(&opt->cpy);
+	ft_free(&opt->env);
 	return (new);
 }
 
@@ -52,13 +52,13 @@ int				ft_env_u(t_opt *opt)
 			ft_putstr("#env unset:\t");
 			ft_putendl(opt->ptr[i]);
 		}
-		old = opt->cpy;
+		old = opt->env;
 		j = -1;
-		while (opt->cpy && opt->cpy[++j])
+		while (opt->env && opt->env[++j])
 		{
-			if (ft_strcmp(opt->cpy[j], opt->ptr[i]) == '=')
+			if (ft_strcmp(opt->env[j], opt->ptr[i]) == '=')
 			{
-				if ((opt->cpy = ft_new_env(opt, j)) == old)
+				if ((opt->env = ft_new_env(opt, j)) == old)
 					return (ft_env_error("malloc failed", 0, opt));
 				break ;
 			}
@@ -71,7 +71,8 @@ int				ft_env_i(t_opt *opt)
 {
 	if (opt->v)
 		ft_putendl("#env clearing environ");
-	ft_free(&opt->cpy);
+	ft_free(&opt->env);
+	opt->env = NULL;
 	return (0);
 }
 

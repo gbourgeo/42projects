@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:34:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:54:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 02:32:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ static int		ft_change_var(int i, char *new_p, t_opt *opt)
 	int			len;
 
 	j = 0;
-	while (opt->cpy && opt->cpy[j])
+	while (opt->env && opt->env[j])
 	{
-		if (ft_strcmp(opt->cpy[j], opt->extra[i]) == '=')
+		if (ft_strcmp(opt->env[j], opt->extra[i]) == '=')
 		{
-			ret = ft_strchr(opt->cpy[j], '=');
+			ret = ft_strchr(opt->env[j], '=');
 			while (*new_p == '=')
 				new_p++;
 			len = ft_strlen(opt->extra[i]) + ft_strlen(new_p) + 1;
@@ -32,12 +32,19 @@ static int		ft_change_var(int i, char *new_p, t_opt *opt)
 			ft_strncpy(ret, opt->extra[i], len);
 			ft_strcat(ret, "=");
 			ft_strcat(ret, new_p);
-			free(opt->cpy[j]);
-			opt->cpy[j] = ret;
+			free(opt->env[j]);
+			opt->env[j] = ret;
 			return (1);
 		}
 		j++;
 	}
+	return (0);
+}
+
+static int		env_fail(char **n, t_opt *opt)
+{
+	ft_free(&opt->env);
+	opt->env = n;
 	return (0);
 }
 
@@ -47,25 +54,24 @@ static int		ft_add_env(int i, char *new_p, t_opt *opt)
 	int			j;
 	int			len;
 
-	n = opt->cpy;
-	if ((opt->cpy = (char **)malloc(sizeof(char *) *
-									(ft_tablen(n) + 2))) == NULL)
-		return (0);
-	j = -1;
-	while (n && n[++j])
-		opt->cpy[j] = n[j];
+	n = opt->env;
+	if (!(opt->env = (char **)malloc(sizeof(char *) * (ft_tablen(n) + 2))))
+		return (env_fail(n, opt));
+	j = 0;
+	while (n && n[j])
+	{
+		opt->env[j] = n[j];
+		j++;
+	}
 	while (*new_p == '=')
 		new_p++;
 	len = ft_strlen(opt->extra[i]) + ft_strlen(new_p) + 1;
-	if ((opt->cpy[j] = (char *)malloc(sizeof(char) * (len + 1))) == NULL)
-	{
-		free(opt->cpy);
-		return (0);
-	}
-	ft_strncpy(opt->cpy[j], opt->extra[i], len);
-	ft_strcat(opt->cpy[j], "=");
-	ft_strcat(opt->cpy[j], new_p);
-	opt->cpy[j + 1] = NULL;
+	if ((opt->env[j] = (char *)malloc(sizeof(char) * (len + 1))) == NULL)
+		return (env_fail(n, opt));
+	ft_strncpy(opt->env[j], opt->extra[i], len);
+	ft_strcat(opt->env[j], "=");
+	ft_strcat(opt->env[j], new_p);
+	opt->env[j + 1] = NULL;
 	return (1);
 }
 

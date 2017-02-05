@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 01:10:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 02:09:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@
 
 typedef struct		s_opt
 {
-	char			**cpy;
+	char			**env;
 	int				i;
 	int				v;
 	int				p;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/04 22:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 01:09:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 01:32:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ static t_hist	*fill_history(int fd, t_hist *new)
 		ft_strncpy(new->cmd, cmd, new->cmd_size);
 		if ((new->prev = (t_hist *)malloc(sizeof(*new))) == NULL)
 			break ;
+		ft_memset(new->prev, 0, sizeof(*new));
 		new->prev->next = new;
 		new = new->prev;
 	}
