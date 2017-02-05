@@ -33,4 +33,8 @@ A FAIRE :
 • Les pipes “|”
 • Les quatre redirections “<”, “>”, “<<” et “>>”
 • Les aggrégations de descripteurs de fichiers, par exemple pour fermer la sortie d’erreur...
-• BONUS : Gérer le redimensionnement de la fenêtre et, par conséquent, la position du curseur.
+
+• BONUS: Gérer le redimensionnement de la fenêtre et, par conséquent, la position du curseur.
+• BONUS: Historique du shell, sauvegarde de l'historique en quittant le shell, recharge de
+ 	 l'historique au démarrage du shell, taille de l'historique et nom du fichier paramétrable
+	 dans le header.
