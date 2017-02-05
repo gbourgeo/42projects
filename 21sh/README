@@ -19,9 +19,10 @@ Fonction supplementaires au projet 'minishell':
     sur la même colonne ou la colonne la plus appropriée sinon.
   > Aller directement au début et à la fin d’une ligne avec HOME et END.
 
-  > Bonus: Sélectionner tout ou partie de la commande, sur plusieurs lignes si besoin,
-    avec les touches shift+RIGHT et shift+LEFT, ctrl+shift+RIGHT et ctrl+shift+LEFT quand à eux
-    sélectionneront par mot.
+  > Bonus: shift+RIGHT et shift+LEFT sélectionne par lettre la ligne de commandes.
+           ctrl+shift+RIGHT et ctrl+shift+LEFT sélectionne par mot la ligne de commandes.
+           shift+UP et shift+DOWN sélectionne par ligne.
+           La sélection permet de couper/copier plus spécifiquement.
 
 A FAIRE :
   > Gérer complètement les quotes et doubles quotes, même sur plusieurs lignes (hors expansions).
