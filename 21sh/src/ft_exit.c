@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 12:41:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/25 01:02:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 01:10:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 
 static void		free_and_exit(char **args)
 {
+	update_history();
 	ft_free(&e.env);
 	ft_free(&e.path);
 	ft_free_hist(&e.hist);
 	ft_free(&args);
+	if (e.histpath)
+		free(e.histpath);
 	if (e.cpy.str)
 		free(e.cpy.str);
 	restore_term();
@@ -26,8 +29,9 @@ static void		free_and_exit(char **args)
 	exit(e.ret);
 }
 
-int				ft_exit(char **args)
+int				ft_exit(char **args, char ***env)
 {
+	(void)env;
 	if (!args || !args[1])
 		free_and_exit(args);
 	if (args[2])

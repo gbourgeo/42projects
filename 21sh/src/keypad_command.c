@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/02 22:56:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/03 21:52:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static void		ctrl_c(void)
 	rewrite_command();
 	goto_eol();
 	write(e.fd, "\n", 1);
-	hist_clean();
+	hist_clean(e.hist, NULL, 0);
 	while (e.hist->prev)
 		e.hist = e.hist->prev;
 	ft_bzero(e.hist->cmd, e.hist->cmd_size);

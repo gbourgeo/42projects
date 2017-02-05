@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:49:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/04 21:52:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ static int		cd_error(char *pwd, char *entry)
 	return (1);
 }
 
-static int		cd_write_in_pwd(char **args, int i)
+static int		cd_write_in_pwd(char **args, int i, char ***env)
 {
 	char		*pwd;
 	char		*tmp;
 
-	pwd = ft_cd_check(args, e.env, i);
+	pwd = ft_cd_check(args, env, i);
 	if (chdir(pwd) != -1)
 	{
 		tmp = pwd;
@@ -51,7 +51,7 @@ static int		cd_write_in_pwd(char **args, int i)
 			pwd = ft_getcwd(tmp, e.env);
 			free(tmp);
 		}
-		ft_change_pwds(pwd);
+		ft_change_pwds(pwd, env);
 		free(pwd);
 		return (0);
 	}
@@ -70,7 +70,7 @@ static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)
 	return (pwd);
 }
 
-static int		cd_search_in_pwd(char **args)
+static int		cd_search_in_pwd(char **args, char ***env)
 {
 	char		*pwd;
 	char		*tmp;
@@ -85,7 +85,7 @@ static int		cd_search_in_pwd(char **args)
 	pwd = cd_change_in_pwd(pwd, tmp, args);
 	if (chdir(pwd) != -1)
 	{
-		ft_change_pwds(pwd);
+		ft_change_pwds(pwd, env);
 		ft_putendl(pwd);
 		free(pwd);
 		return (0);
@@ -93,7 +93,7 @@ static int		cd_search_in_pwd(char **args)
 	return (cd_error(pwd, pwd));
 }
 
-int				ft_cd(char **args)
+int				ft_cd(char **args, char ***env)
 {
 	int		i;
 
@@ -110,9 +110,9 @@ int				ft_cd(char **args)
 		i++;
 	}
 	if (!args[i] || !args[i + 1])
-		return (cd_write_in_pwd(args, i));
+		return (cd_write_in_pwd(args, i, env));
 	if (!args[i + 2])
-		return (cd_search_in_pwd(args + i - 1));
+		return (cd_search_in_pwd(args + i - 1, env));
 	ft_putstr_fd("cd: too much arguments: ", 2);
 	ft_putendl_fd(args[1], 2);
 	return (1);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 01:37:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/31 04:58:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/03 22:02:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,19 @@ void			prompt(char **env)
 	pwd = ft_getenv("PWD", env);
 	home = ft_getenv("HOME", env);
 	tild = ft_strstr(pwd, home);
+	e.prpt = 0;
 	ft_putstr_fd("\033[33m", e.fd);
 	ft_putstr_fd(user, e.fd);
 	ft_putstr_fd("\033[31m ", e.fd);
 	if (tild != NULL)
 	{
+		e.prpt = 1;
 		write(e.fd, "~", 1);
-		ft_putstr_fd(&pwd[ft_strlen(home)], e.fd);
+		pwd = &pwd[ft_strlen(home)];
+		ft_putstr_fd(pwd, e.fd);
 	}
 	else
 		ft_putstr_fd(pwd, e.fd);
 	ft_putstr_fd("\033[37m > \033[0m", e.fd);
+	e.prpt += ft_strlen(user) + ft_strlen(pwd) + 4;
 }

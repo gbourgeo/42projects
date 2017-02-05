@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:54:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/04 21:57:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,22 +31,22 @@ static int		check(char **command, t_opt *opt)
 	return (i);
 }
 
-int				ft_env(char **command)
+int				ft_env(char **command, char ***env)
 {
 	t_opt		opt;
 	int			i;
 
 	ft_memset(&opt, 0, sizeof(opt));
-	if ((opt.cpy = ft_tabdup(e.env)) == NULL)
+	if ((opt.cpy = ft_tabdup(*env)) == NULL)
 		return (ft_env_error("malloc failed", 0, &opt));
 	if (!command[1])
-		ft_puttab(e.env);
+		ft_puttab(*env);
 	else
 	{
 		if ((i = check(command, &opt)) < 0)
 			return (1);
 		if (command[i])
-			e.ret = check_and_exec(&command[i], opt.cpy);
+			e.ret = check_and_exec(&command[i], &opt.cpy);
 		else
 			ft_puttab(opt.cpy);
 	}

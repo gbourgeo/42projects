@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:56:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 01:10:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void			ft_exit_all(char *err)
 	ft_putendl_fd(err, STDERR_FILENO);
 	ft_free(&e.env);
 	ft_free(&e.path);
+	if (e.histpath)
+		free(e.histpath);
 	if (e.cpy.str)
 		free(e.cpy.str);
 	ft_free_hist(&e.hist);
@@ -43,7 +45,9 @@ static void		init_environment(char **environ)
 	}
 	e.path[i] = NULL;
 	ft_free(&path);
-	e.hist = hist_new(NULL, CMD_SIZE);
+	e.histpath = ft_strjoin(ft_getenv("HOME", e.env), HISTFILE);
+	if ((e.hist = retreive_history()) == NULL)
+		e.hist = hist_new(NULL, CMD_SIZE);
 }
 
 int				main(int ac, char **av, char **environ)
@@ -55,6 +59,6 @@ int				main(int ac, char **av, char **environ)
 	init_termcaps(NULL, 0);
 	init_signals();
 	ft_minishell();
-	ft_exit(NULL);
+	ft_exit(NULL, NULL);
 	return (0);
 }

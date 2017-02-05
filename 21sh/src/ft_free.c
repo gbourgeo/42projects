@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:47:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/25 01:01:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/04 22:18:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,17 @@ void			ft_free_hist(t_hist **hist)
 void			ft_free(char ***str)
 {
 	char		**table;
-	int			i;
 
-	i = 0;
-	if (str != NULL)
+	if (str != NULL && *str != NULL)
 	{
 		table = *str;
-		if (table != NULL)
+		while (*table != NULL)
 		{
-			while (table[i] != NULL)
-			{
-				free(table[i]);
-				table[i] = NULL;
-				i++;
-			}
-			free(table);
-			*str = NULL;
+			free(*table);
+			*table = NULL;
+			table++;
 		}
+		free(*str);
+		*str = NULL;
 	}
 }

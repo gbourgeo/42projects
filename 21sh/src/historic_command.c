@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 16:44:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/02 22:02:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/05 00:27:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,9 @@ t_hist			*hist_add(t_hist *new)
 	return (e.hist);
 }
 
-void			hist_clean(void)
+void			hist_clean(t_hist *tmp, t_hist *next, size_t nb)
 {
-	t_hist		*tmp;
-
-	tmp = e.hist;
-	while (tmp)
+	while (tmp && nb < HIST_SIZE)
 	{
 		if (tmp->prev && tmp->save)
 		{
@@ -61,6 +58,20 @@ void			hist_clean(void)
 		}
 		tmp->save = NULL;
 		tmp = tmp->next;
+		nb++;
+	}
+	while (tmp)
+	{
+		if (tmp->prev)
+			tmp->prev->next = NULL;
+		if (tmp->cmd)
+			free(tmp->cmd);
+		if (tmp->save)
+			free(tmp->save);
+		next = tmp->next;
+		ft_memset(tmp, 0, sizeof(*tmp));
+		free(tmp);
+		tmp = next;
 	}
 }
 

@@ -6,61 +6,62 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/09 16:09:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/04 22:30:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static int		new_env(int i)
+static char		**new_env(int i, char ***env)
 {
 	char		**new;
 	int			len;
 
-	new = e.env;
-	e.env = malloc(sizeof(*new) * ft_tablen(new));
-	if (e.env)
+	if (*env)
 	{
+		if ((new = malloc(sizeof(*new) * ft_tablen(*env))) == NULL)
+			return (NULL);
 		len = 0;
-		while (new[len] != 0)
+		while ((*env)[len] != NULL)
 		{
 			if (len < i)
-				e.env[len] = ft_strdup(new[len]);
+				new[len] = ft_strdup((*env)[len]);
 			else if (len > i)
-				e.env[len - 1] = ft_strdup(new[len]);
+				new[len - 1] = ft_strdup((*env)[len]);
 			len++;
 		}
-		e.env[len - 1] = 0;
-		ft_free(&new);
-		return (0);
+		new[len - 1] = NULL;
+		return (new);
 	}
-	e.env = new;
 	ft_putendl_fd("unsetenv: Memory space insufficiant.", 2);
-	return (1);
+	return (NULL);
 }
 
-int				ft_unsetenv(char **entry)
+int				ft_unsetenv(char **entry, char ***env)
 {
+	char		**old;
 	int			i;
 	int			j;
 
-	i = 1;
-	e.ret = 1;
+	i = 0;
 	if (!entry[1])
 		ft_putendl_fd("unsetenv: Too few arguments.", 2);
-	while (entry[i] && e.env)
+	while (entry[++i] && *env)
 	{
 		j = 0;
-		while (e.env[j])
+		while ((*env)[j])
 		{
-			if (ft_strcmp(e.env[j], entry[i]) == '=')
+			if (ft_strcmp((*env)[j], entry[i]) == '=')
 			{
-				e.ret += new_env(j);
+				old = *env;
+				if ((*env = new_env(j, env)) == NULL && (*env = old))
+					e.ret += 1;
+				else
+					ft_free(&old);
 				break ;
 			}
 			j++;
 		}
-		i++;
 	}
 	return (e.ret);
 }

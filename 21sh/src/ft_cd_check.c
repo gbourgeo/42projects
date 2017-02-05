@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/26 09:56:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/01 23:46:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/04 22:02:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,13 @@ static char		*ft_get_path(char *path, char *pwd)
 	return (new);
 }
 
-char			*ft_cd_check(char **args, char **env, int i)
+char			*ft_cd_check(char **args, char ***env, int i)
 {
 	char	*pwd;
 
 	if (!args[i] || !ft_strcmp(args[i], "--") || !ft_strcmp(args[i], "~"))
 	{
-		pwd = ft_getenv("HOME", env);
+		pwd = ft_getenv("HOME", *env);
 		if (pwd == NULL)
 			ft_putendl_fd("cd: HOME not defined", 2);
 		else if (!ft_strcmp(args[i], "~"))
@@ -69,7 +69,7 @@ char			*ft_cd_check(char **args, char **env, int i)
 	}
 	else if (ft_strcmp(args[i], "-") == 0)
 	{
-		pwd = ft_getenv("OLDPWD", env);
+		pwd = ft_getenv("OLDPWD", *env);
 		if (pwd)
 			ft_putendl(pwd);
 		else
@@ -78,6 +78,6 @@ char			*ft_cd_check(char **args, char **env, int i)
 	else if (*args[i] == '/')
 		return (ft_get_path("/", args[i]));
 	else
-		return (ft_get_path(ft_getenv("PWD", env), args[i]));
+		return (ft_get_path(ft_getenv("PWD", *env), args[i]));
 	return (ft_strdup(pwd));
 }

@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/02/02 22:57:05 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/02/04 23:39:35 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -30,6 +30,7 @@ SRC		= main.c			\
 			rewrite_cmd_prpt.c	\
 			treat_command.c	\
 			k_home_end.c	\
+			history.c		\
 			ft_signals.c	\
 			ft_termcaps.c	\
 			ft_minishell.c	\

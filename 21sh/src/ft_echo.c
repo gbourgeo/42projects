@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 14:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/09 16:05:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/04 21:54:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** ECHO should not decrypt '$' lines, the shell must do it at get_next_line();
 */
 
-static void		ft_search(char *ar)
+static void		ft_search(char *ar, char ***env)
 {
 	int			i;
 	int			j;
@@ -27,10 +27,10 @@ static void		ft_search(char *ar)
 	ptr = NULL;
 	if (ar[i++] == '$')
 	{
-		while (e.env[j])
+		while ((*env)[j])
 		{
-			if (ft_strcmp(e.env[j], &ar[i]) == '=')
-				ptr = ft_strchr(e.env[j], '=') + 1;
+			if (ft_strcmp((*env)[j], &ar[i]) == '=')
+				ptr = ft_strchr((*env)[j], '=') + 1;
 			j++;
 		}
 		if (ar[i] == '?')
@@ -42,7 +42,7 @@ static void		ft_search(char *ar)
 		ft_putstr(ar);
 }
 
-int				ft_echo(char **args)
+int				ft_echo(char **args, char ***env)
 {
 	int			i;
 	int			j;
@@ -60,7 +60,7 @@ int				ft_echo(char **args)
 	}
 	while (args[i])
 	{
-		ft_search(args[i]);
+		ft_search(args[i], env);
 		if (args[++i])
 			ft_putchar(' ');
 	}
