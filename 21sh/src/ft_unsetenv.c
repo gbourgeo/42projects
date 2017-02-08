@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/04 22:30:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/06 21:23:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int				ft_unsetenv(char **entry, char ***env)
 			{
 				old = *env;
 				if ((*env = new_env(j, env)) == NULL && (*env = old))
-					e.ret += 1;
+					data.ret += 1;
 				else
 					ft_free(&old);
 				break ;
@@ -63,5 +63,5 @@ int				ft_unsetenv(char **entry, char ***env)
 			j++;
 		}
 	}
-	return (e.ret);
+	return (data.ret);
 }

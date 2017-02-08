@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/04 21:58:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/07 16:33:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,6 @@ int				fork_function(char **args, char ***env)
 		free(path);
 	}
 	else
-		ft_putendl_fd("minishell: command not found.", 2);
+		ft_put2endl_fd("minishell: command not found: ", args[0], 2);
 	return (status);
 }

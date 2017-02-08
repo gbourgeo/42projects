@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/02/04 23:39:35 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/02/07 18:29:34 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -17,6 +17,9 @@ SRC_D 	= src/
 HDR		= includes/
 
 SRC		= main.c			\
+			expansions.c	\
+			split_command.c	\
+			quotes.c		\
 			prompt.c		\
 			check_and_exec.c	\
 			read_command.c	\
@@ -54,7 +57,8 @@ SRC		= main.c			\
 			ft_split_whitespaces.c	\
 			ft_realloc.c	\
 			ft_insert_str.c	\
-			ft_strerror.c
+			ft_strerror.c	\
+			ft_put2endl_fd.c	\
 
 OBJ_D 	= obj/
 

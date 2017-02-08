@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 01:17:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/31 23:16:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/08 19:11:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,70 +20,70 @@
 ** "le"		Move the cursor left one column.
 */
 
-static void		check_command_len(int len)
+static void		check_command_len(int len, t_env *e)
 {
 	size_t		y;
 
-	if (e.hist->cmd[e.pos + len] &&
-		(e.cursor.x + ft_strlen(&e.hist->cmd[e.pos])) % e.sz.ws_col == 1)
+	if (e->hist->cmd[e->pos + len] &&
+		(e->cursor.x + ft_strlen(&e->hist->cmd[e->pos])) % e->sz.ws_col == 1)
 	{
-		y = (e.cursor.x + ft_strlen(&e.hist->cmd[e.pos])) / e.sz.ws_col;
-		while (e.cursor.y + y > e.sz.ws_row)
+		y = (e->cursor.x + ft_strlen(&e->hist->cmd[e->pos])) / e->sz.ws_col;
+		while (e->cursor.y + y > e->sz.ws_row)
 		{
 			tputs(ft_tgetstr("sf"), 1, ft_pchar);
-			e.origin.y--;
-			e.cursor.y--;
+			e->origin.y--;
+			e->cursor.y--;
 		}
 	}
 }
 
-static void		move_right(int len, size_t size, char *str)
+static void		move_right(int len, size_t size, char *str, t_env *e)
 {
-	while (len > 0 && e.pos < size)
+	while (len > 0 && e->pos < size)
 	{
-		check_command_len(len);
-		if (e.cursor.x == e.sz.ws_col)
+		check_command_len(len, e);
+		if (e->cursor.x == e->sz.ws_col)
 		{
-			if (e.cursor.y >= e.sz.ws_row)
+			if (e->cursor.y >= e->sz.ws_row)
 			{
 				tputs(ft_tgetstr("sf"), 1, ft_pchar);
-				e.origin.y--;
+				e->origin.y--;
 			}
 			else
-				e.cursor.y++;
-			e.cursor.x = 0;
+				e->cursor.y++;
+			e->cursor.x = 0;
 		}
 		else
-			e.cursor.x++;
-		e.pos++;
+			e->cursor.x++;
+		e->pos++;
 		len -= 1;
 	}
-	str = tgoto(ft_tgetstr("cm"), e.cursor.x, e.cursor.y);
+	str = tgoto(ft_tgetstr("cm"), e->cursor.x, e->cursor.y);
 	tputs(str, 1, ft_pchar);
 }
 
-static void		move_left(int len, char *str)
+static void		move_left(int len, char *str, t_env *e)
 {
-	while (len < 0 && e.pos > 0)
+	while (len < 0 && e->pos > 0)
 	{
-		if (e.cursor.x == 0)
+		if (e->cursor.x == 0)
 		{
-			e.cursor.x = e.sz.ws_col;
-			e.cursor.y--;
+			e->cursor.x = e->sz.ws_col;
+			e->cursor.y--;
 		}
 		else
-			e.cursor.x--;
-		e.pos--;
+			e->cursor.x--;
+		e->pos--;
 		len += 1;
 	}
-	str = tgoto(ft_tgetstr("cm"), e.cursor.x, e.cursor.y);
+	str = tgoto(ft_tgetstr("cm"), e->cursor.x, e->cursor.y);
 	tputs(str, 1, ft_pchar);
 }
 
-void			ft_pos(int len)
+void			ft_pos(int len, t_env *e)
 {
 	if (len > 0)
-		move_right(len, ft_strlen(e.hist->cmd), NULL);
-	else if (len < 0)
-		move_left(len, NULL);
+		move_right(len, ft_strlen(e->hist->cmd), NULL, e);
+	else if (len < 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
+		move_left(len, NULL, e);
 }

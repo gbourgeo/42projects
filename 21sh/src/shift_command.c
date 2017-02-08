@@ -6,98 +6,98 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:15:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/04 19:26:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/08 23:22:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
 /*
-** "mr"		Enter reverse-video mode.
+** "mr"		Enter reverse-video mode->
 ** "dc"		Delete one character position at the cursor.
 ** "sf"		Scroll the screen one line up.
 ** "cr"		Move the cursor to the beginning of the line it is on.
 ** "me"		Turn off all appearance modes.
 */
 
-static void		shift_right(void)
+static void		shift_right(t_env *e)
 {
-	if (e.pos < ft_strlen(e.hist->cmd))
+	if (e->pos < ft_strlen(e->hist->cmd))
 	{
-		if (e.cpy.cpy == 0)
-			e.cpy.cpy = 1;
-		if (e.cpy.cpy == 1)
+		if (e->cpy.cpy == 0)
+			e->cpy.cpy = 1;
+		if (e->cpy.cpy == 1)
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
 		tputs(ft_tgetstr("dc"), 1, ft_pchar);
-		write(e.fd, &e.hist->cmd[e.pos], 1);
-		ft_pos(1);
+		write(e->fd, &e->hist->cmd[e->pos], 1);
+		ft_pos(1, e);
 	}
 }
 
-static void		shift_left(void)
+static void		shift_left(t_env *e)
 {
-	if (e.pos > 0)
+	if (e->pos > 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
 	{
-		if (e.cpy.cpy == 0)
-			e.cpy.cpy = -1;
-		if (e.cpy.cpy == -1 && e.pos != (size_t)e.cpy.shft)
+		if (e->cpy.cpy == 0)
+			e->cpy.cpy = -1;
+		if (e->cpy.cpy == -1 && e->pos != (size_t)e->cpy.shft)
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
-		if (e.hist->cmd[e.pos])
+		if (e->hist->cmd[e->pos])
 		{
 			tputs(ft_tgetstr("dc"), 1, ft_pchar);
-			write(e.fd, &e.hist->cmd[e.pos], 1);
-			ft_pos(-1);
+			write(e->fd, &e->hist->cmd[e->pos], 1);
+			ft_pos(-1, e);
 		}
 		else
-			ft_pos(-1);
+			ft_pos(-1, e);
 	}
 }
 
-static void		shift_up(void)
+static void		shift_up(t_env *e)
 {
 	size_t		i;
 
 	i = 0;
-	while (i++ < e.sz.ws_col + 1 && e.pos > 0)
+	while (i++ < e->sz.ws_col + 1 && e->pos > 0)
 	{
-		if (e.cpy.cpy == 0)
-			e.cpy.shft = e.pos;
-		if (e.cpy.shft == (long int)e.pos)
-			e.cpy.cpy = 0;
-		shift_left();
+		if (e->cpy.cpy == 0)
+			e->cpy.shft = e->pos;
+		if (e->cpy.shft == (long int)e->pos)
+			e->cpy.cpy = 0;
+		shift_left(e);
 	}
 }
 
-static void		shift_down(void)
+static void		shift_down(t_env *e)
 {
 	size_t		i;
 	size_t		len;
 
 	i = 0;
-	len = ft_strlen(&e.hist->cmd[e.pos]);
-	while (i++ < e.sz.ws_col + 1 && e.hist->cmd[e.pos])
+	len = ft_strlen(&e->hist->cmd[e->pos]);
+	while (i++ < e->sz.ws_col + 1 && e->hist->cmd[e->pos])
 	{
-		if (e.cpy.cpy == 0)
-			e.cpy.shft = e.pos;
-		if (e.cpy.shft == (long int)e.pos)
-			e.cpy.cpy = 0;
-		shift_right();
+		if (e->cpy.cpy == 0)
+			e->cpy.shft = e->pos;
+		if (e->cpy.shft == (long int)e->pos)
+			e->cpy.cpy = 0;
+		shift_right(e);
 	}
 }
 
-void			shift_command(void)
+void			shift_command(t_env *e)
 {
-	if (e.cpy.cpy == 0)
-		e.cpy.shft = e.pos;
-	if (e.cpy.shft == (long int)e.pos)
-		e.cpy.cpy = 0;
-	if (SHFT_UP)
-		shift_up();
-	else if (SHFT_DOWN)
-		shift_down();
-	else if (SHFT_RIGHT)
-		shift_right();
-	else if (SHFT_LEFT)
-		shift_left();
+	if (e->cpy.cpy == 0)
+		e->cpy.shft = e->pos;
+	if (e->cpy.shft == (long int)e->pos)
+		e->cpy.cpy = 0;
+	if (SHFT_UP(e))
+		shift_up(e);
+	else if (SHFT_DOWN(e))
+		shift_down(e);
+	else if (SHFT_RIGHT(e))
+		shift_right(e);
+	else if (SHFT_LEFT(e))
+		shift_left(e);
 	tputs(ft_tgetstr("me"), 1, ft_pchar);
 }

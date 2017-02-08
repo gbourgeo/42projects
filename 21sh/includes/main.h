@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 02:09:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/08 23:36:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,44 +28,44 @@
 # define HIST_SIZE	20
 # define HISTFILE	"/.21sh_history"
 
-# define COPY_KEY	e.buf[0] < 0
-# define K_CUT		e.buf[0] == -30 && e.buf[1] == -119 && e.buf[2] == -120
-# define K_COPY		e.buf[0] == -62 && e.buf[1] == -87
-# define K_PASTE	e.buf[0] == -30 && e.buf[1] == -105 && e.buf[2] == -118
+# define COPY_KEY(x)	x->buf[0] < 0
+# define K_CUT(x)		x->buf[0] == -30 && x->buf[1] == -119 && x->buf[2] == -120
+# define K_COPY(x)		x->buf[0] == -62 && x->buf[1] == -87
+# define K_PASTE(x)		x->buf[0] == -30 && x->buf[1] == -105 && x->buf[2] == -118
 
-# define CTRL_C		e.buf[0] == 3
-# define CTRL_D		e.buf[0] == 4
-# define ENTER		e.buf[0] == 10
+# define CTRL_C(x)		x->buf[0] == 3
+# define CTRL_D(x)		x->buf[0] == 4
+# define ENTER(x)		x->buf[0] == 10
 
-# define KEYPAD		!ft_strncmp(e.buf, "\x1B[", 2)
-# define K_DEL		!ft_strcmp(e.buf, "\x1B[3~")
-# define K_UP		!ft_strcmp(e.buf, "\x1B[A")
-# define K_DOWN		!ft_strcmp(e.buf, "\x1B[B")
-# define K_RIGHT	!ft_strcmp(e.buf, "\x1B[C")
-# define K_LEFT		!ft_strcmp(e.buf, "\x1B[D")
+# define KEYPAD(x)		!ft_strncmp(x->buf, "\x1B[", 2)
+# define K_DEL(x)		!ft_strcmp(x->buf, "\x1B[3~")
+# define K_UP(x)		!ft_strcmp(x->buf, "\x1B[A")
+# define K_DOWN(x)		!ft_strcmp(x->buf, "\x1B[B")
+# define K_RIGHT(x)		!ft_strcmp(x->buf, "\x1B[C")
+# define K_LEFT(x)		!ft_strcmp(x->buf, "\x1B[D")
 
-# define SHFT_KEY	!ft_strncmp(e.buf, "\x1B[1;2", 5)
-# define SHFT_UP	!ft_strcmp(e.buf, "\x1B[1;2A")
-# define SHFT_DOWN	!ft_strcmp(e.buf, "\x1B[1;2B")
-# define SHFT_RIGHT	!ft_strcmp(e.buf, "\x1B[1;2C")
-# define SHFT_LEFT	!ft_strcmp(e.buf, "\x1B[1;2D")
+# define SHFT_KEY(x)	!ft_strncmp(x->buf, "\x1B[1;2", 5)
+# define SHFT_UP(x)		!ft_strcmp(x->buf, "\x1B[1;2A")
+# define SHFT_DOWN(x)	!ft_strcmp(x->buf, "\x1B[1;2B")
+# define SHFT_RIGHT(x)	!ft_strcmp(x->buf, "\x1B[1;2C")
+# define SHFT_LEFT(x)	!ft_strcmp(x->buf, "\x1B[1;2D")
 
-# define CTRL_KEY	!ft_strncmp(e.buf, "\x1B[1;5", 5)
-# define CTRL_UP	!ft_strcmp(e.buf, "\x1B[1;5A")
-# define CTRL_DOWN	!ft_strcmp(e.buf, "\x1B[1;5B")
-# define CTRL_RIGHT	!ft_strcmp(e.buf, "\x1B[1;5C")
-# define CTRL_LEFT	!ft_strcmp(e.buf, "\x1B[1;5D")
+# define CTRL_KEY(x)	!ft_strncmp(x->buf, "\x1B[1;5", 5)
+# define CTRL_UP(x)		!ft_strcmp(x->buf, "\x1B[1;5A")
+# define CTRL_DOWN(x)	!ft_strcmp(x->buf, "\x1B[1;5B")
+# define CTRL_RIGHT(x)	!ft_strcmp(x->buf, "\x1B[1;5C")
+# define CTRL_LEFT(x)	!ft_strcmp(x->buf, "\x1B[1;5D")
 
-# define CT_SH_KEY	!ft_strncmp(e.buf, "\x1B[1;6", 5)
+# define CT_SH_KEY(x)	!ft_strncmp(x->buf, "\x1B[1;6", 5)
 /* # define CT_SH_UP	!ft_strcmp(e.buf, "\x1B[1;6A") */
 /* # define CT_SH_DO	!ft_strcmp(e.buf, "\x1B[1;6B") */
-# define CT_SH_RI	!ft_strcmp(e.buf, "\x1B[1;6C")
-# define CT_SH_LE	!ft_strcmp(e.buf, "\x1B[1;6D")
-# define K_PRINT	e.buf[0] >= 32 && e.buf[0] <= 126
-# define K_SUPPR	e.buf[0] == 127
+# define CT_SH_RI(x)	!ft_strcmp(x->buf, "\x1B[1;6C")
+# define CT_SH_LE(x)	!ft_strcmp(x->buf, "\x1B[1;6D")
+# define K_PRINT(x)		x->buf[0] >= 32 && x->buf[0] <= 126
+# define K_SUPPR(x)		x->buf[0] == 127
 
-# define K_HOME		!ft_strcmp(e.buf, "\x1B[5~")
-# define K_END		!ft_strcmp(e.buf, "\x1B[6~")
+# define K_HOME(x)		!ft_strcmp(x->buf, "\x1B[5~")
+# define K_END(x)		!ft_strcmp(x->buf, "\x1B[6~")
 
 typedef struct		s_opt
 {
@@ -120,15 +120,17 @@ typedef struct		s_env
 	t_hist			*hist;
 	t_copy			cpy;
 	int				ret;
+	char			*quote;
 }					t_env;
 
-t_env				e;
+t_env				data;
 
 int					check_and_exec(char **command, char ***env);
-void				copy_command(void);
-void				ctrl_command(void);
-void				ctrl_shift_command(void);
+void				copy_command(t_env *e);
+void				ctrl_command(t_env *e);
+void				ctrl_shift_command(t_env *e);
 void				cursor_position(t_pos *pos);
+char				*expansions_check(t_env *e);
 int					fork_function(char **args, char ***env);
 
 int					ft_cd(char **args, char ***env);
@@ -154,10 +156,11 @@ void				ft_free(char ***env);
 void				ft_free_hist(t_hist **hist);
 char				*ft_getcwd(char *dir, char **env);
 char				*ft_getenv(char *str, char **env);
-void				ft_minishell(void);
+void				ft_minishell(t_env *e);
 int					ft_pchar(int nb);
 void				ft_perror(const char *comment);
-void				ft_pos(int len);
+void				ft_pos(int len, t_env *e);
+void				ft_put2endl_fd(char *s1, char *s2, int fd);
 char				*ft_realloc(char *str, size_t size);
 
 int					ft_setenv(char **entry, char ***env);
@@ -168,24 +171,27 @@ char				*ft_strndup(const char *s1, int size);
 char				*ft_tgetstr(char *str);
 
 int					ft_unsetenv(char **entry, char ***env);
-void				historic_command(void);
+void				historic_command(t_env *e);
 t_hist				*hist_new(t_hist *next, size_t size);
-t_hist				*hist_add(t_hist *new);
+t_hist				*hist_add(t_hist *new, t_env *e);
 void				hist_clean(t_hist *tmp, t_hist *next, size_t nb);
+
 void				init_signals(void);
 void				init_termcaps(char *term_name, int ret);
-void				k_home(void);
-void				k_end(void);
-void				keypad_command(void);
+void				k_home(t_env *e);
+void				k_end(t_env *e);
+void				keypad_command(t_env *e);
 void				prompt(char **env);
-void				read_command(char *buf, int len);
+int					quotes_command(t_env *e);
+void				read_command(int len, t_env *e);
 void				redefine_term(void);
 void				restore_term(void);
 t_hist				*retreive_history(void);
-void				rewrite_command(void);
-void				rewrite_prompt(void);
-void				shift_command(void);
-void				treat_command(void);
+void				rewrite_command(char *cmd, t_env *e);
+void				rewrite_prompt(t_env *e);
+void				shift_command(t_env *e);
+char				**split_command(char *cmd);
+void				treat_command(t_env *e);
 void				update_history(void);
 
 #endif

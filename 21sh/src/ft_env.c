@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 02:10:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/06 21:22:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int				ft_env(char **command, char ***env)
 		if ((i = check(command, &opt)) < 0)
 			return (1);
 		if (command[i])
-			e.ret = check_and_exec(&command[i], &opt.env);
+			data.ret = check_and_exec(&command[i], &opt.env);
 		else
 			ft_puttab(opt.env);
 	}
@@ -57,7 +57,7 @@ int				ft_env(char **command, char ***env)
  		free(opt.cmd);
  	ft_free(&opt.ptr);
  	ft_free(&opt.extra);
-	return (e.ret);
+	return (data.ret);
 }
 
 int				ft_env_error(char *err, char c, t_opt *opt)

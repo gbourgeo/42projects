@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/04 22:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 01:32:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/06 21:21:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_hist			*retreive_history(void)
 	int			fd;
 	t_hist		*new;
 
-	if ((fd = open(e.histpath, O_RDONLY)) == -1)
+	if ((fd = open(data.histpath, O_RDONLY)) == -1)
 		return (NULL);
 	if ((new = (t_hist *)malloc(sizeof(*new))))
 	{
@@ -60,9 +60,9 @@ void			update_history(void)
 	t_hist		*tmp;
 
 	flag = O_WRONLY | O_CREAT | O_APPEND | O_TRUNC;
-	if ((fd = open(e.histpath, flag, 0644)) == -1)
+	if ((fd = open(data.histpath, flag, 0644)) == -1)
 		return ;
-	tmp = e.hist;
+	tmp = data.hist;
 	while (tmp && tmp->next)
 		tmp = tmp->next;
 	while (tmp)

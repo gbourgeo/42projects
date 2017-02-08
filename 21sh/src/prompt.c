@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 01:37:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/03 22:02:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/06 21:20:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ void			cursor_position(t_pos *pos)
 	int			l;
 	char		*str;
 
-	write(e.fd, "\x1B[6n", 4);
-	if ((l = read(e.fd, buf, 11)) < 0)
+	write(data.fd, "\x1B[6n", 4);
+	if ((l = read(data.fd, buf, 11)) < 0)
 		ft_exit_all("Cursor position read failed.");
 	if ((str = ft_strchr(buf, '[')) == NULL)
 		ft_exit_all("Cursor position data corrupted ('[' missing)");
@@ -45,19 +45,19 @@ void			prompt(char **env)
 	pwd = ft_getenv("PWD", env);
 	home = ft_getenv("HOME", env);
 	tild = ft_strstr(pwd, home);
-	e.prpt = 0;
-	ft_putstr_fd("\033[33m", e.fd);
-	ft_putstr_fd(user, e.fd);
-	ft_putstr_fd("\033[31m ", e.fd);
+	data.prpt = 0;
+	ft_putstr_fd("\033[33m", data.fd);
+	ft_putstr_fd(user, data.fd);
+	ft_putstr_fd("\033[31m ", data.fd);
 	if (tild != NULL)
 	{
-		e.prpt = 1;
-		write(e.fd, "~", 1);
+		data.prpt = 1;
+		write(data.fd, "~", 1);
 		pwd = &pwd[ft_strlen(home)];
-		ft_putstr_fd(pwd, e.fd);
+		ft_putstr_fd(pwd, data.fd);
 	}
 	else
-		ft_putstr_fd(pwd, e.fd);
-	ft_putstr_fd("\033[37m > \033[0m", e.fd);
-	e.prpt += ft_strlen(user) + ft_strlen(pwd) + 4;
+		ft_putstr_fd(pwd, data.fd);
+	ft_putstr_fd("\033[37m > \033[0m", data.fd);
+	data.prpt += ft_strlen(user) + ft_strlen(pwd) + 4;
 }

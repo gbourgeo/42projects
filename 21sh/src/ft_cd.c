@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/04 21:52:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/06 21:22:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int		cd_write_in_pwd(char **args, int i, char ***env)
 		tmp = pwd;
 		if (args[i - 1][0] == '-' && ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
 		{
-			pwd = ft_getcwd(tmp, e.env);
+			pwd = ft_getcwd(tmp, data.env);
 			free(tmp);
 		}
 		ft_change_pwds(pwd, env);
@@ -75,7 +75,7 @@ static int		cd_search_in_pwd(char **args, char ***env)
 	char		*pwd;
 	char		*tmp;
 
-	pwd = ft_getenv("PWD", e.env);
+	pwd = ft_getenv("PWD", data.env);
 	if ((tmp = ft_strstr(pwd, args[1])) == NULL)
 	{
 		ft_putstr_fd("cd: string not in pwd: ", 2);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 16:46:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/31 17:43:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/06 21:21:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void				restore_term(void)
 {
     tputs(ft_tgetstr("ei"), 1, ft_pchar);
-    if ((tcsetattr(e.fd, TCSANOW, &e.old_term)) == -1)
+    if ((tcsetattr(data.fd, TCSANOW, &data.old_term)) == -1)
 		ft_putendl_fd("Fatal error: tcsetattr() returned.", 2);
 }
 
@@ -25,13 +25,13 @@ void				redefine_term(void)
 {
     struct termios  termios;
 
-	if (tcgetattr(e.fd, &e.old_term) != 0)
+	if (tcgetattr(data.fd, &data.old_term) != 0)
 		ft_exit_all("Fatal error: tcgetattr() returned.");
-	ft_memcpy(&termios, &e.old_term, sizeof(termios));
+	ft_memcpy(&termios, &data.old_term, sizeof(termios));
 	termios.c_lflag &= ~(ICANON | ECHO | ISIG);
 	termios.c_cc[VMIN] = 1;
 	termios.c_cc[VTIME] = 0;
-	if (tcsetattr(e.fd, TCSANOW, &termios) == -1)
+	if (tcsetattr(data.fd, TCSANOW, &termios) == -1)
 		ft_exit_all("Fatal error: tcsetattr() returned.");
 	tputs(ft_tgetstr("im"), 1, ft_pchar);
 }
@@ -43,24 +43,24 @@ void				init_termcaps(char *term_name, int ret)
     if (!ttyname(STDIN_FILENO))
         ft_exit_all("You are not connected to a terminal.");
     if (ttyslot() <= 0)
-        ft_exit_all("No terminal found in database.");
-    if ((e.fd = open(ttyname(STDIN_FILENO), O_RDWR)) == -1)
+        ft_exit_all("No terminal found in databasdata.");
+    if ((data.fd = open(ttyname(STDIN_FILENO), O_RDWR)) == -1)
     {
         ft_putstr_fd("Failed to open: ", STDERR_FILENO);
         ft_exit_all(ttyname(STDIN_FILENO));
     }
-    if ((term_name = ft_getenv("TERM", e.env)) == NULL)
+    if ((term_name = ft_getenv("TERM", data.env)) == NULL)
         term_name = "xterm";
     ret = tgetent(NULL, term_name);
     if (ret == -1)
         ft_exit_all("Termcap's data base files unavailable");
     else if (ret == 0)
-        ft_exit_all("Terminal not defined in database.");
+        ft_exit_all("Terminal not defined in databasdata.");
 	redefine_term();
-	if (ioctl(e.fd, TIOCGWINSZ, &e.sz) == -1)
+	if (ioctl(data.fd, TIOCGWINSZ, &data.sz) == -1)
 		ft_exit_all("ioctl(TIOCGWINSZ) failed.");
-	e.sz.ws_col--;
-	e.sz.ws_row--;
+	data.sz.ws_col--;
+	data.sz.ws_row--;
 }
 
 char				*ft_tgetstr(char *str)
