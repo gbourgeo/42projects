@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/02/07 18:29:34 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/02/15 04:17:14 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -17,23 +17,25 @@ SRC_D 	= src/
 HDR		= includes/
 
 SRC		= main.c			\
-			expansions.c	\
-			split_command.c	\
-			quotes.c		\
-			prompt.c		\
 			check_and_exec.c	\
-			read_command.c	\
-			keypad_command.c	\
-			ctrl_command.c	\
-			shift_command.c	\
-			ctrl_shft_command.c	\
-			historic_command.c	\
 			copy_command.c	\
-			pos_function.c	\
-			rewrite_cmd_prpt.c	\
-			treat_command.c	\
+			ctrl_command.c	\
+			ctrl_shft_command.c	\
+			cursor.c		\
+			expansions.c	\
+			historic_command.c	\
+			historic_functions.c	\
+			historic_updates.c	\
+			init_termcaps.c	\
 			k_home_end.c	\
-			history.c		\
+			keypad_command.c	\
+			pos_function.c	\
+			prompt.c		\
+			read_command.c	\
+			rewrite_cmd_prpt.c	\
+			split_command.c	\
+			shift_command.c	\
+			treat_command.c	\
 			ft_signals.c	\
 			ft_termcaps.c	\
 			ft_minishell.c	\

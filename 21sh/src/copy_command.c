@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 18:12:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 23:39:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 19:27:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void			copy_strcopy(char rewrite, t_env *e)
 	{
 		if (e->cpy.cpy == 0)
 			ft_pos(len, e);
-		rewrite_command(e->hist->cmd, e);
+		rewrite_command(e);
 	}
 }
 
@@ -53,13 +53,14 @@ static void			cut_strcopy(t_env *e)
 	else
 		ft_strncpy(&e->hist->cmd[e->pos], &e->hist->cmd[e->cpy.shft], \
 					e->hist->cmd_size - e->pos);
+	e->hist->cmd_len -= len;
 	e->cpy.cut = 1;
-	rewrite_command(e->hist->cmd, e);
+	rewrite_command(e);
 }
 
 static void			paste_strcopy(t_env *e)
 {
-	read_command(ft_strlen(e->cpy.str), e);
+	read_command(ft_strlen(e->cpy.str), e->cpy.str, e);
 	if (e->cpy.cut)
 	{
 		free(e->cpy.str);

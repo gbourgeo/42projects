@@ -6,19 +6,19 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:21:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 23:22:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 19:27:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static void		ct_sh_right(size_t size, t_env *e)
+static void		ct_sh_right(t_env *e)
 {
 	if (e->cpy.cpy == 0)
 		e->cpy.cpy = 1;
 	if (e->cpy.cpy == 1)
 		tputs(ft_tgetstr("mr"), 1, ft_pchar);
-	while (e->pos < size && e->hist->cmd[e->pos] == ' ')
+	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] == ' ')
 	{
 		if (e->cpy.shft == (long int)e->pos && (e->cpy.cpy = 1))
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
@@ -26,7 +26,7 @@ static void		ct_sh_right(size_t size, t_env *e)
 		write(e->fd, &e->hist->cmd[e->pos], 1);
 		ft_pos(1, e);
 	}
-	while (e->pos < size && e->hist->cmd[e->pos] != ' ')
+	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] != ' ')
 	{
 		if (e->cpy.shft == (long int)e->pos && (e->cpy.cpy = 1))
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
@@ -69,7 +69,7 @@ void			ctrl_shift_command(t_env *e)
 	if (e->cpy.shft == (long int)e->pos)
 		e->cpy.cpy = 0;
 	if (CT_SH_RI(e))
-		ct_sh_right(ft_strlen(e->hist->cmd), e);
+		ct_sh_right(e);
 	else if (CT_SH_LE(e))
 		ct_sh_left(e);
 	tputs(ft_tgetstr("me"), 1, ft_pchar);

@@ -6,11 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 16:18:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/13 16:58:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include <stdlib.h>
 
 static size_t	count_lines(char *cmd, size_t i, size_t ret)
 {

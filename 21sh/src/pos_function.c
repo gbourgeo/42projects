@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 01:17:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 19:11:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 19:29:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,17 @@ static void		check_command_len(int len, t_env *e)
 	}
 }
 
-static void		move_right(int len, size_t size, char *str, t_env *e)
+static void		move_right(int len, t_env *e)
 {
-	while (len > 0 && e->pos < size)
+	while (len > 0 && e->pos < e->hist->cmd_len)
 	{
 		check_command_len(len, e);
-		if (e->cursor.x == e->sz.ws_col)
+		if (e->cursor.x == e->sz.ws_col || e->hist->cmd[e->pos] == '\n')
 		{
 			if (e->cursor.y >= e->sz.ws_row)
 			{
-				tputs(ft_tgetstr("sf"), 1, ft_pchar);
+				if (e->hist->cmd[e->pos] != '\n')
+					tputs(ft_tgetstr("sf"), 1, ft_pchar);
 				e->origin.y--;
 			}
 			else
@@ -58,32 +59,47 @@ static void		move_right(int len, size_t size, char *str, t_env *e)
 		e->pos++;
 		len -= 1;
 	}
-	str = tgoto(ft_tgetstr("cm"), e->cursor.x, e->cursor.y);
-	tputs(str, 1, ft_pchar);
+	ft_tgoto(&e->cursor);
 }
 
-static void		move_left(int len, char *str, t_env *e)
+static size_t	find_pos(t_env *e)
+{
+	size_t		pos;
+
+	pos = e->pos - 1;
+	while (pos > 0 && e->hist->cmd[pos - 1] != '\n')
+		pos--;
+	return (e->pos - pos - 1);
+}
+
+static void		move_left(int len, t_env *e)
 {
 	while (len < 0 && e->pos > 0)
 	{
+		if (!ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
+			break ;
 		if (e->cursor.x == 0)
 		{
-			e->cursor.x = e->sz.ws_col;
 			e->cursor.y--;
+			if (e->hist->cmd[e->pos - 1] != '\n')
+				e->cursor.x = e->sz.ws_col;
+			else if (e->cursor.y == e->origin.y)
+				e->cursor.x = e->origin.x + e->pos - 1;
+			else
+				e->cursor.x = find_pos(e);
 		}
 		else
 			e->cursor.x--;
 		e->pos--;
 		len += 1;
 	}
-	str = tgoto(ft_tgetstr("cm"), e->cursor.x, e->cursor.y);
-	tputs(str, 1, ft_pchar);
+	ft_tgoto(&e->cursor);
 }
 
 void			ft_pos(int len, t_env *e)
 {
 	if (len > 0)
-		move_right(len, ft_strlen(e->hist->cmd), NULL, e);
-	else if (len < 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
-		move_left(len, NULL, e);
+		move_right(len, e);
+	else if (len < 0)
+		move_left(len, e);
 }

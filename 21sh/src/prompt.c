@@ -6,58 +6,68 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 01:37:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:20:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 19:29:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-/*
-** "\x1B[6n"	String to send to receive the position of the cursor.
-** "sc"			Save cursor position.
-*/
-
-void			cursor_position(t_pos *pos)
+static void			quote_prompt(t_env *e)
 {
-	char		buf[11];
-	int			l;
-	char		*str;
-
-	write(data.fd, "\x1B[6n", 4);
-	if ((l = read(data.fd, buf, 11)) < 0)
-		ft_exit_all("Cursor position read failed.");
-	if ((str = ft_strchr(buf, '[')) == NULL)
-		ft_exit_all("Cursor position data corrupted ('[' missing)");
-	pos->y = ft_atoi(str + 1) - 1;
-	if ((str = ft_strchr(buf, ';')) == NULL)
-		ft_exit_all("Cursor position data corrupted (';' missing)");
-	pos->x = ft_atoi(str + 1) - 1;
+	if (e->quote == '\'')
+		ft_putstr_fd("quote> ", e->fd);
+	else
+		ft_putstr_fd("dquote> ", e->fd);
+	e->prpt = (e->quote == '\'') ? 7 : 8;
 }
 
-void			prompt(char **env)
+static void		normal_prompt(t_env *e)
 {
 	char		*user;
 	char		*pwd;
 	char		*home;
 	char		*tild;
 
-	user = ft_getenv("USER", env);
-	pwd = ft_getenv("PWD", env);
-	home = ft_getenv("HOME", env);
+	user = ft_getenv("USER", e->env);
+	pwd = ft_getenv("PWD", e->env);
+	home = ft_getenv("HOME", e->env);
 	tild = ft_strstr(pwd, home);
-	data.prpt = 0;
-	ft_putstr_fd("\033[33m", data.fd);
-	ft_putstr_fd(user, data.fd);
-	ft_putstr_fd("\033[31m ", data.fd);
+	e->prpt = 0;
+	ft_putstr_fd("\033[33m", e->fd);
+	ft_putstr_fd(user, e->fd);
+	ft_putstr_fd("\033[31m ", e->fd);
 	if (tild != NULL)
 	{
-		data.prpt = 1;
-		write(data.fd, "~", 1);
+		e->prpt = 1;
+		write(e->fd, "~", 1);
 		pwd = &pwd[ft_strlen(home)];
-		ft_putstr_fd(pwd, data.fd);
+		ft_putstr_fd(pwd, e->fd);
 	}
 	else
-		ft_putstr_fd(pwd, data.fd);
-	ft_putstr_fd("\033[37m > \033[0m", data.fd);
-	data.prpt += ft_strlen(user) + ft_strlen(pwd) + 4;
+		ft_putstr_fd(pwd, e->fd);
+	ft_putstr_fd("\033[37m > \033[0m", e->fd);
+	e->prpt += ft_strlen(user) + ft_strlen(pwd) + 4;
+}
+
+void			prompt(t_env *e)
+{
+	tputs(ft_tgetstr("cr"), 1, ft_pchar);
+	tputs(ft_tgetstr("cd"), 1, ft_pchar);
+	if (e->quote)
+		quote_prompt(e);
+	else
+		normal_prompt(e);
+	cursor_position(&e->origin);
+	ft_memcpy(&e->cursor, &e->origin, sizeof(e->cursor));
+	if (e->quote == 0)
+	{
+		e->pos = 0;
+		e->hist->cmd_len = 0;
+		e->q_pos = 0;
+		e->q_hist = NULL;
+	}
+	else
+	{
+		e->q_pos = e->hist->cmd_len;
+	}
 }

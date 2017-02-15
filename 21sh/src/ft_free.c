@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:47:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/04 22:18:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 04:30:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,18 @@ void			ft_free_hist(t_hist **hist)
 	if (hist)
 	{
 		tmp = *hist;
-		if (tmp)
+		while (tmp)
 		{
-			while (tmp->prev)
-				tmp = tmp->prev;
-			while (tmp)
-			{
-				if (tmp->cmd)
-					free(tmp->cmd);
-				next = tmp->next;
-				ft_memset(tmp, 0, sizeof(*tmp));
-				if (tmp)
-					free(tmp);
-				tmp = next;
-			}
+			if (tmp->cmd)
+				free(tmp->cmd);
+			if (tmp->save)
+				free(tmp->save);
+			next = tmp->next;
+			ft_memset(tmp, 0, sizeof(*tmp));
+			free(tmp);
+			tmp = next;
 		}
+		*hist = NULL;
 	}
 }
 

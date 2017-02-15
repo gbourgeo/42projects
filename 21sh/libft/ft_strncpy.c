@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 16:09:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/03 23:06:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 16:52:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char		*ft_strncpy(char *s1, const char *s2, size_t n)
 	i = 0;
 	while (i < n)
 	{
-		if (s2[i] == '\0')
+		if (s2 == NULL || s2[i] == '\0')
 		{
 			while (i < n)
 				s1[i++] = '\0';

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 23:38:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 04:17:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 static void		move_command(t_env *e)
 {
-	if (K_RIGHT(e) && (size_t)e->pos < ft_strlen(e->hist->cmd))
+	if (K_RIGHT(e) && e->pos < e->hist->cmd_len)
 		ft_pos(1, e);
 	else if (K_LEFT(e) && e->pos > 0)
 		ft_pos(-1, e);
@@ -31,6 +31,7 @@ static void		suppr_command(t_env *e)
 {
 	if (K_DEL(e) && e->hist->cmd[e->pos])
 	{
+		e->hist->cmd_len--;
 		ft_strcpy(e->hist->cmd + e->pos, e->hist->cmd + e->pos + 1);
 		tputs(ft_tgetstr("sc"), 1, ft_pchar);
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
@@ -40,6 +41,7 @@ static void		suppr_command(t_env *e)
 	else if (K_SUPPR(e) && e->pos > 0)
 	{
 		ft_pos(-1, e);
+		e->hist->cmd_len--;
 		ft_strcpy(&e->hist->cmd[e->pos], &e->hist->cmd[e->pos + 1]);
 		tputs(ft_tgetstr("sc"), 1, ft_pchar);
 		tputs(ft_tgetstr("cd"), 1, ft_pchar);
@@ -48,35 +50,16 @@ static void		suppr_command(t_env *e)
 	}
 }
 
-static void		goto_eol(t_env *e)
-{
-	char		*str;
-	t_pos		pos;
-
-	pos.x = e->cursor.x + ft_strlen(&e->hist->cmd[e->pos]);
-	pos.y = e->cursor.y;
-	while (pos.x >= e->sz.ws_col)
-	{
-		pos.x -= e->sz.ws_col;
-		pos.y++;
-	}
-	str = tgoto(ft_tgetstr("cm"), pos.x, pos.y);
-	tputs(str, 1, ft_pchar);
-}
-
 static void		ctrl_c(t_env *e)
 {
-	rewrite_command(e->hist->cmd, e);
-	goto_eol(e);
-	write(e->fd, "\n", 1);
-	hist_clean(e->hist, NULL, 0);
-	while (e->hist->prev)
-		e->hist = e->hist->prev;
+	rewrite_command(e);
+	hist_clean(e->hist);
+	e->cmd = e->hist;
 	ft_bzero(e->hist->cmd, e->hist->cmd_size);
-	e->pos = 0;
-	prompt(e->env);
-	cursor_position(&e->origin);
-	ft_memcpy(&e->cursor, &e->origin, sizeof(e->cursor));
+	tputs(ft_tgetstr("sf"), 1, ft_pchar);
+	tputs(ft_tgetstr("cr"), 1, ft_pchar);
+	e->quote = 0;
+	prompt(e);
 }
 
 void			keypad_command(t_env *e)

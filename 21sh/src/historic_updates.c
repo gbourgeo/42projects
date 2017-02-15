@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/04 22:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:21:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 04:12:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,27 @@
 static t_hist	*fill_history(int fd, t_hist *new)
 {
 	char		*cmd;
-	size_t		len;
 
+	cmd = NULL;
 	while (get_next_line(fd, &cmd) > 0)
 	{
-		len = ft_strlen(cmd);
-		while (new->cmd_size <= len)
-			new->cmd_size += CMD_SIZE;
-		if ((new->cmd = (char *)malloc(new->cmd_size)) == NULL)
-			break ;
-		ft_strncpy(new->cmd, cmd, new->cmd_size);
-		if ((new->prev = (t_hist *)malloc(sizeof(*new))) == NULL)
-			break ;
-		ft_memset(new->prev, 0, sizeof(*new));
-		new->prev->next = new;
-		new = new->prev;
+		if (new == NULL)
+		{
+			new = hist_new(cmd, ft_strlen(cmd), NULL);
+			if (new == NULL)
+				return (new);
+		}
+		else
+		{
+			new->prev = hist_new(cmd, ft_strlen(cmd), new);
+			if (new->prev == NULL)
+				return (new);
+			new = new->prev;
+		}
+		if (cmd)
+			free(cmd);
+		cmd = NULL;
 	}
-	new->cmd = ft_strnew(CMD_SIZE);
-	new->cmd_size = CMD_SIZE;
 	return (new);
 }
 
@@ -44,11 +47,7 @@ t_hist			*retreive_history(void)
 
 	if ((fd = open(data.histpath, O_RDONLY)) == -1)
 		return (NULL);
-	if ((new = (t_hist *)malloc(sizeof(*new))))
-	{
-		ft_memset(new, 0, sizeof(*new));
-		new = fill_history(fd, new);
-	}
+	new = fill_history(fd, NULL);
 	close(fd);
 	return (new);
 }
@@ -65,10 +64,11 @@ void			update_history(void)
 	tmp = data.hist;
 	while (tmp && tmp->next)
 		tmp = tmp->next;
-	while (tmp)
+	while (tmp && tmp->prev)
 	{
 		if (tmp->cmd && *tmp->cmd)
 			ft_putendl_fd(tmp->cmd, fd);
 		tmp = tmp->prev;
 	}
+	close(fd);
 }

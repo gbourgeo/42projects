@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:15:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 23:22:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 19:30:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 
 static void		shift_right(t_env *e)
 {
-	if (e->pos < ft_strlen(e->hist->cmd))
+	if (e->pos < e->hist->cmd_len)
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.cpy = 1;

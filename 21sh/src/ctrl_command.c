@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:18:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 23:22:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/14 19:27:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 static void		ctrl_up(t_env *e)
 {
-	char		*str;
-
 	if (e->cursor.y > e->origin.y)
 	{
 		e->cursor.y--;
@@ -25,20 +23,18 @@ static void		ctrl_up(t_env *e)
 			e->cursor.x = e->origin.x;
 			e->pos = 0;
 		}
-		str = tgoto(ft_tgetstr("cm"), e->cursor.x, e->cursor.y);
-		tputs(str, 1, ft_pchar);
+		ft_tgoto(&e->cursor);
 	}
 }
 
 static void		ctrl_down(t_env *e)
 {
-	char		*str;
 	size_t		len;
 	size_t		pos;
 
 	if (e->cursor.y < e->sz.ws_row)
 	{
-		len = ft_strlen(&e->hist->cmd[e->pos]);
+		len = e->hist->cmd_len - e->pos;
 		if (e->cursor.x + len >= e->sz.ws_col)
 		{
 			e->cursor.y++;
@@ -50,17 +46,16 @@ static void		ctrl_down(t_env *e)
 			}
 			else
 				e->pos += (e->sz.ws_col + 1);
-			str = tgoto(ft_tgetstr("cm"), e->cursor.x, e->cursor.y);
-			tputs(str, 1, ft_pchar);
+			ft_tgoto(&e->cursor);
 		}
 	}
 }
 
-static void		ctrl_right(size_t size, t_env *e)
+static void		ctrl_right(t_env *e)
 {
-	while (e->pos < size && e->hist->cmd[e->pos] == ' ')
+	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] == ' ')
 		ft_pos(1, e);
-	while (e->pos < size && e->hist->cmd[e->pos] != ' ')
+	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] != ' ')
 		ft_pos(1, e);
 }
 
@@ -81,7 +76,7 @@ void			ctrl_command(t_env *e)
 	else if (CTRL_DOWN(e))
 		ctrl_down(e);
 	else if (CTRL_RIGHT(e))
-		ctrl_right(ft_strlen(e->hist->cmd), e);
+		ctrl_right(e);
 	else if (CTRL_LEFT(e))
 		ctrl_left(e);
 }

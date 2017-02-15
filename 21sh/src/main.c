@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:20:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 03:42:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,10 @@ static void		init_environment(char **environ)
 	data.path[i] = NULL;
 	ft_free(&path);
 	data.histpath = ft_strjoin(ft_getenv("HOME", data.env), HISTFILE);
-	if ((data.hist = retreive_history()) == NULL)
-		data.hist = hist_new(NULL, CMD_SIZE);
+	data.hist = retreive_history();
+	if ((data.hist = hist_new(NULL, 0, data.hist)) == NULL)
+		ft_exit_all("Malloc failed.");
+	data.cmd = data.hist;
 }
 
 int				main(int ac, char **av, char **environ)

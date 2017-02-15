@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/08 23:36:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 04:36:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 # define CMD_SIZE	256
 # define READ_SIZE	10
-# define HIST_SIZE	20
+# define HIST_SIZE	5
 # define HISTFILE	"/.21sh_history"
 
 # define COPY_KEY(x)	x->buf[0] < 0
@@ -33,9 +33,14 @@
 # define K_COPY(x)		x->buf[0] == -62 && x->buf[1] == -87
 # define K_PASTE(x)		x->buf[0] == -30 && x->buf[1] == -105 && x->buf[2] == -118
 
+# define K_HOME(x)		!ft_strcmp(x->buf, "\x1B[5~")
+# define K_END(x)		!ft_strcmp(x->buf, "\x1B[6~")
+
 # define CTRL_C(x)		x->buf[0] == 3
 # define CTRL_D(x)		x->buf[0] == 4
-# define ENTER(x)		x->buf[0] == 10
+# define TAB			9
+# define ENTER			10
+# define K_SUPPR(x)		x->buf[0] == 127
 
 # define KEYPAD(x)		!ft_strncmp(x->buf, "\x1B[", 2)
 # define K_DEL(x)		!ft_strcmp(x->buf, "\x1B[3~")
@@ -61,11 +66,6 @@
 /* # define CT_SH_DO	!ft_strcmp(e.buf, "\x1B[1;6B") */
 # define CT_SH_RI(x)	!ft_strcmp(x->buf, "\x1B[1;6C")
 # define CT_SH_LE(x)	!ft_strcmp(x->buf, "\x1B[1;6D")
-# define K_PRINT(x)		x->buf[0] >= 32 && x->buf[0] <= 126
-# define K_SUPPR(x)		x->buf[0] == 127
-
-# define K_HOME(x)		!ft_strcmp(x->buf, "\x1B[5~")
-# define K_END(x)		!ft_strcmp(x->buf, "\x1B[6~")
 
 typedef struct		s_opt
 {
@@ -85,6 +85,7 @@ typedef struct		s_hist
 {
 	struct s_hist	*prev;
 	char			*cmd;
+	size_t			cmd_len;
 	size_t			cmd_size;
 	char			*save;
 	struct s_hist	*next;
@@ -116,11 +117,14 @@ typedef struct		s_env
 	char			buf[READ_SIZE];
 	t_pos			origin;
 	t_pos			cursor;
-	size_t			pos;
-	t_hist			*hist;
 	t_copy			cpy;
 	int				ret;
-	char			*quote;
+	t_hist			*hist;
+	t_hist			*cmd;
+	size_t			pos;
+	char			quote;
+	size_t			q_pos;
+	t_hist			*q_hist;
 }					t_env;
 
 t_env				data;
@@ -156,7 +160,7 @@ void				ft_free(char ***env);
 void				ft_free_hist(t_hist **hist);
 char				*ft_getcwd(char *dir, char **env);
 char				*ft_getenv(char *str, char **env);
-void				ft_minishell(t_env *e);
+int					ft_minishell(t_env *e);
 int					ft_pchar(int nb);
 void				ft_perror(const char *comment);
 void				ft_pos(int len, t_env *e);
@@ -169,26 +173,26 @@ int					ft_stralnum(char *str);
 void				ft_strerror(char *str);
 char				*ft_strndup(const char *s1, int size);
 char				*ft_tgetstr(char *str);
+void				ft_tgoto(t_pos *pos);
 
 int					ft_unsetenv(char **entry, char ***env);
 void				historic_command(t_env *e);
-t_hist				*hist_new(t_hist *next, size_t size);
-t_hist				*hist_add(t_hist *new, t_env *e);
-void				hist_clean(t_hist *tmp, t_hist *next, size_t nb);
+void				hist_add(t_env *e);
+void				hist_clean(t_hist *hist);
+t_hist				*hist_new(char *cmd, size_t len, t_hist *next);
 
 void				init_signals(void);
 void				init_termcaps(char *term_name, int ret);
 void				k_home(t_env *e);
 void				k_end(t_env *e);
 void				keypad_command(t_env *e);
-void				prompt(char **env);
+void				prompt(t_env *e);
 int					quotes_command(t_env *e);
-void				read_command(int len, t_env *e);
+void				read_command(int len, char *buf, t_env *e);
 void				redefine_term(void);
 void				restore_term(void);
 t_hist				*retreive_history(void);
-void				rewrite_command(char *cmd, t_env *e);
-void				rewrite_prompt(t_env *e);
+void				rewrite_command(t_env *e);
 void				shift_command(t_env *e);
 char				**split_command(char *cmd);
 void				treat_command(t_env *e);
