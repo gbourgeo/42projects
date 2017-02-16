@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 01:17:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 22:03:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/16 18:48:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
 /*
-** "sf"		Scroll the creen one line up.
+** "sf"		Scroll the screen one line up.
 ** "nd"		Move the cursor right one column.
 **
 ** "up"		Move the cursor vertically up one line.
@@ -84,7 +84,7 @@ static void		move_left(int len, t_env *e)
 			if (e->hist->cmd[e->pos - 1] != '\n')
 				e->cursor.x = e->sz.ws_col;
 			else if (e->cursor.y == e->origin.y)
-				e->cursor.x = e->origin.x + e->pos - 1;
+				e->cursor.x = e->origin.x + e->pos - e->q_pos - 1;
 			else
 				e->cursor.x = find_pos(e);
 		}
