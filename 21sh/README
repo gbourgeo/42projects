@@ -18,14 +18,19 @@ Fonction supplementaires au projet 'minishell':
     ctrl+UP et ctrl+DOWN permettent de passer d’une ligne à l’autre de la commande en restant
     sur la même colonne ou la colonne la plus appropriée sinon.
   > Aller directement au début et à la fin d’une ligne avec HOME et END.
+  > Gérer complètement les quotes et doubles quotes, même sur plusieurs lignes (hors expansions).
 
   > Bonus: shift+RIGHT et shift+LEFT sélectionne par lettre la ligne de commandes.
            ctrl+shift+RIGHT et ctrl+shift+LEFT sélectionne par mot la ligne de commandes.
            shift+UP et shift+DOWN sélectionne par ligne.
            La sélection permet de couper/copier plus spécifiquement.
 
+• BONUS: Gérer le redimensionnement de la fenêtre et, par conséquent, la position du curseur.
+• BONUS: Historique du shell, sauvegarde de l'historique en quittant le shell, recharge de
+ 	 l'historique au démarrage du shell, taille de l'historique et nom du fichier paramétrable
+	 dans le header.
+
 A FAIRE :
-  > Gérer complètement les quotes et doubles quotes, même sur plusieurs lignes (hors expansions).
 
 • Les fonctionnalités des combinaisons de touches ctrl+D et ctrl+C dans l’édition
   de la ligne et l’éxecution d’un processus.
@@ -33,8 +38,3 @@ A FAIRE :
 • Les pipes “|”
 • Les quatre redirections “<”, “>”, “<<” et “>>”
 • Les aggrégations de descripteurs de fichiers, par exemple pour fermer la sortie d’erreur...
-
-• BONUS: Gérer le redimensionnement de la fenêtre et, par conséquent, la position du curseur.
-• BONUS: Historique du shell, sauvegarde de l'historique en quittant le shell, recharge de
- 	 l'historique au démarrage du shell, taille de l'historique et nom du fichier paramétrable
-	 dans le header.
