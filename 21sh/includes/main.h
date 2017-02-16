@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 04:36:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/16 16:28:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ typedef struct		s_hist
 	size_t			cmd_len;
 	size_t			cmd_size;
 	char			*save;
+	size_t			save_len;
 	struct s_hist	*next;
 }					t_hist;
 
@@ -130,6 +131,8 @@ typedef struct		s_env
 t_env				data;
 
 int					check_and_exec(char **command, char ***env);
+void				check_cmd(char buf, t_env *e);
+void				check_cmd_len(int len, t_env *e);
 void				copy_command(t_env *e);
 void				ctrl_command(t_env *e);
 void				ctrl_shift_command(t_env *e);

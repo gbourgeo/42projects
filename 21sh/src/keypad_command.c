@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 04:17:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/16 16:35:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 ** "cd"		Clear the line the cursor is on, and all the lines below it,
 **			down to the bottom of the screen.
 ** "rc"		Restore cursor position.
+**
+** "sf"		Scroll the screen one line up if cursor at the end of the screen or
+**			Move the cursor one line down.
+** "cr"		Move the cursor at the begining of the line it is on.
 */
 
 static void		move_command(t_env *e)
@@ -38,7 +42,7 @@ static void		suppr_command(t_env *e)
 		ft_putstr_fd(&e->hist->cmd[e->pos], e->fd);
 		tputs(ft_tgetstr("rc"), 1, ft_pchar);
 	}
-	else if (K_SUPPR(e) && e->pos > 0)
+	else if (K_SUPPR(e) && e->pos > e->q_pos)
 	{
 		ft_pos(-1, e);
 		e->hist->cmd_len--;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:21:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/14 19:27:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 22:13:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ static void		ct_sh_left(t_env *e)
 {
 	if (e->cpy.cpy == 0)
 		e->cpy.cpy = -1;
-	while (e->pos > 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
+	while (e->pos > e->q_pos && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
 			e->hist->cmd[e->pos - 1] == ' ')
 		highlight(e);
-	while (e->pos > 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
+	while (e->pos > e->q_pos && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
 			e->hist->cmd[e->pos - 1] != ' ')
 		highlight(e);
 }

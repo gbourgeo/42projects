@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 23:39:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 04:09:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/16 18:19:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void			treat_command(t_env *e)
 		ft_insert_str(&e->hist->cmd[e->hist->cmd_len], "\n", 1);
 		e->hist->cmd_len += 1;
 		e->pos = e->hist->cmd_len;
+		e->q_pos = e->hist->cmd_len;
 	}
 	prompt(e);
 	cursor_position(&e->origin);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:18:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/14 19:27:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 22:04:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,10 @@ static void		ctrl_right(t_env *e)
 
 static void		ctrl_left(t_env *e)
 {
-	while (e->pos > 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
+	while (e->pos > e->q_pos && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
 			e->hist->cmd[e->pos - 1] == ' ')
 		ft_pos(-1, e);
-	while (e->pos > 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
+	while (e->pos > e->q_pos && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
 			e->hist->cmd[e->pos - 1] != ' ')
 		ft_pos(-1, e);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 01:37:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/14 19:29:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/16 15:43:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,5 @@ void			prompt(t_env *e)
 		e->hist->cmd_len = 0;
 		e->q_pos = 0;
 		e->q_hist = NULL;
-	}
-	else
-	{
-		e->q_pos = e->hist->cmd_len;
 	}
 }

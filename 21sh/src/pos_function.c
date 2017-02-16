@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 01:17:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/14 19:29:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/15 22:03:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ static size_t	find_pos(t_env *e)
 
 static void		move_left(int len, t_env *e)
 {
-	while (len < 0 && e->pos > 0)
+	while (len < 0 && e->pos > e->q_pos)
 	{
 		if (!ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
 			break ;
