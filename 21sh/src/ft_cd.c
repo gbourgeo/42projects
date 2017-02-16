@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:22:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/16 19:05:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,12 @@ static int		cd_write_in_pwd(char **args, int i, char ***env)
 	char		*tmp;
 
 	pwd = ft_cd_check(args, env, i);
-	if (chdir(pwd) != -1)
+	if (pwd && !*pwd)
+	{
+		free(pwd);
+		return (0);
+	}
+	if (pwd && chdir(pwd) != -1)
 	{
 		tmp = pwd;
 		if (args[i - 1][0] == '-' && ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
