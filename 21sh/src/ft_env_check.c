@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:25:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 19:39:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:48:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static char		*ft_env_opt_p(char **cmd, int *i, int j, t_opt *opt)
 	return (ret);
 }
 
-static int		ft_i_v_p_u_check(char **cmd, int *i, int j, t_opt *opt)
+static int		ft_p_u_check(char **cmd, int *i, int j, t_opt *opt)
 {
 	char		**old;
 	char		*tmp;
@@ -86,27 +86,26 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 {
 	int			ret;
 
-	while (cmd[++i] && cmd[i][0] == '-')
+	while (cmd[i] && cmd[i][0] == '-')
 	{
 		if (!cmd[i][1])
 			opt->i = 1;
 		if (!ft_strcmp(cmd[i], "--"))
 			return (i);
 		j = 0;
-		while (cmd[i][++j])
+		while (cmd[i] && cmd[i][++j])
 		{
 			if (cmd[i][j] == '-' || cmd[i][j] == 'i')
 				opt->i = 1;
 			else if (cmd[i][j] == 'v')
 				opt->v = 1;
-			else if ((ret = ft_i_v_p_u_check(cmd, &i, j, opt)))
-			{
-				if (ret == -1)
-					return (-1);
-				if (ret == 1)
-					break ;
-			}
+			else if ((ret = ft_p_u_check(cmd, &i, j, opt)) == -1)
+				return (-1);
+			else if (ret == 1)
+				break ;
 		}
+		if (cmd[i])
+			i++;
 	}
 	return (i);
 }

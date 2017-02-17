@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 16:37:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:46:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static int		check(char **command, t_opt *opt)
 {
 	int			i;
 
-	if ((i = ft_env_check_opt(command, opt, 0, 0)) == -1)
+	if ((i = ft_env_check_opt(command, opt, 1, 0)) == -1)
 		return (-1);
 	if ((i = ft_env_check_opt_plus(command, opt, i)) == -1)
 		return (-1);
