@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/16 16:35:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 22:38:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,11 @@ static void		ctrl_c(t_env *e)
 	rewrite_command(e);
 	hist_clean(e->hist);
 	e->cmd = e->hist;
-	ft_bzero(e->hist->cmd, e->hist->cmd_size);
+	if (e->q_pos > 0)
+		ft_bzero(&e->hist->cmd[e->q_pos - 1], e->hist->cmd_size);
+	else
+		ft_bzero(&e->hist->cmd[e->q_pos], e->hist->cmd_size);
+	hist_add(e);
 	tputs(ft_tgetstr("sf"), 1, ft_pchar);
 	tputs(ft_tgetstr("cr"), 1, ft_pchar);
 	e->quote = 0;

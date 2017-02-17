@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:12:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 22:36:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ typedef struct		s_env
 	size_t			pos;
 	char			quote;
 	size_t			q_pos;
-	t_hist			*q_hist;
 }					t_env;
 
 struct s_env		data;

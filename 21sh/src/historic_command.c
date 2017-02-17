@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 16:44:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:06:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 22:41:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static void			aff_cmd(t_env *e)
 
 	len = (e->cmd->save) ? ft_strlen(e->cmd->save) : e->cmd->cmd_len;
 	str = (e->cmd->save) ? e->cmd->save : e->cmd->cmd;
+	e->quote = 0;
 	e->cpy.cpy = 0;
 	e->pos = e->q_pos;
 	e->hist->cmd_len = e->q_pos;
