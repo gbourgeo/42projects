@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/13 16:58:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:09:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ static char		*get_line(char *cmd, size_t *len)
 	i = 0;
 	j = 0;
 	quote = NULL;
-	while (cmd[i + j] && cmd[i + j] != ' ' && (cmd[i + j] < 9 || cmd[i + j] > 11))
+	while (cmd[i + j] && cmd[i + j] != ' ' &&
+			(cmd[i + j] < 9 || cmd[i + j] > 11))
 	{
 		if (cmd[i + j] == '\'' || cmd[i + j] == '"')
 		{

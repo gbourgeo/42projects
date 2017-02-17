@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:22:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 16:37:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,13 @@ int				ft_env(char **command, char ***env)
 		else
 			ft_puttab(opt.env);
 	}
- 	ft_free(&opt.env);
- 	if (opt.path)
- 		free(opt.path);
- 	if (opt.cmd)
- 		free(opt.cmd);
- 	ft_free(&opt.ptr);
- 	ft_free(&opt.extra);
+	ft_free(&opt.env);
+	if (opt.path)
+		free(opt.path);
+	if (opt.cmd)
+		free(opt.cmd);
+	ft_free(&opt.ptr);
+	ft_free(&opt.extra);
 	return (data.ret);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 16:44:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/16 18:30:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:06:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ void				historic_command(t_env *e)
 	{
 		if (e->cmd->next)
 		{
-			if (e->cmd->prev == NULL || ft_strcmp(&e->hist->cmd[e->q_pos], e->cmd->cmd))
+			if (e->cmd->prev == NULL ||
+				ft_strcmp(&e->hist->cmd[e->q_pos], e->cmd->cmd))
 				e->cmd->save = ft_strdup(&e->hist->cmd[e->q_pos]);
 			e->cmd = e->cmd->next;
 			aff_cmd(e);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/16 16:28:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:12:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@
 # define HISTFILE	"/.21sh_history"
 
 # define COPY_KEY(x)	x->buf[0] < 0
-# define K_CUT(x)		x->buf[0] == -30 && x->buf[1] == -119 && x->buf[2] == -120
-# define K_COPY(x)		x->buf[0] == -62 && x->buf[1] == -87
-# define K_PASTE(x)		x->buf[0] == -30 && x->buf[1] == -105 && x->buf[2] == -118
+# define K_CUT(x)		*x->buf == -30 && x->buf[1] == -119 && x->buf[2] == -120
+# define K_COPY(x)		*x->buf == -62 && x->buf[1] == -87
+# define K_PASTE(x)		*x->buf == -30 && x->buf[1] == -105 && x->buf[2] == -118
 
 # define K_HOME(x)		!ft_strcmp(x->buf, "\x1B[5~")
 # define K_END(x)		!ft_strcmp(x->buf, "\x1B[6~")
@@ -62,8 +62,6 @@
 # define CTRL_LEFT(x)	!ft_strcmp(x->buf, "\x1B[1;5D")
 
 # define CT_SH_KEY(x)	!ft_strncmp(x->buf, "\x1B[1;6", 5)
-/* # define CT_SH_UP	!ft_strcmp(e.buf, "\x1B[1;6A") */
-/* # define CT_SH_DO	!ft_strcmp(e.buf, "\x1B[1;6B") */
 # define CT_SH_RI(x)	!ft_strcmp(x->buf, "\x1B[1;6C")
 # define CT_SH_LE(x)	!ft_strcmp(x->buf, "\x1B[1;6D")
 
@@ -128,7 +126,7 @@ typedef struct		s_env
 	t_hist			*q_hist;
 }					t_env;
 
-t_env				data;
+struct s_env		data;
 
 int					check_and_exec(char **command, char ***env);
 void				check_cmd(char buf, t_env *e);
@@ -138,7 +136,7 @@ void				ctrl_command(t_env *e);
 void				ctrl_shift_command(t_env *e);
 void				cursor_position(t_pos *pos);
 char				*expansions_check(t_env *e);
-int					fork_function(char **args, char ***env);
+int					fork_function(char **args, char ***env, int status);
 
 int					ft_cd(char **args, char ***env);
 char				*ft_cd_check(char **args, char ***env, int i);

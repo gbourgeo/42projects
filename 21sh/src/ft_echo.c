@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 14:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/07 17:39:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 16:36:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void		ft_search(char *ar, char ***env)
 	char		*ptr;
 
 	i = 0;
-	j = 0;	
+	j = 0;
 	ptr = NULL;
 	if (ar[i++] == '$')
 	{

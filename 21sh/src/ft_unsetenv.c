@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:23:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:06:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static char		**new_env(int i, char ***env)
 	if (*env)
 	{
 		if ((new = malloc(sizeof(*new) * ft_tablen(*env))) == NULL)
-			return (NULL);
+			return (*env);
 		len = 0;
 		while ((*env)[len] != NULL)
 		{
@@ -34,7 +34,7 @@ static char		**new_env(int i, char ***env)
 		return (new);
 	}
 	ft_putendl_fd("unsetenv: Memory space insufficiant.", 2);
-	return (NULL);
+	return (*env);
 }
 
 int				ft_unsetenv(char **entry, char ***env)
@@ -54,7 +54,7 @@ int				ft_unsetenv(char **entry, char ***env)
 			if (ft_strcmp((*env)[j], entry[i]) == '=')
 			{
 				old = *env;
-				if ((*env = new_env(j, env)) == NULL && (*env = old))
+				if ((*env = new_env(j, env)) == old)
 					data.ret += 1;
 				else
 					ft_free(&old);

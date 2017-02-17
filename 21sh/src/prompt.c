@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 01:37:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/16 15:43:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:07:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static void			quote_prompt(t_env *e)
+static void		quote_prompt(t_env *e)
 {
 	if (e->quote == '\'')
 		ft_putstr_fd("quote> ", e->fd);

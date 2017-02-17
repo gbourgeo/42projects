@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:21:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:21:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 19:46:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,6 @@ int				check_and_exec(char **command, char ***env)
 		i++;
 	}
 	if (!builtins[i] && *command)
-		data.ret = fork_function(command, env);
+		data.ret = fork_function(command, env, 127);
 	return (data.ret);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 16:46:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/13 17:01:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:02:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void				restore_term(void)
 
 void				redefine_term(void)
 {
-	struct termios  termios;
+	struct termios	termios;
 
 	if (tcgetattr(data.fd, &data.old_term) != 0)
 		ft_exit_all("Fatal error: tcgetattr() returned.");

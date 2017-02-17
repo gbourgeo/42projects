@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 18:12:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/14 19:27:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 16:33:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,16 @@ static void			copy_strcopy(char rewrite, t_env *e)
 	int				len;
 
 	len = (e->cpy.cpy > 0) ? e->pos - e->cpy.shft : e->cpy.shft - e->pos;
-	if ((!e->cpy.cpy && (len = ft_strlen(&e->hist->cmd[e->pos])) == 0) || len <= 0)
+	if ((!e->cpy.cpy && (len = ft_strlen(&e->hist->cmd[e->pos])) == 0) ||
+		len <= 0)
 		return ;
 	if (e->cpy.str != NULL)
 		free(e->cpy.str);
 	if (e->cpy.cpy > 0 &&
 		!(e->cpy.str = ft_strndup(&e->hist->cmd[e->cpy.shft], len)))
 		ft_exit_all("Malloc failed.");
-	if (e->cpy.cpy <= 0 && !(e->cpy.str = ft_strndup(&e->hist->cmd[e->pos], len)))
+	if (e->cpy.cpy <= 0 &&
+		!(e->cpy.str = ft_strndup(&e->hist->cmd[e->pos], len)))
 		ft_exit_all("Malloc failed.");
 	if (rewrite)
 	{
@@ -39,7 +41,8 @@ static void			cut_strcopy(t_env *e)
 	int				len;
 
 	len = (e->cpy.cpy > 0) ? e->pos - e->cpy.shft : e->cpy.shft - e->pos;
-	if ((!e->cpy.cpy && (len = ft_strlen(&e->hist->cmd[e->pos])) == 0) || len <= 0)
+	if ((!e->cpy.cpy && (len = ft_strlen(&e->hist->cmd[e->pos])) == 0) ||
+		len <= 0)
 		return ;
 	copy_strcopy(0, e);
 	if (e->cpy.cpy == 0)

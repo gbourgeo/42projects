@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 03:37:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/16 16:18:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:08:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** "cd"		Clear screen from the cursor position adn all the lines below.
 */
 
-void				check_cmd(char buf, t_env *e)
+void			check_cmd(char buf, t_env *e)
 {
 	if ((buf == '\'' || buf == '"'))
 	{

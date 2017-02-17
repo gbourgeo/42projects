@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/07 16:33:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 19:45:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ static char		*check_path(char *path)
 	return (path);
 }
 
-
 static char		*search_path(char *cmd, char ***env)
 {
 	int			i;
@@ -63,7 +62,7 @@ static char		*search_path(char *cmd, char ***env)
 	i = 0;
 	ret = NULL;
 	paths = (ft_getenv("PATH", *env)) ?
-		ft_strsplit(ft_getenv("PATH", *env), ':') : NULL; // e->path
+		ft_strsplit(ft_getenv("PATH", *env), ':') : NULL;
 	while (paths && paths[i])
 	{
 		tmp = (paths[i][ft_strlen(paths[i]) - 1] != '/') ?
@@ -91,13 +90,11 @@ static char		*get_path(char **cmd, char ***env)
 	return (search_path(*cmd, env));
 }
 
-int				fork_function(char **args, char ***env)
+int				fork_function(char **args, char ***env, int status)
 {
 	pid_t		pid;
-	int			status;
 	char		*path;
 
-	status = 127;
 	if ((path = get_path(args, env)) != NULL)
 	{
 		pid = fork();

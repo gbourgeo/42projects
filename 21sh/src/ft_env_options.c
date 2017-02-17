@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 02:17:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 19:42:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,7 @@ int				ft_env_u(t_opt *opt)
 	while (opt->ptr[++i])
 	{
 		if (opt->v)
-		{
-			ft_putstr("#env unset:\t");
-			ft_putendl(opt->ptr[i]);
-		}
+			ft_put2endl_fd("#env unset:\t", opt->ptr[i], data.fd);
 		old = opt->env;
 		j = -1;
 		while (opt->env && opt->env[++j])

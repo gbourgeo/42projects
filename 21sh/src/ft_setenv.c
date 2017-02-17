@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/04 22:01:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/17 21:02:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static char		**add_env(char **entry, char ***env, int i)
 	return (NULL);
 }
 
-static int			modify_env(char **entry, int i, char ***env)
+static int		modify_env(char **entry, int i, char ***env)
 {
 	char		*tmp;
 
@@ -58,7 +58,7 @@ static int			modify_env(char **entry, int i, char ***env)
 	return (-1);
 }
 
-static int			search_command(char **entry, char ***env)
+static int		search_command(char **entry, char ***env)
 {
 	char		**old_env;
 	int			i;
@@ -80,9 +80,9 @@ static int			search_command(char **entry, char ***env)
 	return (0);
 }
 
-int					ft_setenv(char **entry, char ***env)
+int				ft_setenv(char **entry, char ***env)
 {
-	size_t			i;
+	size_t		i;
 
 	i = 0;
 	if (!entry[1])
