@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:09:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/19 22:51:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include "libft.h"
 
 static size_t	count_lines(char *cmd, size_t i, size_t ret)
 {
@@ -42,7 +43,7 @@ static char		*copy_line(char *cmd, char *quote, size_t i, size_t j)
 {
 	char		*line;
 
-	if ((line = (char *)malloc(sizeof(*line) * (i + 1))) == NULL)
+	if (i <= 0 || (line = (char *)malloc(sizeof(*line) * (i + 1))) == NULL)
 		return (NULL);
 	line[i--] = '\0';
 	while (i + j > 0)
@@ -105,8 +106,9 @@ char			**split_command(char *cmd)
 	{
 		while (cmd[i] == ' ' || (cmd[i] > 9 && cmd[i] < 11))
 			i++;
-		if ((ret[j++] = get_line(&cmd[i], &i)) == NULL)
+		if ((ret[j] = get_line(&cmd[i], &i)) == NULL)
 			break ;
+		j++;
 	}
 	ret[j] = NULL;
 	return (ret);

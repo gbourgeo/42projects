@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 23:39:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:13:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/19 22:23:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 ** "cr"		Move the cursor to the beginning of the line it is on.
 */
 
-static void		launch_command(t_env *e)
+static void		parse_command(t_env *e)
 {
 	char		*cmd;
 	char		**args;
@@ -41,7 +41,7 @@ void			treat_command(t_env *e)
 	tputs(ft_tgetstr("sf"), 1, ft_pchar);
 	tputs(ft_tgetstr("cr"), 1, ft_pchar);
 	if (e->quote == 0)
-		launch_command(e);
+		parse_command(e);
 	else
 	{
 		ft_insert_str(&e->hist->cmd[e->hist->cmd_len], "\n", 1);

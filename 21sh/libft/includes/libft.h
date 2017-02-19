@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/09 17:01:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/19 22:10:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ int					ft_tablen(char **table);
 void				ft_puttab(char **table);
 void				ft_puttab_fd(char **table, int fd);
 void				ft_tabdel(char **table);
+char				**ft_tabnew(size_t size);
 char				**ft_split(char *str, char *charset);
 char				**ft_split_whitespaces(char *str);
 char				*ft_str2join(char const *s1, char const *s2, \

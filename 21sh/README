@@ -32,6 +32,7 @@ Fonction supplementaires au projet 'minishell':
 
 A FAIRE :
 
+• MODIFIER l'env a chaque appel de fonction : _=...
 • Les fonctionnalités des combinaisons de touches ctrl+D et ctrl+C dans l’édition
   de la ligne et l’éxecution d’un processus.
 • Le séparateur de commandes “;”

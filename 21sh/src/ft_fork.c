@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 19:45:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/19 23:30:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,36 +56,35 @@ static char		*search_path(char *cmd, char ***env)
 {
 	int			i;
 	char		*ret;
-	char		*tmp;
 	char		**paths;
 
 	i = 0;
-	ret = NULL;
-	paths = (ft_getenv("PATH", *env)) ?
-		ft_strsplit(ft_getenv("PATH", *env), ':') : NULL;
-	while (paths && paths[i])
+	ret = ft_getenv("PATH", *env);
+	if ((paths = ft_strsplit(ret, ':')) == NULL)
+		return (NULL);
+	while (paths[i])
 	{
-		tmp = (paths[i][ft_strlen(paths[i]) - 1] != '/') ?
-			ft_strjoin(paths[i], "/") : paths[i];
-		ret = ft_strjoin(tmp, cmd);
 		if (paths[i][ft_strlen(paths[i]) - 1] != '/')
-			free(tmp);
+			ret = ft_str2join(paths[i], "/", cmd);
+		else
+			ret = ft_strjoin(paths[i], cmd);
 		if (check_path(ret))
 			break ;
 		free(ret);
 		ret = NULL;
 		i++;
 	}
-	if (paths && ft_getenv("PATH", *env))
-		ft_free(&paths);
+	ft_free(&paths);
 	return (ret);
 }
 
 static char		*get_path(char **cmd, char ***env)
 {
-	if (cmd && *cmd[0] == '/')
+	if (cmd == NULL || *cmd == NULL)
+		return (NULL);
+	if (*cmd[0] == '/')
 		return (check_path(ft_strdup(*cmd)));
-	if (cmd && ft_strchr(*cmd, '/'))
+	if (ft_strchr(*cmd, '/'))
 		return (check_command(ft_strsplit(*cmd, '/'), env));
 	return (search_path(*cmd, env));
 }
