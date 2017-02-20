@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:46:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/20 15:55:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,4 +80,30 @@ int				ft_env_error(char *err, char c, t_opt *opt)
 	ft_free(&opt->ptr);
 	ft_free(&opt->extra);
 	return (-1);
+}
+
+void			ft_update_env(char *path, char **args)
+{
+	char		*tmp;
+	size_t		i;
+
+	i = 0;
+	if (path)
+	{
+		tmp = args[0];
+		args[0] = path;
+		path = tmp;
+	}
+	while (data.env && data.env[i])
+	{
+		if (!ft_strncmp(data.env[i], "_=", 2))
+		{
+			free(data.env[i]);
+			data.env[i] = ft_strjoin("_=", args[ft_tablen(args) - 1]);
+			break ;
+		}
+		i++;
+	}
+	if (path)
+		free(path);
 }

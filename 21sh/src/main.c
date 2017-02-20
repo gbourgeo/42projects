@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 03:42:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/20 21:11:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static void		init_environment(char **environ)
 	i = 0;
 	if ((data.env = ft_envcpy(environ)) == NULL)
 		ft_exit_all("Can't copy environnement.");
+	
 	if ((path = ft_strsplit(ft_getenv("PATH", data.env), ':')) == NULL)
 		ft_exit_all("Can't split PATH.");
 	if (!(data.path = malloc(sizeof(*data.path) * (ft_tablen(path) + 1))))

@@ -6,66 +6,51 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 14:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 16:36:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/20 21:39:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-/*
-** ECHO should not decrypt '$' lines, the shell must do it at get_next_line();
-*/
-
-static void		ft_search(char *ar, char ***env)
+static int		echo_opt(char **args, int *n)
 {
 	int			i;
 	int			j;
-	char		*ptr;
 
-	i = 0;
-	j = 0;
-	ptr = NULL;
-	if (ar[i++] == '$')
+	i = 1;
+	while (args[i] && args[i][0] == '-')
 	{
-		while ((*env)[j])
+		j = 1;
+		while (args[i][j] == 'n')
 		{
-			if (ft_strcmp((*env)[j], &ar[i]) == '=')
-				ptr = ft_strchr((*env)[j], '=') + 1;
+			*n = 1;
 			j++;
 		}
-		if (ar[i] == '?')
-			ft_putnbr(data.ret);
-		else
-			ft_putstr(ptr);
+		if (args[i][j] && args[i][j] != 'n')
+			return (i);
+		i++;
 	}
-	else
-		ft_putstr(ar);
+	return (i);
 }
 
 int				ft_echo(char **args, char ***env)
 {
 	int			i;
-	int			j;
 	int			n;
 
-	i = 1;
-	j = 1;
 	n = 0;
-	if (args[1] && args[1][0] == '-')
-	{
-		while (args[1][j])
-			n = (args[1][j++] == 'n') ? 1 : 0;
-		if (n)
-			i++;
-	}
+	i = echo_opt(args, &n);
 	while (args[i])
 	{
-		ft_search(args[i], env);
-		if (args[++i])
-			ft_putchar(' ');
+		ft_putstr_fd(args[i], data.fd);
+		i++;
+		if (args[i])
+			ft_putchar_fd(' ', data.fd);
 	}
-	if (n)
-		ft_putstr("\e[7m%\e[0m");
-	ft_putchar('\n');
+	if (n && i > 2)
+		ft_putendl_fd("\e[7m%\e[0m", data.fd);
+	if (!n)
+		ft_putchar_fd('\n', data.fd);
 	return (0);
+	(void)env;
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 23:39:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/19 22:23:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/20 15:54:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static void		parse_command(t_env *e)
 	check_and_exec(args, &e->env);
 	redefine_term();
 	hist_add(e);
+	ft_free(&args);
 }
 
 void			treat_command(t_env *e)

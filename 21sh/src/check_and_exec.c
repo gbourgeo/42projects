@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:21:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 19:46:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/20 21:08:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int				check_and_exec(char **command, char ***env)
 		if (ft_strcmp(*command, builtins[i]) == 0)
 		{
 			data.ret = function[i](command, env);
+			ft_update_env(NULL, command);
 			break ;
 		}
 		i++;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 22:36:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/20 15:54:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,7 @@ char				*ft_tgetstr(char *str);
 void				ft_tgoto(t_pos *pos);
 
 int					ft_unsetenv(char **entry, char ***env);
+void				ft_update_env(char *path, char **args);
 void				historic_command(t_env *e);
 void				hist_add(t_env *e);
 void				hist_clean(t_hist *hist);
