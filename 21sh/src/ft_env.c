@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/21 20:51:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:27:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static void		free_opt(t_opt *opt)
 	if (opt->cmd)
 		free(opt->cmd);
 	ft_free(&opt->ptr);
-	ft_free(&opt->extra);
+	free(opt->extra);
 }
 
 int				ft_env(char **command, char ***env)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/20 15:54:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:20:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ static char		*search_path(char *cmd, char ***env)
 	char		**paths;
 
 	i = 0;
-	ret = ft_getenv("PATH", *env);
+	if ((ret = ft_getenv("PATH", *env)) == NULL || *ret == 0)
+		return (NULL);
 	if ((paths = ft_strsplit(ret, ':')) == NULL)
 		return (NULL);
 	while (paths[i])

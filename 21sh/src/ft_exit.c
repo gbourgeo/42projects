@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 12:41:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/19 22:24:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:30:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ static void		free_and_exit(char **args)
 {
 	update_history();
 	ft_free(&data.env);
-	ft_free(&data.path);
 	ft_free_hist(&data.hist);
 	ft_free(&args);
 	if (data.histpath)

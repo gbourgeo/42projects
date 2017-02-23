@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:08:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:29:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,6 @@ typedef struct		s_pos
 typedef struct		s_env
 {
 	char			**env;
-	char			**path;
 	char			*histpath;
 	int				fd;
 	struct termios	old_term;

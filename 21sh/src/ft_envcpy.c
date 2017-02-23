@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 10:37:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/20 15:29:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:42:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ static char		**ft_new_env(void)
 	if (getcwd(my_dir, 255) == NULL)
 		ft_putendl_fd("I can't get your current working directory.", 2);
 	if ((cpy = malloc(sizeof(*cpy) * 7)) == NULL)
-		ft_putendl_fd("I can't get free memory space.", 2);
-	if (cpy == NULL)
 		return (NULL);
 	cpy[0] = ft_strjoin("HOME=", my_dir);
 	cpy[1] = ft_strdup("USER=guest");
@@ -37,28 +35,27 @@ static char		**ft_new_env(void)
 char			**ft_envcpy(char **env)
 {
 	int			i;
-	int			shlvl;
+	char		*shlvl;
 	char		**cpy;
 
 	i = 0;
 	if (env == NULL || !*env)
 		return (ft_new_env());
-	if ((cpy = malloc(sizeof(*cpy) * (ft_tablen(env) + 1))) != NULL)
+	if ((cpy = malloc(sizeof(*cpy) * (ft_tablen(env) + 1))) == NULL)
+		return (NULL);
+	while (env[i] != '\0')
 	{
-		while (env[i] != '\0')
+		if (!ft_strncmp(env[i], "SHLVL=", 6))
 		{
-			if (!ft_strncmp(env[i], "SHLVL=", 6))
-			{
-				shlvl = ft_atoi(&env[i][6]);
-				cpy[i] = ft_strjoin("SHLVL=", ft_itoa(shlvl + 1));
-			}
-			else
-				cpy[i] = ft_strdup(env[i]);
-			++i;
+			shlvl = ft_itoa(ft_atoi(&env[i][6]) + 1);
+			cpy[i] = ft_strjoin("SHLVL=", shlvl);
+			if (shlvl)
+				free(shlvl);
 		}
-		cpy[i] = 0;
+		else
+			cpy[i] = ft_strdup(env[i]);
+		++i;
 	}
-	else
-		ft_putendl("I can't get free memory space for environment variables.");
+	cpy[i] = 0;
 	return (cpy);
 }
