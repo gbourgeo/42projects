@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/14 16:49:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 05:38:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static int		ft_minishell(int fd, char **environ)
 	char		*buf;
 	int			ret;
 
+	ret = 0;
 	if (init_shell(fd, &e, environ))
 	{
 		prompt(e.env);

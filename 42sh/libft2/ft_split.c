@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/01 20:05:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/27 19:30:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 05:35:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,6 @@ char		**ft_split(char *str, char *charset)
 		else
 			++i;
 	}
-	tab[j] = '\0';
+	tab[j] = NULL;
 	return (tab);
 }

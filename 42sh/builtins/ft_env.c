@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/27 19:17:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 05:37:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int		redefine_env(char **args, t_env *e)
 		{
 			if ((new[2] = ft_strdup(ft_strrchr(args[i], '=') + 1)))
 			{
-				new[3] = '\0';
+				new[3] = NULL;
 				ft_setenv(new, &e->env);
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/15 20:44:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/16 01:41:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 05:36:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void		ft_change_pwds(char *pwd, char ***env)
 	if ((tmp = (char**)malloc(sizeof(char*) * 4)) != NULL)
 	{
 		tmp[0] = ft_strdup("setenv");
-		tmp[3] = '\0';
+		tmp[3] = NULL;
 		if (ft_getenv("OLDPWD", *env))
 		{
 			tmp[1] = ft_strdup("OLDPWD");

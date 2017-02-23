@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/27 19:17:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 05:37:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static char		**new_env(char **args, char ***env)
 	}
 	join = ft_strjoin(args[1], "=");
 	new[i] = ft_strjoin(join, args[2]);
-	new[i + 1] = '\0';
+	new[i + 1] = NULL;
 	free(join);
 	return (new);
 }
