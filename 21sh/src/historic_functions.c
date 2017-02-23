@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/15 04:11:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 04:31:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 04:43:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-t_hist				*hist_new(char *cmd, size_t len, t_hist *next)
+t_hist				*hist_new(char *cmd, long len, t_hist *next)
 {
 	t_hist			*ret;
 
@@ -35,10 +35,16 @@ t_hist				*hist_new(char *cmd, size_t len, t_hist *next)
 	return (ret);
 }
 
-void				hist_add(t_env *e)
+void				hist_add(t_env *e, t_parse *parse)
 {
-	if ((!e->hist->next || ft_strcmp(e->hist->cmd, e->hist->next->cmd))
-		&& *e->hist->cmd)
+	long			i;
+
+	i = 0;
+	while (e->hist->cmd[i] && (e->hist->cmd[i] == ' ' ||
+								(e->hist->cmd[i] > 9 && e->hist->cmd[i] < 11)))
+		i++;
+	if (parse && i != e->hist->cmd_len &&
+		(!e->hist->next || ft_strcmp(e->hist->cmd, e->hist->next->cmd)))
 		e->hist = hist_new(NULL, 0, e->hist);
 	else
 	{
@@ -51,7 +57,7 @@ void				hist_add(t_env *e)
 
 void				hist_clean(t_hist *hist)
 {
-	size_t			size;
+	size_t		size;
 
 	size = 0;
 	while (hist)

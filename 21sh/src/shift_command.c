@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:15:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/14 19:30:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 04:45:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void		shift_left(t_env *e)
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.cpy = -1;
-		if (e->cpy.cpy == -1 && e->pos != (size_t)e->cpy.shft)
+		if (e->cpy.cpy == -1 && e->pos != e->cpy.shft)
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
 		if (e->hist->cmd[e->pos])
 		{
@@ -62,7 +62,7 @@ static void		shift_up(t_env *e)
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.shft = e->pos;
-		if (e->cpy.shft == (long int)e->pos)
+		if (e->cpy.shft == e->pos)
 			e->cpy.cpy = 0;
 		shift_left(e);
 	}
@@ -79,7 +79,7 @@ static void		shift_down(t_env *e)
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.shft = e->pos;
-		if (e->cpy.shft == (long int)e->pos)
+		if (e->cpy.shft == e->pos)
 			e->cpy.cpy = 0;
 		shift_right(e);
 	}
@@ -89,7 +89,7 @@ void			shift_command(t_env *e)
 {
 	if (e->cpy.cpy == 0)
 		e->cpy.shft = e->pos;
-	if (e->cpy.shft == (long int)e->pos)
+	if (e->cpy.shft == e->pos)
 		e->cpy.cpy = 0;
 	if (SHFT_UP(e))
 		shift_up(e);

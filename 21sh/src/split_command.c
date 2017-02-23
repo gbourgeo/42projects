@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 00:16:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 04:38:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ char			**split_command(char *cmd, t_env *e)
 	size_t		j;
 
 	line = count_lines(cmd, 0, 0);
-	if ((ret = (char **)malloc(sizeof(*ret) * (line + 1))) == NULL)
+	if ((ret = ft_tabnew(line + 1)) == NULL)
 		return (NULL);
 	i = 0;
 	j = 0;

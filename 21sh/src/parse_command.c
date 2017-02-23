@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/23 02:07:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:08:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 04:32:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,30 @@
 static void		ft_free_parse(t_parse **new)
 {
 	t_parse		*tmp;
-	t_parse		*prev;
 
-	if (new)
+	if (new && *new)
 	{
 		tmp = *new;
-		while (tmp)
+		while (tmp->prev)
 		{
-			if (tmp->prev == NULL && tmp->cmd != NULL)
-				free(tmp->cmd);
-			prev = tmp->prev;
-			ft_memset(tmp, 0, sizeof(*tmp));
-			free(tmp);
 			tmp = tmp->prev;
+			ft_memset(tmp->next, 0, sizeof(*tmp));
+			free(tmp->next);
 		}
-		*new = NULL;
+		if (tmp->cmd)
+			free(tmp->cmd);
+		ft_memset(tmp, 0, sizeof(*tmp));
+		free(tmp);
+		tmp = NULL;
 	}
 }
 
-static void		*parse_error(char *s1, char *s2, t_parse **new)
+static void		*parse_error(char *s1, char *s2, t_parse *new)
 {
 	ft_putstr_fd(s1, 2);
 	ft_putstr_fd(s2, 2);
 	ft_putendl_fd("'", 2);
-	ft_free_parse(new);
+	ft_free_parse(&new);
 	return (NULL);
 }
 
@@ -47,7 +47,7 @@ static t_parse	*parse_new(char *cmd, t_parse *prev)
 	t_parse		*new;
 
 	if ((new = (t_parse *)malloc(sizeof(*new))) == NULL)
-		return (parse_error("21sh: Memory insufficient.", NULL, &prev));
+		return (parse_error("21sh: Memory insufficient.", NULL, prev));
 	ft_memset(new, 0, sizeof(*new));
 	if (prev)
 		prev->next = new;
@@ -70,8 +70,8 @@ static t_parse	*parse_it(t_env *e)
 	{
 		if ((tmp = ft_strchr(cmd, ';')) != NULL)
 			*tmp = '\0';
-		if (*cmd == '\0')
-			return (parse_error("21sh: parse error near ", "`;;'", &new));
+		if (new && *cmd == '\0')
+			return (parse_error("21sh: parse error near ", "`;;'", new));
 		if ((new = parse_new(cmd, new)) == NULL)
 			break ;
 		cmd = (tmp) ? tmp + 1 : NULL;
@@ -94,6 +94,7 @@ void			parse_command(t_env *e)
 			restore_term();
 			e->ret = check_and_exec(args, &e->env);
 			redefine_term();
+			ft_free(&args);
 		}
 		else
 			ft_putendl_fd("21sh: Parsing failed.", 2);
@@ -101,7 +102,6 @@ void			parse_command(t_env *e)
 			break ;
 		parse = parse->next;
 	}
+	hist_add(e, parse);
 	ft_free_parse(&parse);
-	hist_add(e);
-	ft_free(&args);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:29:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 04:44:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,10 @@ typedef struct		s_hist
 {
 	struct s_hist	*prev;
 	char			*cmd;
-	size_t			cmd_len;
-	size_t			cmd_size;
+	long			cmd_len;
+	long			cmd_size;
 	char			*save;
-	size_t			save_len;
+	long			save_len;
 	struct s_hist	*next;
 }					t_hist;
 
@@ -103,7 +103,7 @@ typedef struct		s_copy
 	int				cpy;
 	int				cut;
 	char			*str;
-	long int		shft;
+	long			shft;
 }					t_copy;
 
 typedef struct		s_pos
@@ -127,9 +127,9 @@ typedef struct		s_env
 	int				ret;
 	t_hist			*hist;
 	t_hist			*cmd;
-	size_t			pos;
+	long			pos;
 	char			quote;
-	size_t			q_pos;
+	long			q_pos;
 }					t_env;
 
 struct s_env		data;
@@ -186,9 +186,9 @@ void				ft_tgoto(t_pos *pos);
 int					ft_unsetenv(char **entry, char ***env);
 void				ft_update_env(char *path, char **args);
 void				historic_command(t_env *e);
-void				hist_add(t_env *e);
+void				hist_add(t_env *e, t_parse *parse);
 void				hist_clean(t_hist *hist);
-t_hist				*hist_new(char *cmd, size_t len, t_hist *next);
+t_hist				*hist_new(char *cmd, long len, t_hist *next);
 
 void				init_signals(void);
 void				init_termcaps(char *term_name, int ret);
