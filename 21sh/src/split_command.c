@@ -6,12 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/19 22:51:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 00:16:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include "libft.h"
+#include "main.h"
 
 static size_t	count_lines(char *cmd, size_t i, size_t ret)
 {
@@ -22,7 +21,7 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 		if (cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11))
 		{
 			ret++;
-			while (cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11) && cmd[i])
+			while (cmd[i] && cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11))
 			{
 				if (cmd[i] == '\'' || cmd[i] == '"')
 				{
@@ -39,64 +38,37 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 	return (ret);
 }
 
-static char		*copy_line(char *cmd, char *quote, size_t i, size_t j)
+static char		*get_line(char *cmd, size_t *len, t_env *e)
 {
+	size_t		i;
 	char		*line;
 
-	if (i <= 0 || (line = (char *)malloc(sizeof(*line) * (i + 1))) == NULL)
-		return (NULL);
-	line[i--] = '\0';
-	while (i + j > 0)
+	i = 0;
+	while (cmd[i] && cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11))
 	{
-		if (quote && cmd[i + j] == *quote)
-			j--;
-		else
+		if (cmd[i] == '\'' || cmd[i] == '"')
 		{
-			line[i] = cmd[i + j];
-			i--;
+			e->quote = cmd[i++];
+			while (cmd[i] != e->quote)
+				i++;
 		}
+		i++;
 	}
-	if (quote == NULL || cmd[i + j] != *quote)
-		line[i + j] = cmd[i + j];
+	if (i <= 0 || (line = ft_strnew(i + 1)) == NULL)
+		return (NULL);
+	*len += i;
+	ft_strncpy(line, cmd, i);
+	line = expansions_check(&line, e);
 	return (line);
 }
 
-static char		*get_line(char *cmd, size_t *len)
-{
-	size_t		i;
-	size_t		j;
-	char		*quote;
-
-	i = 0;
-	j = 0;
-	quote = NULL;
-	while (cmd[i + j] && cmd[i + j] != ' ' &&
-			(cmd[i + j] < 9 || cmd[i + j] > 11))
-	{
-		if (cmd[i + j] == '\'' || cmd[i + j] == '"')
-		{
-			quote = &cmd[i + j];
-			j++;
-			while (cmd[i + j] && cmd[i + j] != *quote)
-				i++;
-			j++;
-		}
-		else
-			i++;
-	}
-	*len += i + j;
-	return (copy_line(cmd, quote, i, j));
-}
-
-char			**split_command(char *cmd)
+char			**split_command(char *cmd, t_env *e)
 {
 	size_t		line;
 	char		**ret;
 	size_t		i;
 	size_t		j;
 
-	if (cmd == NULL)
-		return (NULL);
 	line = count_lines(cmd, 0, 0);
 	if ((ret = (char **)malloc(sizeof(*ret) * (line + 1))) == NULL)
 		return (NULL);
@@ -106,7 +78,7 @@ char			**split_command(char *cmd)
 	{
 		while (cmd[i] == ' ' || (cmd[i] > 9 && cmd[i] < 11))
 			i++;
-		if ((ret[j] = get_line(&cmd[i], &i)) == NULL)
+		if ((ret[j] = get_line(&cmd[i], &i, e)) == NULL)
 			break ;
 		j++;
 	}

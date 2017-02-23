@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/20 15:55:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/21 20:51:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,25 @@ static int		check(char **command, t_opt *opt)
 	return (i);
 }
 
+static void		free_opt(t_opt *opt)
+{
+	ft_free(&opt->env);
+	if (opt->path)
+		free(opt->path);
+	if (opt->cmd)
+		free(opt->cmd);
+	ft_free(&opt->ptr);
+	ft_free(&opt->extra);
+}
+
 int				ft_env(char **command, char ***env)
 {
 	t_opt		opt;
+	int			ret;
 	int			i;
 
 	ft_memset(&opt, 0, sizeof(opt));
+	ret = 0;
 	if ((opt.env = ft_tabdup(*env)) == NULL)
 		return (ft_env_error("malloc failed", 0, &opt));
 	if (!command[1])
@@ -46,18 +59,12 @@ int				ft_env(char **command, char ***env)
 		if ((i = check(command, &opt)) < 0)
 			return (1);
 		if (command[i])
-			data.ret = check_and_exec(&command[i], &opt.env);
+			ret = check_and_exec(&command[i], &opt.env);
 		else
 			ft_puttab(opt.env);
 	}
-	ft_free(&opt.env);
-	if (opt.path)
-		free(opt.path);
-	if (opt.cmd)
-		free(opt.cmd);
-	ft_free(&opt.ptr);
-	ft_free(&opt.extra);
-	return (data.ret);
+	free_opt(&opt);
+	return (ret);
 }
 
 int				ft_env_error(char *err, char c, t_opt *opt)
@@ -72,13 +79,7 @@ int				ft_env_error(char *err, char c, t_opt *opt)
 		write(2, "\n           [name=value ...] [utility [argument ...]]", 53);
 	}
 	ft_putchar_fd('\n', 2);
-	ft_free(&opt->env);
-	if (opt->path)
-		free(opt->path);
-	if (opt->cmd)
-		free(opt->cmd);
-	ft_free(&opt->ptr);
-	ft_free(&opt->extra);
+	free_opt(opt);
 	return (-1);
 }
 

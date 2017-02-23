@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 23:39:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/20 15:54:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:07:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,6 @@
 **			Else, move the cursor one line down.
 ** "cr"		Move the cursor to the beginning of the line it is on.
 */
-
-static void		parse_command(t_env *e)
-{
-	char		*cmd;
-	char		**args;
-
-	cmd = expansions_check(e);
-	args = split_command(cmd);
-	if (cmd)
-		free(cmd);
-	if (args == NULL)
-		return (ft_putendl_fd("Parsing failed.", 2));
-	restore_term();
-	check_and_exec(args, &e->env);
-	redefine_term();
-	hist_add(e);
-	ft_free(&args);
-}
 
 void			treat_command(t_env *e)
 {

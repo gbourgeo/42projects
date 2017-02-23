@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/20 15:54:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 02:08:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,14 @@ typedef struct		s_opt
 	char			**extra;
 }					t_opt;
 
+typedef struct		s_parse
+{
+	struct s_parse	*prev;
+	int				type;
+	char			*cmd;
+	struct s_parse	*next;
+}					t_parse;
+
 typedef struct		s_hist
 {
 	struct s_hist	*prev;
@@ -134,7 +142,8 @@ void				copy_command(t_env *e);
 void				ctrl_command(t_env *e);
 void				ctrl_shift_command(t_env *e);
 void				cursor_position(t_pos *pos);
-char				*expansions_check(t_env *e);
+int					dollar(size_t i, char **cmd, t_env *e);
+char				*expansions_check(char **cmd, t_env *e);
 int					fork_function(char **args, char ***env, int status);
 
 int					ft_cd(char **args, char ***env);
@@ -187,6 +196,7 @@ void				init_termcaps(char *term_name, int ret);
 void				k_home(t_env *e);
 void				k_end(t_env *e);
 void				keypad_command(t_env *e);
+void				parse_command(t_env *e);
 void				prompt(t_env *e);
 int					quotes_command(t_env *e);
 void				read_command(int len, char *buf, t_env *e);
@@ -195,7 +205,7 @@ void				restore_term(void);
 t_hist				*retreive_history(void);
 void				rewrite_command(t_env *e);
 void				shift_command(t_env *e);
-char				**split_command(char *cmd);
+char				**split_command(char *cmd, t_env *e);
 void				treat_command(t_env *e);
 void				update_history(void);
 
