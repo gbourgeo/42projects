@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/23 02:07:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 04:32:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/23 05:45:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static t_parse	*parse_new(char *cmd, t_parse *prev)
 	return (new);
 }
 
-static t_parse	*parse_it(t_env *e)
+static t_parse	*check_semicolon(t_env *e)
 {
 	t_parse		*new;
 	char		*cmd;
@@ -86,14 +86,12 @@ void			parse_command(t_env *e)
 	t_parse		*parse;
 	char		**args;
 
-	parse = parse_it(e);
+	parse = check_semicolon(e);
 	while (parse)
 	{
 		if ((args = split_command(parse->cmd, e)) != NULL)
 		{
-			restore_term();
 			e->ret = check_and_exec(args, &e->env);
-			redefine_term();
 			ft_free(&args);
 		}
 		else
