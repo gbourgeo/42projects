@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:42:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:40:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,6 @@ int				main(int ac, char **av, char **environ)
 	init_termcaps(NULL, 0);
 	init_signals();
 	ft_minishell(&data);
-	ft_exit(NULL, NULL);
+	ft_exit(NULL, &data);
 	return (0);
 }

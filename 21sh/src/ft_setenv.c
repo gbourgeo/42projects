@@ -6,24 +6,24 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:02:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 04:22:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static char		**add_env(char **entry, char ***env, int i)
+static char		**add_env(char **entry, int i, t_env *e)
 {
 	char		**new;
 	char		*tmp;
 
-	new = (char **)malloc(sizeof(char *) * (i + 2));
+	new = ft_tabnew(i + 2);
 	if (new)
 	{
 		i = 0;
-		while (*env && (*env)[i] != NULL)
+		while (e->env && e->env[i] != NULL)
 		{
-			new[i] = ft_strdup((*env)[i]);
+			new[i] = ft_strdup(e->env[i]);
 			i++;
 		}
 		if (i)
@@ -41,55 +41,50 @@ static char		**add_env(char **entry, char ***env, int i)
 	return (NULL);
 }
 
-static int		modify_env(char **entry, int i, char ***env)
+static void		modify_env(char **entry, int i, t_env *e)
 {
 	char		*tmp;
 
-	free((*env)[i]);
+	free(e->env[i]);
 	tmp = ft_strjoin(entry[1], "=");
 	if (tmp)
 	{
-		(*env)[i] = ft_strjoin(tmp, entry[2]);
+		e->env[i] = ft_strjoin(tmp, entry[2]);
 		free(tmp);
-		if ((*env)[i])
-			return (0);
+		if (e->env[i])
+			return ;
 	}
 	ft_putendl_fd("setenv: Memory space insufficiant.", 2);
-	return (-1);
+	e->ret = 1;
 }
 
-static int		search_command(char **entry, char ***env)
+static void		search_command(char **entry, t_env *e)
 {
 	char		**old_env;
 	int			i;
 
 	i = 0;
-	while (*env && (*env)[i] != NULL)
+	while (e->env && e->env[i] != NULL)
 	{
-		if (ft_strcmp((*env)[i], entry[1]) == '=')
-			return (modify_env(entry, i, env));
+		if (ft_strcmp(e->env[i], entry[1]) == '=')
+			return (modify_env(entry, i, e));
 		i++;
 	}
-	old_env = *env;
-	if ((*env = add_env(entry, env, i)) == NULL)
-	{
-		*env = old_env;
-		return (-1);
-	}
-	ft_free(&old_env);
-	return (0);
+	old_env = e->env;
+	if ((e->env = add_env(entry, i, e)) != NULL)
+		return (ft_free(&old_env));
+	e->env = old_env;
+	e->ret = 1;
 }
 
-int				ft_setenv(char **entry, char ***env)
+void			ft_setenv(char **entry, t_env *e)
 {
 	size_t		i;
 
 	i = 0;
+	e->ret = 0;
 	if (!entry[1])
-	{
-		ft_puttab(*env);
-		return (0);
-	}
+		return (ft_puttab(e->env));
 	else if (entry[1] && entry[2] && entry[3])
 		ft_putendl_fd("setenv: too many arguments.", 2);
 	else if (!ft_isalpha(*entry[1]))
@@ -97,6 +92,6 @@ int				ft_setenv(char **entry, char ***env)
 	else if (!ft_stralnum(entry[1]))
 		ft_putendl_fd("setenv: Variable contain no alphanumeric character.", 2);
 	else
-		return (search_command(entry, env));
-	return (-1);
+		return (search_command(entry, e));
+	e->ret = 1;
 }

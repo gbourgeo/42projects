@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 14:54:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/20 21:39:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 02:31:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int		echo_opt(char **args, int *n)
 	return (i);
 }
 
-int				ft_echo(char **args, char ***env)
+void			ft_echo(char **args, t_env *e)
 {
 	int			i;
 	int			n;
@@ -51,6 +51,5 @@ int				ft_echo(char **args, char ***env)
 		ft_putendl_fd("\e[7m%\e[0m", data.fd);
 	if (!n)
 		ft_putchar_fd('\n', data.fd);
-	return (0);
-	(void)env;
+	e->ret = 0;
 }

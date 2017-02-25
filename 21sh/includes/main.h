@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 04:44:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:47:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,12 @@
 # define CT_SH_KEY(x)	!ft_strncmp(x->buf, "\x1B[1;6", 5)
 # define CT_SH_RI(x)	!ft_strcmp(x->buf, "\x1B[1;6C")
 # define CT_SH_LE(x)	!ft_strcmp(x->buf, "\x1B[1;6D")
+
+typedef struct		s_pipe
+{
+	char			**table;
+	char			***cmd;
+}					t_pipe;
 
 typedef struct		s_opt
 {
@@ -134,7 +140,7 @@ typedef struct		s_env
 
 struct s_env		data;
 
-int					check_and_exec(char **command, char ***env);
+void				check_and_exec(char **command, t_env *e);
 void				check_cmd(char buf, t_env *e);
 void				check_cmd_len(int len, t_env *e);
 void				copy_command(t_env *e);
@@ -143,22 +149,22 @@ void				ctrl_shift_command(t_env *e);
 void				cursor_position(t_pos *pos);
 int					dollar(size_t i, char **cmd, t_env *e);
 char				*expansions_check(char **cmd, t_env *e);
-int					fork_function(char **args, char ***env, int status);
+void				fork_function(char **args, t_env *e);
 
-int					ft_cd(char **args, char ***env);
-char				*ft_cd_check(char **args, char ***env, int i);
-void				ft_change_pwds(char *pwd, char ***env);
+void				ft_cd(char **args, t_env *e);
+char				*ft_cd_check(char **args, int i, t_env *e);
+void				ft_change_pwds(char *new, t_env *e);
 
-int					ft_echo(char **args, char ***env);
+void				ft_echo(char **args, t_env *e);
 char				**ft_envcpy(char **env);
 
-int					ft_exit(char **args, char ***env);
+void				ft_exit(char **args, t_env *e);
 void				ft_exit_all(char *err);
 
-int					ft_env(char **command, char ***env);
+void				ft_env(char **command, t_env *e);
 int					ft_env_check_opt(char **cmd, t_opt *opt, int i, int j);
 int					ft_env_check_opt_plus(char **cmd, t_opt *opt, int i);
-int					ft_env_error(char *err, char c, t_opt *opt);
+int					ft_env_error(char *err, char c);
 int					ft_env_extra(t_opt *opt);
 int					ft_env_i(t_opt *opt);
 int					ft_env_p(t_opt *opt, char **cmd);
@@ -175,7 +181,7 @@ void				ft_pos(int len, t_env *e);
 void				ft_put2endl_fd(char *s1, char *s2, int fd);
 char				*ft_realloc(char *str, size_t size);
 
-int					ft_setenv(char **entry, char ***env);
+void				ft_setenv(char **entry, t_env *e);
 char				**ft_split_whitespaces(char *str);
 int					ft_stralnum(char *str);
 void				ft_strerror(char *str);
@@ -183,8 +189,8 @@ char				*ft_strndup(const char *s1, int size);
 char				*ft_tgetstr(char *str);
 void				ft_tgoto(t_pos *pos);
 
-int					ft_unsetenv(char **entry, char ***env);
-void				ft_update_env(char *path, char **args);
+void				ft_unsetenv(char **entry, t_env *e);
+void				ft_update_env(char *path, char **args, t_env *e);
 void				historic_command(t_env *e);
 void				hist_add(t_env *e, t_parse *parse);
 void				hist_clean(t_hist *hist);
@@ -196,6 +202,7 @@ void				k_home(t_env *e);
 void				k_end(t_env *e);
 void				keypad_command(t_env *e);
 void				parse_command(t_env *e);
+void				pipes_check(char **args, t_env *e);
 void				prompt(t_env *e);
 int					quotes_command(t_env *e);
 void				read_command(int len, char *buf, t_env *e);

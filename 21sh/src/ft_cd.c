@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 16:35:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:24:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static int		cd_error(char *pwd, char *entry)
+static void		cd_error(char *pwd, char *entry)
 {
 	struct stat	buffer;
 	int			ret;
@@ -34,33 +34,34 @@ static int		cd_error(char *pwd, char *entry)
 		ft_putendl(entry);
 		free(pwd);
 	}
-	return (1);
 }
 
-static int		cd_write_in_pwd(char **args, int i, char ***env)
+static void		cd_write_in_pwd(char **args, int i, t_env *e)
 {
 	char		*pwd;
 	char		*tmp;
 
-	pwd = ft_cd_check(args, env, i);
+	e->ret = 0;
+	pwd = ft_cd_check(args, i, e);
 	if (pwd && !*pwd)
 	{
 		free(pwd);
-		return (0);
+		return ;
 	}
 	if (pwd && chdir(pwd) != -1)
 	{
 		tmp = pwd;
 		if (*args[i - 1] == '-' && ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
 		{
-			pwd = ft_getcwd(tmp, data.env);
+			pwd = ft_getcwd(tmp, e->env);
 			free(tmp);
 		}
-		ft_change_pwds(pwd, env);
+		ft_change_pwds(pwd, e);
 		free(pwd);
-		return (0);
+		return ;
 	}
-	return (cd_error(pwd, args[i]));
+	cd_error(pwd, args[i]);
+	e->ret = 1;
 }
 
 static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)
@@ -75,34 +76,36 @@ static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)
 	return (pwd);
 }
 
-static int		cd_search_in_pwd(char **args, char ***env)
+static void		cd_search_in_pwd(char **args, t_env *e)
 {
 	char		*pwd;
 	char		*tmp;
 
-	pwd = ft_getenv("PWD", data.env);
+	pwd = ft_getenv("PWD", e->env);
 	if ((tmp = ft_strstr(pwd, args[1])) == NULL)
 	{
 		ft_putstr_fd("cd: string not in pwd: ", 2);
 		ft_putendl_fd(args[1], 2);
-		return (1);
+		return ;
 	}
 	pwd = cd_change_in_pwd(pwd, tmp, args);
 	if (chdir(pwd) != -1)
 	{
-		ft_change_pwds(pwd, env);
+		e->ret = 0;
+		ft_change_pwds(pwd, e);
 		ft_putendl(pwd);
 		free(pwd);
-		return (0);
+		return ;
 	}
-	return (cd_error(pwd, pwd));
+	cd_error(pwd, pwd);
 }
 
-int				ft_cd(char **args, char ***env)
+void			ft_cd(char **args, t_env *e)
 {
-	int		i;
+	int			i;
 
 	i = 1;
+	e->ret = 1;
 	while (args[i] && *args[i] == '-' && args[i][1] && args[i][1] != '-')
 	{
 		if (ft_strchr(args[i], 'P') == NULL && ft_strchr(args[i], 'L') == NULL)
@@ -110,15 +113,14 @@ int				ft_cd(char **args, char ***env)
 			ft_putstr_fd("cd: invalid option: ", 2);
 			ft_putstr_fd(args[1], 2);
 			ft_putendl_fd("\nusage: cd [-L|-P] [dir]", 2);
-			return (1);
+			return ;
 		}
 		i++;
 	}
 	if (!args[i] || !args[i + 1])
-		return (cd_write_in_pwd(args, i, env));
+		return (cd_write_in_pwd(args, i, e));
 	if (!args[i + 2])
-		return (cd_search_in_pwd(args + i - 1, env));
+		return (cd_search_in_pwd(args + i - 1, e));
 	ft_putstr_fd("cd: too much arguments: ", 2);
 	ft_putendl_fd(args[1], 2);
-	return (1);
 }

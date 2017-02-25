@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/02/23 02:08:45 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/02/25 00:32:22 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,6 +31,7 @@ SRC		= main.c			\
 			k_home_end.c	\
 			keypad_command.c	\
 			parse_command.c	\
+			pipes.c			\
 			pos_function.c	\
 			prompt.c		\
 			read_command.c	\

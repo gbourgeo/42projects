@@ -6,34 +6,31 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:21:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 05:41:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:48:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-int				check_and_exec(char **command, char ***env)
+void			check_and_exec(char **command, t_env *e)
 {
 	static char	*builtins[] = { BUILTINS };
-	static int	(*function[])(char **, char ***) = { FUNCTION };
+	static void	(*function[])(char **, t_env *) = { FUNCTION };
 	int			i;
-	int			ret;
 
 	i = 0;
-	ret = 0;
 	restore_term();
 	while (builtins[i])
 	{
 		if (ft_strcmp(*command, builtins[i]) == 0)
 		{
-			ret = function[i](command, env);
-			ft_update_env(NULL, command);
+			ft_update_env(NULL, command, e);
+			function[i](command, e);
 			break ;
 		}
 		i++;
 	}
 	if (!builtins[i] && *command)
-		ret = fork_function(command, env, 127);
+		fork_function(command, e);
 	redefine_term();
-	return (ret);
 }

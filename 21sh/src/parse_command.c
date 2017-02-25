@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/23 02:07:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 05:45:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 00:25:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ static void		ft_free_parse(t_parse **new)
 static void		*parse_error(char *s1, char *s2, t_parse *new)
 {
 	ft_putstr_fd(s1, 2);
-	ft_putstr_fd(s2, 2);
-	ft_putendl_fd("'", 2);
+	ft_putendl_fd(s2, 2);
 	ft_free_parse(&new);
 	return (NULL);
 }
@@ -57,7 +56,7 @@ static t_parse	*parse_new(char *cmd, t_parse *prev)
 	return (new);
 }
 
-static t_parse	*check_semicolon(t_env *e)
+static t_parse	*semicolon_check(t_env *e)
 {
 	t_parse		*new;
 	char		*cmd;
@@ -65,7 +64,7 @@ static t_parse	*check_semicolon(t_env *e)
 
 	new = NULL;
 	if ((cmd = ft_strdup(e->hist->cmd)) == NULL)
-		return (parse_error("21sh: Can't duplicate `", e->hist->cmd, NULL));
+		return (parse_error("21sh: Can't duplicate :", e->hist->cmd, new));
 	while (cmd && *cmd)
 	{
 		if ((tmp = ft_strchr(cmd, ';')) != NULL)
@@ -76,7 +75,7 @@ static t_parse	*check_semicolon(t_env *e)
 			break ;
 		cmd = (tmp) ? tmp + 1 : NULL;
 	}
-	while (new->prev)
+	while (new && new->prev)
 		new = new->prev;
 	return (new);
 }
@@ -86,12 +85,12 @@ void			parse_command(t_env *e)
 	t_parse		*parse;
 	char		**args;
 
-	parse = check_semicolon(e);
+	parse = semicolon_check(e);
 	while (parse)
 	{
 		if ((args = split_command(parse->cmd, e)) != NULL)
 		{
-			e->ret = check_and_exec(args, &e->env);
+			pipes_check(args, e);
 			ft_free(&args);
 		}
 		else

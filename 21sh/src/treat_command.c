@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/01 23:39:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:07:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/24 21:59:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ void			treat_command(t_env *e)
 	tputs(ft_tgetstr("sf"), 1, ft_pchar);
 	tputs(ft_tgetstr("cr"), 1, ft_pchar);
 	if (e->quote == 0)
-		parse_command(e);
+	{
+		if (*e->hist->cmd)
+			parse_command(e);
+	}
 	else
 	{
 		ft_insert_str(&e->hist->cmd[e->hist->cmd_len], "\n", 1);

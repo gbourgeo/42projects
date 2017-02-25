@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:34:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/05 02:32:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 04:02:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static int		ft_add_env(int i, char *new_p, t_opt *opt)
 	int			len;
 
 	n = opt->env;
-	if (!(opt->env = (char **)malloc(sizeof(char *) * (ft_tablen(n) + 2))))
+	if (!(opt->env = ft_tabnew(ft_tablen(n) + 2)))
 		return (env_fail(n, opt));
 	j = 0;
 	while (n && n[j])
@@ -92,7 +92,7 @@ int				ft_env_extra(t_opt *opt)
 		*tmp = '\0';
 		if (!ft_change_var(i, tmp + 1, opt) &&
 			!ft_add_env(i, tmp + 1, opt))
-			return (ft_env_error("malloc failed", 0, opt));
+			return (ft_env_error("malloc failed.", 0));
 		i++;
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:36:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 02:44:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int				ft_env_u(t_opt *opt)
 
 	i = -1;
 	if (opt->ptr == NULL || opt->ptr[0] == '\0')
-		return (ft_env_error("option requires an argument", 'u', opt));
+		return (ft_env_error("option requires an argument", 'u'));
 	while (opt->ptr[++i])
 	{
 		if (opt->v)
@@ -56,7 +56,7 @@ int				ft_env_u(t_opt *opt)
 			if (ft_strcmp(opt->env[j], opt->ptr[i]) == '=')
 			{
 				if ((opt->env = ft_new_env(opt, j)) == old)
-					return (ft_env_error("malloc failed", 0, opt));
+					return (ft_env_error("malloc failed.", 0));
 				break ;
 			}
 		}
@@ -103,9 +103,9 @@ int				ft_env_p(t_opt *opt, char **cmd)
 
 	i = 0;
 	if (opt->path == NULL || opt->path[0] == '\0')
-		return (ft_env_error("option requires an argument", 'P', opt));
+		return (ft_env_error("option requires an argument", 'P'));
 	if ((opt->cmd = ft_search_path(cmd[0], opt)) == NULL)
-		return (ft_env_error("No such file or directory", 0, opt));
+		return (ft_env_error("No such file or directory", 0));
 	free(cmd[0]);
 	cmd[0] = opt->cmd;
 	opt->cmd = NULL;

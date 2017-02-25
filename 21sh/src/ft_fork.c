@@ -6,19 +6,19 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:20:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:48:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static char		*check_command(char **cmd, char ***env)
+static char		*check_command(char **cmd, t_env *e)
 {
 	char		*pwd;
 	char		*tmp;
 	int			i;
 
-	pwd = ft_strdup(ft_getenv("PWD", *env));
+	pwd = ft_strdup(ft_getenv("PWD", e->env));
 	if (pwd == NULL)
 		return (NULL);
 	i = 0;
@@ -52,14 +52,14 @@ static char		*check_path(char *path)
 	return (path);
 }
 
-static char		*search_path(char *cmd, char ***env)
+static char		*search_path(char *cmd, t_env *e)
 {
 	int			i;
 	char		*ret;
 	char		**paths;
 
 	i = 0;
-	if ((ret = ft_getenv("PATH", *env)) == NULL || *ret == 0)
+	if ((ret = ft_getenv("PATH", e->env)) == NULL || *ret == 0)
 		return (NULL);
 	if ((paths = ft_strsplit(ret, ':')) == NULL)
 		return (NULL);
@@ -79,41 +79,40 @@ static char		*search_path(char *cmd, char ***env)
 	return (ret);
 }
 
-static char		*get_path(char **cmd, char ***env)
+static char		*get_path(char **cmd, t_env *e)
 {
 	if (cmd == NULL || *cmd == NULL)
 		return (NULL);
 	if (*cmd[0] == '/')
 		return (check_path(ft_strdup(*cmd)));
 	if (ft_strchr(*cmd, '/'))
-		return (check_command(ft_strsplit(*cmd, '/'), env));
-	return (search_path(*cmd, env));
+		return (check_command(ft_strsplit(*cmd, '/'), e));
+	return (search_path(*cmd, e));
 }
 
-int				fork_function(char **args, char ***env, int status)
+void			fork_function(char **args, t_env *e)
 {
 	pid_t		pid;
 	char		*path;
 
-	if ((path = get_path(args, env)) != NULL)
+	if ((path = get_path(args, e)) != NULL)
 	{
 		pid = fork();
 		if (pid > 0)
 		{
-			if (waitpid(pid, &status, 0) < 0)
+			if (waitpid(pid, &e->ret, 0) < 0)
 				ft_putendl_fd("21sh: waitpid error.", 2);
 		}
 		else if (pid == 0)
 		{
-			status = execve(path, args, *env);
+			e->ret = execve(path, args, e->env);
 			ft_putendl_fd("21sh: check your arguments.", 2);
-			exit(status);
+			exit(e->ret);
 		}
 		else
 			ft_putendl_fd("21sh: Fork error.", 2);
 	}
 	else
 		ft_put2endl_fd("21sh: command not found: ", args[0], 2);
-	ft_update_env(path, args);
-	return (status);
+	ft_update_env(path, args, e);
 }

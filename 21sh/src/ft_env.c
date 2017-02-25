@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:27:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 04:01:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,32 +42,48 @@ static void		free_opt(t_opt *opt)
 	free(opt->extra);
 }
 
-int				ft_env(char **command, char ***env)
+static void		ft_error(char *err, t_opt *opt, t_env *e)
+{
+	e->ret = 1;
+	if (err)
+	{
+		ft_putstr_fd("env: ", 2);
+		ft_putstr_fd(err, 2);
+		ft_putchar_fd('\n', 2);
+	}
+	free_opt(opt);
+}
+
+void			ft_env(char **command, t_env *e)
 {
 	t_opt		opt;
-	int			ret;
+	char		**tmp;
 	int			i;
 
 	ft_memset(&opt, 0, sizeof(opt));
-	ret = 0;
-	if ((opt.env = ft_tabdup(*env)) == NULL)
-		return (ft_env_error("malloc failed", 0, &opt));
+	e->ret = 0;
+	if ((opt.env = ft_tabdup(e->env)) == NULL)
+		return (ft_error("malloc failed", &opt, e));
 	if (!command[1])
 		ft_puttab(opt.env);
 	else
 	{
 		if ((i = check(command, &opt)) < 0)
-			return (1);
+			return (ft_error(NULL, &opt, e));
 		if (command[i])
-			ret = check_and_exec(&command[i], &opt.env);
+		{
+			tmp = e->env;
+			e->env = opt.env;
+			check_and_exec(&command[i], e);
+			e->env = tmp;
+		}
 		else
 			ft_puttab(opt.env);
 	}
 	free_opt(&opt);
-	return (ret);
 }
 
-int				ft_env_error(char *err, char c, t_opt *opt)
+int				ft_env_error(char *err, char c)
 {
 	ft_putstr_fd("env: ", 2);
 	ft_putstr_fd(err, 2);
@@ -79,11 +95,10 @@ int				ft_env_error(char *err, char c, t_opt *opt)
 		write(2, "\n           [name=value ...] [utility [argument ...]]", 53);
 	}
 	ft_putchar_fd('\n', 2);
-	free_opt(opt);
 	return (-1);
 }
 
-void			ft_update_env(char *path, char **args)
+void			ft_update_env(char *path, char **args, t_env *e)
 {
 	char		*tmp;
 	size_t		i;
@@ -95,12 +110,12 @@ void			ft_update_env(char *path, char **args)
 		args[0] = path;
 		path = tmp;
 	}
-	while (data.env && data.env[i])
+	while (e->env && e->env[i])
 	{
-		if (!ft_strncmp(data.env[i], "_=", 2))
+		if (ft_strncmp(e->env[i], "_=", 2) == 0)
 		{
-			free(data.env[i]);
-			data.env[i] = ft_strjoin("_=", args[ft_tablen(args) - 1]);
+			free(e->env[i]);
+			e->env[i] = ft_strjoin("_=", args[ft_tablen(args) - 1]);
 			break ;
 		}
 		i++;

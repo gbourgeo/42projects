@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 04:38:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/24 22:15:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 				if (cmd[i] == '\'' || cmd[i] == '"')
 				{
 					quote = &cmd[i++];
-					while (cmd[i] && cmd[i] != *quote)
+					while (cmd[i] != *quote)
 						i++;
 				}
+				else if (cmd[i] == '|' && i > 0 && cmd[i - 1] != ' ')
+					ret++;
 				i++;
 			}
 		}
@@ -40,7 +42,7 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 
 static char		*get_line(char *cmd, size_t *len, t_env *e)
 {
-	size_t		i;
+	long		i;
 	char		*line;
 
 	i = 0;
@@ -52,9 +54,15 @@ static char		*get_line(char *cmd, size_t *len, t_env *e)
 			while (cmd[i] != e->quote)
 				i++;
 		}
+		else if (cmd[i] == '|')
+		{
+			if (i == 0 || cmd[i - 1] == ' ')
+				i++;
+			break ;
+		}
 		i++;
 	}
-	if (i <= 0 || (line = ft_strnew(i + 1)) == NULL)
+	if (i == 0 || (line = ft_strnew(i + 1)) == NULL)
 		return (NULL);
 	*len += i;
 	ft_strncpy(line, cmd, i);

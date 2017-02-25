@@ -6,39 +6,38 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 12:41:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 02:30:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:25:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static void		free_and_exit(char **args)
+static void		free_and_exit(char **args, t_env *e)
 {
 	update_history();
-	ft_free(&data.env);
-	ft_free_hist(&data.hist);
+	ft_free(&e->env);
+	ft_free_hist(&e->hist);
 	ft_free(&args);
-	if (data.histpath)
-		free(data.histpath);
-	if (data.cpy.str)
-		free(data.cpy.str);
+	if (e->histpath)
+		free(e->histpath);
+	if (e->cpy.str)
+		free(e->cpy.str);
 	restore_term();
-	ft_bzero(&data, sizeof(data));
-	ft_putendl_fd("exit", data.fd);
-	exit(data.ret);
+	ft_bzero(e, sizeof(*e));
+	ft_putendl_fd("exit", e->fd);
+	exit(e->ret);
 }
 
-int				ft_exit(char **args, char ***env)
+void			ft_exit(char **args, t_env *e)
 {
-	(void)env;
 	if (!args || !args[1])
-		free_and_exit(args);
+		free_and_exit(args, e);
 	if (args[2])
 		ft_putendl_fd("exit: Too many arguments.", 2);
 	else
 	{
-		data.ret = ft_atoi(args[1]);
-		free_and_exit(args);
+		e->ret = ft_atoi(args[1]);
+		free_and_exit(args, e);
 	}
-	return (-1);
+	e->ret = 1;
 }

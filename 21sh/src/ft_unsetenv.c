@@ -6,62 +6,58 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 21:06:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 03:37:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static char		**new_env(int i, char ***env)
+static char		**new_env(int i, t_env *e)
 {
 	char		**new;
 	int			len;
 
-	if (*env)
+	e->ret++;
+	if (!e->env || !(new = malloc(sizeof(*new) * ft_tablen(e->env))))
+		return (e->env);
+	len = 0;
+	while ((e->env)[len] != NULL)
 	{
-		if ((new = malloc(sizeof(*new) * ft_tablen(*env))) == NULL)
-			return (*env);
-		len = 0;
-		while ((*env)[len] != NULL)
-		{
-			if (len < i)
-				new[len] = ft_strdup((*env)[len]);
-			else if (len > i)
-				new[len - 1] = ft_strdup((*env)[len]);
-			len++;
-		}
-		new[len - 1] = NULL;
-		return (new);
+		if (len < i)
+			new[len] = ft_strdup((e->env)[len]);
+		else if (len > i)
+			new[len - 1] = ft_strdup((e->env)[len]);
+		len++;
 	}
-	ft_putendl_fd("unsetenv: Memory space insufficiant.", 2);
-	return (*env);
+	new[len - 1] = NULL;
+	e->ret = 0;
+	return (new);
 }
 
-int				ft_unsetenv(char **entry, char ***env)
+void			ft_unsetenv(char **entry, t_env *e)
 {
 	char		**old;
 	int			i;
 	int			j;
 
-	i = 0;
-	if (!entry[1])
-		ft_putendl_fd("unsetenv: Too few arguments.", 2);
-	while (entry[++i] && *env)
+	i = 1;
+	e->ret = 1;
+	if (!entry[i])
+		return (ft_putendl_fd("unsetenv: Too few arguments", 2));
+	while (entry[i] && e->env)
 	{
 		j = 0;
-		while ((*env)[j])
+		while (e->env[j])
 		{
-			if (ft_strcmp((*env)[j], entry[i]) == '=')
+			if (ft_strcmp(e->env[j], entry[i]) == '=')
 			{
-				old = *env;
-				if ((*env = new_env(j, env)) == old)
-					data.ret += 1;
-				else
+				old = e->env;
+				if ((e->env = new_env(j, e)) != old)
 					ft_free(&old);
 				break ;
 			}
 			j++;
 		}
+		i++;
 	}
-	return (data.ret);
 }
