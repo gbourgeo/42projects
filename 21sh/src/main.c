@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 03:40:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 04:41:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,10 @@ void			ft_exit_all(char *err)
 	exit(EXIT_FAILURE);
 }
 
-static void		init_environment(char **environ)
+static void		init_environment(void)
 {
+	extern char	**environ;
+
 	if ((data.env = ft_envcpy(environ)) == NULL)
 		ft_exit_all("Can't initiate the shell correctly.");
 	data.histpath = ft_strjoin(ft_getenv("HOME", data.env), HISTFILE);
@@ -36,12 +38,12 @@ static void		init_environment(char **environ)
 	data.cmd = data.hist;
 }
 
-int				main(int ac, char **av, char **environ)
+int				main(int ac, char **av)
 {
 	(void)ac;
 	(void)av;
 	ft_memset(&data, 0, sizeof(data));
-	init_environment(environ);
+	init_environment();
 	init_termcaps(NULL, 0);
 	init_signals();
 	ft_minishell(&data);
