@@ -1,17 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_signals.c                                       :+:      :+:    :+:   */
+/*   init_signals.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 21:41:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/06 21:21:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 06:02:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 #include <sys/ioctl.h>
+
+static void			sig_int(int signum)
+{
+	(void)signum;
+}
 
 static void			sig_handler(int signum)
 {
@@ -34,6 +39,14 @@ static void			sig_handler(int signum)
 void				init_signals(void)
 {
 	signal(SIGSEGV, &sig_handler);
-	signal(SIGINT, &sig_handler);
+	init_sigint(0);
 	signal(SIGWINCH, &sig_handler);
+}
+
+void				init_sigint(int on)
+{
+	if (on)
+		signal(SIGINT, &sig_int);
+	else
+		signal(SIGINT, &sig_handler);
 }

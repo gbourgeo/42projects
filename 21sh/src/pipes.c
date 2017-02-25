@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 01:40:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 05:23:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,37 +30,6 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 		free(pi->table);
 	if (pi->cmd)
 		free(pi->cmd);
-}
-
-static void		pipes_exec(char ***cmd, t_env *e)
-{
-	int			p[2];
-	pid_t		pid;
-	int			fd;
-
-	while (*cmd != NULL)
-	{
-		if (pipe(p) == -1)
-			return (ft_putendl_fd("21sh: pipe() failure.", 2));
-		if ((pid = fork()) == -1)
-			return (ft_putendl_fd("21sh: fork() failure.", 2));
-		else if (pid == 0)
-		{
-			dup2(fd, 0);
-			if (*(cmd + 1) != NULL)
-				dup2(p[1], 1);
-			close(p[0]);
-			check_and_exec(*cmd, e);
-			exit(e->ret);
-		}
-		else
-		{
-			waitpid(pid, &e->ret, 0);
-			close(p[1]);
-			fd = p[0];
-			cmd++;
-		}
-	}
 }
 
 static void		pipes_error(char *str, char **args, long nb, t_pipe *pi)

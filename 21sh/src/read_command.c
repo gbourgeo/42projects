@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 03:37:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/24 21:56:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 04:48:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void			read_command(int len, char *buf, t_env *e)
 	{
 		if (buf[i] == ENTER)
 			treat_command(e);
-		else
+		else if (e->buf[i] > 31 && e->buf[i] < 127)
 			check_cmd(buf[i], e);
 		i++;
 	}

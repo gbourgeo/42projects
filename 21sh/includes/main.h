@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 03:47:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 05:52:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,7 @@ void				hist_add(t_env *e, t_parse *parse);
 void				hist_clean(t_hist *hist);
 t_hist				*hist_new(char *cmd, long len, t_hist *next);
 
+void				init_sigint(int on);
 void				init_signals(void);
 void				init_termcaps(char *term_name, int ret);
 void				k_home(t_env *e);
@@ -203,6 +204,7 @@ void				k_end(t_env *e);
 void				keypad_command(t_env *e);
 void				parse_command(t_env *e);
 void				pipes_check(char **args, t_env *e);
+void				pipes_exec(char ***cmd, t_env *e);
 void				prompt(t_env *e);
 int					quotes_command(t_env *e);
 void				read_command(int len, char *buf, t_env *e);

@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/02/25 00:32:22 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/02/25 05:25:48 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -27,11 +27,13 @@ SRC		= main.c			\
 			historic_command.c	\
 			historic_functions.c	\
 			historic_updates.c	\
+			init_signals.c	\
 			init_termcaps.c	\
 			k_home_end.c	\
 			keypad_command.c	\
 			parse_command.c	\
 			pipes.c			\
+			pipes_exec.c	\
 			pos_function.c	\
 			prompt.c		\
 			read_command.c	\
@@ -39,7 +41,6 @@ SRC		= main.c			\
 			split_command.c	\
 			shift_command.c	\
 			treat_command.c	\
-			ft_signals.c	\
 			ft_termcaps.c	\
 			ft_minishell.c	\
 			ft_echo.c		\
@@ -63,7 +64,7 @@ SRC		= main.c			\
 			ft_realloc.c	\
 			ft_insert_str.c	\
 			ft_strerror.c	\
-			ft_put2endl_fd.c	\
+			ft_put2endl_fd.c
 
 OBJ_D 	= obj/
 
