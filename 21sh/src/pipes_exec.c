@@ -6,19 +6,20 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 05:23:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 06:01:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/25 06:26:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static void		pipe_child(int fd, char ***cmd, int *p, t_env *e)
+static void		pipe_child(int *fd, char ***cmd, int *p, t_env *e)
 {
-	dup2(fd, 0);
+	dup2(*fd, 0);
 	if (*(cmd + 1) != NULL)
 		dup2(p[1], 1);
 	close(p[0]);
 	check_and_exec(*cmd, e);
+	close(p[1]);
 	exit(e->ret);
 }
 
@@ -48,7 +49,7 @@ void			pipes_exec(char ***cmd, t_env *e)
 		if ((pid = fork()) == -1)
 			return (ft_putendl_fd("21sh: fork() failure.", 2));
 		else if (pid == 0)
-			pipe_child(fd, cmd, p, e);
+			pipe_child(&fd, cmd, p, e);
 		else
 			pipe_father(pid, p, e);
 		fd = p[0];
