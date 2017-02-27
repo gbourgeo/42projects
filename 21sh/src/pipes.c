@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 05:23:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 05:21:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,20 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	if ((pi.cmd = (char ***)malloc(sizeof(**pi.cmd) * (nb + 2))) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
-	ft_memset(i, 0, sizeof(*i) * 3);
-	pi.cmd[i[2]++] = args;
-	while (args[i[0]])
+	ft_memset(i, -1, sizeof(*i) * 3);
+	pi.cmd[++i[2]] = args;
+	while (args[++i[0]])
 	{
 		if (ft_strcmp(args[i[0]], "|") == 0)
 		{
-			pi.table[i[1]++] = args[i[0]];
+			if (i[0] == 0)
+				return (pipes_error("parse error near `|'", args, i[1], &pi));
+			pi.table[++i[1]] = args[i[0]];
 			args[i[0]] = NULL;
 			if (args[i[0] + 1] == NULL)
 				return (pipes_error("parse error near `|'", args, i[1], &pi));
-			pi.cmd[i[2]++] = &args[i[0] + 1];
+			pi.cmd[++i[2]] = &args[i[0] + 1];
 		}
-		i[0]++;
 	}
 	pi.cmd[i[2]] = NULL;
 	pipes_exec(pi.cmd, e);

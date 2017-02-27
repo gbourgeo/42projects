@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/09 16:35:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/15 05:37:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/26 23:20:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,6 @@ void				init_termcaps(char *term_name, int ret)
 		ft_exit_all("ioctl(TIOCGWINSZ) failed.");
 	data.sz.ws_col--;
 	data.sz.ws_row--;
+	if ((data.htab_value = tgetnum("it")) == -1)
+		data.htab_value = 8;
 }

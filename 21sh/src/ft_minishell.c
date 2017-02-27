@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 05:36:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/26 21:37:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 #include <stdio.h>
 
 /*
-** printf("%d %d %d %d %d %d %d %d\n", e->buf[0], e->buf[1], e->buf[2],
-** e->buf[3], e->buf[4], e->buf[5], e->buf[6], e->buf[7]);
+** printf("%d %d %d %d %d %d %d %d\n", e->buf[0], e->buf[1], e->buf[2], e->buf[3], e->buf[4], e->buf[5], e->buf[6], e->buf[7]);
 */
 
 int				ft_minishell(t_env *e)

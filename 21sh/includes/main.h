@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 05:52:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 03:36:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ typedef struct		s_env
 	char			**env;
 	char			*histpath;
 	int				fd;
+	int				htab_value;
 	struct termios	old_term;
 	struct winsize	sz;
 	size_t			prpt;
@@ -149,6 +150,7 @@ void				ctrl_shift_command(t_env *e);
 void				cursor_position(t_pos *pos);
 int					dollar(size_t i, char **cmd, t_env *e);
 char				*expansions_check(char **cmd, t_env *e);
+void				find_pos(t_env *e);
 void				fork_function(char **args, t_env *e);
 
 void				ft_cd(char **args, t_env *e);
@@ -170,6 +172,7 @@ int					ft_env_i(t_opt *opt);
 int					ft_env_p(t_opt *opt, char **cmd);
 int					ft_env_u(t_opt *opt);
 void				ft_insert_str(char *s1, char *s2, int len);
+int					ft_iswhitespace(char c);
 void				ft_free(char ***env);
 void				ft_free_hist(t_hist **hist);
 char				*ft_getcwd(char *dir, char **env);
@@ -191,6 +194,8 @@ void				ft_tgoto(t_pos *pos);
 
 void				ft_unsetenv(char **entry, t_env *e);
 void				ft_update_env(char *path, char **args, t_env *e);
+void				highlight_tab_right(t_env *e);
+void				highlight_tab_left(t_env *e);
 void				historic_command(t_env *e);
 void				hist_add(t_env *e, t_parse *parse);
 void				hist_clean(t_hist *hist);
@@ -202,6 +207,8 @@ void				init_termcaps(char *term_name, int ret);
 void				k_home(t_env *e);
 void				k_end(t_env *e);
 void				keypad_command(t_env *e);
+void				move_tab_right(t_env *e);
+void				move_tab_left(t_env *e);
 void				parse_command(t_env *e);
 void				pipes_check(char **args, t_env *e);
 void				pipes_exec(char ***cmd, t_env *e);
@@ -214,6 +221,7 @@ t_hist				*retreive_history(void);
 void				rewrite_command(t_env *e);
 void				shift_command(t_env *e);
 char				**split_command(char *cmd, t_env *e);
+void				tab_command(t_env *e);
 void				treat_command(t_env *e);
 void				update_history(void);
 

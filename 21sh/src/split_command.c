@@ -6,11 +6,16 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/24 22:15:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 02:18:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
+
+/* static void		redirection_check(char *cmd, size_t i, size_t ret) */
+/* { */
+
+/* } */
 
 static size_t	count_lines(char *cmd, size_t i, size_t ret)
 {
@@ -18,10 +23,10 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 
 	while (cmd[i])
 	{
-		if (cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11))
+		if (!ft_iswhitespace(cmd[i]))
 		{
 			ret++;
-			while (cmd[i] && cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11))
+			while (cmd[i] && !ft_iswhitespace(cmd[i]))
 			{
 				if (cmd[i] == '\'' || cmd[i] == '"')
 				{
@@ -31,6 +36,8 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 				}
 				else if (cmd[i] == '|' && i > 0 && cmd[i - 1] != ' ')
 					ret++;
+/* 				else if (cmd[i] == '>' || cmd[i] == '<') */
+/* 					redirection_check(cmd, i, ret); */
 				i++;
 			}
 		}
@@ -46,7 +53,7 @@ static char		*get_line(char *cmd, size_t *len, t_env *e)
 	char		*line;
 
 	i = 0;
-	while (cmd[i] && cmd[i] != ' ' && (cmd[i] < 9 || cmd[i] > 11))
+	while (cmd[i] && !ft_iswhitespace(cmd[i]))
 	{
 		if (cmd[i] == '\'' || cmd[i] == '"')
 		{
@@ -84,7 +91,7 @@ char			**split_command(char *cmd, t_env *e)
 	j = 0;
 	while (cmd[i])
 	{
-		while (cmd[i] == ' ' || (cmd[i] > 9 && cmd[i] < 11))
+		while (ft_iswhitespace(cmd[i]))
 			i++;
 		if ((ret[j] = get_line(&cmd[i], &i, e)) == NULL)
 			break ;

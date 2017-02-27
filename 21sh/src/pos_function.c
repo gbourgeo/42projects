@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 01:17:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/16 18:48:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 00:30:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,9 @@ static void		move_right(int len, t_env *e)
 	while (len > 0 && e->pos < e->hist->cmd_len)
 	{
 		check_command_len(len, e);
-		if (e->cursor.x == e->sz.ws_col || e->hist->cmd[e->pos] == '\n')
+		if (e->hist->cmd[e->pos] == TAB)
+			move_tab_right(e);
+		else if (e->cursor.x >= e->sz.ws_col || e->hist->cmd[e->pos] == '\n')
 		{
 			if (e->cursor.y >= e->sz.ws_row)
 			{
@@ -62,16 +64,6 @@ static void		move_right(int len, t_env *e)
 	ft_tgoto(&e->cursor);
 }
 
-static size_t	find_pos(t_env *e)
-{
-	size_t		pos;
-
-	pos = e->pos - 1;
-	while (pos > 0 && e->hist->cmd[pos - 1] != '\n')
-		pos--;
-	return (e->pos - pos - 1);
-}
-
 static void		move_left(int len, t_env *e)
 {
 	while (len < 0 && e->pos > e->q_pos)
@@ -79,15 +71,9 @@ static void		move_left(int len, t_env *e)
 		if (!ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
 			break ;
 		if (e->cursor.x == 0)
-		{
-			e->cursor.y--;
-			if (e->hist->cmd[e->pos - 1] != '\n')
-				e->cursor.x = e->sz.ws_col;
-			else if (e->cursor.y == e->origin.y)
-				e->cursor.x = e->origin.x + e->pos - e->q_pos - 1;
-			else
-				e->cursor.x = find_pos(e);
-		}
+			find_pos(e);
+		else if (e->hist->cmd[e->pos - 1] == TAB)
+			move_tab_left(e);
 		else
 			e->cursor.x--;
 		e->pos--;
@@ -102,4 +88,24 @@ void			ft_pos(int len, t_env *e)
 		move_right(len, e);
 	else if (len < 0)
 		move_left(len, e);
+}
+
+void			find_pos(t_env *e)
+{
+	size_t		pos;
+
+	e->cursor.y--;
+	if (e->hist->cmd[e->pos - 1] == TAB)
+		e->cursor.x = e->sz.ws_col - (e->sz.ws_col % e->htab_value);
+	else if (e->hist->cmd[e->pos - 1] != '\n')
+		e->cursor.x = e->sz.ws_col;
+	else if (e->cursor.y == e->origin.y)
+		e->cursor.x = e->origin.x + e->pos - e->q_pos - 1;
+	else
+	{
+		pos = e->pos - 1;
+		while (pos > 0 && e->hist->cmd[pos - 1] != '\n')
+			pos--;
+		e->cursor.x = e->pos - pos - 1;
+	}
 }

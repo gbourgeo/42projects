@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:15:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 04:45:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 05:09:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,28 +28,39 @@ static void		shift_right(t_env *e)
 			e->cpy.cpy = 1;
 		if (e->cpy.cpy == 1)
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
-		tputs(ft_tgetstr("dc"), 1, ft_pchar);
-		write(e->fd, &e->hist->cmd[e->pos], 1);
-		ft_pos(1, e);
+		if (e->hist->cmd[e->pos] != TAB)
+		{
+			tputs(ft_tgetstr("dc"), 1, ft_pchar);
+			write(e->fd, &e->hist->cmd[e->pos], 1);
+			ft_pos(1, e);
+		}
+		else
+			highlight_tab_right(e);
+		if (e->cpy.shft == e->pos)
+			rewrite_command(e);
 	}
 }
 
 static void		shift_left(t_env *e)
 {
-	if (e->pos > 0 && ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
+	if (e->pos > e->q_pos &&
+		ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)))
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.cpy = -1;
-		if (e->cpy.cpy == -1 && e->pos != e->cpy.shft)
+		if (e->cpy.cpy == -1)
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
-		if (e->hist->cmd[e->pos])
+		tputs(ft_tgetstr("dc"), 1, ft_pchar);
+		write(e->fd, &e->hist->cmd[e->pos], 1);
+		if (e->hist->cmd[e->pos] != TAB)
 		{
-			tputs(ft_tgetstr("dc"), 1, ft_pchar);
-			write(e->fd, &e->hist->cmd[e->pos], 1);
-			ft_pos(-1, e);
+			if (e->hist->cmd[e->pos - 1] != TAB)
+				ft_pos(-1, e);
+			else
+				highlight_tab_left(e);
 		}
 		else
-			ft_pos(-1, e);
+			highlight_tab_left(e);
 	}
 }
 
@@ -58,7 +69,7 @@ static void		shift_up(t_env *e)
 	size_t		i;
 
 	i = 0;
-	while (i++ < e->sz.ws_col + 1 && e->pos > 0)
+	while (i++ < e->sz.ws_col + 1 && e->pos > e->q_pos)
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.shft = e->pos;

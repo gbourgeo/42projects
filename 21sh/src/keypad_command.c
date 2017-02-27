@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/23 03:06:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 03:46:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void		move_command(t_env *e)
 {
 	if (K_RIGHT(e) && e->pos < e->hist->cmd_len)
 		ft_pos(1, e);
-	else if (K_LEFT(e) && e->pos > 0)
+	else if (K_LEFT(e) && e->pos > e->q_pos)
 		ft_pos(-1, e);
 }
 

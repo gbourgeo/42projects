@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:21:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 16:34:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 02:24:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void		ct_sh_right(t_env *e)
 		e->cpy.cpy = 1;
 	if (e->cpy.cpy == 1)
 		tputs(ft_tgetstr("mr"), 1, ft_pchar);
-	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] == ' ')
+	while (e->pos < e->hist->cmd_len && ft_iswhitespace(e->hist->cmd[e->pos]))
 	{
 		if (e->cpy.shft == (long int)e->pos && (e->cpy.cpy = 1))
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
@@ -26,7 +26,7 @@ static void		ct_sh_right(t_env *e)
 		write(e->fd, &e->hist->cmd[e->pos], 1);
 		ft_pos(1, e);
 	}
-	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] != ' ')
+	while (e->pos < e->hist->cmd_len && !ft_iswhitespace(e->hist->cmd[e->pos]))
 	{
 		if (e->cpy.shft == (long int)e->pos && (e->cpy.cpy = 1))
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
@@ -56,11 +56,11 @@ static void		ct_sh_left(t_env *e)
 		e->cpy.cpy = -1;
 	while (e->pos > e->q_pos &&
 			ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
-			e->hist->cmd[e->pos - 1] == ' ')
+			ft_iswhitespace(e->hist->cmd[e->pos - 1]))
 		highlight(e);
 	while (e->pos > e->q_pos &&
 			ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
-			e->hist->cmd[e->pos - 1] != ' ')
+			!ft_iswhitespace(e->hist->cmd[e->pos - 1]))
 		highlight(e);
 }
 

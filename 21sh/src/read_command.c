@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 03:37:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 04:48:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 03:58:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,12 @@ void			check_cmd(char buf, t_env *e)
 			e->quote = 0;
 	}
 	ft_insert_str(&e->hist->cmd[e->pos], &buf, 1);
-	tputs(ft_tgetstr("cd"), 1, ft_pchar);
-	ft_putstr_fd(&e->hist->cmd[e->pos], e->fd);
 	e->hist->cmd_len++;
+	tputs(ft_tgetstr("cd"), 1, ft_pchar);
+	write(e->fd, &e->hist->cmd[e->pos], 1);
 	ft_pos(1, e);
+	if (e->hist->cmd[e->pos])
+		rewrite_command(e);
 }
 
 void			check_cmd_len(int len, t_env *e)
@@ -60,6 +62,8 @@ void			read_command(int len, char *buf, t_env *e)
 	{
 		if (buf[i] == ENTER)
 			treat_command(e);
+		else if (buf[i] == TAB)
+			tab_command(e);
 		else if (e->buf[i] > 31 && e->buf[i] < 127)
 			check_cmd(buf[i], e);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:18:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/17 16:32:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 02:16:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ static void		ctrl_down(t_env *e)
 
 static void		ctrl_right(t_env *e)
 {
-	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] == ' ')
+	while (e->pos < e->hist->cmd_len && ft_iswhitespace(e->hist->cmd[e->pos]))
 		ft_pos(1, e);
-	while (e->pos < e->hist->cmd_len && e->hist->cmd[e->pos] != ' ')
+	while (e->pos < e->hist->cmd_len && !ft_iswhitespace(e->hist->cmd[e->pos]))
 		ft_pos(1, e);
 }
 
@@ -63,11 +63,11 @@ static void		ctrl_left(t_env *e)
 {
 	while (e->pos > e->q_pos &&
 			ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
-			e->hist->cmd[e->pos - 1] == ' ')
+			ft_iswhitespace(e->hist->cmd[e->pos - 1]))
 		ft_pos(-1, e);
 	while (e->pos > e->q_pos &&
 			ft_memcmp(&e->cursor, &e->origin, sizeof(e->cursor)) &&
-			e->hist->cmd[e->pos - 1] != ' ')
+			!ft_iswhitespace(e->hist->cmd[e->pos - 1]))
 		ft_pos(-1, e);
 }
 
