@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 03:37:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 03:58:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 09:39:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void			read_command(int len, char *buf, t_env *e)
 			treat_command(e);
 		else if (buf[i] == TAB)
 			tab_command(e);
-		else if (e->buf[i] > 31 && e->buf[i] < 127)
+		else if (buf[i] > 31 && buf[i] < 127)
 			check_cmd(buf[i], e);
 		i++;
 	}

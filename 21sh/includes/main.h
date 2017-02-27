@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 07:27:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 09:30:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@
 
 # define COPY_KEY(x)	x->buf[0] < 0
 # define K_CUT(x)		*x->buf == -30 && x->buf[1] == -119 && x->buf[2] == -120
-# define K_COPY(x)		*x->buf == -61 && x->buf[1] == -89
-# define K_PASTE(x)		*x->buf == -30 && x->buf[1] == -120 && x->buf[2] == -102
+# define K_COPY(x)		*x->buf == -62 && x->buf[1] == -87
+# define K_PASTE(x)		*x->buf == -30 && x->buf[1] == -105 && x->buf[2] == -118
 
 # define K_HOME(x)		!ft_strcmp(x->buf, "\x1B[5~")
 # define K_END(x)		!ft_strcmp(x->buf, "\x1B[6~")
@@ -126,11 +126,11 @@ typedef struct		s_env
 	int				htab_value;
 	struct termios	old_term;
 	struct winsize	sz;
+	t_copy			cpy;
 	size_t			prpt;
 	char			buf[READ_SIZE];
 	t_pos			origin;
 	t_pos			cursor;
-	t_copy			cpy;
 	int				ret;
 	t_hist			*hist;
 	t_hist			*cmd;

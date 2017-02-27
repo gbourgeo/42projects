@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 18:12:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 06:17:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 09:38:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,24 @@ static void			copy_strcopy(char rewrite, t_env *e)
 	e->cpy.cut = 0;
 }
 
+static void			check_quote(t_env *e)
+{
+	long			i;
+
+	i = 0;
+	while (e->cpy.str[i])
+	{
+		if (e->cpy.str[i] == '\'' || e->cpy.str[i] == '"')
+		{
+			if (e->quote == 0)
+				e->quote = e->cpy.str[i];
+			else if (e->quote == e->cpy.str[i])
+				e->quote = 0;
+		}
+		i++;
+	}
+}
+
 static void			cut_strcopy(t_env *e)
 {
 	int				len;
@@ -59,13 +77,12 @@ static void			cut_strcopy(t_env *e)
 					e->hist->cmd_size - e->pos);
 	e->hist->cmd_len -= len;
 	e->cpy.cut = 1;
+	check_quote(e);
 	rewrite_command(e);
 }
 
 static void			paste_strcopy(t_env *e)
 {
-/* 	ft_putstr(e->cpy.str); */
-/* 	ft_putnbr(ft_strlen(e->cpy.str)); */
 	if (e->cpy.str == NULL)
 		return ;
 	read_command(ft_strlen(e->cpy.str), e->cpy.str, e);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 05:29:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 09:31:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int				ft_minishell(t_env *e)
 	prompt(e);
 	while ((len = read(e->fd, e->buf, READ_SIZE)) > 0)
 	{
-// printf("%d %d %d %d %d %d %d %d\n", e->buf[0], e->buf[1], e->buf[2], e->buf[3], e->buf[4], e->buf[5], e->buf[6], e->buf[7]);
+//printf("%d %d %d %d %d %d %d %d\n", e->buf[0], e->buf[1], e->buf[2], e->buf[3], e->buf[4], e->buf[5], e->buf[6], e->buf[7]);
 		if (KEYPAD(e) || K_SUPPR(e) || CTRL_C(e))
 			keypad_command(e);
 		else if (COPY_KEY(e))
