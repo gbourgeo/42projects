@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 05:21:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 07:36:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,20 +48,20 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	if ((pi.cmd = (char ***)malloc(sizeof(**pi.cmd) * (nb + 2))) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
-	ft_memset(i, -1, sizeof(*i) * 3);
-	pi.cmd[++i[2]] = args;
-	while (args[++i[0]])
+	ft_memset(i, 0, sizeof(*i) * 3);
+	pi.cmd[i[2]++] = args;
+	while (args[i[0]])
 	{
-		if (ft_strcmp(args[i[0]], "|") == 0)
+		if (*args[i[0]] == '|')
 		{
-			if (i[0] == 0)
+			if (i[0] == 0 || args[i[0] - 1] == NULL || args[i[0] + 1] == NULL ||
+				ft_strlen(args[i[0]]) != 1)
 				return (pipes_error("parse error near `|'", args, i[1], &pi));
-			pi.table[++i[1]] = args[i[0]];
+			pi.table[i[1]++] = args[i[0]];
 			args[i[0]] = NULL;
-			if (args[i[0] + 1] == NULL)
-				return (pipes_error("parse error near `|'", args, i[1], &pi));
-			pi.cmd[++i[2]] = &args[i[0] + 1];
+			pi.cmd[i[2]++] = &args[i[0] + 1];
 		}
+		i[0]++;
 	}
 	pi.cmd[i[2]] = NULL;
 	pipes_exec(pi.cmd, e);
@@ -77,7 +77,7 @@ void			pipes_check(char **args, t_env *e)
 	nb = 0;
 	while (args[i])
 	{
-		if (ft_strcmp(args[i], "|") == 0)
+		if (*args[i] == '|')
 			nb++;
 		i++;
 	}

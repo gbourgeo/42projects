@@ -6,16 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 02:18:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 07:31:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
-
-/* static void		redirection_check(char *cmd, size_t i, size_t ret) */
-/* { */
-
-/* } */
 
 static size_t	count_lines(char *cmd, size_t i, size_t ret)
 {
@@ -34,10 +29,6 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 					while (cmd[i] != *quote)
 						i++;
 				}
-				else if (cmd[i] == '|' && i > 0 && cmd[i - 1] != ' ')
-					ret++;
-/* 				else if (cmd[i] == '>' || cmd[i] == '<') */
-/* 					redirection_check(cmd, i, ret); */
 				i++;
 			}
 		}
@@ -60,12 +51,6 @@ static char		*get_line(char *cmd, size_t *len, t_env *e)
 			e->quote = cmd[i++];
 			while (cmd[i] != e->quote)
 				i++;
-		}
-		else if (cmd[i] == '|')
-		{
-			if (i == 0 || cmd[i - 1] == ' ')
-				i++;
-			break ;
 		}
 		i++;
 	}

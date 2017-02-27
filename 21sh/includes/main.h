@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 05:29:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 07:27:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,7 @@ void				init_termcaps(char *term_name, int ret);
 void				k_home(t_env *e);
 void				k_end(t_env *e);
 void				keypad_command(t_env *e);
+char				*lexical_analysis(char *command);
 void				move_tab_right(t_env *e);
 void				move_tab_left(t_env *e);
 void				parse_command(t_env *e);
