@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/27 05:10:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 05:17:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 06:16:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,8 @@ static void			highlight(int i, int limit, t_env *e)
 	j = i;
 	while (i-- > limit)
 		tputs(ft_tgetstr("dc"), 1, ft_pchar);
-	if (e->hist->cmd[e->pos + 1] == TAB)
-		j++;
+	if (limit == 0 && e->hist->cmd[e->pos + 1] == TAB)
+		tputs(ft_tgetstr("mr"), 1, ft_pchar);
 	write(e->fd, "        ", j);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 02:15:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 05:09:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/02/27 06:13:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void		shift_left(t_env *e)
 	{
 		if (e->cpy.cpy == 0)
 			e->cpy.cpy = -1;
-		if (e->cpy.cpy == -1)
+		if (e->cpy.cpy == -1 && e->cpy.shft != e->pos)
 			tputs(ft_tgetstr("mr"), 1, ft_pchar);
 		tputs(ft_tgetstr("dc"), 1, ft_pchar);
 		write(e->fd, &e->hist->cmd[e->pos], 1);
