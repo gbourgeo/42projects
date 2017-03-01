@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/23 02:07:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 11:55:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 12:09:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void			parse_command(t_env *e)
 	{
 		if ((args = split_command(parse->cmd, e)) != NULL)
 		{
-			ft_puttab(args);
+//			ft_puttab(args);
 			pipes_check(args, e);
 			ft_free(&args);
 		}

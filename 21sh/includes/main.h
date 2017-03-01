@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 11:49:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 12:07:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ typedef struct		s_pipe
 	char			**table;
 	char			***cmd;
 	int				*fds;
+	int				fd;
 }					t_pipe;
 
 typedef struct		s_parse

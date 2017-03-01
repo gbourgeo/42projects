@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 11:54:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 14:07:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,15 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 	count = 0;
 	while (count < nb)
 	{
+		if (pi->fds[count] > STDOUT_FILENO)
+			close(pi->fds[count]);
 		while (args[i])
 			i++;
 		args[i] = pi->table[count];
 		count++;
 	}
+	if (pi->fds[count] > STDIN_FILENO)
+		close(pi->fds[count]);
 	if (pi->table)
 		free(pi->table);
 	if (pi->cmd)
@@ -57,13 +61,14 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	ft_memset(i, 0, sizeof(*i) * 4);
 	pi.cmd[i[2]++] = args;
+	pi.fds[i[3]++] = STDOUT_FILENO;
 	while (args[i[0]])
 	{
 		if (*args[i[0]] == '|')
 		{
 			if (i[0] == 0 || args[i[0] - 1] == NULL || args[i[0] + 1] == NULL)
 				return (pipes_error("parse error near `|'", args, i[1], &pi));
-			pi.fds[i[3]++] = 0;
+			pi.fds[i[3]++] = 1;
 			pi.table[i[1]++] = args[i[0]];
 			args[i[0]] = NULL;
 			pi.cmd[i[2]++] = &args[i[0] + 1];
