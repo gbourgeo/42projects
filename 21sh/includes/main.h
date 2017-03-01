@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 09:30:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 11:49:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@
 
 # define COPY_KEY(x)	x->buf[0] < 0
 # define K_CUT(x)		*x->buf == -30 && x->buf[1] == -119 && x->buf[2] == -120
-# define K_COPY(x)		*x->buf == -62 && x->buf[1] == -87
-# define K_PASTE(x)		*x->buf == -30 && x->buf[1] == -105 && x->buf[2] == -118
+//# define K_COPY(x)		*x->buf == -62 && x->buf[1] == -87
+//# define K_PASTE(x)		*x->buf == -30 && x->buf[1] == -105 && x->buf[2] == -118
+# define K_COPY(x)		*x->buf == -61 && x->buf[1] == -89
+# define K_PASTE(x)		*x->buf == -30 && x->buf[1] == -120 && x->buf[2] == -102
 
 # define K_HOME(x)		!ft_strcmp(x->buf, "\x1B[5~")
 # define K_END(x)		!ft_strcmp(x->buf, "\x1B[6~")
@@ -65,12 +67,6 @@
 # define CT_SH_RI(x)	!ft_strcmp(x->buf, "\x1B[1;6C")
 # define CT_SH_LE(x)	!ft_strcmp(x->buf, "\x1B[1;6D")
 
-typedef struct		s_pipe
-{
-	char			**table;
-	char			***cmd;
-}					t_pipe;
-
 typedef struct		s_opt
 {
 	char			**env;
@@ -84,6 +80,13 @@ typedef struct		s_opt
 	char			**ptr;
 	char			**extra;
 }					t_opt;
+
+typedef struct		s_pipe
+{
+	char			**table;
+	char			***cmd;
+	int				*fds;
+}					t_pipe;
 
 typedef struct		s_parse
 {
@@ -194,6 +197,7 @@ void				ft_tgoto(t_pos *pos);
 
 void				ft_unsetenv(char **entry, t_env *e);
 void				ft_update_env(char *path, char **args, t_env *e);
+char				*get_path(char **cmd, t_env *e);
 void				highlight_tab_right(t_env *e);
 void				highlight_tab_left(t_env *e);
 void				historic_command(t_env *e);
@@ -212,7 +216,7 @@ void				move_tab_right(t_env *e);
 void				move_tab_left(t_env *e);
 void				parse_command(t_env *e);
 void				pipes_check(char **args, t_env *e);
-void				pipes_exec(char ***cmd, t_env *e);
+void				pipes_loop(t_pipe pi, t_env *e);
 void				prompt(t_env *e);
 int					quotes_command(t_env *e);
 void				read_command(int len, char *buf, t_env *e);

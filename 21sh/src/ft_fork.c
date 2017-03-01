@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 03:48:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 09:13:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ static char		*search_path(char *cmd, t_env *e)
 	return (ret);
 }
 
-static char		*get_path(char **cmd, t_env *e)
+char			*get_path(char **cmd, t_env *e)
 {
 	if (cmd == NULL || *cmd == NULL)
 		return (NULL);

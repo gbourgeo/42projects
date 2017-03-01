@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/23 02:07:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 07:31:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 11:55:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ static t_parse	*semicolon_check(t_env *e)
 	char		*tmp;
 
 	new = NULL;
-	if ((cmd = lexical_analysis(e->hist->cmd)) == NULL)
+//	if ((cmd = lexical_analysis(e->hist->cmd)) == NULL)
+	if ((cmd = ft_strdup(e->hist->cmd)) == NULL)
 		return (parse_error("21sh: Can't duplicate :", e->hist->cmd, new));
 	while (cmd && *cmd)
 	{
@@ -90,6 +91,7 @@ void			parse_command(t_env *e)
 	{
 		if ((args = split_command(parse->cmd, e)) != NULL)
 		{
+			ft_puttab(args);
 			pipes_check(args, e);
 			ft_free(&args);
 		}

@@ -6,16 +6,40 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 07:31:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 11:54:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
+static size_t	quotes(char *cmd, size_t i)
+{
+	char		quote;
+
+	quote = cmd[i++];
+	while (cmd[i] != quote)
+		i++;
+	return (i + 1);
+}
+
+static size_t	pipes(char *cmd, size_t i, size_t *ret)
+{
+	char		pipe;
+
+	pipe = cmd[i++];
+	if (i != 1 && !ft_iswhitespace(cmd[i - 2]))
+		(*ret)++;
+	if (!cmd[i] || ft_iswhitespace(cmd[i]))
+		return (i);
+	if (cmd[i - 1] == '|')
+		return (i);
+	if (cmd[i] == pipe)
+		return (i + 1);
+	return (i);
+}
+
 static size_t	count_lines(char *cmd, size_t i, size_t ret)
 {
-	char		*quote;
-
 	while (cmd[i])
 	{
 		if (!ft_iswhitespace(cmd[i]))
@@ -24,12 +48,14 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 			while (cmd[i] && !ft_iswhitespace(cmd[i]))
 			{
 				if (cmd[i] == '\'' || cmd[i] == '"')
+					i = quotes(cmd, i);
+				else if (cmd[i] == '|' || cmd[i] == '<' || cmd[i] == '>')
 				{
-					quote = &cmd[i++];
-					while (cmd[i] != *quote)
-						i++;
+					i = pipes(cmd, i, &ret);
+					break ;
 				}
-				i++;
+				else
+					i++;
 			}
 		}
 		else
@@ -47,12 +73,15 @@ static char		*get_line(char *cmd, size_t *len, t_env *e)
 	while (cmd[i] && !ft_iswhitespace(cmd[i]))
 	{
 		if (cmd[i] == '\'' || cmd[i] == '"')
+			i = quotes(cmd, i);
+		else if (cmd[i] == '|')
 		{
-			e->quote = cmd[i++];
-			while (cmd[i] != e->quote)
+			if (i == 0)
 				i++;
+			break ;
 		}
-		i++;
+		else
+			i++;
 	}
 	if (i == 0 || (line = ft_strnew(i + 1)) == NULL)
 		return (NULL);

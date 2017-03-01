@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 05:23:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 06:26:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/01 11:49:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void		pipe_father(pid_t pid, int *p, t_env *e)
 	close(p[1]);
 }
 
-void			pipes_exec(char ***cmd, t_env *e)
+void			pipes_loop(t_pipe pi, t_env *e)
 {
 	int			p[2];
 	pid_t		pid;
@@ -42,18 +42,18 @@ void			pipes_exec(char ***cmd, t_env *e)
 
 	e->ret = 1;
 	init_sigint(1);
-	while (*cmd != NULL && e->ret != 130)
+	while (*pi.cmd != NULL && e->ret != 130)
 	{
 		if (pipe(p) == -1)
 			return (ft_putendl_fd("21sh: pipe() failure.", 2));
 		if ((pid = fork()) == -1)
 			return (ft_putendl_fd("21sh: fork() failure.", 2));
 		else if (pid == 0)
-			pipe_child(&fd, cmd, p, e);
+			pipe_child(&fd, pi.cmd, p, e);
 		else
 			pipe_father(pid, p, e);
 		fd = p[0];
-		cmd++;
+		pi.cmd++;
 	}
 	init_sigint(0);
 }
