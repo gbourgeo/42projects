@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/17 02:33:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 10:20:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
 		sv_leave_chan(e, cl);
 	}
 	cl->leaved = 1;
-//	ft_clear(e, cl);
 }
 
 t_fd			*sv_clear_client(t_env *e, t_fd *cl)

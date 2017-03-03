@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 04:15:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 12:11:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,9 @@ typedef struct		s_pipe
 	int				*fds;
 	int				fd;
 	int				fildes[2];
-	int				isfirst;
+	int				pipe;
+	int				last_pipe;
+	int				redir;
 }					t_pipe;
 
 typedef struct		s_parse

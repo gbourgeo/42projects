@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/26 15:56:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 10:20:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ static void			sv_signals(void)
 	signal(SIGWINCH, SIG_IGN);
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGALRM, SIG_IGN);
-//	signal(SIGHUP, sv_rehash);
 	signal(SIGINT, sv_quit);
 	signal(SIGTERM, sv_quit);
 	signal(SIGBUS, sv_quit);

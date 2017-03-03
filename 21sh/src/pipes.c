@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 05:59:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 12:13:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,10 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 	}
 	pi.table[i[1]] = NULL;
 	pi.cmd[i[2]] = NULL;
-	pi.fd = 0;
-	pi.isfirst = 1;
+	pi.fd = -1;
+	pi.pipe = 0;
+	pi.last_pipe = 0;
+	pi.redir = 0;
 	e->ret = 1;
 	init_sigint(1);
 	pipes_loop(pi, e);

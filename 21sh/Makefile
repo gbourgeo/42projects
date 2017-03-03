@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/02/27 07:28:33 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/03 07:31:04 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -34,7 +34,7 @@ SRC		= main.c					\
 			lexical_analysis.c		\
 			parse_command.c			\
 			pipes.c					\
-			pipes_exec.c			\
+			pipes_loop.c			\
 			pos_function.c			\
 			prompt.c				\
 			read_command.c			\

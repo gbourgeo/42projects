@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/17 02:30:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 10:21:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ typedef struct			s_com
 	void				(*fct)(char **, t_env *, t_fd *);
 }						t_com;
 
-t_env					e;
+struct s_env			e;
 
 void					sv_error(char *str, t_env *e);
 void					sv_init_server(char **av, t_env *e);

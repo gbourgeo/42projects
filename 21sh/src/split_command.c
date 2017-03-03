@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 16:35:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 11:54:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 09:40:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static size_t	quotes(char *cmd, size_t i)
+static long		quotes(char *cmd, long i)
 {
 	char		quote;
 
@@ -22,23 +22,36 @@ static size_t	quotes(char *cmd, size_t i)
 	return (i + 1);
 }
 
-static size_t	pipes(char *cmd, size_t i, size_t *ret)
+static long		pipes(char *cmd, long *i, int c)
 {
+	long		ret;
 	char		pipe;
 
-	pipe = cmd[i++];
-	if (i != 1 && !ft_iswhitespace(cmd[i - 2]))
-		(*ret)++;
-	if (!cmd[i] || ft_iswhitespace(cmd[i]))
-		return (i);
-	if (cmd[i - 1] == '|')
-		return (i);
-	if (cmd[i] == pipe)
-		return (i + 1);
-	return (i);
+	ret = 0;
+	pipe = cmd[*i];
+	if (c)
+	{
+		if (*i != 0 && !ft_iswhitespace(cmd[*i - 1]))
+			ret = 1;
+		(*i)++;
+		if (pipe == '|' || !cmd[*i] || !ft_iswhitespace(cmd[*i]))
+			return (ret);
+		if (cmd[*i] == pipe)
+			(*i)++;
+	}
+	else
+	{
+		if (*i != 0 && (cmd[*i] != '|' || cmd[*i] != '<' || cmd[*i] != '>'))
+			return (ret);
+		if (*i == 0)
+			(*i)++;
+		if (pipe != '|' && cmd[*i] == pipe)
+			(*i)++;
+	}
+	return (ret);
 }
 
-static size_t	count_lines(char *cmd, size_t i, size_t ret)
+static size_t	count_lines(char *cmd, long i, long ret)
 {
 	while (cmd[i])
 	{
@@ -51,7 +64,7 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 					i = quotes(cmd, i);
 				else if (cmd[i] == '|' || cmd[i] == '<' || cmd[i] == '>')
 				{
-					i = pipes(cmd, i, &ret);
+					ret += pipes(cmd, &i, 1);
 					break ;
 				}
 				else
@@ -64,7 +77,7 @@ static size_t	count_lines(char *cmd, size_t i, size_t ret)
 	return (ret);
 }
 
-static char		*get_line(char *cmd, size_t *len, t_env *e)
+static char		*get_line(char *cmd, long *len, t_env *e)
 {
 	long		i;
 	char		*line;
@@ -74,10 +87,9 @@ static char		*get_line(char *cmd, size_t *len, t_env *e)
 	{
 		if (cmd[i] == '\'' || cmd[i] == '"')
 			i = quotes(cmd, i);
-		else if (cmd[i] == '|')
+		else if (cmd[i] == '|' || cmd[i] == '<' || cmd[i] == '>')
 		{
-			if (i == 0)
-				i++;
+			pipes(cmd, &i, 0);
 			break ;
 		}
 		else
@@ -95,8 +107,8 @@ char			**split_command(char *cmd, t_env *e)
 {
 	size_t		line;
 	char		**ret;
-	size_t		i;
-	size_t		j;
+	long		i;
+	long		j;
 
 	line = count_lines(cmd, 0, 0);
 	if ((ret = ft_tabnew(line + 1)) == NULL)
