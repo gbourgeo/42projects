@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 12:07:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 04:15:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@
 # define BUILTINS	"echo", "cd", "setenv", "unsetenv", "env", "exit", NULL
 # define FUNCTION	ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
 
-# define CMD_SIZE	256
-# define READ_SIZE	10
-# define HIST_SIZE	5
-# define HISTFILE	"/.21sh_history"
+# define CMD_SIZE		256
+# define READ_SIZE		10
+# define HIST_SIZE		5
+# define HISTFILE		"/.21sh_history"
 
 # define COPY_KEY(x)	x->buf[0] < 0
 # define K_CUT(x)		*x->buf == -30 && x->buf[1] == -119 && x->buf[2] == -120
@@ -87,6 +87,8 @@ typedef struct		s_pipe
 	char			***cmd;
 	int				*fds;
 	int				fd;
+	int				fildes[2];
+	int				isfirst;
 }					t_pipe;
 
 typedef struct		s_parse

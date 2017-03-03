@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 14:07:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/03 05:59:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 
 	i = 0;
 	count = 0;
-	while (count < nb)
+	while (count <= nb)
 	{
 		if (pi->fds[count] > STDOUT_FILENO)
 			close(pi->fds[count]);
@@ -53,12 +53,13 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 	t_pipe		pi;
 	long		i[4];
 
-	if ((pi.table = ft_tabnew(nb + 1)) == NULL)
+	if ((pi.table = ft_tabnew(nb + 2)) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	if ((pi.cmd = (char ***)malloc(sizeof(**pi.cmd) * (nb + 2))) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
-	if ((pi.fds = (int *)malloc(sizeof(*pi.fds) * (nb + 1))) == NULL)
+	if ((pi.fds = (int *)malloc(sizeof(*pi.fds) * (nb + 2))) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
+	pi.fd = 0;
 	ft_memset(i, 0, sizeof(*i) * 4);
 	pi.cmd[i[2]++] = args;
 	pi.fds[i[3]++] = STDOUT_FILENO;
@@ -68,7 +69,7 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		{
 			if (i[0] == 0 || args[i[0] - 1] == NULL || args[i[0] + 1] == NULL)
 				return (pipes_error("parse error near `|'", args, i[1], &pi));
-			pi.fds[i[3]++] = 1;
+			pi.fds[i[3]++] = STDOUT_FILENO;
 			pi.table[i[1]++] = args[i[0]];
 			args[i[0]] = NULL;
 			pi.cmd[i[2]++] = &args[i[0] + 1];
@@ -95,8 +96,14 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		}
 		i[0]++;
 	}
+	pi.table[i[1]] = NULL;
 	pi.cmd[i[2]] = NULL;
+	pi.fd = 0;
+	pi.isfirst = 1;
+	e->ret = 1;
+	init_sigint(1);
 	pipes_loop(pi, e);
+	init_sigint(0);
 	pipes_free(args, nb, &pi);
 }
 
