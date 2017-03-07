@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:22:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/27 03:46:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 16:24:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,21 +36,19 @@ static void		suppr_command(t_env *e)
 	if (K_DEL(e) && e->hist->cmd[e->pos])
 	{
 		e->hist->cmd_len--;
+		if (e->hist->cmd[e->pos] == e->quote)
+			e->quote = 0;
 		ft_strcpy(e->hist->cmd + e->pos, e->hist->cmd + e->pos + 1);
-		tputs(ft_tgetstr("sc"), 1, ft_pchar);
-		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		ft_putstr_fd(&e->hist->cmd[e->pos], e->fd);
-		tputs(ft_tgetstr("rc"), 1, ft_pchar);
+		rewrite_command(e);
 	}
 	else if (K_SUPPR(e) && e->pos > e->q_pos)
 	{
 		ft_pos(-1, e);
 		e->hist->cmd_len--;
+		if (e->hist->cmd[e->pos] == e->quote)
+			e->quote = 0;
 		ft_strcpy(&e->hist->cmd[e->pos], &e->hist->cmd[e->pos + 1]);
-		tputs(ft_tgetstr("sc"), 1, ft_pchar);
-		tputs(ft_tgetstr("cd"), 1, ft_pchar);
-		ft_putstr_fd(&e->hist->cmd[e->pos], e->fd);
-		tputs(ft_tgetstr("rc"), 1, ft_pchar);
+		rewrite_command(e);
 	}
 }
 

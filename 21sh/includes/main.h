@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/04 15:05:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 19:21:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void				cursor_position(t_pos *pos);
 int					dollar(size_t i, char **cmd, t_env *e);
 char				*expansions_check(char **cmd, t_env *e);
 void				find_pos(t_env *e);
-void				fork_function(char **args, t_env *e);
+char				*fork_function(char **args, t_env *e);
 
 void				ft_cd(char **args, t_env *e);
 char				*ft_cd_check(char **args, int i, t_env *e);

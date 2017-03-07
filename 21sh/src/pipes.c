@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/04 15:06:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 19:10:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,18 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 		free(pi->fds);
 }
 
-static void		pipes_error(char *str, char **args, long nb, t_pipe *pi)
+static void		pipes_error(char *str, char **args, long *nb, t_pipe *pi)
 {
 	ft_putstr_fd("21sh: ", 2);
-	ft_putendl_fd(str, 2);
-	pipes_free(args, nb, pi);
+	ft_putstr_fd(str, 2);
+	if (!ft_strncmp(str, "parse", 5))
+		ft_putchar_fd('\n', 2);
+	else
+	{
+		ft_putstr_fd(": ", 2);
+		ft_putendl_fd(args[nb[0] + 1], 2);
+	}
+	pipes_free(args, nb[1], pi);
 }
 
 static void		pipes_prepare(char **args, t_env *e, long nb)
@@ -54,13 +61,13 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 	long		i[4];
 
 	e->ret = 1;
-	if ((pi.table = ft_tabnew(nb + 1)) == NULL)
-		return (pipes_error("Insufficient Memory.", args, 0, &pi));
-	if ((pi.cmd = (char ***)malloc(sizeof(**pi.cmd) * (nb + 2))) == NULL)
-		return (pipes_error("Insufficient Memory.", args, 0, &pi));
-	if ((pi.fds = (int *)malloc(sizeof(*pi.fds) * (nb + 2))) == NULL)
-		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	ft_memset(i, 0, sizeof(*i) * 4);
+	if ((pi.table = ft_tabnew(nb + 1)) == NULL)
+		return (pipes_error("Insufficient Memory.", args, i, &pi));
+	if ((pi.cmd = (char ***)malloc(sizeof(**pi.cmd) * (nb + 2))) == NULL)
+		return (pipes_error("Insufficient Memory.", args, i, &pi));
+	if ((pi.fds = (int *)malloc(sizeof(*pi.fds) * (nb + 2))) == NULL)
+		return (pipes_error("Insufficient Memory.", args, i, &pi));
 	pi.cmd[i[2]++] = args;
 	pi.fds[i[3]++] = STDOUT_FILENO;
 	pi.pipe = 0;
@@ -70,7 +77,7 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		if (*args[i[0]] == '|')
 		{
 			if (i[0] == 0 || args[i[0] - 1] == NULL || args[i[0] + 1] == NULL)
-				return (pipes_error("parse error near `|'", args, i[1], &pi));
+				return (pipes_error("parse error near `|'", args, i, &pi));
 			pi.table[i[1]++] = args[i[0]];
 			pi.cmd[i[2]++] = &args[i[0] + 1];
 			pi.fds[i[3]++] = STDOUT_FILENO;
@@ -79,21 +86,21 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 		else if (*args[i[0]] == '>')
 		{
 			if (args[i[0] + 1] == NULL)
-				return (pipes_error("parse error near `\\n'", args, i[1], &pi));
+				return (pipes_error("parse error near `\\n'", args, i, &pi));
+			if ((pi.fds[i[3]++] = open(args[i[0] + 1], O_RDWR | O_TRUNC | O_CREAT, 0644)) == -1)
+				return (pipes_error(strerror(errno), args, i, &pi));
 			pi.table[i[1]++] = args[i[0]];
 			pi.cmd[i[2]++] = &args[i[0] + 1];
-			if ((pi.fds[i[3]++] = open(args[i[0] + 1], O_WRONLY | O_TRUNC | O_CREAT, 0644)) == -1)
-				return (pipes_error(strerror(errno), args, i[1], &pi));
 			args[i[0]] = NULL;
 		}
 		else if (*args[i[0]] == '<')
 		{
 			if (args[i[0] + 1] == NULL)
-				return (pipes_error("parse error near `\\n'", args, i[1], &pi));
+				return (pipes_error("parse error near `\\n'", args, i, &pi));
+			if ((pi.fds[i[3]++] = open(args[i[0] + 1], O_RDONLY)) == -1)
+				return (pipes_error(strerror(errno), args, i, &pi));
 			pi.table[i[1]++] = args[i[0]];
 			pi.cmd[i[2]++] = &args[i[0] + 1];
-			if ((pi.fds[i[3]++] = open(args[i[0] + 1], O_RDONLY)) == -1)
-				return (pipes_error(strerror(errno), args, i[1], &pi));
 			args[i[0]] = NULL;
 		}
 		i[0]++;

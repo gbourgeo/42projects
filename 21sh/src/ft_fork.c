@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 09:13:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 19:20:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char			*get_path(char **cmd, t_env *e)
 	return (search_path(*cmd, e));
 }
 
-void			fork_function(char **args, t_env *e)
+char			*fork_function(char **args, t_env *e)
 {
 	pid_t		pid;
 	char		*path;
@@ -114,5 +114,5 @@ void			fork_function(char **args, t_env *e)
 	}
 	else
 		ft_put2endl_fd("21sh: command not found: ", args[0], 2);
-	ft_update_env(path, args, e);
+	return (path);
 }

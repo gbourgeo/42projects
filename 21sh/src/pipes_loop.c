@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 05:23:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 00:47:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 19:24:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static void		pipe_exec(char **command, t_env *e, int fork)
 {
 	static char	*builtins[] = { BUILTINS };
 	static void	(*function[])(char **, t_env *) = { FUNCTION };
+	char		*path;
 	int			i;
 
 	i = 0;
@@ -47,7 +48,11 @@ static void		pipe_exec(char **command, t_env *e, int fork)
 	if (!fork)
 		pipe_fork(command, e);
 	else
-		fork_function(command, e);
+	{
+		path = fork_function(command, e);
+		if (path)
+			free(path);
+	}
 }
 
 static void		pipe_error(char *err, int p, t_env *e)
@@ -72,8 +77,8 @@ static void		pipe_error(char *err, int p, t_env *e)
 void			pipes_loop(t_pipe pi, t_env *e, long tot)
 {
 	int			p[2];
-	int			p2[2];
 	pid_t		pid;
+	char		*cat[3];
 
 	if (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '|')
 	{
@@ -123,19 +128,6 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 	else if (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '<')
 	{
 
-/* 		pi.redir++; */
-/* 		if ((pid = fork()) < 0) */
-/* 			return (pipe_error("fork() failed.", -1, e)); */
-/* 		if (pid == 0) */
-/* 		{ */
-/* 			dup2(*(pi.fds + tot + pi.redir), STDIN_FILENO); */
-/* 			close(*(pi.fds + tot + pi.redir)); */
-/* 			pipe_exec(*(pi.cmd + tot), e, 0); */
-/* 		} */
-/* 		else */
-/* 			waitpid(pid, &e->ret, 0); */
-/* 		if (*(pi.table + tot + pi.redir)) */
-/* 			pipes_loop(pi, e, tot); */
 		if (pipe(p) == -1)
 			return (pipe_error("pipe() failed.", -1, e));
 		if ((pid = fork()) < 0)
@@ -171,7 +163,8 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 			waitpid(pid, &e->ret, 0);
 			if (e->ret)
 				return (pipe_error(NULL, p[0], e));
-			pi.redir++;
+			while (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '<')
+				pi.redir++;
 			if (*(pi.table + tot + pi.redir))
 			{
 				pi.pipe = p[0];
@@ -182,13 +175,13 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 			{
 				dup2(p[0], STDIN_FILENO);
 				close(p[0]);
-				int i = ft_tablen(*(pi.cmd + tot));
-				char **next;
-				next = &(pi.cmd)[tot][i];
-				(pi.cmd)[tot][i] = (pi.cmd)[tot + pi.redir][1];
-				ft_puttab((pi.cmd)[tot]);ft_putchar('\n');
-				ft_puttab(&(pi.cmd)[tot + pi.redir][1]);ft_putchar('\n');
-				pipe_exec(*(pi.cmd + tot), e, 1);
+				if (**(pi.cmd + tot))
+					pipe_exec(*(pi.cmd + tot), e, 1);
+				else
+				{
+					cat[0] = "cat";
+					pipe_exec(cat, e, 1);
+				}
 				dup2(1, STDIN_FILENO);
 			}
 		}
@@ -196,19 +189,6 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 	else if (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '>')
 	{
 
-/* 		pi.redir++; */
-/* 		if ((pid = fork()) < 0) */
-/* 			return (pipe_error("fork() failed.", -1, e)); */
-/* 		if (pid == 0) */
-/* 		{ */
-/* 			dup2(*(pi.fds + tot + pi.redir), STDOUT_FILENO); */
-/* 			close(*(pi.fds + tot + pi.redir)); */
-/* 			pipe_exec(*(pi.cmd + tot), e, 0); */
-/* 		} */
-/* 		else */
-/* 			waitpid(pid, &e->ret, 0); */
-/* 		if (*(pi.table + tot + pi.redir)) */
-/* 			pipes_loop(pi, e, tot);		 */
 		if ((pid = fork()) < 0)
 			return (pipe_error("fork() failed.", -1, e));
 		if (pid == 0)
@@ -222,8 +202,19 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 			pi.redir++;
 			dup2(*(pi.fds + tot + pi.redir), STDOUT_FILENO);
 			close(*(pi.fds + tot + pi.redir));
-			pipe_exec(*(pi.cmd + tot), e, 0);
-			dup2(0, STDOUT_FILENO);
+			if (tot + pi.redir - 2 >= 0 && **(pi.table + tot + pi.redir - 2) == '>')
+			{
+				cat[0] = "cat";
+				cat[1] = **(pi.cmd + tot + pi.redir - 1);
+				pipe_exec(cat, e, 0);
+			}
+			else if (**(pi.cmd + tot))
+				pipe_exec(*(pi.cmd + tot), e, 0);
+			else
+			{
+				cat[0] = "cat";
+				pipe_exec(cat, e, 0);
+			}
 		}
 		else
 		{
@@ -232,7 +223,10 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 				return (pipe_error(NULL, p[0], e));
 			pi.redir++;
 			if (*(pi.table + tot + pi.redir))
+			{
+				pi.pipe = *(pi.fds + tot + pi.redir);
 				pipes_loop(pi, e, tot);
+			}
 		}
 	}
 }

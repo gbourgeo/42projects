@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 03:21:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 11:47:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 19:20:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void			check_and_exec(char **command, t_env *e)
 {
 	static char	*builtins[] = { BUILTINS };
 	static void	(*function[])(char **, t_env *) = { FUNCTION };
+	char		*path;
 	int			i;
 
 	i = 0;
@@ -31,6 +32,9 @@ void			check_and_exec(char **command, t_env *e)
 		i++;
 	}
 	if (!builtins[i] && *command)
-		fork_function(command, e);
+	{
+		path = fork_function(command, e);
+		ft_update_env(path, command, e);
+	}
 	redefine_term();
 }
