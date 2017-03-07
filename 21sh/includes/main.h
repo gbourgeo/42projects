@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 12:11:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/04 15:05:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,7 @@ typedef struct		s_pipe
 	char			**table;
 	char			***cmd;
 	int				*fds;
-	int				fd;
-	int				fildes[2];
 	int				pipe;
-	int				last_pipe;
 	int				redir;
 }					t_pipe;
 
@@ -220,8 +217,9 @@ char				*lexical_analysis(char *command);
 void				move_tab_right(t_env *e);
 void				move_tab_left(t_env *e);
 void				parse_command(t_env *e);
+
 void				pipes_check(char **args, t_env *e);
-void				pipes_loop(t_pipe pi, t_env *e);
+void				pipes_loop(t_pipe pi, t_env *e, long tot);
 void				prompt(t_env *e);
 int					quotes_command(t_env *e);
 void				read_command(int len, char *buf, t_env *e);

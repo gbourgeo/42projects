@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 12:13:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/04 15:06:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 		args[i] = pi->table[count];
 		count++;
 	}
-	if (pi->fds[count] > STDIN_FILENO)
+	if (pi->fds[count] > STDOUT_FILENO)
 		close(pi->fds[count]);
 	if (pi->table)
 		free(pi->table);
@@ -53,59 +53,59 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 	t_pipe		pi;
 	long		i[4];
 
-	if ((pi.table = ft_tabnew(nb + 2)) == NULL)
+	e->ret = 1;
+	if ((pi.table = ft_tabnew(nb + 1)) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	if ((pi.cmd = (char ***)malloc(sizeof(**pi.cmd) * (nb + 2))) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
 	if ((pi.fds = (int *)malloc(sizeof(*pi.fds) * (nb + 2))) == NULL)
 		return (pipes_error("Insufficient Memory.", args, 0, &pi));
-	pi.fd = 0;
 	ft_memset(i, 0, sizeof(*i) * 4);
 	pi.cmd[i[2]++] = args;
 	pi.fds[i[3]++] = STDOUT_FILENO;
+	pi.pipe = 0;
+	pi.redir = 0;
 	while (args[i[0]])
 	{
 		if (*args[i[0]] == '|')
 		{
 			if (i[0] == 0 || args[i[0] - 1] == NULL || args[i[0] + 1] == NULL)
 				return (pipes_error("parse error near `|'", args, i[1], &pi));
-			pi.fds[i[3]++] = STDOUT_FILENO;
 			pi.table[i[1]++] = args[i[0]];
-			args[i[0]] = NULL;
 			pi.cmd[i[2]++] = &args[i[0] + 1];
+			pi.fds[i[3]++] = STDOUT_FILENO;
+			args[i[0]] = NULL;
 		}
 		else if (*args[i[0]] == '>')
 		{
 			if (args[i[0] + 1] == NULL)
 				return (pipes_error("parse error near `\\n'", args, i[1], &pi));
+			pi.table[i[1]++] = args[i[0]];
+			pi.cmd[i[2]++] = &args[i[0] + 1];
 			if ((pi.fds[i[3]++] = open(args[i[0] + 1], O_WRONLY | O_TRUNC | O_CREAT, 0644)) == -1)
 				return (pipes_error(strerror(errno), args, i[1], &pi));
-			pi.table[i[1]++] = args[i[0]];
 			args[i[0]] = NULL;
-			pi.cmd[i[2]++] = &args[i[0] + 1];
 		}
 		else if (*args[i[0]] == '<')
 		{
 			if (args[i[0] + 1] == NULL)
 				return (pipes_error("parse error near `\\n'", args, i[1], &pi));
+			pi.table[i[1]++] = args[i[0]];
+			pi.cmd[i[2]++] = &args[i[0] + 1];
 			if ((pi.fds[i[3]++] = open(args[i[0] + 1], O_RDONLY)) == -1)
 				return (pipes_error(strerror(errno), args, i[1], &pi));
-			pi.table[i[1]++] = args[i[0]];
 			args[i[0]] = NULL;
-			pi.cmd[i[2]++] = &args[i[0] + 1];
 		}
 		i[0]++;
 	}
 	pi.table[i[1]] = NULL;
 	pi.cmd[i[2]] = NULL;
-	pi.fd = -1;
-	pi.pipe = 0;
-	pi.last_pipe = 0;
-	pi.redir = 0;
-	e->ret = 1;
+	pi.fds[i[3]] = STDOUT_FILENO;
 	init_sigint(1);
-	pipes_loop(pi, e);
+	restore_term();
+	pipes_loop(pi, e, 0);
 	init_sigint(0);
+	redefine_term();
 	pipes_free(args, nb, &pi);
 }
 

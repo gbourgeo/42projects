@@ -6,121 +6,233 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 05:23:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 16:43:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/07 00:47:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static void		pipe_child(t_pipe *pi, int *p, t_env *e)
+static void		pipe_fork(char **args, t_env *e)
 {
-	int			tot;
+	char		*path;
 
-	tot = pi->pipe + pi->redir;
-	if (pi->fd == -1)
-		pi->fd = p[0];
-	close(STDIN_FILENO);
-	dup2(pi->fd, STDIN_FILENO);
-	close(pi->fd);
-	if (*(pi->cmd + tot + 1) != NULL)
+	if ((path = get_path(args, e)) != NULL)
 	{
-		close(STDOUT_FILENO);
-		dup2(p[1], STDOUT_FILENO);
-		close(p[1]);
+		e->ret = execve(path, args, e->env);
+		ft_putendl_fd("21sh: check your arguments.", 2);
 	}
-	if (tot == 0 || **(pi->table + tot - 1) == '|')
-		check_and_exec(*(pi->cmd + tot), e);
-/* 	else */
-/* 		check_and_exec(*(pi->cmd + pi->last_pipe), e); */
+	else
+		ft_put2endl_fd("21sh: command not found: ", args[0], 2);
+	if (path)
+		free(path);
 	exit(e->ret);
 }
 
-static void		pipe_father(pid_t pid, int *p, t_env *e)
+static void		pipe_exec(char **command, t_env *e, int fork)
 {
-	close(p[1]);
-	waitpid(pid, &e->ret, 0);
-	if (e->ret == 512)
+	static char	*builtins[] = { BUILTINS };
+	static void	(*function[])(char **, t_env *) = { FUNCTION };
+	int			i;
+
+	i = 0;
+	while (builtins[i])
 	{
-		e->ret = 130;
-		ft_putchar('\n');
+		if (ft_strcmp(*command, builtins[i]) == 0)
+		{
+			function[i](command, e);
+			return ;
+		}
+		i++;
 	}
+	if (!fork)
+		pipe_fork(command, e);
+	else
+		fork_function(command, e);
 }
 
-void			pipes_loop(t_pipe pi, t_env *e)
+static void		pipe_error(char *err, int p, t_env *e)
+{
+	if (err)
+	{
+		ft_putstr_fd("21sh: ", 2);
+		ft_putendl_fd(err, 2);
+		e->ret = 1;
+	}
+	else if (e->ret == 512)
+	{
+		ft_putchar('\n');
+		e->ret = 130;
+	}
+	if (p > -1)
+		close(p);
+	init_sigint(0);
+	redefine_term();
+}
+
+void			pipes_loop(t_pipe pi, t_env *e, long tot)
 {
 	int			p[2];
-	int			tot;
+	int			p2[2];
 	pid_t		pid;
 
-	tot = pi.pipe + pi.redir;
-	if (e->ret != 130)
+	if (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '|')
 	{
-		if ((*(pi.table + tot) == NULL && **(pi.table + tot - 1) == '|') || **(pi.table + tot) == '|')
+
+		if (pipe(p) == -1)
+			return (pipe_error("pipe() failed.", -1, e));
+		if ((pid = fork()) < 0)
+			return (pipe_error("fork() failed.", -1, e));
+		if (pid == 0)
 		{
-			if (pipe(p) == -1)
-				return (ft_putendl_fd("21sh: pipe() failure.", 2));
-			if ((pid = fork()) == -1)
-				return (ft_putendl_fd("21sh: fork() failure.", 2));
-			else if (pid == 0)
-				pipe_child(&pi, p, e);
-			else
-				pipe_father(pid, p, e);
-			pi.fd = p[0];
-			pi.pipe++;
-			if (*(pi.table + tot))
+			if (pi.pipe)
 			{
-				pi.last_pipe = tot + 1;
-				pipes_loop(pi, e);
+				dup2(pi.pipe, STDIN_FILENO);
+				close(pi.pipe);
+				pi.pipe = 0;
+			}
+			close(p[0]);
+			dup2(p[1], STDOUT_FILENO);
+			close(p[1]);
+			pipe_exec(*(pi.cmd + tot), e, 0);
+		}
+		else
+		{
+			close(p[1]);
+			waitpid(pid, &e->ret, 0);
+			if (e->ret)
+				return (pipe_error(NULL, p[0], e));
+			tot += pi.redir + 1;
+			pi.redir = 0;
+			if (*(pi.table + tot + pi.redir))
+			{
+				pi.pipe = p[0];
+				pipes_loop(pi, e, tot);
+				close(p[0]);
+			}
+			else
+			{
+				dup2(p[0], STDIN_FILENO);
+				close(p[0]);
+				pipe_exec(*(pi.cmd + tot + pi.redir), e, 1);
+				dup2(1, STDIN_FILENO);
+			}
+			tot += pi.redir + 1;
+			pi.redir = 0;
+		}
+	}
+	else if (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '<')
+	{
+
+/* 		pi.redir++; */
+/* 		if ((pid = fork()) < 0) */
+/* 			return (pipe_error("fork() failed.", -1, e)); */
+/* 		if (pid == 0) */
+/* 		{ */
+/* 			dup2(*(pi.fds + tot + pi.redir), STDIN_FILENO); */
+/* 			close(*(pi.fds + tot + pi.redir)); */
+/* 			pipe_exec(*(pi.cmd + tot), e, 0); */
+/* 		} */
+/* 		else */
+/* 			waitpid(pid, &e->ret, 0); */
+/* 		if (*(pi.table + tot + pi.redir)) */
+/* 			pipes_loop(pi, e, tot); */
+		if (pipe(p) == -1)
+			return (pipe_error("pipe() failed.", -1, e));
+		if ((pid = fork()) < 0)
+			return (pipe_error("fork() failed.", -1, e));
+		if (pid == 0)
+		{
+			if (pi.pipe)
+			{
+				dup2(pi.pipe, STDIN_FILENO);
+				close(pi.pipe);
+				pi.pipe = 0;
+			}
+			close(p[0]);
+			dup2(p[1], STDOUT_FILENO);
+			close(p[1]);
+			int i = 0;
+			while (*(pi.table + tot + i) && **(pi.table + tot + i) == '<')
+				i++;
+			char *more[i + 1];
+			int j = 0;
+			more[j] = "more";
+			while (*(pi.table + tot + j) && **(pi.table + tot + j) == '<')
+			{
+				more[j + 1] = **(pi.cmd + tot + j + 1);
+				j++;
+			}
+			more[j + 1] = NULL;
+			pipe_exec(more, e, 0);			
+		}
+		else
+		{
+			close(p[1]);
+			waitpid(pid, &e->ret, 0);
+			if (e->ret)
+				return (pipe_error(NULL, p[0], e));
+			pi.redir++;
+			if (*(pi.table + tot + pi.redir))
+			{
+				pi.pipe = p[0];
+				pipes_loop(pi, e, tot);
+				close(p[0]);
+			}
+			else
+			{
+				dup2(p[0], STDIN_FILENO);
+				close(p[0]);
+				int i = ft_tablen(*(pi.cmd + tot));
+				char **next;
+				next = &(pi.cmd)[tot][i];
+				(pi.cmd)[tot][i] = (pi.cmd)[tot + pi.redir][1];
+				ft_puttab((pi.cmd)[tot]);ft_putchar('\n');
+				ft_puttab(&(pi.cmd)[tot + pi.redir][1]);ft_putchar('\n');
+				pipe_exec(*(pi.cmd + tot), e, 1);
+				dup2(1, STDIN_FILENO);
 			}
 		}
-		else if (*(pi.table + tot) && **(pi.table + tot) == '>')
+	}
+	else if (*(pi.table + tot + pi.redir) && **(pi.table + tot + pi.redir) == '>')
+	{
+
+/* 		pi.redir++; */
+/* 		if ((pid = fork()) < 0) */
+/* 			return (pipe_error("fork() failed.", -1, e)); */
+/* 		if (pid == 0) */
+/* 		{ */
+/* 			dup2(*(pi.fds + tot + pi.redir), STDOUT_FILENO); */
+/* 			close(*(pi.fds + tot + pi.redir)); */
+/* 			pipe_exec(*(pi.cmd + tot), e, 0); */
+/* 		} */
+/* 		else */
+/* 			waitpid(pid, &e->ret, 0); */
+/* 		if (*(pi.table + tot + pi.redir)) */
+/* 			pipes_loop(pi, e, tot);		 */
+		if ((pid = fork()) < 0)
+			return (pipe_error("fork() failed.", -1, e));
+		if (pid == 0)
 		{
-			if ((pid = fork()) == -1)
-				return (ft_putendl_fd("21sh: fork() failure.", 2));
-			else if (pid == 0)
+			if (pi.pipe)
 			{
-				if (pi.fd > -1)
-				{
-					close(STDIN_FILENO);
-					dup2(pi.fd, STDIN_FILENO);
-					close(pi.fd);
-				}
-				close(STDOUT_FILENO);
-				dup2(*(pi.fds + tot + 1), STDOUT_FILENO);
-				close(*(pi.fds + tot + 1));
-				check_and_exec(*(pi.cmd + pi.last_pipe), e);
-				exit(e->ret);
+				dup2(pi.pipe, STDIN_FILENO);
+				close(pi.pipe);
+				pi.pipe = 0;
 			}
-			else
-				waitpid(pid, &e->ret, 0);
-//			if (pi.fd == -1)
-			pi.fd = *(pi.fds + tot + 1);
 			pi.redir++;
-			pipes_loop(pi, e);
+			dup2(*(pi.fds + tot + pi.redir), STDOUT_FILENO);
+			close(*(pi.fds + tot + pi.redir));
+			pipe_exec(*(pi.cmd + tot), e, 0);
+			dup2(0, STDOUT_FILENO);
 		}
-		else if (*(pi.table + tot) && **(pi.table + tot) == '<')
+		else
 		{
-			if ((pid = fork()) == -1)
-				return (ft_putendl_fd("21sh: fork() failure.", 2));
-			else if (pid == 0)
-			{
-				close(STDIN_FILENO);
-				dup2(*(pi.fds + tot + 1), STDIN_FILENO);
-				close(*(pi.fds + tot + 1));
-				if (*(pi.table + tot + 1) && **(pi.table + tot + 1) != '<')
-				{
-					close(STDOUT_FILENO);
-					dup2(*(pi.fds + tot + 2), STDOUT_FILENO);
-					close(*(pi.fds + tot + 2));
-				}
-				check_and_exec(*(pi.cmd + pi.last_pipe), e);
-				exit(e->ret);
-			}
-			else
-				waitpid(pid, &e->ret, 0);
+			waitpid(pid, &e->ret, 0);
+			if (e->ret)
+				return (pipe_error(NULL, p[0], e));
 			pi.redir++;
-			pi.fd = *(pi.fds + tot + 1);
-			pipes_loop(pi, e);
+			if (*(pi.table + tot + pi.redir))
+				pipes_loop(pi, e, tot);
 		}
 	}
 }
