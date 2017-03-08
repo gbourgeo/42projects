@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 19:10:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/08 20:34:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,22 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 		free(pi->cmd);
 	if (pi->fds)
 		free(pi->fds);
+}
+
+static void		rework_cmd(t_pipe *pi, long len)
+{
+	long		i;
+
+	i = 0;
+	while (i < len)
+	{
+		while (*(pi->table + i) && **(pi->table + i) == '|')
+			i++;
+		if (*(pi->table + i) && **(pi->table + i) != '|')
+		{
+			
+		}
+	}
 }
 
 static void		pipes_error(char *str, char **args, long *nb, t_pipe *pi)
@@ -110,6 +126,7 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 	pi.fds[i[3]] = STDOUT_FILENO;
 	init_sigint(1);
 	restore_term();
+	rework_cmd(&pi, i[1]);
 	pipes_loop(pi, e, 0);
 	init_sigint(0);
 	redefine_term();
