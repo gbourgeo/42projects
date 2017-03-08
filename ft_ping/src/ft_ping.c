@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/03 22:55:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/24 15:31:21 by root             ###   ########.fr       */
+/*   Updated: 2017/03/07 20:19:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ static int		ft_usage(char illegal)
 		ft_putchar_fd(illegal, 2);
 		ft_putendl_fd("'", 2);
 	}
-	ft_putstr_fd("Usage: " ,2);
+	ft_putstr_fd("Usage: ", 2);
 	ft_putstr_fd(e.prog, 2);
-	ft_putendl_fd(" [-"OPTIONS"] host" ,2);
+	ft_putendl_fd(" [-"OPTIONS"] host", 2);
 	exit(2);
 }
 
@@ -44,7 +44,7 @@ static int		ft_options(char **av)
 			else if (av[i][j] == 'h')
 				ft_usage(0);
 			else
-			  ft_usage(av[i][j]);
+				ft_usage(av[i][j]);
 			j++;
 		}
 		i++;

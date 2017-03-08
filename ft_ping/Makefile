@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/08/03 22:45:44 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/08/16 20:17:55 by root             ###   ########.fr        #
+#    Updated: 2017/03/07 23:21:23 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,7 +14,7 @@ NAME = ft_ping
 
 SRC_DIR = src/
 
-SRC = ft_ping.c ft_init.c ft_setup.c ft_signals.c ft_analyse.c
+SRC = ft_analyse.c ft_init.c ft_ping.c ft_pinger.c ft_setup.c ft_signals.c
 
 OBJ_DIR = obj/
 
@@ -26,19 +26,19 @@ LIB_H = $(LIBFT)/includes
 
 WWW = gcc -Wall -Werror -Wextra
 
-all: lib $(OBJ_DIR) $(NAME)
+all: $(LIBFT) $(OBJ_DIR) $(NAME)
 
-lib:
+$(LIBFT):
 	@make -C $(LIBFT)
 
 $(OBJ_DIR):
 	mkdir -p $@
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) | $(LIBFT)/libft.a
 	$(WWW) -o $@ $^ -L $(LIBFT) -lft
 	@echo "CREATED:" $(NAME);
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(SRC_DIR)ft_ping.h | $(OBJ_DIR)
 	$(WWW) -o $@ -c $< -I $(LIB_H)
 
 clean:

@@ -6,13 +6,57 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/09 14:23:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/24 15:30:56 by root             ###   ########.fr       */
+/*   Updated: 2017/03/07 21:01:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
 #include <signal.h>
 #include <stdio.h>
+
+/*
+** void			ft_alarm(int sig)
+** {
+** 	ft_pinger();
+** 	signal(SIGALRM, ft_alarm);
+** 	if (!e.npackets || e.ntransmitted < e.npackets)
+** 		alarm((u_int)e.interval);
+** 	else
+** 	{
+** 		if (e.nreceived)
+** 		{
+** 			sig = 2 * e.tmax / 1000;
+** 			if (!sig)
+** 				sig = 1;
+** 			if (sig > MAXWAIT)
+** 				sig = MAXWAIT;
+** 		}
+** 		else
+** 			sig = MAXWAIT;
+** 		signal(SIGALRM, ft_finish);
+** 		alarm((u_int)sig);
+** 	}
+** }
+*/
+
+static void		ft_aff_ntransmitted(void)
+{
+	if (e.nreceived > e.ntransmitted)
+		printf("-- somebody's printing up packets!");
+	else
+		printf("%d%% packet loss, ",
+				(int)(((e.ntransmitted - e.nreceived) * 100) / e.ntransmitted));
+}
+
+static void		ft_aff_nreceived(void)
+{
+	printf("rtt min/avg/max/mdev = %.3f/%.3f/%.3f/%.3f ms\n",
+			e.tmin,
+			(e.tmax + e.tmin) / 2,
+			e.tmax,
+			(e.tmax - e.tmin) / 2);
+	exit(0);
+}
 
 void			ft_finish(int sig)
 {
@@ -28,23 +72,11 @@ void			ft_finish(int sig)
 	printf("%ld packets transmitted, ", e.ntransmitted);
 	printf("%ld received, ", e.nreceived);
 	if (e.ntransmitted)
-	{
-		if (e.nreceived > e.ntransmitted)
-			printf("-- somebody's printing up packets!");
-		else
-			printf("%d%% packet loss, ", (int)(((e.ntransmitted - e.nreceived) * 100)
-							/ e.ntransmitted));
-	}
-	printf("time %ldms\n", 1000 * e.start_time.tv_sec + e.start_time.tv_usec / 1000);
+		ft_aff_ntransmitted();
+	printf("time %ldms\n", 1000 * e.start_time.tv_sec +
+			e.start_time.tv_usec / 1000);
 	if (e.nreceived)
-	{
-		printf("rtt min/avg/max/mdev = %.3f/%.3f/%.3f/%.3f ms\n",
-				e.tmin,
-				(e.tmax + e.tmin) / 2,
-				e.tmax,
-				(e.tmax - e.tmin) / 2);
-		exit(0);
-	}
+		ft_aff_nreceived();
 	exit(1);
 }
 
@@ -55,29 +87,6 @@ void			ft_alarm(int sig)
 	signal(SIGALRM, ft_alarm);
 	alarm((u_int)e.interval);
 }
-
-/* void			ft_alarm(int sig) */
-/* { */
-/* 	ft_pinger(); */
-/* 	signal(SIGALRM, ft_alarm); */
-/* 	if (!e.npackets || e.ntransmitted < e.npackets) */
-/* 		alarm((u_int)e.interval); */
-/* 	else */
-/* 	{ */
-/* 		if (e.nreceived) */
-/* 		{ */
-/* 			sig = 2 * e.tmax / 1000; */
-/* 			if (!sig) */
-/* 				sig = 1; */
-/* 			if (sig > MAXWAIT) */
-/* 				sig = MAXWAIT; */
-/* 		} */
-/* 		else */
-/* 			sig = MAXWAIT; */
-/* 		signal(SIGALRM, ft_finish); */
-/* 		alarm((u_int)sig); */
-/* 	} */
-/* } */
 
 void			ft_signals(void)
 {

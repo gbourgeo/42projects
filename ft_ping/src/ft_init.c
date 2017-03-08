@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 01:35:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/24 18:27:02 by root             ###   ########.fr       */
+/*   Updated: 2017/03/07 22:24:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,17 @@ static void			ft_err(char *msg, char *err_msg)
 static void			ft_setsockopt(void)
 {
 	socklen_t		on;
+	int				ret;
 
 	on = 1;
-	if (setsockopt(e.sock, SOL_SOCKET, SO_BROADCAST, (char *)&on, sizeof(on)) < 0)
+	ret = setsockopt(e.sock, SOL_SOCKET, SO_BROADCAST, (char *)&on, sizeof(on));
+	if (ret < 0)
 		ft_err("setsockopt", "(SO_BROADCAST)");
 	if (setsockopt(e.sock, IPPROTO_IP, IP_HDRINCL, (char *)&on, sizeof(on)) < 0)
 		ft_err("setsocket", "(IPHDRINCL)");
 	on = 64;
-	if (setsockopt(e.sock, SOL_IP, IP_TTL, (char *)&on, sizeof(on)) < 0)
+//	if (setsockopt(e.sock, SOL_IP, IP_TTL, (char *)&on, sizeof(on)) < 0)
+	if (setsockopt(e.sock, IPPROTO_IP, IP_TTL, (char *)&on, sizeof(on)) < 0)
 		ft_err("setsocket", "(IPHDRINCL)");
 	on = IP_MAXPACKET + 128;
 	setsockopt(e.sock, SOL_SOCKET, SO_RCVBUF, (char *)&on, sizeof(on));
@@ -43,7 +46,22 @@ static void			ft_setsockopt(void)
 		setsockopt(e.sock, SOL_SOCKET, SO_SNDBUF, (char *)&on, sizeof(on));
 	e.start_time.tv_sec = 1;
 	e.start_time.tv_usec = 0;
-	setsockopt(e.sock, SOL_SOCKET, SO_SNDTIMEO, &e.start_time, sizeof(struct timeval));
+	ret = sizeof(struct timeval);
+	setsockopt(e.sock, SOL_SOCKET, SO_SNDTIMEO, &e.start_time, ret);
+}
+
+static void			ft_getinfo(struct addrinfo *res)
+{
+	int				i;
+
+	ft_memcpy(e.srcname, res->ai_canonname, sizeof(e.srcname));
+	ft_memcpy(&e.source, res->ai_addr, sizeof(e.source));
+	inet_ntop(res->ai_family, &e.source.sin_addr, e.srcip, sizeof(e.srcip));
+	if ((i = getnameinfo((struct sockaddr *)&e.source, sizeof(e.source),
+							e.srcname, sizeof(e.srcname), NULL, 0,
+							NI_NAMEREQD | NI_DGRAM)) != 0)
+		ft_err("getnameinfo:", (char *)gai_strerror(i));
+	freeaddrinfo(res);
 }
 
 static void			ft_socket(void)
@@ -63,20 +81,14 @@ static void			ft_socket(void)
 	tmp = res;
 	while (tmp)
 	{
-		if ((e.sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) >= 0)
+		e.sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+		if (e.sock >= 0)
 			break ;
 		tmp = tmp->ai_next;
 	}
 	if (tmp == NULL)
 		ft_err(e.prog, "socket");
-	ft_memcpy(e.srcname, res->ai_canonname, sizeof(e.srcname));
-	ft_memcpy(&e.source, res->ai_addr, sizeof(e.source));
-	inet_ntop(res->ai_family, &e.source.sin_addr, e.srcip, sizeof(e.srcip));
-	if ((i = getnameinfo((struct sockaddr *)&e.source, sizeof(e.source),
-						 e.srcname, sizeof(e.srcname), NULL, 0,
-						 NI_NAMEREQD | NI_DGRAM)) != 0)
-		ft_err("getnameinfo:", (char *)gai_strerror(i));
-	freeaddrinfo(res);
+	ft_getinfo(res);
 }
 
 void				ft_init(void)
