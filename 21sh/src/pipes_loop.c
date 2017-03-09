@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 05:23:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/08 20:10:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/09 19:22:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,45 +72,6 @@ static void		pipe_error(char *err, int p, t_env *e)
 		close(p);
 	init_sigint(0);
 	redefine_term();
-}
-
-static void		find_args(t_pipe pi, t_env *e, long tot, int fork)
-{
-	char		**cmd;
-	int			i;
-	int			j;
-	int			k;
-
-	i = 0;
-	j = ft_tablen(*(pi.cmd + tot));
-	while (*(pi.table + tot + i) && **(pi.table + tot + i) != '|')
-	{
-		j += ft_tablen(*(pi.cmd + tot + i + 1)) - 1;
-		i++;
-	}
-	if ((cmd = ft_tabnew(i + j + 1)) == NULL)
-		return ;
-	i = 0;
-	j = 0;
-	k = 0;
-	while (*(*(pi.cmd + tot) + j))
-	{
-		cmd[j] = *(*(pi.cmd + tot) + j);
-		j++;
-	}
-	while (*(pi.table + tot + i) && **(pi.table + tot + i) != '|')
-	{
-		k = 1;
-		while (*(*(pi.cmd + tot + i + 1) + k))
-		{
-			cmd[j++] = *(*(pi.cmd + tot + i + 1) + k);
-			k++;
-		}
-		i++;
-	}
-	cmd[j] = NULL;
-	pipe_exec(cmd, e, fork);
-	free(cmd);
 }
 
 void			pipes_loop(t_pipe pi, t_env *e, long tot)
@@ -216,7 +177,7 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 				dup2(p[0], STDIN_FILENO);
 				close(p[0]);
 				if (**(pi.cmd + tot))
-					find_args(pi, e, tot, 1);
+					pipe_exec(*(pi.cmd + tot), e, 1);
 				dup2(1, STDIN_FILENO);
 			}
 		}
@@ -244,7 +205,7 @@ void			pipes_loop(t_pipe pi, t_env *e, long tot)
 				pipe_exec(cat, e, 0);
 			}
 			else if (**(pi.cmd + tot))
-				find_args(pi, e, tot, 0);
+				pipe_exec(*(pi.cmd + tot), e, 0);
 			else
 			{
 				cat[0] = "cat";

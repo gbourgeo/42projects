@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/08 20:34:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/09 21:44:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,46 @@ static void		pipes_free(char **args, long nb, t_pipe *pi)
 		free(pi->fds);
 }
 
-static void		rework_cmd(t_pipe *pi, long len)
+static void		rework_before(t_pipe *pi, long i, long j)
+{
+	long		len;
+
+	len = ft_tablen(pi->cmd[i]);
+	pi->cmd[i][len] = pi->cmd[i + j + 1][1];
+	pi->cmd[i + j + 1][1] = pi->cmd[i + j + 1][0];
+	pi->cmd[i + j + 1][0] = NULL;
+	pi->cmd[i + j + 1] = &pi->cmd[i + j + 1][1];
+	while (j > i)
+	{
+		pi->cmd[i + j][1] = pi->cmd[i + j][0];
+		pi->cmd[i + j][0] = NULL;
+		pi->cmd[i + j] = &pi->cmd[i + j][1];
+		j--;
+	}
+}
+
+static void		rework_cmd(t_pipe *pi)
 {
 	long		i;
+	long		j;
 
 	i = 0;
-	while (i < len)
+	j = 0;
+	while (pi->table[i + j])
 	{
-		while (*(pi->table + i) && **(pi->table + i) == '|')
-			i++;
-		if (*(pi->table + i) && **(pi->table + i) != '|')
+		if (pi->table[i + j] && *pi->table[i + j] != '|')
 		{
-			
+			if (pi->cmd[i + j + 1][1])
+				rework_before(pi, i, j);
+			else
+				j++;
+		}
+		else if (j == 0)
+			i++;
+		else
+		{
+			i += j;
+			j = 0;
 		}
 	}
 }
@@ -126,7 +154,7 @@ static void		pipes_prepare(char **args, t_env *e, long nb)
 	pi.fds[i[3]] = STDOUT_FILENO;
 	init_sigint(1);
 	restore_term();
-	rework_cmd(&pi, i[1]);
+	rework_cmd(&pi);
 	pipes_loop(pi, e, 0);
 	init_sigint(0);
 	redefine_term();
