@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/01 22:53:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/21 12:17:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/10 16:30:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void			read_client_command(t_client *cl)
 {
 	char			**cmds;
 	int				i;
-	static t_com	com[] = { { "/away", cl_void }, {"/connect", cl_connect },
+	static t_cmd	com[] = { { "/away", cl_void }, {"/connect", cl_connect },
 							{ "/help", cl_help }, { "/join", cl_void },
 							{ "/leave", cl_void }, { "/list", cl_void },
 							{ "/msg", cl_void }, { "/nick", cl_nick },
@@ -40,7 +40,7 @@ void				read_client(t_client *cl)
 {
 	int				ret;
 
-	ret = read(STDIN_FILENO, cl->read, BUFF - 1);
+	ret = read(STDIN_FILENO, cl->read, BUFF);
 	if (ret < 0)
 		cl_error("Client: read() error.", cl);
 	else if (ret == 0)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/14 11:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 18:34:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/10 16:55:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,12 @@
 */
 
 # define NAME_SIZE	9
+
+/*
+** Default port number
+*/
+
+# define DEF_PORT	"4242"
 
 /*
 ** All commands the server supports, and their associated function.

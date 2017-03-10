@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/21 12:11:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/10 15:47:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ void			cl_connect(char **cmds, t_client *cl)
 		return (ft_putendl_fd("Missing parameters.", 2));
 	port = (cmds[2] == NULL) ? ft_strrchr(cmds[1], ':') : cmds[2];
 	if (port == NULL)
-		return (ft_putendl_fd("Missing parameters.", 2));
+		port = DEF_PORT;
+	else
+		*port++ = '\0';
 	ft_strclr(cl->read);
 	if (fd != -1)
 		send(fd, "/quit\n", 6, 0);
-	if (cmds[2] == NULL)
-		*port++ = '\0';
 	if (cl_getaddrinfo(cmds[1], port, cl))
 		cl->sock = fd;
 	else if (*cl->name)

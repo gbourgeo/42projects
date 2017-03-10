@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:51:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/08/02 18:41:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/10 16:50:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,11 @@ static int			cl_init_addrinfo(char *ad, char *pt, struct addrinfo **res)
 	hints.ai_canonname = NULL;
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
-	ft_putstr("\e[33mConnecting to server... ");
+	ft_putstr("\e[33mConnecting to \e[0m");
+	ft_putstr(ad);
+	ft_putstr("\e[33m on port \e[0m");
+	ft_putstr(pt);
+	ft_putstr("\e[33m...\e[0m");
 	if (getaddrinfo(ad, pt, &hints, res))
 		return (1);
 	return (0);
