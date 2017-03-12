@@ -1,32 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipes.c                                            :+:      :+:    :+:   */
+/*   pipes_free.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/10 14:47:30 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/10 14:46:43 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/10 14:46:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-void			pipes_check(char **args, t_env *e)
+void			pipes_free(char **args, long nb, t_pipe *pi)
 {
 	long		i;
-	long		nb;
+	long		count;
 
 	i = 0;
-	nb = 0;
-	while (args[i])
+	count = 0;
+	while (count <= nb)
 	{
-		if (*args[i] == '|' || *args[i] == '>' || *args[i] == '<')
-			nb++;
-		i++;
+		if (pi->fds[count] > STDOUT_FILENO)
+			close(pi->fds[count]);
+		while (args[i])
+			i++;
+		args[i] = pi->table[count];
+		count++;
 	}
-	if (nb > 0)
-		e->ret = pipes_prepare(args, e, nb);
-	else
-		check_and_exec(args, e);
+	if (pi->fds[count] > STDOUT_FILENO)
+		close(pi->fds[count]);
+	if (pi->table)
+		free(pi->table);
+	if (pi->cmd)
+		free(pi->cmd);
+	if (pi->fds)
+		free(pi->fds);
 }

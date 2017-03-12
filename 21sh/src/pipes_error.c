@@ -1,32 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipes.c                                            :+:      :+:    :+:   */
+/*   pipes_error.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/02/25 00:25:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/10 14:47:30 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/10 14:48:32 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/10 14:48:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-void			pipes_check(char **args, t_env *e)
+int				pipes_error(char *str, char **args, long *nb, t_pipe *pi)
 {
-	long		i;
-	long		nb;
-
-	i = 0;
-	nb = 0;
-	while (args[i])
-	{
-		if (*args[i] == '|' || *args[i] == '>' || *args[i] == '<')
-			nb++;
-		i++;
-	}
-	if (nb > 0)
-		e->ret = pipes_prepare(args, e, nb);
+	ft_putstr_fd("21sh: ", 2);
+	ft_putstr_fd(str, 2);
+	if (!ft_strncmp(str, "parse", 5))
+		ft_putchar_fd('\n', 2);
 	else
-		check_and_exec(args, e);
+	{
+		ft_putstr_fd(": ", 2);
+		ft_putendl_fd(args[nb[0] + 1], 2);
+	}
+	pipes_free(args, nb[1], pi);
+	return (1);
 }

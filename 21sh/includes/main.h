@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 19:21:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/10 14:50:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,11 @@ void				move_tab_left(t_env *e);
 void				parse_command(t_env *e);
 
 void				pipes_check(char **args, t_env *e);
+int					pipes_error(char *str, char **args, long *nb, t_pipe *pi);
+void				pipes_free(char **args, long nb, t_pipe *pi);
 void				pipes_loop(t_pipe pi, t_env *e, long tot);
+int					pipes_prepare(char **args, t_env *e, long nb);
+void				pipes_rework(t_pipe *pi);
 void				prompt(t_env *e);
 int					quotes_command(t_env *e);
 void				read_command(int len, char *buf, t_env *e);
