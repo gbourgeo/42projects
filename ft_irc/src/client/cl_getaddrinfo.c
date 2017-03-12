@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:51:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/10 16:50:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 03:35:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int					cl_getaddrinfo(char *addr, char *port, t_client *cl)
 	struct addrinfo	*results;
 	struct addrinfo	*tmp;
 
-	if (cl_init_addrinfo(addr, port, &results))
-		return (cl_error("getaddrinfo() failed.", NULL));
+	if (cl_init_addrinfo(addr, (port == NULL) ? DEF_PORT : port, &results))
+		return (cl_error("getaddrinfo() returned.", NULL));
 	tmp = results;
 	while (tmp != NULL)
 	{

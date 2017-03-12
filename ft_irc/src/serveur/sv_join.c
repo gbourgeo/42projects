@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 14:34:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/10 19:59:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,23 +57,26 @@ void			sv_join(char **cmds, t_env *e, t_fd *cl)
 {
 	char		*s;
 
+	s = cmds[1];
 	if (!cmds[1] || *cmds[1] == '\0')
 		return (sv_err(cmds[0], ":Not enough parameters", cl->fd));
-	if (!ISCHAN(cmds[1]) || (*cmds[1] == '!' && ISCHAN(cmds[1])))
+	while (*s)
+	{
+		if (*s == 7 || *s == 10 || *s == 13 || *s == ',' || *s == ':')
+			*s = '\0';
+		else
+			s++;
+	}
+	if (!ISCHAN(*cmds[1]))
 		return (sv_err(cmds[1], ":No such channel", cl->fd));
-	if ((s = ft_strchr(cmds[1], '\007')))
-		*s = '\0';
-	if (!*cmds[1] ||
-		(cl->chan && !ft_strncmp(cmds[1], cl->chan->name, CHAN_SIZE)))
+	if (cl->chan && !ft_strncmp(cmds[1], cl->chan->name, CHAN_SIZE))
 		return ;
 	if (cl->chan)
 	{
 		sv_sendto_chan_msg(" :leaved the channel.", cl);
 		sv_leave_chan(e, cl);
 	}
-	cl->chan = sv_join_chan(cmds[1], e, cl);
-	ft_putendl("OK");
-	if (cl->chan == NULL)
+	if ((cl->chan = sv_join_chan(cmds[1], e, cl)) == NULL)
 		return (sv_err("SERVER", ":Out of memory.", cl->fd));
 	if (cl->chan->nbusers > 1)
 		sv_sendto_chan_msg(" :joined the channel.", cl);

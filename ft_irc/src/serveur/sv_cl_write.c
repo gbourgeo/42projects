@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/17 02:35:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 05:24:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,15 +66,15 @@ void				sv_cl_write(t_env *e, t_fd *cl)
 	if (cl->wr.tail && (*cl->wr.tail == '\n' || *cl->wr.tail == '\r'))
 	{
 		sv_clean_buf(&cl->wr);
-		if (*cl->wr.head == '/')
+		if (LOCK_SERVER && cl->reg.registered == 0)
+			sv_get_cl_password(cl, e);
+		else if (*cl->wr.head == '/')
 			sv_cmd_client(e, cl);
 		else if (cl->wr.head != cl->wr.tail && cl->chan)
 			sv_sendto_chan(cl);
 		if (cl->wr.tail)
 			*cl->wr.tail = '\0';
 		cl->wr.head = cl->wr.tail;
-		if (!cl->leaved)
-			sv_cl_prompt(cl);
 		if (e->verb)
 			sv_aff_wr(cl);
 	}

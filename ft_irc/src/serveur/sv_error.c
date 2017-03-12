@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 03:48:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/11 23:09:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,22 @@ static void		sv_free_chan(t_chan **chan)
 	ft_memset(*chan, 0, sizeof(**chan));
 	free(*chan);
 	*chan = NULL;
+}
+
+static void		sv_free_users(t_file **file)
+{
+	t_file		*ptr;
+	t_file		*next;
+
+	ptr = *file;
+	while (ptr)
+	{
+		if (ptr->password)
+			free(ptr->password);
+		next = ptr->next;
+		free(ptr);
+		ptr = next;
+	}
 }
 
 void			sv_error(char *str, t_env *e)
@@ -37,6 +53,8 @@ void			sv_error(char *str, t_env *e)
 		ft_memset(&e->fds[i], 0, sizeof(e->fds[i]));
 		i++;
 	}
+	if (e->users)
+		sv_free_users(&e->users);
 	if (e->fds)
 		free(e->fds);
 	if (e->chan)

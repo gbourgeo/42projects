@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 10:21:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 06:25:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,14 @@
 */
 
 /*
+** LOCK_SERVER		If the value is different of 0 the server will ask for login
+**					and password to each new connection.
+*/
+
+# define LOCK_SERVER 0
+# define USERS_FILE ".irc_users"
+
+/*
 ** MAX_CLIENT		Set the number of clients this program will handle. It can't
 **					be over the system limit. (see RLIMIT_NOFILE)
 */
@@ -31,14 +39,14 @@
 ** MAX_CLIENT_BY_IP Let you choose how many times a same IP can connect.
 */
 
-# define MAX_CLIENT_BY_IP 2
+# define MAX_CLIENT_BY_IP 3
 
 /*
 ** SERV_SIZE		The maximum lenght a servers' name can be. Over this value,
 **					a server name will be truncated.
 */
 
-# define SERV_SIZE	20
+# define SERVER_LEN	63
 
 /*
 ** CHAN_SIZE		The maximum lenght a channels' name can be. Over this value,
@@ -114,7 +122,7 @@
 # define WHO_MSG WHO_1 WHO_2 WHO_3
 
 # define ISVALID(c) (((c) >= 'A' && (c) <= '~') || ft_isdigit(c) || (c) == '-')
-# define ISCHAN(c) (*c == '#' || *c == '&' || *c == '+' || *c == '!')
+# define ISCHAN(c) (c == '#' || c == '&' || c == '+' || c == '!')
 
 enum
 {
@@ -122,6 +130,11 @@ enum
 	FD_SERVER,
 	FD_CLIENT
 };
+
+/*
+** I had set a void * in the struct s_user because i couldn't set it as t_fd *.
+** The structures definition won't allow it. Such a mess.
+*/
 
 typedef struct			s_user
 {
@@ -141,18 +154,25 @@ typedef struct			s_chan
 	struct s_chan		*prev;
 }						t_chan;
 
+typedef struct			s_reg
+{
+	int					registered;
+	char				login[NICK_LEN + 1];
+	char				*password;
+}						t_reg;
+
 typedef struct			s_fd
 {
-	int					leaved;
 	int					fd;
 	struct sockaddr		csin;
 	char				addr[1025];
 	char				port[32];
+	t_reg				reg;
 	short				type;
 	long				flags;
 	time_t				time;
 	char				flood;
-	char				nick[NAME_SIZE + 1];
+	char				nick[NICK_LEN + 1];
 	char				*away;
 	t_user				*user;
 	t_chan				*chan;
@@ -162,14 +182,23 @@ typedef struct			s_fd
 	t_buf				wr;
 	char				buf_read[BUFF + 1];
 	char				buf_write[BUFF + 1];
+	int					leaved;
 	struct s_fd			*next;
 	struct s_fd			*prev;
 }						t_fd;
 
+typedef struct			s_file
+{
+	char				login[NICK_LEN + 1];
+	char				*password;
+	struct s_file		*next;
+}						t_file;
+
 typedef struct			s_env
 {
 	char				verb;
-	char				name[NAME_SIZE + 1];
+	t_file				*users;
+	char				name[SERVER_LEN + 1];
 	int					ipv4;
 	char				addr4[16];
 	int					ipv6;
@@ -190,38 +219,41 @@ typedef struct			s_com
 
 struct s_env			e;
 
-void					sv_error(char *str, t_env *e);
-void					sv_init_server(char **av, t_env *e);
+t_file					*get_users_list(void);
 void					sv_accept(t_env *e, int ip);
-int						sv_new_client(t_env *e, t_fd *new);
-int						sv_loop(t_env *e);
-void					sv_cl_prompt(t_fd *cl);
+t_user					*sv_add_chan_user(t_chan *chan, t_user *new);
+void					sv_away(char **cmds, t_env *e, t_fd *cl);
+int						sv_check_name_valid(char **cmds);
+void					sv_cl_end(char **cmds, t_env *e, t_fd *cl);
 void					sv_cl_read(t_env *e, t_fd *cl);
 void					sv_cl_write(t_env *e, t_fd *cl);
-void					sv_cl_end(char **cmds, t_env *e, t_fd *cl);
 t_fd					*sv_clear_client(t_env *e, t_fd *cl);
+void					sv_connect(char **cmds, t_env *e, t_fd *cl);
+int						sv_connect_client(t_fd *cl, t_env *e);
+void					sv_err(char *nick, char *err, int fd);
+void					sv_error(char *str, t_env *e);
 /*
 ** int						sv_flood_protect(t_env *e, int id);
 */
-void					sv_nick(char **cmds, t_env *e, t_fd *cl);
+void					sv_get_cl_password(t_fd *cl, t_env *e);
+void					sv_help(char **cmds, t_env *e, t_fd *cl);
+void					sv_init_server(char **av, t_env *e);
 void					sv_join(char **cmds, t_env *e, t_fd *cl);
 void					sv_leave(char **cmds, t_env *e, t_fd *cl);
 void					sv_leave_chan(t_env *e, t_fd *cl);
-void					sv_msg(char **cmds, t_env *e, t_fd *cl);
-void					sv_who(char **cmds, t_env *e, t_fd *cl);
 void					sv_list(char **cmds, t_env *e, t_fd *cl);
-void					sv_help(char **cmds, t_env *e, t_fd *cl);
-void					sv_connect(char **cmds, t_env *e, t_fd *cl);
-void					sv_topic(char **cmds, t_env *e, t_fd *cl);
-void					sv_away(char **cmds, t_env *e, t_fd *cl);
+int						sv_loop(t_env *e);
+void					sv_msg(char **cmds, t_env *e, t_fd *cl);
+void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
+t_user					*sv_new_user(t_fd *id);
+void					sv_nick(char **cmds, t_env *e, t_fd *cl);
+void					sv_quit(int sig);
+void					sv_sendto_chan(t_fd *cl);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);
-void					sv_sendto_chan(t_fd *cl);
 char					**sv_split(t_buf *buf);
 char					*sv_strchr(const t_buf *b, int c);
-void					sv_err(char *nick, char *err, int fd);
-t_user					*sv_add_chan_user(t_chan *chan, t_user *new);
-t_user					*sv_new_user(t_fd *id);
-void					sv_quit(int sig);
+void					sv_topic(char **cmds, t_env *e, t_fd *cl);
+void					sv_who(char **cmds, t_env *e, t_fd *cl);
 
 #endif

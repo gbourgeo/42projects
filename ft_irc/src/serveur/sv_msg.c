@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 19:40:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 05:25:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void		sv_private_msg(t_fd *to, char **cmds, char *from)
 	fd = to->fd;
 	i = 2;
 	send(fd, "\n\e[34;1m(pv)", 12, 0);
-	send(fd, from, NAME_SIZE, 0);
+	send(fd, from, NICK_LEN, 0);
 	send(fd, "\e[0m", 4, 0);
 	while (cmds[i])
 	{
@@ -30,7 +30,6 @@ static void		sv_private_msg(t_fd *to, char **cmds, char *from)
 		i++;
 	}
 	send(fd, "\r\n", 2, 0);
-	sv_cl_prompt(to);
 }
 
 void			sv_msg(char **cmds, t_env *e, t_fd *cl)
@@ -48,7 +47,7 @@ void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 	while (us)
 	{
 		to = (t_fd *)us->is;
-		if (to->fd != cl->fd && !ft_strncmp(to->nick, cmds[1], NAME_SIZE))
+		if (to->fd != cl->fd && !ft_strncmp(to->nick, cmds[1], NICK_LEN))
 		{
 			if (to->flags & FLAGS_AWAY)
 				sv_err(to->nick, (to->away) ? to->away : "Gone", cl->fd);

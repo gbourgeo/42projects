@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/22 14:39:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 05:21:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ void			sv_who(char **cmds, t_env *e, t_fd *cl)
 		send(cl->fd, "\n", 1, 0);
 		send(cl->fd, ((t_fd *)us->is)->chan->name, CHAN_SIZE, 0);
 		send(cl->fd, " ", 1, 0);
-		send(cl->fd, ((t_fd *)(us->is))->nick, NAME_SIZE, 0);
+		send(cl->fd, ((t_fd *)(us->is))->nick, NICK_LEN, 0);
 		if (((t_fd *)us->is)->flags & CHFL_CHANOP)
 			send(cl->fd, "@", 1, 0);
 		send(cl->fd, " ", 1, 0);
 		send(cl->fd, ((t_fd *)us->is)->addr, 1025, 0);
 		send(cl->fd, " ", 1, 0);
-		send(cl->fd, e->name, NAME_SIZE, 0);
+		send(cl->fd, e->name, NICK_LEN, 0);
 		if (((t_fd *)us->is)->flags & FLAGS_AWAY)
 			send(cl->fd, " G", 2, 0);
 		else
@@ -61,7 +61,7 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 		while (us)
 		{
 			send(cl->fd, " ", 1, 0);
-			send(cl->fd, ((t_fd *)us->is)->nick, NAME_SIZE, 0);
+			send(cl->fd, ((t_fd *)us->is)->nick, NICK_LEN, 0);
 			us = us->next;
 		}
 		if ((ch = ch->next))

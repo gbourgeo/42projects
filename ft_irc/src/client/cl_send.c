@@ -1,22 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_cl_prompt.c                                     :+:      :+:    :+:   */
+/*   cl_send.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/07/08 02:21:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/14 06:40:49 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/12 04:45:12 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/12 04:45:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include "cl_main.h"
 #include <sys/socket.h>
 
-void		sv_cl_prompt(t_fd *cl)
+void			cl_send(int fd, char *cmd, char *param, char **next)
 {
-	if (cl == NULL)
-		return ;
-	send(cl->fd, cl->nick, NAME_SIZE, 0);
-	send(cl->fd, " \e[32m>\e[0m", 11, 0);
+	send(fd, cmd, ft_strlen(cmd), 0);
+	send(fd, param, ft_strlen(param), 0);
+	while (next && *next)
+	{
+		send(fd, " ", 1, 0);
+		send(fd, *next, ft_strlen(*next), 0);
+		next++;
+	}
+	send(fd, END_CHECK, END_CHECK_LEN, 0);
 }

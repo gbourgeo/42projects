@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 10:20:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 05:09:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,22 +52,15 @@ static void			sv_verbose(char **av, t_env *e)
 static void			sv_init_env(t_env *e)
 {
 	struct rlimit	rlp;
-	size_t			i;
 
-	i = 0;
 	if (getrlimit(RLIMIT_NOFILE, &rlp) == -1)
 		sv_error("ERROR: Getrlimit(RLIMIT_NOFILE)", e);
 	if (MAX_CLIENT > rlp.rlim_cur)
 		sv_error("MAX_CLIENT > rlim_cur. Check MAX_CLIENT and reduce it.", e);
-	e->members = 0;
-	e->fds = NULL;
-	e->chan = (t_chan *)malloc(sizeof(*e->chan));
-	if (e->chan == NULL)
-		sv_error("ERROR: malloc() of chan", e);
-	ft_memset(e->chan, 0, sizeof(*e->chan));
-	ft_strncpy(e->chan->name, "#Global", CHAN_SIZE + 1);
-	ft_strncpy(e->chan->topic, "Home Sweet Home !", TOPIC_SIZE + 1);
-	e->chan->nbusers = 1;
+	e->users = get_users_list();
+/* 	e->members = 0; */
+/* 	e->fds = NULL; */
+/* 	e->chan = NULL; */
 }
 
 static void			sv_signals(void)

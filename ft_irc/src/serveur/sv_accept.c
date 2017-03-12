@@ -6,58 +6,69 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:16:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 19:44:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 07:08:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-#include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netdb.h>
 
-static int			sv_check_clone(t_env *e, t_fd *new, int ip)
+static int			sv_check_clone(t_env *e, struct sockaddr *csin, int ip)
 {
 	t_fd			*cl;
-	struct in_addr	*v4;
-	struct in6_addr	*v6;
+	struct in_addr	*v4[2];
+	struct in6_addr	*v6[2];
 	size_t			clone;
 
 	cl = e->fds;
-	v4 = (ip) ? NULL : (struct in_addr *)&new->csin;
-	v6 = (ip) ? (struct in6_addr *)&new->csin : NULL;
+	v4[0] = (ip) ? NULL : &((struct sockaddr_in *)csin)->sin_addr;
+	v6[0] = (ip) ? &((struct sockaddr_in6 *)csin)->sin6_addr : NULL;
 	clone = 0;
 	while (cl)
 	{
-		if ((v4 && !ft_strcmp(cl->addr, new->addr)) ||
-			(v6 && !ft_strcmp(cl->addr, new->addr)))
-			clone++;
+		if (!ip)
+		{
+			v4[1] = &((struct sockaddr_in *)&cl->csin)->sin_addr;
+			if (!ft_memcmp(v4[0], v4[1], sizeof(struct in_addr)))
+				clone++;
+		}
+		else
+		{
+			v6[1] = &((struct sockaddr_in6 *)&cl->csin)->sin6_addr;
+			if (!ft_memcmp(v6[0], v6[1], sizeof(struct in_addr)))
+				clone++;
+		}
 		cl = cl->next;
 	}
 	return (clone);
 }
 
-void				sv_accept(t_env *e, int ip)
+static void			sv_send(int fd, char *str, t_env *e)
 {
-	t_fd			new;
+	if (e->verb)
+		ft_putendl(str);
+	if (fd > 0)
+	{
+		send(fd, str, ft_strlen(str), 0);
+		send(fd, END_CHECK, END_CHECK_LEN, 0);
+		close(fd);
+	}
+}
+
+void				sv_accept(t_env *e, int ipv6)
+{
+	int				fd;
+	struct sockaddr	csin;
 	socklen_t		len;
 
-	ft_memset(&new, 0, sizeof(new));
-	len = sizeof(new.csin);
-	new.fd = accept((!ip) ? e->ipv4 : e->ipv6, &new.csin, &len);
-	if (new.fd == -1)
-		return ;
-	e->members++;
-	if (e->members >= MAX_CLIENT)
-		send(new.fd, "Maximum clients reached. Try again later.\r\n", 43, 0);
-	else if (sv_check_clone(e, &new, ip) >= MAX_CLIENT_BY_IP)
-		send(new.fd, "Max Client by IP reached.\r\n", 27, 0);
-	else if (getnameinfo(&new.csin, sizeof(new.csin), new.addr, NI_MAXHOST,
-					new.port, NI_MAXSERV, NI_NUMERICSERV))
-		send(new.fd, "Couldn't get your HOST and SERV.\r\n", 35, 0);
-	else if (sv_new_client(e, &new))
-		send(new.fd, "ERROR: server malloc()\r\n", 24, 0);
+	len = sizeof(csin);
+	fd = accept((!ipv6) ? e->ipv4 : e->ipv6, &csin, &len);
+	if (fd == -1)
+		sv_send(fd, "ERROR :Fucntion accept() returned", e);
+	if (e->members + 1 >= MAX_CLIENT)
+		sv_send(fd, "ERROR :Maximum clients reached", e);
+	else if (sv_check_clone(e, &csin, ipv6) >= MAX_CLIENT_BY_IP)
+		sv_send(fd, "ERROR :Max Client by IP reached", e);
 	else
-		return ;
-	e->members--;
-	close(new.fd);
+		sv_new_client(fd, &csin, e);
 }

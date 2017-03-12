@@ -6,69 +6,109 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/10 15:47:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 04:46:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 #include <sys/socket.h>
 
+static int		cl_nick_check(char *nick)
+{
+	int			i;
+
+	if (!nick || !*nick)
+		return (1);
+	if (ft_isalpha(*nick) || ISSPECIAL(*nick))
+	{
+		i = 1;
+		while (nick[i] && i <= NICK_LEN)
+		{
+			if (ft_isalpha(nick[i]) || ft_isdigit(nick[i]) ||
+				ISSPECIAL(nick[i]) || nick[i] == '-')
+				i++;
+			else
+				return (2);
+		}
+		return (0);
+	}
+	return (2);
+}
+
 void			cl_nick(char **cmds, t_client *cl)
 {
-	if (!cmds[1] && cl->sock == -1)
-		ft_putendl_fd("\e[31mMissing parameters.\e[0m", 2);
+	int			err;
+
+	err = cl_nick_check(cmds[1]);
+	if (err == 1)
+	{
+		ft_putstr_fd(cmds[0], STDERR_FILENO);
+		ft_putendl_fd(" :No nickname given", STDERR_FILENO);
+	}
+	else if (err == 2)
+	{
+		ft_putstr_fd(cmds[1], STDERR_FILENO);
+		ft_putendl_fd(" :Erroneus nickname", STDERR_FILENO);
+	}
+	else
+		ft_strncpy(cl->nick, cmds[1], NICK_LEN);
 }
 
 void			cl_help(char **cmds, t_client *cl)
 {
-	if (cl->sock == -1)
-	{
-		ft_putendl("Here's a list of usefull commands:");
-		ft_putendl("/nick <nickname>");
-		ft_putendl("/connect <_host_[:port]>");
-		ft_putendl("/quit");
-	}
-	(void)cmds;
-}
-
-void			cl_void(char **cmds, t_client *cl)
-{
 	(void)cmds;
 	(void)cl;
+	ft_putstr("The commands described here are used to register a connection");
+	ft_putstr(" with an \nIRC server as a user as well as to correctly ");
+	ft_putstr("disconnect.\n\n");
+	ft_putstr("A \"PASS\" command is not required for a client connection ");
+	ft_putstr("to be \nregistered, but it MUST precede the latter of the ");
+	ft_putstr("NICK/USER \ncombination (for a user connection) or the SERVICE");
+	ft_putstr(" command (for a\nservice connection). The RECOMMENDED order ");
+	ft_putstr("for a client to register\nis as follows:\n\n");
+	ft_putstr("                           1. Pass message\n");
+	ft_putstr("           2. Nick message                2. Service message\n");
+	ft_putstr("           3. User message\n\n");
+	ft_putstr("Upon success, the client will receive an RPL_WELCOME ");
+	ft_putstr("(for users) or\nRPL_YOURESERVICE (for services) message ");
+	ft_putstr("indicating that the\nconnection is now registered and known ");
+	ft_putstr("the to the entire IRC network.\nThe reply message MUST contain");
+	ft_putstr(" the full client identifier upon which\nit was registered.\n\n");
+	ft_putendl("CONNECT <target_server> [port]");
+	ft_putendl("HELP");
+	ft_putendl("NICK <nickname>");
+	ft_putendl("PASS <passwordhere>");
+	ft_putendl("USER <user> <mode> <unused> <realname>");
+	ft_putendl("QUIT");
 }
 
 void			cl_quit(char **cmds, t_client *cl)
 {
 	ft_free(&cmds);
-	if (cl->sock >= 0)
+	if (cl->sock > 0)
 		close(cl->sock);
 	FD_ZERO(&cl->fds);
 	ft_memset(cl, 0, sizeof(*cl));
+	ft_putendl("User leaved the client.");
 	exit(0);
 }
 
 void			cl_connect(char **cmds, t_client *cl)
 {
 	char		*port;
-	int			fd;
 
-	fd = cl->sock;
 	if (!cmds[1])
-		return (ft_putendl_fd("Missing parameters.", 2));
-	port = (cmds[2] == NULL) ? ft_strrchr(cmds[1], ':') : cmds[2];
-	if (port == NULL)
-		port = DEF_PORT;
-	else
-		*port++ = '\0';
-	ft_strclr(cl->read);
-	if (fd != -1)
-		send(fd, "/quit\n", 6, 0);
-	if (cl_getaddrinfo(cmds[1], port, cl))
-		cl->sock = fd;
-	else if (*cl->name)
 	{
-		send(cl->sock, "/nick ", 6, 0);
-		send(cl->sock, cl->name, NAME_SIZE, 0);
-		send(cl->sock, "\n", 1, 0);
+		ft_putstr_fd(cmds[0], STDERR_FILENO);
+		return (ft_putendl_fd(ERR_NEEDMOREPARAMS, 2));
 	}
+	port = (cmds[2] == NULL) ? DEF_PORT : cmds[2];
+	if (cl_getaddrinfo(cmds[1], port, cl))
+		return ;
+	if (cl->pass)
+		cl_send(cl->sock, "PASS ", cl->pass, NULL);
+	if (*cl->nick)
+		cl_send(cl->sock, "NICK ", cl->nick, NULL);
+	if (cl->user)
+		cl_send(cl->sock, "USER ", *cl->user, cl->user);
 }

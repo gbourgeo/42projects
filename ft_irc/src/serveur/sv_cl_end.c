@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/03 10:20:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 07:11:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,16 @@ void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
 	cl->leaved = 1;
 }
 
+static void		sv_free_client(t_fd *cl)
+{
+	if (cl->reg.password)
+		free(cl->reg.password);
+	if (cl->away)
+		free(cl->away);
+	if (cl->user)
+		free(cl->user);
+}
+
 t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 {
 	t_fd		*ret;
@@ -57,10 +67,7 @@ t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 	FD_CLR(cl->fd, &e->fd_read);
 	FD_CLR(cl->fd, &e->fd_write);
 	close(cl->fd);
-	if (cl->away)
-		free(cl->away);
-	if (cl->user)
-		free(cl->user);
+	sv_free_client(cl);
 	if (cl->prev)
 		cl->prev->next = cl->next;
 	else

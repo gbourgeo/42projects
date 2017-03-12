@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/11/12 01:36:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/12 06:18:28 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,8 +14,8 @@ CLIENT	= client
 
 CL_DIR	= src/client/
 
-CL_SRC	= cl_main.c cl_getaddrinfo.c cl_loop.c cl_read_write.c cl_commands.c \
-		cl_error.c
+CL_SRC	= cl_main.c cl_getaddrinfo.c cl_read_write.c cl_commands.c \
+		cl_commands_next.c cl_error.c cl_send.c
 
 CL_OBJ	= $(CL_SRC:.c=.o)
 
@@ -25,9 +25,10 @@ SV_DIR	= src/serveur/
 
 SV_SRC	= sv_accept.c sv_chan.c sv_cl_end.c sv_cl_read.c sv_cl_write.c \
 		sv_command_client.c sv_error.c sv_init_server.c sv_join.c \
-		sv_leave.c sv_loop.c sv_main.c sv_msg.c sv_send.c sv_split.c \
-		sv_topic.c sv_err.c sv_strchr.c sv_cl_prompt.c sv_nick.c \
-		sv_away.c sv_new_client.c sv_help.c sv_signals.c
+		sv_leave.c sv_loop.c sv_main.c sv_msg.c sv_sendtochan.c sv_split.c \
+		sv_topic.c sv_err.c sv_strchr.c  sv_nick.c \
+		sv_away.c sv_new_client.c sv_help.c sv_signals.c sv_cl_register.c \
+		get_users_list.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 

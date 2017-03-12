@@ -1,0 +1,7 @@
+# Fichiers des utilisateurs enregistres sur ft_irc
+# Forme: username ; espace ; motdepasse
+# Tout username qui commencera par "guest" ou qui ne sera pas
+# a la norme irc 2812 ne sera pas pris en compte.
+
+toto fdp
+encule ton_cul

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_send.c                                          :+:      :+:    :+:   */
+/*   sv_sendtochan.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/17 19:48:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/08 19:30:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 06:17:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void			sv_sendto_chan_new(t_fd *cl)
 	us = cl->chan->user;
 	while (us)
 	{
-		send(cl->fd, ((t_fd *)us->is)->nick, NAME_SIZE, 0);
+		send(cl->fd, ((t_fd *)us->is)->nick, NICK_LEN, 0);
 		if (((t_fd *)us->is)->flags & CHFL_CHANOP)
 			send(cl->fd, "@", 1, 0);
 		if ((us = us->next))
@@ -52,10 +52,9 @@ void			sv_sendto_chan_msg(char *msg, t_fd *cl)
 		if (fd != cl->fd)
 		{
 			send(fd, "\n", 1, 0);
-			send(fd, cl->nick, NAME_SIZE, 0);
+			send(fd, cl->nick, NICK_LEN, 0);
 			send(fd, msg, len, 0);
 			send(fd, "\r\n", 2, 0);
-			sv_cl_prompt((t_fd *)us->is);
 		}
 		us = us->next;
 	}
@@ -75,7 +74,7 @@ void			sv_sendto_chan(t_fd *cl)
 		if (((t_fd *)us->is)->fd != cl->fd)
 		{
 			send(((t_fd *)us->is)->fd, "\n", 1, 0);
-			send(((t_fd *)us->is)->fd, cl->nick, NAME_SIZE, 0);
+			send(((t_fd *)us->is)->fd, cl->nick, NICK_LEN, 0);
 			send(((t_fd *)us->is)->fd, " ", 1, 0);
 			if (cl->wr.tail > cl->wr.head)
 				send(((t_fd *)us->is)->fd, cl->wr.head, len[0], 0);
@@ -84,7 +83,6 @@ void			sv_sendto_chan(t_fd *cl)
 				send(((t_fd *)us->is)->fd, cl->wr.head, len[1], 0);
 				send(((t_fd *)us->is)->fd, cl->wr.start, len[2], 0);
 			}
-			sv_cl_prompt((t_fd *)us->is);
 		}
 		us = us->next;
 	}

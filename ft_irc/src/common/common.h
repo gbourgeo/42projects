@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/14 11:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/10 16:55:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 04:07:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,23 @@
 # define BUFF		512
 
 /*
-** The maximum lenght a client can be named.
+** The maximum lenght a nickname can be.
 */
 
-# define NAME_SIZE	9
+# define NICK_LEN	9
 
 /*
 ** Default port number
 */
 
-# define DEF_PORT	"4242"
+# define DEF_PORT	"6667"
 
 /*
 ** All commands the server supports, and their associated function.
 */
 
-# define COMMANDS1 "/away", "/connect", "/help", "/join", "/leave", "/list"
-# define COMMANDS2 "/msg", "/nick", "/quit", "/topic", "/who", NULL
+# define COMMANDS1 "AWAY", "CONNECT", "HELP", "JOIN", "LEAVE", "LIST"
+# define COMMANDS2 "MSG", "NICK", "QUIT", "TOPIC", "WHO", NULL
 
 # define SYNTAX1 "<message>", "<_host> <port>", "<command>", "<channel>"
 # define SYNTAX2 "<channel>", "", "<nicknames> <message>", "<nickname>"
@@ -46,6 +46,8 @@
 
 # define END_CHECK "\r\n"
 # define END_CHECK_LEN 2
+
+# define ISSPECIAL(c) (((c) >= '[' && (c) <= '`') || ((c) >= '{' && (c) <= '}'))
 
 /*
 ** Structure s_buf implemented for client write and server read / write

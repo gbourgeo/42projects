@@ -6,41 +6,29 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/07/26 17:50:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 06:46:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <stdio.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
-static void			sv_print(t_env *e, t_fd *cl)
+void				sv_welcome(t_env *e, t_fd *cl)
 {
-	t_fd			*tmp;
-
-	tmp = e->fds;
-	while (tmp && tmp->next)
-		tmp = tmp->next;
-	if (tmp == NULL)
-		e->fds = cl;
-	else
-	{
-		tmp->next = cl;
-		cl->prev = tmp;
-	}
-	if (e->verb)
-		printf("\e[32mNew client from\e[0m %s :%s\n", cl->addr, cl->port);
 	send(cl->fd, ":Welcome to the Internet Relay Chat ", 36, 0);
-	send(cl->fd, cl->nick, NAME_SIZE, 0);
+	send(cl->fd, cl->nick, NICK_LEN, 0);
 	send(cl->fd, "\n:Your host is ", 15, 0);
-	send(cl->fd, e->name, NAME_SIZE, 0);
+	send(cl->fd, e->name, NICK_LEN, 0);
 	send(cl->fd, "\n:This server was created ", 26, 0);
 	send(cl->fd, e->creation, ft_strlen(e->creation), 0);
 	send(cl->fd, "\r\n", 2, 0);
-	sv_cl_prompt(cl);
 }
 
-static void			sv_fill_buf(t_buf *info, char *buff)
+static void			sv_init_buf(t_buf *info, char *buff)
 {
 	info->start = &buff[0];
 	info->end = &buff[BUFF];
@@ -49,51 +37,53 @@ static void			sv_fill_buf(t_buf *info, char *buff)
 	info->len = 0;
 }
 
-static void			sv_find_nick(t_env *e, t_fd *new)
+static void			new_client_error(int fd, char *str, t_env *e)
 {
-	t_user			*us;
-	size_t			nb;
-
-	us = e->chan->user;
-	ft_strncpy(new->nick, "user", NAME_SIZE + 1);
-	nb = 0;
-	while (us)
-	{
-		ft_strncpy(new->nick + 4, ft_itoa(nb), NAME_SIZE - 4);
-		if (ft_strcmp(new->nick, ((t_fd *)us->is)->nick) == 0)
-		{
-			nb++;
-			us = e->chan->user;
-		}
-		else
-			us = us->next;
-	}
-	ft_strncpy(new->nick + 4, ft_itoa(nb), NAME_SIZE - 4);
+	if (e->verb)
+		ft_putendl(str);
+	send(fd, str, ft_strlen(str), 0);
+	send(fd, END_CHECK, END_CHECK_LEN, 0);
+	close(fd);
 }
 
-int					sv_new_client(t_env *e, t_fd *new)
+static void			send_notice(int fd, char *str, t_env *e)
+{
+	send(fd, e->name, SERVER_LEN, 0);
+	send(fd, " NOTICE * :*** ", 15, 0);
+	send(fd, str, ft_strlen(str), 0);
+	send(fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
+void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 {
 	t_fd			*cl;
 
-	cl = (t_fd *)malloc(sizeof(*cl));
-	if (cl == NULL)
-		return (1);
-	ft_memcpy(cl, new, sizeof(*new));
+	if ((cl = (t_fd *)malloc(sizeof(*cl))) == NULL)
+		return (new_client_error(fd, "ERROR :Malloc failed", e));
+	cl->fd = fd;
+	ft_memcpy(&cl->csin, csin, sizeof(cl->csin));
+	send_notice(fd, "Looking up your hostname...", e);
+	if (getnameinfo(&cl->csin, sizeof(cl->csin), cl->addr, NI_MAXHOST,
+					cl->port, NI_MAXSERV, NI_NUMERICSERV))
+		send_notice(fd, "Couldn't look up your hostname", e);
+//	send_notice(fd, "Checking Ident", e);
+//
+//	send_notice(fd, "No Ident response", e);
 	cl->type = FD_CLIENT;
 	cl->time = time(NULL);
-	sv_find_nick(e, cl);
-	if ((cl->user = sv_new_user(cl)) == NULL)
-	{
-		free(cl);
-		return (1);
-	}
-	cl->chan = e->chan;
 	cl->fct_read = sv_cl_read;
 	cl->fct_write = sv_cl_write;
-	sv_fill_buf(&cl->rd, cl->buf_read);
-	sv_fill_buf(&cl->wr, cl->buf_write);
-	e->chan->nbusers++;
-	e->chan->user = sv_add_chan_user(e->chan, cl->user);
-	sv_print(e, cl);
-	return (0);
+	sv_init_buf(&cl->rd, cl->buf_read);
+	sv_init_buf(&cl->wr, cl->buf_write);
+	cl->user = sv_new_user(cl);
+	if (e->fds)
+		e->fds->prev = cl;
+	cl->next = e->fds;
+	e->fds = cl;
+	e->members++;
+	if (e->verb)
+		printf("\e[32mNew client from\e[0m %s :%s\n", cl->addr, cl->port);
+/* 	if (!LOCK_SERVER) */
+/* 		return (sv_connect_client(cl)); */
+/* 	send(cl->fd, "Username: ", 10, 0); */
 }

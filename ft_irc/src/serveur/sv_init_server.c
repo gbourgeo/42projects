@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/11/17 01:37:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/12 05:47:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,8 @@ void					sv_init_server(char **av, t_env *e)
 
 	port = (*av[1] != '-') ? av[1] : av[2];
 	p = getpwuid(getuid());
-	ft_strncpy(e->name, (p) ? p->pw_name : "unknown", sizeof(e->name));
+	*e->name = ':';
+	ft_strncpy(e->name + 1, (p) ? p->pw_name : "unknown", SERVER_LEN - 1);
 	e->ipv4 = -1;
 	e->ipv6 = -1;
 	sv_getaddrinfo(port, e);
