@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 05:09:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 05:23:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ static void			sv_verbose(char **av, t_env *e)
 				j++;
 			}
 		}
+		else
+			e->port = av[i];
 		i++;
 	}
 }
@@ -84,7 +86,7 @@ int					main(int ac, char **av)
 	sv_verbose(av, &e);
 	sv_init_env(&e);
 	sv_signals();
-	sv_init_server(av, &e);
+	sv_init_server(&e);
 	date = time(NULL);
 	e.creation = ctime(&date);
 	sv_loop(&e);

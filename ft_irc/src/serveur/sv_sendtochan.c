@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/17 19:48:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 06:17:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 02:58:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void			sv_sendto_chan_new(t_fd *cl)
 	us = cl->chan->user;
 	while (us)
 	{
-		send(cl->fd, ((t_fd *)us->is)->nick, NICK_LEN, 0);
+		send(cl->fd, ((t_fd *)us->is)->reg.nick, NICK_LEN, 0);
 		if (((t_fd *)us->is)->flags & CHFL_CHANOP)
 			send(cl->fd, "@", 1, 0);
 		if ((us = us->next))
@@ -52,7 +52,7 @@ void			sv_sendto_chan_msg(char *msg, t_fd *cl)
 		if (fd != cl->fd)
 		{
 			send(fd, "\n", 1, 0);
-			send(fd, cl->nick, NICK_LEN, 0);
+			send(fd, cl->reg.nick, NICK_LEN, 0);
 			send(fd, msg, len, 0);
 			send(fd, "\r\n", 2, 0);
 		}
@@ -74,7 +74,7 @@ void			sv_sendto_chan(t_fd *cl)
 		if (((t_fd *)us->is)->fd != cl->fd)
 		{
 			send(((t_fd *)us->is)->fd, "\n", 1, 0);
-			send(((t_fd *)us->is)->fd, cl->nick, NICK_LEN, 0);
+			send(((t_fd *)us->is)->fd, cl->reg.nick, NICK_LEN, 0);
 			send(((t_fd *)us->is)->fd, " ", 1, 0);
 			if (cl->wr.tail > cl->wr.head)
 				send(((t_fd *)us->is)->fd, cl->wr.head, len[0], 0);

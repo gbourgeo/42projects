@@ -6,44 +6,32 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 05:23:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 06:25:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <fcntl.h>
 
-static t_file		*free_str(char **str, t_file *ret)
-{
-	while (str && *str != NULL)
-		free(*str++);
-	return (ret);
-}
-
 static t_file		*new_user(char **str, t_file *next)
 {
 	t_file			*new;
 
-	if (str[0] == NULL || str[1] == NULL)
-	{
-		if (str[0])
-			free(str[0]);
+	if (ft_tablen(str) < 3)
 		return (next);
-	}
-	if (sv_check_name_valid(str))
-		return (free_str(str, next));
+	if (ft_tablen(str) < 3 || sv_check_name_valid(str + 2))
+		return (next);
 	new = malloc(sizeof(*new));
 	if (new == NULL)
 	{
 		ft_free(&str);
 		return (next);
 	}
-	ft_strncpy(new->login, *str, NICK_LEN);
-	free(*str);
-	str++;
-	new->password = *str++;
+	ft_strncpy(new->username, *str++, NICK_LEN);
+	new->password = ft_strdup(*str++);
+	ft_strncpy(new->nick, *str++, NICK_LEN);
 	new->next = next;
-	return (free_str(str, new));
+	return (new);
 }
 
 t_file				*get_users_list(void)
@@ -63,10 +51,9 @@ t_file				*get_users_list(void)
 	while (get_next_line(fd, &buf) > 0)
 	{
 		str = NULL;
-		if (buf && *buf != '#' && (str = ft_strsplit(buf,' ')))
+		if (buf && *buf != '#' && (str = ft_strsplit(buf, ' ')))
 			first = new_user(str, first);
-		if (str)
-			free(str);
+		ft_free(&str);
 		if (buf)
 			free(buf);
 		buf = NULL;

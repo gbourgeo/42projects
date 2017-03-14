@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 05:25:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 23:19:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,31 +32,59 @@ static void		sv_private_msg(t_fd *to, char **cmds, char *from)
 	send(fd, "\r\n", 2, 0);
 }
 
+static void		sv_search_chan(char *chan_name, char **cmds, t_fd *cl, t_env *e)
+{
+	t_chan		*chans;
+
+	chans = cl->chan;
+	while (chans)
+	{
+		// Checker si l'user n'est pas sur le channel et que le chan a le mode +n.
+		// Checker si l'user est sur le chan mais que le chan n'est pas en mode +m et qu'il n'est pas chan op.
+		// Checker si l'user n'est pas ban du chan.
+		if (!ft_strcmp(chan_name, chans->name))
+		{
+			if (1)
+				return (sv_sendto_chan(&cmds[2], cl, e));
+		}
+		chans = chans->next;
+	}
+	sv_err(ERR_CANNOTSENDTOCHAN, chan_name, NULL, cl, e);
+}
+
+static void		sv_search_user(char *nick, char **cmds, t_fd *cl, t_env *e)
+{
+	t_fd		*fd;
+
+	fd = e->fds;
+	while (fd)
+	{
+		if (!ft_strcmp(nick, fd->reg.nick))
+			return (sv_sendto(fd, cl, e));
+		fd = fd->next;
+	}
+	sv_err(ERR_NOSUCHNICK, nick, NULL, cl, e);
+}
+
 void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 {
-	t_user		*us;
-	t_fd		*to;
+	char		**targets;
+	int			i;
 
-	if (cl->chan == NULL)
-		return ;
-	us = cl->chan->user;
 	if (!cmds[1] || *cmds[1] == '\0')
-		return (sv_err(cmds[0], ":Not enough parameters", cl->fd));
-	if (!cmds[2])
-		return (sv_err(cmds[0], ":No text to send", cl->fd));
-	while (us)
+		return (sv_err(ERR_NORECIPIENT, cmds[0], NULL, cl, e));
+	if (!cmds[2] || !*cmds[2])
+		return (sv_err(ERR_NOTEXTTOSEND, cmds[0], NULL, cl, e));
+	ft_strtolower(cmds[1]);
+	if ((targets = ft_strsplit(cmds[1], ',')) == NULL)
+		sv_error("ERROR: Server out of memory", e);
+	i = 0;
+	while (targets[i])
 	{
-		to = (t_fd *)us->is;
-		if (to->fd != cl->fd && !ft_strncmp(to->nick, cmds[1], NICK_LEN))
-		{
-			if (to->flags & FLAGS_AWAY)
-				sv_err(to->nick, (to->away) ? to->away : "Gone", cl->fd);
-			else
-				sv_private_msg((t_fd *)us->is, cmds, cl->nick);
-			return ;
-		}
-		us = us->next;
+		if (ISCHAN(*targets[i]))
+			sv_search_chan(targets[i], cmds, cl, e);
+		else
+			sv_search_user(targets[i], cmds, cl, e);
+		i++;
 	}
-	sv_err(cmds[1], ":No such nick", cl->fd);
-	(void)e;
 }

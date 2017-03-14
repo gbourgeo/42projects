@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 05:24:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 05:44:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,25 +35,31 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 {
 	char			**cmds;
 	int				nb;
-	static t_com	com[] = { { "/away", sv_away }, {"/connect", sv_connect },
-							{ "/help", sv_help }, { "/join", sv_join },
-							{ "/leave", sv_leave }, { "/list", sv_list },
-							{ "/msg", sv_msg }, { "/nick", sv_nick },
-							{ "/quit", sv_cl_end }, { "/topic", sv_topic },
-							{ "/who", sv_who }, { NULL, sv_null } };
+	static t_com	com[] = { SV_COMMANDS1, SV_COMMANDS2 };
 
 	nb = 0;
 	if ((cmds = sv_split(&cl->wr)) == NULL)
 		return (sv_error("Server: split failed.\r\n", e));
+	ft_strtoupper(cmds[0]);
 	while (com[nb].name && ft_strcmp(com[nb].name, cmds[0]))
 		nb++;
-	com[nb].fct(cmds, e, cl);
+	if (cl->reg.registered <= 0 && LOCK_SERVER)
+		sv_get_cl_password(cl, e);
+	else if (cl->reg.registered > 0 || nb == 7 || nb == 10)
+		com[nb].fct(cmds, e, cl);
+	else if (cl->reg.registered == 0)
+	{
+		send(cl->fd, e->name, SERVER_LEN, 0);
+		send(cl->fd, " 451 * :You have not registered", 31, 0);
+		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+		cl->reg.registered = -1;
+	}
 	ft_free(&cmds);
 }
 
 static void			sv_clean_buf(t_buf *wr)
 {
-	while (wr->head && *wr->head == ' ')
+	while (wr->head && (*wr->head == ' ' || *wr->head == '\t'))
 	{
 		wr->head++;
 		if (wr->head >= wr->end)
@@ -63,15 +69,13 @@ static void			sv_clean_buf(t_buf *wr)
 
 void				sv_cl_write(t_env *e, t_fd *cl)
 {
-	if (cl->wr.tail && (*cl->wr.tail == '\n' || *cl->wr.tail == '\r'))
+	if (cl->wr.tail && *cl->wr.tail == '\n')
 	{
 		sv_clean_buf(&cl->wr);
-		if (LOCK_SERVER && cl->reg.registered == 0)
-			sv_get_cl_password(cl, e);
-		else if (*cl->wr.head == '/')
-			sv_cmd_client(e, cl);
-		else if (cl->wr.head != cl->wr.tail && cl->chan)
-			sv_sendto_chan(cl);
+		sv_cmd_client(e, cl);
+/* 			else if (cl->wr.head != cl->wr.tail && cl->chan) */
+/* 				sv_sendto_chan(cl); */
+/* 			} */
 		if (cl->wr.tail)
 			*cl->wr.tail = '\0';
 		cl->wr.head = cl->wr.tail;

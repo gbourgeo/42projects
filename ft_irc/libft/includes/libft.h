@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/14 12:17:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 23:47:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 typedef struct		s_list
 {
+	struct s_list	*prev;
 	void			*content;
 	size_t			content_size;
 	struct s_list	*next;
@@ -74,6 +75,7 @@ void				ft_putchar_fd(char c, int fd);
 void				ft_putstr_fd(char const *s, int fd);
 void				ft_putendl_fd(char const *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
+
 void				ft_lstadd(t_list **alst, t_list *new);
 void				ft_lstaddend(t_list **alst, t_list *new);
 void				ft_lstdel(t_list **alst, void (*del)(void *, size_t));
@@ -82,6 +84,7 @@ void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 t_list				*ft_lstnew(void const *content, size_t content_size);
 void				ft_lstswap(t_list *one, t_list *two);
+
 char				**ft_tabdup(char **tab);
 int					ft_tablen(char **tab);
 void				ft_puttab(char **tab);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/11 20:23:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 06:43:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 06:15:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,12 @@ static void			check_cl_register(t_fd *cl, t_env *e)
 	ptr = e->users;
 	while (ptr)
 	{
-		if (!ft_strcmp(ptr->login, cl->reg.login))
+		if (!ft_strcmp(ptr->username, cl->reg.username))
 		{
 			if (!ft_strcmp(ptr->password, cl->reg.password))
 			{
-				ft_strncpy(cl->nick, cl->reg.login, NICK_LEN);
-//				sv_connect_client(cl, e);
+				ft_strncpy(cl->reg.nick, ptr->nick, NICK_LEN);
+				sv_welcome(e, cl);
 				return ;
 			}
 			cl->leaved = 1;
@@ -81,13 +81,11 @@ void				sv_get_cl_password(t_fd *cl, t_env *e)
 	size_t			len;
 
 	len = 0;
-	if (!*cl->reg.login)
+	if (cl->reg.registered == 0)
 	{
-		copy_str(cl->reg.login, NICK_LEN, cl);
-		if (!*cl->reg.login)
-			send(cl->fd, "Username: ", 10, 0);
-		else
-			send(cl->fd, "Password: ", 10, 0);
+		copy_str(cl->reg.username, NICK_LEN, cl);
+		send(cl->fd, "Password: ", 10, 0);
+		cl->reg.registered = -2;
 	}
 	else
 	{

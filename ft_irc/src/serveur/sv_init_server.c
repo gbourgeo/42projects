@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 05:47:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 06:33:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static int				sv_findsocket(struct addrinfo *p, int ip)
 	return (sv_sockerr("setsockopt(SO_REUSEADDR) ", fd));
 }
 
-static void				sv_getaddrinfo(char *port, t_env *e)
+static void				sv_getaddrinfo(t_env *e)
 {
 	struct addrinfo		hints;
 	struct addrinfo		*res;
@@ -82,7 +82,7 @@ static void				sv_getaddrinfo(char *port, t_env *e)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo(NULL, port, &hints, &res))
+	if (getaddrinfo(NULL, e->port, &hints, &res))
 		sv_error("Error: getaddrinfo()", e);
 	p = res;
 	while (p != NULL)
@@ -100,24 +100,23 @@ static void				sv_getaddrinfo(char *port, t_env *e)
 		sv_error("Error: Invalid or Unavailable port.", e);
 }
 
-void					sv_init_server(char **av, t_env *e)
+void					sv_init_server(t_env *e)
 {
-	char				*port;
 	struct passwd		*p;
 
-	port = (*av[1] != '-') ? av[1] : av[2];
 	p = getpwuid(getuid());
 	*e->name = ':';
 	ft_strncpy(e->name + 1, (p) ? p->pw_name : "unknown", SERVER_LEN - 1);
+	ft_strcat(e->name, "_server");
 	e->ipv4 = -1;
 	e->ipv6 = -1;
-	sv_getaddrinfo(port, e);
+	sv_getaddrinfo(e);
 	ft_putstr("IPV4: ");
 	if (sv_sockavail(e, 0) != -1)
-		printf("%s %s\n", e->addr4, port);
+		printf("%s %s\n", e->addr4, e->port);
 	ft_putstr("IPV6: ");
 	if (sv_sockavail(e, 1) != -1)
-		printf("%s %s\n", e->addr6, port);
+		printf("%s %s\n", e->addr6, e->port);
 	if (e->ipv4 >= 0 && listen(e->ipv4, MAX_CLIENT) == -1)
 		sv_error("Error: listen() on ipv4.", e);
 	if (e->ipv6 >= 0 && listen(e->ipv6, MAX_CLIENT) == -1)

@@ -1,7 +1,12 @@
-# Fichiers des utilisateurs enregistres sur ft_irc
-# Forme: username ; espace ; motdepasse
-# Tout username qui commencera par "guest" ou qui ne sera pas
-# a la norme irc 2812 ne sera pas pris en compte.
+#
+# Fichiers des utilisateurs enregistres sur ft_irc.
+#
+# SEMANTIC: username ; espace ; motdepasse ; nickname
+# Tout "username" ou "nickname" qui ne sera pas
+# a la norme irc 2812 ne sera pas pris en compte
+# lors du parsing.
 
-toto fdp
-encule ton_cul
+toto fdp furry
+encule ton_cul salut
+!non
+!ca passera ~pas

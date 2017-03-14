@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/11 23:09:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/14 03:39:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void			sv_error(char *str, t_env *e)
 		sv_free_users(&e->users);
 	if (e->fds)
 		free(e->fds);
-	if (e->chan)
-		sv_free_chan(&e->chan);
+	if (e->chans)
+		sv_free_chan(&e->chans);
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);
 	close(e->ipv4);

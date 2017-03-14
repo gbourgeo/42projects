@@ -6,23 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/01 22:53:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 04:43:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/13 04:12:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 #include <sys/socket.h>
-
-static char			*ft_strtoupper(char *str)
-{
-	while (str && *str)
-	{
-		if (*str >= 'a' && *str <= 'z')
-			*str -= 32;
-		str++;
-	}
-	return (str);
-}
 
 static void			read_command(t_client *cl)
 {
@@ -40,6 +29,7 @@ static void			read_command(t_client *cl)
 		i++;
 	cmd[i].fct(args, cl);
 	ft_free(&args);
+	free(save);
 }
 
 void				read_client(t_client *cl)
