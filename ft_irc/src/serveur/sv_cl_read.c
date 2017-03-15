@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/11 21:52:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 02:54:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 static void		sv_aff_rd(t_fd *cl)
 {
-	write(1, "\nClient ", 8);
+	write(1, "Client ", 7);
 	write(1, cl->addr, ft_strlen(cl->addr));
 	write(1, " ", 1);
 	write(1, cl->port, ft_strlen(cl->port));

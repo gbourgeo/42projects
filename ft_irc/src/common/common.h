@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/14 11:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 20:38:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/14 18:58:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,13 @@
 */
 
 # define NICK_LEN	9
+
+/*
+** ADDR_LEN		The length we can store a client address.
+**				Be aware my server handle ipv6.
+*/
+
+# define ADDR_LEN	1024
 
 /*
 ** Default port number

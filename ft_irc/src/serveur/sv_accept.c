@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:16:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 02:51:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 01:26:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,11 @@ void				sv_accept(t_env *e, int ipv6)
 	len = sizeof(csin);
 	fd = accept((!ipv6) ? e->ipv4 : e->ipv6, &csin, &len);
 	if (fd == -1)
-		sv_send(fd, "ERROR :Fucntion accept() returned", e);
+		sv_error("ERROR: SERVER: Accept() returned.", e);
 	if (e->members + 1 >= MAX_CLIENT)
-		sv_send(fd, "ERROR :Maximum clients reached", e);
+		sv_send(fd, "ERROR: SERVER: Maximum clients reached.", e);
 	else if (sv_check_clone(e, &csin, ipv6) >= MAX_CLIENT_BY_IP)
-		sv_send(fd, "ERROR :Max Client by IP reached", e);
+		sv_send(fd, "ERROR: SERVER: Max Clients per IP reached.", e);
 	else
 		sv_new_client(fd, &csin, e);
 }

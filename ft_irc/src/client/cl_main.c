@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 04:01:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/14 22:47:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static void		cl_loop(t_client *cl)
 
 	while (42)
 	{
-		ft_putstr("$\e[32m>\e[0m ");
-		ft_putstr(cl->read);
+/* 		ft_putstr("$\e[32m>\e[0m "); */
+/* 		ft_putstr(cl->read); */
 		FD_ZERO(&cl->fds);
 		FD_SET(STDIN_FILENO, &cl->fds);
 		if (cl->sock > 0)

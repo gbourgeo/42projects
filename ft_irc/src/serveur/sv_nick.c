@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 16:01:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 02:39:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@ int			sv_check_name_valid(char **cmds)
 {
 	char		*tmp;
 
-	if (!cmds[0] || !*cmds[0])
+	if (!cmds[1] || !*cmds[1])
 		return (1);
-	if (ft_isalpha(*cmds[0]) || ISSPECIAL(*cmds[0]))
+	if (!ft_strcmp(cmds[1], "anonymous"))
+		return (2);
+	if (ft_isalpha(*cmds[1]) || ISSPECIAL(*cmds[1]))
 	{
-		tmp = cmds[0] + 1;
-		while (*tmp && tmp - cmds[0] < NICK_LEN)
+		tmp = cmds[1] + 1;
+		while (*tmp && tmp - cmds[1] < NICK_LEN)
 		{
 			if (ft_isalpha(*tmp) || ft_isdigit(*tmp) || ISSPECIAL(*tmp) || *tmp == '-')
 				tmp++;
@@ -60,17 +62,31 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 {
 	int			err;
 
-	err = sv_check_name_valid(cmds + 1);
+	err = sv_check_name_valid(cmds);
 	if (err == 1)
-		return (sv_err(" ", cmds[0], ":No nickname given", cl, e));
+		return (sv_err(ERR_NONICKNAMEGIVEN, "NICK", NULL, cl, e));
 	if (err == 2)
-		return (sv_err(" ", cmds[1], ":Erroneus Nickname", cl, e));
+		return (sv_err(ERR_ERRONEUSNICKNAME, cmds[1], NULL, cl, e));
 	if (is_registered_nick(cmds[1], cl, e))
-		return (sv_err(" ", cmds[1], ":Nick already in use", cl, e));
-/* 	if (++cl->wr.head == cl->wr.end) */
-/* 		cl->wr.head = cl->wr.start; */
-/* 	sv_sendto_chan(cl); */
-	ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
-	if (cl->reg.registered == 0 && *cl->reg.username && cl->reg.realname)
+		return (sv_err(ERR_NICKNAMEINUSE, cmds[1], NULL, cl, e));
+	if (cl->reg.umode & USR_RESTRICT)
+		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl, e));
+	if (cl->reg.registered == 0 && cl->reg.realname && *cl->reg.realname)
+	{
+		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
 		sv_welcome(e, cl);
+	}
+	else if (ft_strcmp(cl->reg.nick, cmds[1]))
+	{
+		send(cl->fd, ":", 1, 0);
+		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+		send(cl->fd, "!~", 2, 0);
+		send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
+		send(cl->fd, "@", 1, 0);
+		send(cl->fd, cl->addr, ADDR_LEN, 0);
+		send(cl->fd, " NICK :", 7, 0);
+		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
+		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	}
 }

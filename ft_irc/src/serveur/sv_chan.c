@@ -6,17 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 00:40:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/14 17:44:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-
-void			sv_leave_chan(t_env *e, t_fd *cl)
-{
-	(void)e;
-	(void)cl;
-}
 
 t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 {

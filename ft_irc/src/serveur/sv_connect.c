@@ -1,32 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_sendtochan.c                                    :+:      :+:    :+:   */
+/*   sv_connect.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/06/17 19:48:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 18:23:42 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/15 00:30:13 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/15 02:41:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-#include <sys/socket.h>
 
-void			sv_sendto_chan_new(t_fd *cl)
+void			sv_connect(char **cmds, t_env *e, t_fd *cl)
 {
-	(void)cl;
-}
-
-void			sv_sendto_chan_msg(char *msg, t_fd *cl)
-{
-	(void)msg;
-	(void)cl;
-}
-
-void			sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e)
-{
-	(void)chan;
-	(void)cl;
-	(void)e;
+	if (!cmds[1] || !*cmds[1] || !cmds[2] || !*cmds[2])
+		return (sv_err(ERR_NEEDMOREPARAMS, "CONNECT", NULL, cl, e));
+	if (cl->reg.umode & IRC_OPERATOR)
+		return ; //This is not handled by my ft_irc ^^
+	sv_err(ERR_NOPRIVILEGES, cmds[0], NULL, cl, e);
 }

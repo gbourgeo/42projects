@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/11 20:23:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 06:15:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 05:27:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ static void			check_cl_register(t_fd *cl, t_env *e)
 			if (!ft_strcmp(ptr->password, cl->reg.password))
 			{
 				ft_strncpy(cl->reg.nick, ptr->nick, NICK_LEN);
+				cl->reg.realname = ptr->realname;
 				sv_welcome(e, cl);
 				return ;
 			}
@@ -76,6 +77,26 @@ static void			check_cl_register(t_fd *cl, t_env *e)
 	send(cl->fd, "Invalid username.", 17, 0);
 }
 
+static int			check_if_already_connected(t_fd *cl, t_env *e)
+{
+	t_fd			*user;
+
+	user = e->fds;
+	while (user)
+	{
+		if (user->fd != cl->fd &&
+			!ft_strcmp(user->reg.username, cl->reg.username))
+		{
+			send(cl->fd, "ERROR: ", 7, 0);
+			send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
+			send(cl->fd, " :Client already connected to the server.", 41, 0);
+			return ((cl->leaved = 1));
+		}
+		user = user->next;
+	}
+	return (0);
+}
+
 void				sv_get_cl_password(t_fd *cl, t_env *e)
 {
 	size_t			len;
@@ -85,7 +106,7 @@ void				sv_get_cl_password(t_fd *cl, t_env *e)
 	{
 		copy_str(cl->reg.username, NICK_LEN, cl);
 		send(cl->fd, "Password: ", 10, 0);
-		cl->reg.registered = -2;
+		cl->reg.registered = -1;
 	}
 	else
 	{
@@ -93,6 +114,7 @@ void				sv_get_cl_password(t_fd *cl, t_env *e)
 		if ((cl->reg.password = ft_strnew(len + 1)) == NULL)
 			sv_error("SERVER is running out of memory.\r\n", e);
 		copy_str(cl->reg.password, 0, cl);
-		check_cl_register(cl, e);
+		if (!check_if_already_connected(cl, e))
+			check_cl_register(cl, e);
 	}
 }

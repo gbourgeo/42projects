@@ -1,12 +1,12 @@
 #
 # Fichiers des utilisateurs enregistres sur ft_irc.
 #
-# SEMANTIC: username ; espace ; motdepasse ; nickname
+# SEMANTIC: <username> <password> <nickname> <realname>
 # Tout "username" ou "nickname" qui ne sera pas
 # a la norme irc 2812 ne sera pas pris en compte
 # lors du parsing.
 
-toto fdp furry
-encule ton_cul salut
+toto fdp furry Henry Dumas
+encule ton_cul salut ca va ?
 !non
-!ca passera ~pas
+!ca passera ~pas tavu *o*

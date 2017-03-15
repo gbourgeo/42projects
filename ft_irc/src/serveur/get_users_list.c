@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 06:25:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 01:27:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 
 static t_file		*new_user(char **str, t_file *next)
 {
+	int				len;
 	t_file			*new;
 
-	if (ft_tablen(str) < 3)
-		return (next);
-	if (ft_tablen(str) < 3 || sv_check_name_valid(str + 2))
+	len = ft_tablen(str);
+	if (len < 4 || sv_check_name_valid(str + 2) || len > 15)
 		return (next);
 	new = malloc(sizeof(*new));
 	if (new == NULL)
@@ -30,6 +30,7 @@ static t_file		*new_user(char **str, t_file *next)
 	ft_strncpy(new->username, *str++, NICK_LEN);
 	new->password = ft_strdup(*str++);
 	ft_strncpy(new->nick, *str++, NICK_LEN);
+	new->realname = ft_tabdup(str);
 	new->next = next;
 	return (new);
 }

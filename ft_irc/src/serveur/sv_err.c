@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/11 04:01:19 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 01:45:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 02:46:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int		sv_size(char *str)
 
 void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl, t_env *e)
 {
-	static char	*replies[] = { { NULL, NULL, NULL },
+	char		*replies[][50] = { { NULL, NULL, NULL },
 							   { cmd, NULL, ":No such nick" },
 							   { cmd, NULL, ":No such server" },
 							   { cmd, NULL, ":No such channel" },
@@ -98,32 +98,33 @@ void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl, t_env *e)
 							   { NULL, NULL, NULL }, { NULL, NULL, NULL }, { NULL, NULL, NULL }, //492-500
 							   { NULL, NULL, ":Unknown MODE flag" },
 							   { cmd, NULL, ":Cannot change mode for other users" } };
-	int			pos;
+	long		pos;
 
 	if (ft_strlen(err) != 3)
 		return ;
-	pos = ft_atoi(err + 1);
-	if (*err - '0' == 4 || (*err - '0' == 5 && pos < 3))
+	pos = ft_atoi(err) - 400;
+	if (pos > 0 && pos < (long)sizeof(replies))
 	{
 		send(cl->fd, e->name, SERVER_LEN, 0);
 		send(cl->fd, " ", 1, 0);
 		send(cl->fd, err, sv_size(err), 0);
 		send(cl->fd, " ", 1, 0);
 		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-		if (*replies[*err - '0' - 4])
+		if (replies[pos][0])
 		{
 			send(cl->fd, " ", 1, 0);
-			send(cl->fd, replies[*err - '0' - 4], sv_size(replies[*err - '0' - 4]), 0);
+			send(cl->fd, replies[pos][0], sv_size(replies[pos][0]), 0);
 		}
-		if (*(replies[*err - '0' - 4] + 1))
+		if (replies[pos][1])
 		{
 			send(cl->fd, " ", 1, 0);
-			send(cl->fd, str, sv_size(str), 0);
+			send(cl->fd, replies[pos][1], sv_size(replies[pos][1]), 0);
 		}
-		if (*(replies[*err - '0' - 4] + 1))
+		if (replies[pos][2])
 		{
 			send(cl->fd, " ", 1, 0);
-			send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+			send(cl->fd, replies[pos][2], sv_size(replies[pos][2]), 0);
 		}
+		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
 	}
 }

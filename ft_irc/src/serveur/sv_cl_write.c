@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 05:44:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 05:15:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,33 +15,33 @@
 
 static void			sv_aff_wr(t_fd *cl)
 {
-	write(1, "\nClient ", 8);
+	write(1, "Client ", 8);
 	write(1, cl->addr, ft_strlen(cl->addr));
 	write(1, " ", 1);
 	write(1, cl->port, ft_strlen(cl->port));
 	write(1, " wr: ", 5);
 	write(1, cl->wr.start, BUFF);
+	write(1, "\n", 1);
 }
 
 static void			sv_null(char **cmds, t_env *e, t_fd *cl)
 {
-	(void)e;
-	send(cl->fd, cmds[0], ft_strlen(cmds[0]), 0);
-	send(cl->fd, " :Unknown command.", 18, 0);
-	send(cl->fd, "\r\n", 2, 0);
+	sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl, e);
 }
 
 static void			sv_cmd_client(t_env *e, t_fd *cl)
 {
 	char			**cmds;
+	char			*dup;
 	int				nb;
 	static t_com	com[] = { SV_COMMANDS1, SV_COMMANDS2 };
 
 	nb = 0;
 	if ((cmds = sv_split(&cl->wr)) == NULL)
-		return (sv_error("Server: split failed.\r\n", e));
-	ft_strtoupper(cmds[0]);
-	while (com[nb].name && ft_strcmp(com[nb].name, cmds[0]))
+		return (sv_error("Server: split failed.", e));
+	dup = ft_strdup(cmds[0]);
+	ft_strtoupper(dup);
+	while (com[nb].name && ft_strcmp(com[nb].name, dup))
 		nb++;
 	if (cl->reg.registered <= 0 && LOCK_SERVER)
 		sv_get_cl_password(cl, e);
@@ -54,6 +54,7 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
 		cl->reg.registered = -1;
 	}
+	free(dup);
 	ft_free(&cmds);
 }
 

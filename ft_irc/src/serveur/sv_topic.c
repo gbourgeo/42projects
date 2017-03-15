@@ -6,57 +6,74 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 05:25:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 00:38:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_sendto_chan_topic(t_fd *cl, t_env *e)
+static void		sv_set_topic(char **cmds, t_chan *chan, t_fd *cl, t_env *e)
 {
-	t_user		*us;
-
-	us = cl->chan->user;
-	while (us)
+	if (!cmds[1])
 	{
-		if (((t_fd *)us->is)->fd != cl->fd)
-			send(((t_fd *)us->is)->fd, "\n", 1, 0);
-		send(((t_fd *)us->is)->fd, "TOPIC ", 7, 0);
-		send(((t_fd *)us->is)->fd, cl->chan->name, CHAN_SIZE, 0);
-		send(((t_fd *)us->is)->fd, " :", 2, 0);
-		send(((t_fd *)us->is)->fd, cl->chan->topic, TOPIC_SIZE, 0);
-		send(((t_fd *)us->is)->fd, "\n", 1, 0);
-		us = us->next;
+		if (!*chan->topic)
+		{
+			// RPL_NOTOPIC
+			send(cl->fd, e->name, SERVER_LEN, 0);
+			send(cl->fd, " 331 ", 5, 0);
+			send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+			send(cl->fd, " ", 1, 0);
+			send(cl->fd, chan->name, CHAN_LEN, 0);
+			send(cl->fd, " :No topic is set", 17, 0);
+			send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+			return ;
+		}
+		else
+		{
+			//RPL_TOPIC
+			send(cl->fd, ":", 1, 0);
+			send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+			send(cl->fd, "!~", 2, 0);
+			send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
+			send(cl->fd, "@", 1, 0);
+			send(cl->fd, cl->addr, ADDR_LEN, 0);
+			send(cl->fd, " ", 1, 0);
+			send(cl->fd, cmds[0], ft_strlen(cmds[0]), 0);
+			send(cl->fd, chan->name, CHAN_LEN, 0);
+			send(cl->fd, " :", 2, 0);
+			send(cl->fd, chan->topic, TOPIC_LEN, 0);
+			send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+			return ;
+		}
 	}
-	(void)e;
+	if (*cmds[1] == ':')
+		ft_strncpy(chan->topic, cmds[1] + 1, TOPIC_LEN);
+	else
+		ft_strncpy(chan->topic, cmds[1], TOPIC_LEN);
 }
 
 void			sv_topic(char **cmds, t_env *e, t_fd *cl)
 {
-	size_t		j;
+	t_listin	*chan;
 
-	j = 2;
-	if (!cmds[1] || *cmds[1] == '\0')
-		return (sv_err(*cmds, ":Not enough parameters", cl->fd));
-	if (!ISCHAN(*cmds[1]))
-		return (sv_err(*cmds, ":Channel doesn't support modes", cl->fd));
-	if (!cl->chan || ft_strncmp(cl->chan->name, cmds[1], CHAN_SIZE))
-		return (sv_err(cmds[1], " :You're not on that channel", cl->fd));
-	if (!cmds[2])
+	if (!cmds[0] || !*cmds[0])
+		return (sv_err(ERR_NEEDMOREPARAMS, "TOPIC", NULL, cl, e));
+	if (!ISCHAN(*cmds[0]))
+		return (sv_err(ERR_NOSUCHCHANNEL, cmds[0], NULL, cl, e));
+	chan = cl->chans;
+	while (chan)
 	{
-		if (*cl->chan->topic == '\0')
-			return (sv_err(cmds[1], ":No topic is set", cl->fd));
-		return (sv_err(cmds[1], cl->chan->topic, cl->fd));
+		if (!ft_strcmp(((t_chan *)chan->is)->name, cmds[0]))
+		{
+			if (!(chan->mode & USR_CHANOP))
+				return (sv_err(ERR_CHANOPRIVSNEEDED, cmds[0], NULL, cl, e));
+			else if (!(((t_chan *)chan->is)->cmode & CHFL_TOPIC))
+				return (sv_err(ERR_NOCHANMODES, cmds[0], NULL, cl, e));
+			else
+				sv_set_topic(cmds, chan->is, cl, e);
+		}
+		chan = chan->next;
 	}
-	if (cl->flags == 0 || !(cl->flags & CHFL_CHANOP))
-		return (sv_err(*cmds, ":You're not channel operator", cl->fd));
-	ft_strncpy(cl->chan->topic, cmds[j++], TOPIC_SIZE);
-	while (cmds[j])
-	{
-		ft_strncat(cl->chan->topic, " ", TOPIC_SIZE);
-		ft_strncat(cl->chan->topic, cmds[j], TOPIC_SIZE);
-		j++;
-	}
-	sv_sendto_chan_topic(cl, e);
+	sv_err(ERR_NOTONCHANNEL, cmds[0], NULL, cl, e);
 }

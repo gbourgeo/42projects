@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 06:17:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 05:11:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	cl->fct_write = sv_cl_write;
 	sv_init_buf(&cl->rd, cl->buf_read);
 	sv_init_buf(&cl->wr, cl->buf_write);
-	cl->user = sv_new_user(cl);
 	if (e->fds)
 		e->fds->prev = cl;
 	cl->next = e->fds;
@@ -68,5 +67,4 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	}
 	if (e->verb)
 		printf("\e[32mNew connection from\e[0m %s :%s\n", cl->addr, cl->port);
-/* 	send(cl->fd, "Username: ", 10, 0); */
 }

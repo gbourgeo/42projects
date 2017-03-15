@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 04:46:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/14 21:41:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int		cl_nick_check(char *nick)
 
 	if (!nick || !*nick)
 		return (1);
-	if (ft_isalpha(*nick) || ISSPECIAL(*nick))
+	if (ft_strcmp(nick, "anonymous") || ft_isalpha(*nick) || ISSPECIAL(*nick))
 	{
 		i = 1;
 		while (nick[i] && i <= NICK_LEN)

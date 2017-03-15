@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 03:04:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 02:10:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,22 +247,9 @@
 **        I - set/remove an invitation mask to automatically override
 **            the invite-only flag;
 */
-# define CHAN_MODES "Oovaimnqpsrtkl"
 
-/*
-** Channel flags.
-*/
-# define CHFL_ANNON		0x0001
-# define CHFL_INVITE	0x0002
-# define CHFL_MOD		0x0004
-# define CHFL_N			0x0010
-# define CHFL_QUIET		0x0020
-# define CHFL_PRIV		0x0040
-# define CHFL_SECRET	0x0100
-# define CHFL_REOP		0x0200
-# define CHFL_TOPIC		0x0400
-# define CHFL_KEY		0x1000
-# define CHFL_LIMIT		0x2000
+# define USER_MODES "Oov"
+
 /*
 ** User flags.
 */
@@ -270,7 +257,25 @@
 # define USR_CHANOP		0x0002
 # define USR_VOICED		0x0004
 # define USR_AWAY		0x0010
-# define IRC_OPERATOR	0x0020
+# define USR_RESTRICT	0x0020
+# define IRC_OPERATOR	0x0040
+
+# define CHAN_MODES "aimnqpsrtkl"
+
+/*
+** Channel flags.
+*/
+# define CHFL_ANNON		0x0001
+# define CHFL_INVITE	0x0002
+# define CHFL_MOD		0x0004
+# define CHFL_NOMSG		0x0010
+# define CHFL_QUIET		0x0020
+# define CHFL_PRIV		0x0040
+# define CHFL_SECRET	0x0100
+# define CHFL_REOP		0x0200
+# define CHFL_TOPIC		0x0400
+# define CHFL_KEY		0x1000
+# define CHFL_LIMIT		0x2000
 
 enum
 {
@@ -297,7 +302,7 @@ typedef struct			s_reg
 	int					registered;
 	char				nick[NICK_LEN + 1];
 	char				username[USERNAME_LEN + 1];
-	int					mode;
+	int					umode;
 	char				*password;
 	char				**realname;
 }						t_reg;
@@ -307,7 +312,7 @@ typedef struct			s_fd
 	struct s_fd			*prev;
 	int					fd;
 	struct sockaddr		csin;
-	char				addr[1025];
+	char				addr[ADDR_LEN + 1];
 	char				port[32];
 	t_reg				reg;
 	short				type;
@@ -331,7 +336,7 @@ typedef struct			s_chan
 	struct s_chan		*prev;
 	char				name[CHAN_LEN + 1];
 	char				topic[TOPIC_LEN + 1];
-	int					mode;
+	int					cmode;
 	size_t				nbusers;
 	t_listin			*users;
 	struct s_chan		*next;
@@ -342,6 +347,7 @@ typedef struct			s_file
 	char				username[NICK_LEN + 1];
 	char				*password;
 	char				nick[NICK_LEN + 1];
+	char				**realname;
 	struct s_file		*next;
 }						t_file;
 
@@ -403,7 +409,7 @@ void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_notice(int fd, char *str, t_env *e);
 void					sv_quit(int sig);
 void					sv_rpl(char *num, char *cmd, char *cmd2, t_fd *cl, t_env *e);
-void					sv_sendto_chan(t_fd *cl);
+void					sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);
 char					**sv_split(t_buf *buf);
