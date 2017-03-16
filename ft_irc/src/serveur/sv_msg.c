@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:19:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 23:20:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,13 @@ static void		sv_sendtoclient(t_fd *to, char **cmds, t_fd *cl)
 	send(to->fd, cl->reg.username, USERNAME_LEN, 0);
 	send(to->fd, "@", 1, 0);
 	send(to->fd, cl->addr, ADDR_LEN, 0);
-	send(to->fd, " ", 1, 0);
-	send(to->fd, cmds[0], ft_strlen(cmds[0]), 0);
-	send(to->fd, " ", 1, 0);
+	send(to->fd, " MSG ", 5, 0);
+	send(to->fd, cmds[1], ft_strlen(cmds[1]), 0);
+	send(to->fd, " :", 2, 0);
 	while (cmds[i])
 	{
-		send(to->fd, " ", 1, 0);
+		if (i > 2)
+			send(to->fd, " ", 1, 0);
 		send(to->fd, cmds[i], ft_strlen(cmds[i]), 0);
 		i++;
 	}
@@ -52,7 +53,7 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 }
 
 /*
-** Dans search_chan(...) { while(chan)... }
+** Dans sv_search_chan(...) { while(chan)... }
 ** Checker si l'user n'est pas sur le channel et que le chan a le mode +n.
 ** Checker si l'user est sur le chan mais que le chan n'est pas en mode +m et
 ** qu'il n'est pas chan op.
@@ -84,7 +85,21 @@ static void		sv_search_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 	while (fd)
 	{
 		if (!sv_strcmp(nick, fd->reg.nick))
-			return (sv_sendtoclient(fd, cmds, cl));
+		{
+			sv_sendtoclient(fd, cmds, cl);
+			if (fd->reg.umode &= USR_AWAY)
+			{
+				send(cl->fd, e->name, SERVER_LEN, 0);
+				send(cl->fd, " 301 ", 5, 0);
+				send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+				send(cl->fd, " ", 1, 0);
+				send(cl->fd, fd->reg.nick, NICK_LEN, 0);
+				send(cl->fd, " :", 2, 0);
+				send(cl->fd, fd->away, ft_strlen(fd->away), 0);
+				send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+			}
+			return ;
+		}
 		fd = fd->next;
 	}
 	sv_err(ERR_NOSUCHNICK, nick, NULL, cl, e);

@@ -1,56 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_cl_end.c                                        :+:      :+:    :+:   */
+/*   sv_clear_client.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 11:47:41 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/16 22:04:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-#include <sys/socket.h>
 #include <stdio.h>
-
-static int		sv_move_head(t_buf *wr)
-{
-	while (*wr->head && *wr->head == ' ')
-	{
-		wr->head++;
-		if (wr->head >= wr->end)
-			wr->head = wr->start;
-	}
-	while (*wr->head && *wr->head != ' ')
-	{
-		wr->head++;
-		if (wr->head >= wr->end)
-			wr->head = wr->start;
-	}
-	while (*wr->head && *wr->head == ' ')
-	{
-		wr->head++;
-		if (wr->head >= wr->end)
-			wr->head = wr->start;
-	}
-	return (wr->head - wr->tail);
-}
-
-void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
-{
-	if (cl->chans)
-	{
-		if (cmds == NULL || !cmds[1] || sv_move_head(&cl->wr))
-			sv_sendto_chan_msg(" :Disconnected.", cl);
-	}
-	if (*cl->reg.username && cl->reg.password && *cl->reg.nick)
-	{
-		add_in_userslist(e->users, cl);
-		add_in_users(e->users, cl);
-	}
-	cl->leaved = 1;
-}
 
 static void		sv_free_client_onchans(t_fd *cl, t_listin *next)
 {

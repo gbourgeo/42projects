@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:54:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 22:09:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void			sv_cl_read(t_env *e, t_fd *cl)
 
 	ret = recv(cl->fd, cl->rd.tail, 1, 0);
 	if (ret <= 0)
-		return (sv_cl_end(NULL, e, cl));
+		return (sv_quit(NULL, e, cl));
 	*cl->wr.tail = *cl->rd.tail;
 	if (e->verb && *cl->rd.tail == '\n')
 		sv_aff_rd(cl);

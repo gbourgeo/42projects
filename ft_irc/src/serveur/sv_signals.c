@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 09:47:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 22:08:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static void		ft_kill_channels(t_chan *chan)
 	chan = NULL;
 }
 
-void			sv_quit(int sig)
+void			sv_server_killed(int sig)
 {
 	(void)sig;
 	if (e.verb)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 10:30:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 22:09:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ static void			sv_signals(void)
 	signal(SIGWINCH, SIG_IGN);
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGALRM, SIG_IGN);
-	signal(SIGINT, sv_quit);
-	signal(SIGTERM, sv_quit);
-	signal(SIGBUS, sv_quit);
+	signal(SIGINT, sv_server_killed);
+	signal(SIGTERM, sv_server_killed);
+	signal(SIGBUS, sv_server_killed);
 	signal(SIGUSR1, SIG_IGN);
 }
 

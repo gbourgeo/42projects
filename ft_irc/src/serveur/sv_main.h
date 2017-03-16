@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 12:07:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 22:10:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@
 # define MSG		{ "MSG", sv_msg }
 # define NICK		{ "NICK", sv_nick }
 # define PASS		{ "PASS", sv_pass }
-# define QUIT		{ "QUIT", sv_cl_end }
+# define QUIT		{ "QUIT", sv_quit }
 # define USER		{ "USER", sv_user }
 # define TOPIC		{ "TOPIC", sv_topic }
 # define WHO		{ "WHO", sv_who }
@@ -388,7 +388,6 @@ t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
 void					sv_away(char **cmds, t_env *e, t_fd *cl);
 int						sv_check_name_valid(char **cmds);
-void					sv_cl_end(char **cmds, t_env *e, t_fd *cl);
 void					sv_cl_read(t_env *e, t_fd *cl);
 void					sv_cl_write(t_env *e, t_fd *cl);
 t_fd					*sv_clear_client(t_env *e, t_fd *cl);
@@ -412,7 +411,8 @@ void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_notice(int fd, char *str, t_env *e);
 void					sv_pass(char **cmds, t_env *e, t_fd *cl);
-void					sv_quit(int sig);
+void					sv_quit(char **cmds, t_env *e, t_fd *cl);
+void					sv_server_killed(int sig);
 void					sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);

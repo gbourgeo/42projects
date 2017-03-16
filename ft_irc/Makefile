@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/16 10:04:35 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/16 22:06:54 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,12 +23,38 @@ SERVEUR	= serveur
 
 SV_DIR	= src/serveur/
 
-SV_SRC	= sv_accept.c sv_chan.c sv_cl_end.c sv_cl_read.c sv_cl_write.c \
-		sv_list.c sv_connect.c sv_error.c sv_init_server.c sv_join.c \
-		sv_leave.c sv_loop.c sv_main.c sv_msg.c sv_sendtochan.c sv_split.c \
-		sv_topic.c sv_err.c sv_strchr.c  sv_nick.c sv_notice.c sv_user.c \
-		sv_away.c sv_new_client.c sv_help.c sv_signals.c sv_cl_register.c \
-		sv_welcome.c sv_who.c sv_pass.c get_users_list.c
+SV_SRC	= get_users_list.c	\
+		sv_accept.c 		\
+		sv_away.c 			\
+		sv_chan.c 			\
+		sv_cl_read.c 		\
+		sv_cl_register.c 	\
+		sv_cl_write.c 		\
+		sv_clear_client.c 	\
+		sv_connect.c 		\
+		sv_err.c 			\
+		sv_error.c 			\
+		sv_help.c 			\
+		sv_init_server.c 	\
+		sv_join.c 			\
+		sv_leave.c 			\
+		sv_list.c 			\
+		sv_loop.c 			\
+		sv_main.c 			\
+		sv_msg.c			\
+		sv_new_client.c 	\
+		sv_nick.c 			\
+		sv_notice.c 		\
+		sv_pass.c			\
+		sv_quit.c	 		\
+		sv_sendtochan.c 	\
+		sv_signals.c 		\
+		sv_split.c 			\
+		sv_strchr.c 		\
+		sv_topic.c 			\
+		sv_user.c 			\
+		sv_welcome.c 		\
+		sv_who.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 
