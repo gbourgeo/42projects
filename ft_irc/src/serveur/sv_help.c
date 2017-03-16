@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 07:10:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 21:00:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void		sv_specific_help(char **name, char **cmds, t_fd *cl)
 	{
 		nb = 0;
 		ft_strtoupper(*cmds);
-		while (name[nb] && ft_strcmp(name[nb], *cmds))
+		while (name[nb] && sv_strcmp(name[nb], *cmds))
 			nb++;
 		send(cl->fd, "*** HELP : ", 11, 0);
 		send(cl->fd, *cmds, ft_strlen(*cmds), 0);

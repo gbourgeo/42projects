@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:40:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 21:02:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static void		sv_search_chan(char *chan_name, char **cmds, t_fd *cl, t_env *e)
 		// Checker si l'user n'est pas sur le channel et que le chan a le mode +n.
 		// Checker si l'user est sur le chan mais que le chan n'est pas en mode +m et qu'il n'est pas chan op.
 		// Checker si l'user n'est pas ban du chan.
-		if (!ft_strcmp(chan_name, ((t_chan *)chans->is)->name))
+		if (!sv_strcmp(chan_name, ((t_chan *)chans->is)->name))
 		{
 			if (1)
 				return (sv_sendtochan(cmds, chans->is, cl));
@@ -78,7 +78,7 @@ static void		sv_search_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 	fd = e->fds;
 	while (fd)
 	{
-		if (!ft_strcmp(nick, fd->reg.nick))
+		if (!sv_strcmp(nick, fd->reg.nick))
 			return (sv_sendtoclient(fd, cmds, cl));
 		fd = fd->next;
 	}

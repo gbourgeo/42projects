@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/01 22:53:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 04:12:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 20:58:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,16 @@
 static void			read_command(t_client *cl)
 {
 	char			**args;
-	char			*save;
 	int				i;
 	static t_cmd	cmd[] = { CONNECT, HELP, NICK, PASS, QUIT, USER, END };
 
 	i = 0;
 	if ((args = ft_split_whitespaces(cl->read)) == NULL)
 		cl_error("Client: split failed\n", cl);
-	save = ft_strdup(args[0]);
-	ft_strtoupper(save);
-	while (cmd[i].name && ft_strcmp(cmd[i].name, save))
+	while (cmd[i].name && sv_strcmp(cmd[i].name, args[0]))
 		i++;
 	cmd[i].fct(args, cl);
 	ft_free(&args);
-	free(save);
 }
 
 void				read_client(t_client *cl)

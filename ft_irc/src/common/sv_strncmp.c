@@ -1,26 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_connect.c                                       :+:      :+:    :+:   */
+/*   sv_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/15 00:30:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 02:52:57 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/15 20:46:30 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/16 01:19:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
-
 /*
-** CONNECT is not implemented in this version (1.0)
+** sv_strncmp will compare string insensitively 'n' sizely.
 */
 
-void			sv_connect(char **cmds, t_env *e, t_fd *cl)
+#include "libft.h"
+
+int				sv_strncmp(const char *s1, const char *s2, size_t n)
 {
-	if (!cmds[1] || !*cmds[1] || !cmds[2] || !*cmds[2])
-		return (sv_err(ERR_NEEDMOREPARAMS, "CONNECT", NULL, cl, e));
-	if (cl->reg.umode & IRC_OPERATOR)
-		return ;
-	sv_err(ERR_NOPRIVILEGES, cmds[0], NULL, cl, e);
+	if (!s1 || !s2)
+		return (-1);
+	while (*s1 && *s2 && n-- > 0 && ft_toupper(*s1) == ft_toupper(*s2))
+	{
+		s1++;
+		s2++;
+	}
+	return (*s1 - *s2);
 }

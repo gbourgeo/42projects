@@ -6,11 +6,33 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 17:44:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 03:44:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
+
+static void		send_joinmsg_toothers(t_chan *chan, t_fd *cl)
+{
+	t_listin	*other;
+	t_fd		*us;
+
+	other = chan->users;
+	while (other)
+	{
+		us = (t_fd *)other->is;
+		send(us->fd, ":", 1, 0);
+		send(us->fd, cl->reg.nick, NICK_LEN, 0);
+		send(us->fd, "!~", 2, 0);
+		send(us->fd, cl->reg.username, USERNAME_LEN, 0);
+		send(us->fd, "@", 1, 0);
+		send(us->fd, cl->addr, ADDR_LEN, 0);
+		send(us->fd, " JOIN ", 6, 0);
+		send(us->fd, chan->name, ft_strlen(chan->name), 0);
+		send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+		other = other->next;
+	}
+}
 
 t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 {
@@ -18,11 +40,12 @@ t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 
 	if ((new = malloc(sizeof(*new))) == NULL)
 		sv_error("ERROR: SERVER: out of memory", &e);
+	send_joinmsg_toothers(chan, cl);
 	new->prev = NULL;
 	new->is = cl;
 	new->next = chan->users;
 	if (chan->users)
-		chan->users->prev = new;
+		chan->users->prev = new;	
 	return (new);
 }
 

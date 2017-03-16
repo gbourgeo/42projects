@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 05:47:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 03:29:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,8 @@ void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
 	{
 		if (cmds == NULL || !cmds[1] || sv_move_head(&cl->wr))
 			sv_sendto_chan_msg(" :Disconnected.", cl);
-/* 		else */
-/* 			sv_sendto_chan(cl); */
-		sv_leave_chan(e, cl);
 	}
+	(void)e;
 	cl->leaved = 1;
 }
 
@@ -110,6 +108,6 @@ t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 	free(cl);
 	cl = NULL;
 	if (e->verb)
-		printf("\n\e[31mCLIENT\e[0m %s %s \e[31mleft\e[0m\n", cl->addr, cl->port);
+		printf("\nCLIENT: %s|%s :Has left\n", cl->addr, cl->port);
 	return (ret);
 }

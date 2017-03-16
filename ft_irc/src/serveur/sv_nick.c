@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:39:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 20:50:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int			sv_check_name_valid(char **cmds)
 
 	if (!cmds[1] || !*cmds[1])
 		return (1);
-	if (!ft_strcmp(cmds[1], "anonymous"))
+	if (!sv_strcmp(cmds[1], "anonymous"))
 		return (2);
 	if (ft_isalpha(*cmds[1]) || ISSPECIAL(*cmds[1]))
 	{
@@ -44,14 +44,14 @@ static int		is_registered_nick(char *nick, t_fd *cl, t_env *e)
 	f = e->users;
 	while (f)
 	{
-		if (!ft_strncmp(f->nick, nick, NICK_LEN))
+		if (!sv_strncmp(f->nick, nick, NICK_LEN))
 			return (1);
 		f = f->next;
 	}
 	fds = e->fds;
 	while (fds)
 	{
-		if (fds->fd != cl->fd && !ft_strncmp(nick, fds->reg.nick, NICK_LEN))
+		if (fds->fd != cl->fd && !sv_strncmp(nick, fds->reg.nick, NICK_LEN))
 			return (1);
 		fds = fds->next;
 	}
@@ -76,7 +76,7 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
 		sv_welcome(e, cl);
 	}
-	else if (ft_strcmp(cl->reg.nick, cmds[1]))
+	else if (sv_strcmp(cl->reg.nick, cmds[1]))
 	{
 		send(cl->fd, ":", 1, 0);
 		send(cl->fd, cl->reg.nick, NICK_LEN, 0);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 05:15:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 20:52:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,13 @@ static void			sv_null(char **cmds, t_env *e, t_fd *cl)
 static void			sv_cmd_client(t_env *e, t_fd *cl)
 {
 	char			**cmds;
-	char			*dup;
 	int				nb;
 	static t_com	com[] = { SV_COMMANDS1, SV_COMMANDS2 };
 
 	nb = 0;
 	if ((cmds = sv_split(&cl->wr)) == NULL)
 		return (sv_error("Server: split failed.", e));
-	dup = ft_strdup(cmds[0]);
-	ft_strtoupper(dup);
-	while (com[nb].name && ft_strcmp(com[nb].name, dup))
+	while (com[nb].name && sv_strcmp(com[nb].name, cmds[0]))
 		nb++;
 	if (cl->reg.registered <= 0 && LOCK_SERVER)
 		sv_get_cl_password(cl, e);
@@ -54,7 +51,6 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
 		cl->reg.registered = -1;
 	}
-	free(dup);
 	ft_free(&cmds);
 }
 

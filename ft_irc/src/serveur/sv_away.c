@@ -6,36 +6,62 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 16:16:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 21:13:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 02:34:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-/* static void		sv_away_message(char **cmds, t_env *e, t_fd *cl) */
-/* { */
-/* 	int			i; */
-/* 	int			len; */
+static void		sv_away_msg(char *num, char *msg, t_fd *cl, t_env *e)
+{
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, num, 3, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, msg, ft_strlen(msg), 0);
+	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
 
-/* 	i = 1; */
-/* 	len = 0; */
-/* 	while (cmds[i] && len < TOPIC_SIZE) */
-/* 	{ */
-/* 		ft_strncat(cl->away, cmds[i], TOPIC_SIZE - len); */
-/* 		len += ft_strlen(cmds[i]); */
-/* 		if (++len < TOPIC_SIZE) */
-/* 			ft_strcat(cl->away, " "); */
-/* 		else */
-/* 			cl->away[len] = '\0'; */
-/* 		i++; */
-/* 	} */
-/* 	sv_err(cmds[0], ":You have been marked as being away", cl->fd); */
-/* 	(void)e; */
-/* } */
+static void		sv_dupmsg(t_fd *cl)
+{
+	char		*ptr;
+	int			len;
+
+	ptr = cl->wr.head;
+	len = 0;
+	while (ptr != cl->wr.tail)
+	{
+		ptr++;
+		len++;
+		if (ptr == cl->wr.end)
+			ptr = cl->wr.start;
+	}
+	if ((cl->away = ft_strnew(len + 1)) == NULL)
+		return ;
+	ptr = cl->wr.head;
+	len = 0;
+	while (ptr != cl->wr.tail)
+	{
+		cl->away[len++] = *ptr++;
+		if (ptr == cl->wr.end)
+			ptr = cl->wr.start;
+	}
+}
 
 void			sv_away(char **cmds, t_env *e, t_fd *cl)
 {
-	(void)cmds;
-	(void)e;
-	(void)cl;
+	if (cl->away)
+	{
+		free(cl->away);
+		cl->away = NULL;
+	}
+	if (!cmds[1] || !*cmds[1])
+		sv_away_msg("305", ":You are no longer marked as being away", cl, e);
+	else
+	{
+		sv_away_msg("306", ":You have been marked as being away", cl, e);
+		sv_dupmsg(cl);
+	}
 }

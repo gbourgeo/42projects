@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:10:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 03:28:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,16 +94,16 @@
 # define AWAY_1 "Mark yourself as being away. <message> is a message that will"
 # define AWAY_2	" be\nautomatically sent to anyone who tries sending you a "
 # define AWAY_3	"private message.\nIf you are already marked as being away, "
-# define AWAY_4	"/away will change your status\nback to \"here\"."
+# define AWAY_4	"AWAY will change your status\nback to \"here\"."
 # define AWAY_MSG AWAY_1 AWAY_2 AWAY_3 AWAY_4
 # define CONNECT_1 "Request the server to establish a connection to <host>.\n"
 # define CONNECT_2 "It is only available to FT_IRC Operators. ^^"
 # define CONNECT_MSG CONNECT_1 CONNECT_2
-# define HELP_1 "/help without parameters lists all IRC commands.\n"
-# define HELP_2 "/help with a command name prints info about that command"
+# define HELP_1 "HELP without parameters lists all IRC commands.\n"
+# define HELP_2 "HELP with a command name prints info about that command"
 # define HELP_MSG HELP_1 HELP_2
-# define JOIN_MSG "Leave the current channel and join a new one."
-# define LEAVE_MSG "Leave the current channel."
+# define JOIN_MSG "JOIN a new channel."
+# define LEAVE_MSG "LEAVE the current channel."
 # define LIST_MSG "Lists all active channels and, if set, their topics."
 # define MSG_MSG "Send a private message."
 # define NICK_1 "Change your nickname. You can't choose a nickname already in "
@@ -112,10 +112,9 @@
 # define QUIT_MSG "Exit from FT_IRC."
 # define TOPIC_MSG "Sets the topic for the channel you're on."
 # define USER_MSG "Specify the username, hostname and realname of a new user."
-# define WHO_1 "Without parameters lists users on all channels.\n"
-# define WHO_2 "Followed by a channel, lists users on that channel.\n"
-# define WHO_3 "/who * lists users on the same channel as you."
-# define WHO_MSG WHO_1 WHO_2 WHO_3
+# define WHO_1 "Followed by a channel, lists users on that channel.\n"
+# define WHO_2 "WHO * lists users on the same channel as you."
+# define WHO_MSG WHO_1 WHO_2
 
 # define SV_HELPMSG1 AWAY_MSG, CONNECT_MSG, HELP_MSG, JOIN_MSG, LEAVE_MSG
 # define SV_HELPMSG2 LIST_MSG, MSG_MSG, NICK_MSG, QUIT_MSG, TOPIC_MSG
@@ -144,10 +143,10 @@
 
 # define COMMANDS1 "AWAY", "CONNECT", "HELP", "JOIN", "LEAVE", "LIST"
 # define COMMANDS2 "MSG", "NICK", "QUIT", "TOPIC", "USER", "WHO", NULL
-# define SYNTAX1 "<message>", "<_host> <port>", "<command>", "<channel>"
-# define SYNTAX2 "<channel>", "", "<nicknames> <message>", "<nickname>"
+# define SYNTAX1 "[<message>]", "<_host_> [<port>]", "[<command>]", "<channel>"
+# define SYNTAX2 "<channel>", "", "<nick> <message>", "<nick>"
 # define SYNTAX3 "[<comment>]", "<channel> [<topic>]"
-# define SYNTAX4 "<user> <mode> <unused> <realname>", "<channel>", NULL
+# define SYNTAX4 "<user> <mode> <unused> <realname>", "<channel|user>", NULL
 
 /*
 ** Errors list
@@ -344,7 +343,7 @@ typedef struct			s_chan
 
 typedef struct			s_file
 {
-	char				username[NICK_LEN + 1];
+	char				username[USERNAME_LEN + 1];
 	char				*password;
 	char				nick[NICK_LEN + 1];
 	char				**realname;
@@ -400,7 +399,6 @@ void					sv_help(char **cmds, t_env *e, t_fd *cl);
 void					sv_init_server(t_env *e);
 void					sv_join(char **cmds, t_env *e, t_fd *cl);
 void					sv_leave(char **cmds, t_env *e, t_fd *cl);
-void					sv_leave_chan(t_env *e, t_fd *cl);
 void					sv_list(char **cmds, t_env *e, t_fd *cl);
 int						sv_loop(t_env *e);
 void					sv_msg(char **cmds, t_env *e, t_fd *cl);

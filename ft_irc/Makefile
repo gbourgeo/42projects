@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/15 00:29:43 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/15 20:59:47 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -34,7 +34,7 @@ SV_OBJ	= $(SV_SRC:.c=.o)
 
 COM_DIR	= src/common/
 
-COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c
+COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c sv_strcmp.c sv_strncmp.c
 
 COM_OBJ	= $(COM_SRC:.c=.o)
 
@@ -63,11 +63,11 @@ $(OBJ_DIR):
 	@mkdir -p $@
 
 $(CLIENT): $(OBJ_CL) $(OBJ_COM) | lib
-	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses -g
+	$(WWW) -o $@ $^ -L $(LIBFT) -lft
 	@echo CREATED: $@
 
 $(SERVEUR): $(OBJ_SV) $(OBJ_COM) | lib
-	@$(WWW) -o $@ $^ -L $(LIBFT) -lft -g
+	@$(WWW) -o $@ $^ -L $(LIBFT) -lft
 	@echo CREATED: $@
 
 $(OBJ_DIR)%.o: $(CL_DIR)%.c $(CL_DIR)cl_main.h $(COM_DIR)common.h | $(OBJ_DIR)

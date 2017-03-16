@@ -6,17 +6,50 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:37:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:40:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 03:36:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-void			sv_leave_chan(t_env *e, t_fd *cl)
+static void		sv_send_more(char **cmd, t_fd *us)
 {
-	(void)e;
-	(void)cl;
+	int			i;
+
+	i = 3;
+	send(us->fd, ":", 1, 0);
+	send(us->fd, cmd[2], ft_strlen(cmd[2]), 0);
+	while (cmd[i])
+	{
+		send(us->fd, " ", 1, 0);
+		send(us->fd, cmd[i], ft_strlen(cmd[i]), 0);
+		i++;
+	}
+}
+
+static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
+{
+	t_listin	*list;
+	t_fd		*us;
+
+	list = chan->users;
+	while (list)
+	{
+		us = (t_fd *)list->is;
+		send(us->fd, ":", 1, 0);
+		send(us->fd, cl->reg.nick, NICK_LEN, 0);
+		send(us->fd, "!~", 2, 0);
+		send(us->fd, cl->reg.username, USERNAME_LEN, 0);
+		send(us->fd, "@", 1, 0);
+		send(us->fd, cl->addr, ADDR_LEN, 0);
+		send(us->fd, " LEAVE ", 7, 0);
+		send(us->fd, chan->name, CHAN_LEN, 0);
+		if (cmd[2])
+			sv_send_more(cmd, us);
+		send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+		list = list->next;
+	}
 }
 
 static void		sv_find_chaninuser(t_chan *chan, t_fd *cl, t_env *e)
@@ -24,9 +57,8 @@ static void		sv_find_chaninuser(t_chan *chan, t_fd *cl, t_env *e)
 	t_listin	*tmp;
 
 	tmp = cl->chans;
-	while (tmp && ft_strcmp(((t_chan *)tmp->is)->name, chan->name))
+	while (tmp && sv_strcmp(((t_chan *)tmp->is)->name, chan->name))
 		tmp = tmp->next;
-	// I should not send an error here but this error should never happen.
 	if (tmp == NULL)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl, e));
 	if (tmp->prev)
@@ -36,18 +68,14 @@ static void		sv_find_chaninuser(t_chan *chan, t_fd *cl, t_env *e)
 	if (tmp->next)
 		tmp->next->prev = tmp->prev;
 	free(tmp);
-/* 	sv_sendto_chan_msg(":leaved the channel.", cl); */
-/* 	sv_leave_chan(e, cl); */
-/* 	send(cl->fd, ":Channel leaved.", 16, 0); */
-/* 	send(cl->fd, "\r\n", 2, 0); */
 }
 
-static void		sv_find_userinchan(t_chan *chan, t_fd *cl, t_env *e)
+static void		sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl, t_env *e)
 {
 	t_listin	*tmp;
 
 	tmp = chan->users;
-	while (tmp && ft_strcmp(((t_fd *)tmp->is)->reg.nick, cl->reg.nick))
+	while (tmp && sv_strcmp(((t_fd *)tmp->is)->reg.nick, cl->reg.nick))
 		tmp = tmp->next;
 	if (tmp == NULL)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl, e));
@@ -57,8 +85,9 @@ static void		sv_find_userinchan(t_chan *chan, t_fd *cl, t_env *e)
 		chan->users = tmp->next;
 	if (tmp->next)
 		tmp->next->prev = tmp->prev;
-	free(tmp);
+	sv_send_leavemsg(cmd, chan, cl);
 	sv_find_chaninuser(chan, cl, e);
+	free(tmp);
 }
 
 void			sv_leave(char **cmds, t_env *e, t_fd *cl)
@@ -75,11 +104,11 @@ void			sv_leave(char **cmds, t_env *e, t_fd *cl)
 	while (list[i])
 	{
 		chan = e->chans;
-		while (chan && ft_strncmp(list[i], chan->name, CHAN_LEN))
+		while (chan && sv_strncmp(list[i], chan->name, CHAN_LEN))
 			chan = chan->next;
 		if (chan == NULL)
 			sv_err(ERR_NOSUCHCHANNEL, list[i], NULL, cl, e);
 		else
-			sv_find_userinchan(chan, cl, e);
+			sv_find_userinchan(cmds, chan, cl, e);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 05:11:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 01:06:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 
 	if ((cl = (t_fd *)malloc(sizeof(*cl))) == NULL)
 		return (new_client_error(fd, "ERROR :Malloc failed", e));
+	ft_memset(cl, 0, sizeof(*cl));
 	cl->fd = fd;
 	ft_memcpy(&cl->csin, csin, sizeof(cl->csin));
 	sv_notice(fd, "Looking up your hostname...", e);

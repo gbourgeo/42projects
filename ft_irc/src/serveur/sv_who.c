@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:36:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 21:04:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static void		sv_who_user(char **cmds, t_fd *cl, t_env *e)
 	user = e->fds;
 	while (user)
 	{
-		if (!ft_strcmp(user->reg.nick, cmds[1]))
+		if (!sv_strcmp(user->reg.nick, cmds[1]))
 			sv_who_info(user, user->chans, cl, e);
 		user = user->next;
 	}
@@ -77,7 +77,7 @@ static void		sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 	chan = e->chans;
 	while (chan)
 	{
-		if (!ft_strcmp(chan->name, cmds[1]))
+		if (!sv_strcmp(chan->name, cmds[1]))
 		{
 			if (!(chan->cmode & CHFL_SECRET))
 			{

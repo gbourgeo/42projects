@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 01:27:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 02:16:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static t_file		*new_user(char **str, t_file *next)
 	t_file			*new;
 
 	len = ft_tablen(str);
-	if (len < 4 || sv_check_name_valid(str + 2) || len > 15)
+	if (len < 4 || len > 15 || sv_check_name_valid(str + 2))
 		return (next);
 	new = malloc(sizeof(*new));
 	if (new == NULL)

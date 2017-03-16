@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 05:12:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/15 21:37:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,27 @@ static void			sv_check_clients(t_env *e)
 	}
 }
 
+static void			sv_check_chans(t_env *e)
+{
+	t_chan			*ch;
+
+	ch = e->chans;
+	while (ch)
+	{
+		if (ch->nbusers <= 0)
+		{
+			if (ch->prev)
+				ch->prev->next = ch->next;
+			else
+				e->chans = ch->next;
+			if (ch->next)
+				ch->next->prev = ch->prev;
+			free(ch);
+		}
+		ch = ch->next;
+	}
+}
+
 int					sv_loop(t_env *e)
 {
 	int				ret;
@@ -89,6 +110,7 @@ int					sv_loop(t_env *e)
 	while (1)
 	{
 		sv_check_clients(e);
+		sv_check_chans(e);
 		max = sv_init_fd(e);
 		ret = select(max + 1, &e->fd_read, &e->fd_write, NULL, NULL);
 		if (ret == -1)
