@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:37:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 03:36:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 03:51:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,15 +79,15 @@ static void		sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl, t_env *e)
 		tmp = tmp->next;
 	if (tmp == NULL)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl, e));
+	sv_send_leavemsg(cmd, chan, cl);
 	if (tmp->prev)
 		tmp->prev->next = tmp->next;
 	else
 		chan->users = tmp->next;
 	if (tmp->next)
 		tmp->next->prev = tmp->prev;
-	sv_send_leavemsg(cmd, chan, cl);
-	sv_find_chaninuser(chan, cl, e);
 	free(tmp);
+	sv_find_chaninuser(chan, cl, e);
 }
 
 void			sv_leave(char **cmds, t_env *e, t_fd *cl)
@@ -104,11 +104,13 @@ void			sv_leave(char **cmds, t_env *e, t_fd *cl)
 	while (list[i])
 	{
 		chan = e->chans;
-		while (chan && sv_strncmp(list[i], chan->name, CHAN_LEN))
+		while (chan && sv_strcmp(list[i], chan->name))
 			chan = chan->next;
 		if (chan == NULL)
 			sv_err(ERR_NOSUCHCHANNEL, list[i], NULL, cl, e);
 		else
 			sv_find_userinchan(cmds, chan, cl, e);
+		i++;
 	}
+	ft_free(&list);
 }

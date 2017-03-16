@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 20:50:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:23:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-int			sv_check_name_valid(char **cmds)
+int				sv_check_name_valid(char **cmds)
 {
 	char		*tmp;
 
@@ -26,7 +26,8 @@ int			sv_check_name_valid(char **cmds)
 		tmp = cmds[1] + 1;
 		while (*tmp && tmp - cmds[1] < NICK_LEN)
 		{
-			if (ft_isalpha(*tmp) || ft_isdigit(*tmp) || ISSPECIAL(*tmp) || *tmp == '-')
+			if (ft_isalpha(*tmp) || ft_isdigit(*tmp) || ISSPECIAL(*tmp) ||
+				*tmp == '-')
 				tmp++;
 			else
 				return (2);
@@ -58,6 +59,31 @@ static int		is_registered_nick(char *nick, t_fd *cl, t_env *e)
 	return (0);
 }
 
+static void		send_newnick(char *newnick, t_fd *cl, t_env *e)
+{
+	t_fd		*other;
+	int			len;
+
+	other = e->fds;
+	len = ft_strlen(newnick);
+	while (other)
+	{
+		send(cl->fd, ":", 1, 0);
+		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+		send(cl->fd, "!~", 2, 0);
+		send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
+		send(cl->fd, "@", 1, 0);
+		send(cl->fd, cl->addr, ADDR_LEN, 0);
+		send(cl->fd, " NICK :", 7, 0);
+		if (len > NICK_LEN)
+			send(cl->fd, newnick, NICK_LEN, 0);
+		else
+			send(cl->fd, newnick, len, 0);
+		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	}
+	ft_strncpy(cl->reg.nick, newnick, NICK_LEN);
+}
+
 void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 {
 	int			err;
@@ -77,16 +103,5 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 		sv_welcome(e, cl);
 	}
 	else if (sv_strcmp(cl->reg.nick, cmds[1]))
-	{
-		send(cl->fd, ":", 1, 0);
-		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-		send(cl->fd, "!~", 2, 0);
-		send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
-		send(cl->fd, "@", 1, 0);
-		send(cl->fd, cl->addr, ADDR_LEN, 0);
-		send(cl->fd, " NICK :", 7, 0);
-		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
-		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-	}
+		send_newnick(cmds[1], cl, e);
 }

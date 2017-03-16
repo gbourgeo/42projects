@@ -6,16 +6,35 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 21:04:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:30:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		sv_who_info(t_fd *user, t_listin *info, t_fd *cl, t_env *e)
+static void		sv_info_next(t_fd *user, t_listin *info, t_fd *cl)
 {
 	char		**tmp;
-	
+
+	if (user->reg.umode & IRC_OPERATOR)
+		send(cl->fd, "*", 1, 0);
+	if (info && info->mode & USR_CHANOP)
+		send(cl->fd, "@", 1, 0);
+	if (info && info->mode & USR_VOICED)
+		send(cl->fd, "+", 1, 0);
+	send(cl->fd, " :0", 3, 0);
+	tmp = user->reg.realname;
+	while (tmp && *tmp)
+	{
+		send(cl->fd, " ", 1, 0);
+		send(cl->fd, *tmp, ft_strlen(*tmp), 0);
+		tmp++;
+	}
+	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
+static void		sv_who_info(t_fd *user, t_listin *info, t_fd *cl, t_env *e)
+{
 	send(cl->fd, e->name, SERVER_LEN, 0);
 	send(cl->fd, " 352 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
@@ -37,23 +56,7 @@ static void		sv_who_info(t_fd *user, t_listin *info, t_fd *cl, t_env *e)
 		send(cl->fd, "G", 1, 0);
 	else
 		send(cl->fd, "H", 1, 0);
-	if (user->reg.umode & IRC_OPERATOR)
-		send(cl->fd, "*", 1, 0);
-	if (info && info->mode & USR_CHANOP)
-		send(cl->fd, "@", 1, 0);
-	if (info && info->mode & USR_VOICED)
-		send(cl->fd, "+", 1, 0);
-// Normalement ici on compte le nombre de noeuds entre le serveur et le client,
-// mais bon comme on gere pas les connexions entre serveurs on affiche direct 0.
-	send(cl->fd, " :0", 3, 0);
-	tmp = user->reg.realname;
-	while (tmp && *tmp)
-	{
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, *tmp, ft_strlen(*tmp), 0);
-		tmp++;
-	}
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_info_next(user, info, cl);
 }
 
 static void		sv_who_user(char **cmds, t_fd *cl, t_env *e)
@@ -84,7 +87,8 @@ static void		sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 				list = chan->users;
 				while (list)
 				{
-					if (!cmds[2] || ft_strcmp(cmds[2], "o") || list->mode & USR_CHANOP)
+					if (!cmds[2] || ft_strcmp(cmds[2], "o") ||
+						list->mode & USR_CHANOP)
 						sv_who_info(list->is, ((t_fd *)list->is)->chans, cl, e);
 					list = list->next;
 				}
@@ -92,7 +96,7 @@ static void		sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 			return ;
 		}
 		chan = chan->next;
-	}	
+	}
 }
 
 void			sv_who(char **cmds, t_env *e, t_fd *cl)
@@ -102,7 +106,7 @@ void			sv_who(char **cmds, t_env *e, t_fd *cl)
 	if (ISCHAN(*cmds[1]))
 		sv_who_chan(cmds, cl, e);
 	else
-		sv_who_user(cmds, cl, e);	
+		sv_who_user(cmds, cl, e);
 	send(cl->fd, e->name, SERVER_LEN, 0);
 	send(cl->fd, " 315 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);

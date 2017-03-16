@@ -6,46 +6,48 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 21:25:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:27:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
+static void		sv_rpl_notopic(t_chan *chan, t_fd *cl, t_env *e)
+{
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " 331 ", 5, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, " :No topic is set", 17, 0);
+	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
+static void		sv_rpl_topic(char *cmd, t_chan *chan, t_fd *cl)
+{
+	send(cl->fd, ":", 1, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+	send(cl->fd, "!~", 2, 0);
+	send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
+	send(cl->fd, "@", 1, 0);
+	send(cl->fd, cl->addr, ADDR_LEN, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, cmd, ft_strlen(cmd), 0);
+	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, " :", 2, 0);
+	send(cl->fd, chan->topic, TOPIC_LEN, 0);
+	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
 static void		sv_set_topic(char **cmds, t_chan *chan, t_fd *cl, t_env *e)
 {
 	if (!cmds[1])
 	{
 		if (!*chan->topic)
-		{
-			// RPL_NOTOPIC
-			send(cl->fd, e->name, SERVER_LEN, 0);
-			send(cl->fd, " 331 ", 5, 0);
-			send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-			send(cl->fd, " ", 1, 0);
-			send(cl->fd, chan->name, CHAN_LEN, 0);
-			send(cl->fd, " :No topic is set", 17, 0);
-			send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-			return ;
-		}
+			return (sv_rpl_notopic(chan, cl, e));
 		else
-		{
-			//RPL_TOPIC
-			send(cl->fd, ":", 1, 0);
-			send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-			send(cl->fd, "!~", 2, 0);
-			send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
-			send(cl->fd, "@", 1, 0);
-			send(cl->fd, cl->addr, ADDR_LEN, 0);
-			send(cl->fd, " ", 1, 0);
-			send(cl->fd, cmds[0], ft_strlen(cmds[0]), 0);
-			send(cl->fd, chan->name, CHAN_LEN, 0);
-			send(cl->fd, " :", 2, 0);
-			send(cl->fd, chan->topic, TOPIC_LEN, 0);
-			send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-			return ;
-		}
+			return (sv_rpl_topic(cmds[0], chan, cl));
 	}
 	if (*cmds[1] == ':')
 		ft_strncpy(chan->topic, cmds[1] + 1, TOPIC_LEN);

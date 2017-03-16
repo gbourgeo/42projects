@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 02:04:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:22:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,10 @@ static int		sv_channel_ident(char *name, t_chan *new, t_fd *cl, t_env *e)
 	return (1);
 }
 
+/*
+** Afficher les nouveaux mode du chan si on implemente la commande MODE
+*/
+
 static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
 {
 	t_chan		*new;
@@ -67,7 +71,7 @@ static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
 	if (*name == '!' && !sv_channel_ident(name, new, cl, e))
 		return (e->chans);
 	if (!*new->name)
-	ft_bzero(new->topic, TOPIC_LEN + 1);
+		ft_bzero(new->topic, TOPIC_LEN + 1);
 	ft_memset(&new->cmode, 0, sizeof(new->cmode));
 	new->cmode |= (*new->name == '+') ? CHFL_TOPIC : CHFL_NOMSG | CHFL_SECRET;
 	new->nbusers = 1;
@@ -126,7 +130,6 @@ static int		sv_join_channel(char *chan_name, t_fd *cl, t_env *e)
 		}
 		chan = chan->next;
 	}
-	// afficher les MODE (+ns ?) de base du nouveau channel.
 	if (*chan_name == '!' && !sv_check_safe_chan(chan_name, cl, e))
 		return (0);
 	e->chans = sv_new_chan(chan_name, cl, e);
@@ -149,6 +152,10 @@ static void		sv_leaveallchannels(t_fd *cl, t_env *e)
 	(void)e;
 }
 
+/*
+** Si on implemente /NAMES, l'appeler au lieu de /WHO.
+*/
+
 static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 {
 	char		**chans;
@@ -167,12 +174,10 @@ static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 			sv_err(ERR_NOSUCHCHANNEL, chans[i], NULL, cl, e);
 		else if (sv_join_channel(chans[i], cl, e))
 		{
-			// Si on implemente /NAMES, l'appeler au lieu de /WHO.
 			save = cmds[1];
 			cmds[1] = e->chans->name;
 			sv_who(cmds, e, cl);
 			cmds[1] = save;
-			//
 		}
 		i++;
 	}

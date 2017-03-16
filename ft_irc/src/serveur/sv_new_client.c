@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 01:06:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:15:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,6 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	if (getnameinfo(&cl->csin, sizeof(cl->csin), cl->addr, NI_MAXHOST,
 					cl->port, NI_MAXSERV, NI_NUMERICSERV))
 		sv_notice(fd, "Couldn't look up your hostname", e);
-//	send_notice(fd, "Checking Ident", e);
-//
-//	send_notice(fd, "No Ident response", e);
 	cl->type = FD_CLIENT;
 	cl->time = time(NULL);
 	cl->fct_read = sv_cl_read;
@@ -62,10 +59,7 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	cl->next = e->fds;
 	e->fds = cl;
 	if (LOCK_SERVER)
-	{
-		send(cl->fd, "This server is protected. Please login.\r\n", 41, 0);
-		send(cl->fd, "Username: ", 10, 0);
-	}
+		send(cl->fd, "Server protected.\nUsername: ", 28, 0);
 	if (e->verb)
 		printf("\e[32mNew connection from\e[0m %s :%s\n", cl->addr, cl->port);
 }

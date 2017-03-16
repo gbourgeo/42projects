@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 21:02:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:12:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static void		sv_list_specific_chan(char **cmds, t_fd *cl, t_env *e)
 			if (!sv_strcmp(tmp->name, chans[i]))
 			{
 				sv_send_chaninfo(tmp, cl, e);
-				break;
+				break ;
 			}
 			tmp = tmp->next;
 		}

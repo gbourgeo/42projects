@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 02:42:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:10:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,6 @@ void			sv_error(char *str, t_env *e)
 	{
 		if (e->fds[i].type == FD_CLIENT)
 		{
-			send(e->fds[i].fd, e->name, SERVER_LEN, 0);
-			send(e->fds[i].fd, " ", 1, 0);
 			send(e->fds[i].fd, str, len, 0);
 			send(e->fds[i].fd, END_CHECK, END_CHECK_LEN, 0);
 		}

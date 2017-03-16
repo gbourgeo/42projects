@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 03:28:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:16:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@
 **					a server name will be truncated.
 */
 # define SERVER_LEN	63
-
 
 /*
 ** CHAN_LIMIT		The maximum number of channels a client can join.
@@ -406,7 +405,6 @@ void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_notice(int fd, char *str, t_env *e);
 void					sv_quit(int sig);
-void					sv_rpl(char *num, char *cmd, char *cmd2, t_fd *cl, t_env *e);
 void					sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);

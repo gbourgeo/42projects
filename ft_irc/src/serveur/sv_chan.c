@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 03:44:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:09:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 	new->is = cl;
 	new->next = chan->users;
 	if (chan->users)
-		chan->users->prev = new;	
+		chan->users->prev = new;
 	return (new);
 }
 

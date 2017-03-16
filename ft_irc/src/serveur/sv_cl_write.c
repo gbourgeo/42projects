@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 20:52:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 04:09:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,6 @@ void				sv_cl_write(t_env *e, t_fd *cl)
 	{
 		sv_clean_buf(&cl->wr);
 		sv_cmd_client(e, cl);
-/* 			else if (cl->wr.head != cl->wr.tail && cl->chan) */
-/* 				sv_sendto_chan(cl); */
-/* 			} */
 		if (cl->wr.tail)
 			*cl->wr.tail = '\0';
 		cl->wr.head = cl->wr.tail;
