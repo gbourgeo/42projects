@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:10:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 10:27:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static void		sv_free_users(t_file **file)
 	ft_memset(*file, 0, sizeof(**file));
 	free(*file);
 	*file = NULL;
+	close(e.fd);
 }
 
 static void		sv_free_fds(t_fd **fds)
@@ -50,6 +51,8 @@ static void		sv_free_fds(t_fd **fds)
 	if (fds == NULL || *fds == NULL)
 		return ;
 	fd = *fds;
+	if ((*fds)->reg.password)
+		add_in_userslist(e.users, *fds);
 	if (fd->next)
 		sv_free_fds(&fd->next);
 	if (fd->reg.password)

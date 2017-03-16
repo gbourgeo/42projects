@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 21:37:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 11:56:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,64 @@ static int			sv_init_fd(t_env *e)
 static void			sv_check_clients(t_env *e)
 {
 	t_fd			*cl;
+	t_file			*us;
 
 	cl = e->fds;
 	while (cl)
 	{
 		if (cl->leaved)
 			cl = sv_clear_client(e, cl);
+		else if (cl->reg.registered <= 0 && *cl->reg.nick && *cl->reg.username)
+		{
+			if (cl->reg.password)
+			{
+				us = e->users;
+				while (us)
+				{
+					if (!ft_strcmp(us->username, cl->reg.username))
+					{
+						if (!ft_strcmp(us->password, cl->reg.password))
+						{
+							cl->reg.registered = 1;
+							cl->reg.umode = us->mode;
+							ft_strncpy(cl->reg.nick, us->nick, NICK_LEN);
+							ft_free(&cl->reg.realname);
+							cl->reg.realname = us->realname;
+							sv_welcome(e, cl);
+							break ;
+						}
+						cl->reg.registered = 0;
+						send(cl->fd, "ERROR: failed to loggin.", 24, 0);
+						send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+						ft_strclr(cl->reg.username);
+						free(cl->reg.password);
+						cl->reg.password = NULL;
+						cl->reg.umode = 0;
+						ft_strclr(cl->reg.nick);
+						ft_free(&cl->reg.realname);
+						break ;
+					}
+					else if (!ft_strcmp(us->nick, cl->reg.nick))
+					{
+						cl->reg.registered = 0;
+						send(cl->fd, "ERROR: Nick collision.", 22, 0);
+						send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+						ft_strclr(cl->reg.username);
+						free(cl->reg.password);
+						cl->reg.password = NULL;
+						cl->reg.umode = 0;
+						ft_strclr(cl->reg.nick);
+						ft_free(&cl->reg.realname);
+						break ;
+					}
+					us = us->next;
+				}
+				if (us == NULL)
+					sv_welcome(e, cl);
+			}
+			else
+				sv_welcome(e, cl);
+		}
 		else
 			cl = cl->next;
 	}

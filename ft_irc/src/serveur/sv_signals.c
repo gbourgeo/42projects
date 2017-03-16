@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/14 21:26:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 09:47:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void			sv_quit(int sig)
 			ft_putstr_fd("\nServer Killed By SIGBUS", 2);
 	}
 	write(2, "\n", 1);
+	update_users_file(&e);
 	ft_kill_connections(e.fds);
 	ft_kill_channels(e.chans);
 	FD_ZERO(&e.fd_read);

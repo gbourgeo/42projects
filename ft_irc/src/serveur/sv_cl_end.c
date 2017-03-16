@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 03:29:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 11:47:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,11 @@ void			sv_cl_end(char **cmds, t_env *e, t_fd *cl)
 		if (cmds == NULL || !cmds[1] || sv_move_head(&cl->wr))
 			sv_sendto_chan_msg(" :Disconnected.", cl);
 	}
-	(void)e;
+	if (*cl->reg.username && cl->reg.password && *cl->reg.nick)
+	{
+		add_in_userslist(e->users, cl);
+		add_in_users(e->users, cl);
+	}
 	cl->leaved = 1;
 }
 
@@ -99,15 +103,15 @@ t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 
 	FD_CLR(cl->fd, &e->fd_read);
 	FD_CLR(cl->fd, &e->fd_write);
-	close(cl->fd);
 	sv_free_client(cl, e);
+	close(cl->fd);
+	if (e->verb)
+		printf("CLIENT: %s|%s :Has left\n", cl->addr, cl->port);
 	ret = cl->next;
 	if (cl->reg.registered > 0)
 		e->members--;
 	ft_memset(cl, 0, sizeof(*cl));
 	free(cl);
 	cl = NULL;
-	if (e->verb)
-		printf("\nCLIENT: %s|%s :Has left\n", cl->addr, cl->port);
 	return (ret);
 }

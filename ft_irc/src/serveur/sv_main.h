@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:16:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 12:07:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 ** LOCK_SERVER		If the value is different of 0 the server will ask for login
 **					and password to each new connection.
 */
-# define LOCK_SERVER 1
+# define LOCK_SERVER 0
 # define USERS_FILE ".irc_users"
 
 /*
@@ -108,16 +108,28 @@
 # define NICK_1 "Change your nickname. You can't choose a nickname already in "
 # define NICK_2 "use.\nPlus, some characters are forbiden."
 # define NICK_MSG NICK_1 NICK_2
+# define PASS_MSG "Set a 'connection password'."
 # define QUIT_MSG "Exit from FT_IRC."
 # define TOPIC_MSG "Sets the topic for the channel you're on."
-# define USER_MSG "Specify the username, hostname and realname of a new user."
+# define USER_MSG "Specify the username, mode and realname of a new user."
 # define WHO_1 "Followed by a channel, lists users on that channel.\n"
 # define WHO_2 "WHO * lists users on the same channel as you."
 # define WHO_MSG WHO_1 WHO_2
 
 # define SV_HELPMSG1 AWAY_MSG, CONNECT_MSG, HELP_MSG, JOIN_MSG, LEAVE_MSG
-# define SV_HELPMSG2 LIST_MSG, MSG_MSG, NICK_MSG, QUIT_MSG, TOPIC_MSG
-# define SV_HELPMSG3 USER_MSG, WHO_MSG
+# define SV_HELPMSG2 LIST_MSG, MSG_MSG, NICK_MSG, PASS_MSG, QUIT_MSG, USER_MSG
+# define SV_HELPMSG3 TOPIC_MSG, WHO_MSG
+
+# define SV_COMMANDS1 AWAY, CONNECT, HELP, JOIN, LEAVE, LIST, MSG, NICK, PASS
+# define SV_COMMANDS2 QUIT, USER, TOPIC, WHO, END
+
+# define COMMANDS1 "AWAY", "CONNECT", "HELP", "JOIN", "LEAVE", "LIST", "MSG"
+# define COMMANDS2 "NICK", "PASS", "QUIT", "USER", "TOPIC", "WHO", NULL
+
+# define SYNTAX1 "[<message>]", "<_host_> [<port>]", "[<command>]", "<channel>"
+# define SYNTAX2 "<channel>", "", "<nick> <message>", "<nick>", "<password>"
+# define SYNTAX3 "[<comment>]", "<user> <mode> <unused> <realname>"
+# define SYNTAX4 "<channel> [<topic>]", "<channel|user>", NULL
 
 /*
 ** Here i regroup all commands the server will handle and their associated
@@ -131,21 +143,12 @@
 # define LIST		{ "LIST", sv_list }
 # define MSG		{ "MSG", sv_msg }
 # define NICK		{ "NICK", sv_nick }
+# define PASS		{ "PASS", sv_pass }
 # define QUIT		{ "QUIT", sv_cl_end }
-# define TOPIC		{ "TOPIC", sv_topic }
 # define USER		{ "USER", sv_user }
+# define TOPIC		{ "TOPIC", sv_topic }
 # define WHO		{ "WHO", sv_who }
 # define END		{ NULL, sv_null }
-
-# define SV_COMMANDS1 AWAY, CONNECT, HELP, JOIN, LEAVE, LIST, MSG, NICK, QUIT
-# define SV_COMMANDS2 TOPIC, USER, WHO, END
-
-# define COMMANDS1 "AWAY", "CONNECT", "HELP", "JOIN", "LEAVE", "LIST"
-# define COMMANDS2 "MSG", "NICK", "QUIT", "TOPIC", "USER", "WHO", NULL
-# define SYNTAX1 "[<message>]", "<_host_> [<port>]", "[<command>]", "<channel>"
-# define SYNTAX2 "<channel>", "", "<nick> <message>", "<nick>"
-# define SYNTAX3 "[<comment>]", "<channel> [<topic>]"
-# define SYNTAX4 "<user> <mode> <unused> <realname>", "<channel|user>", NULL
 
 /*
 ** Errors list
@@ -344,6 +347,7 @@ typedef struct			s_file
 {
 	char				username[USERNAME_LEN + 1];
 	char				*password;
+	int					mode;
 	char				nick[NICK_LEN + 1];
 	char				**realname;
 	struct s_file		*next;
@@ -352,6 +356,7 @@ typedef struct			s_file
 typedef struct			s_env
 {
 	char				verb;
+	int					fd;
 	t_file				*users;
 	char				name[SERVER_LEN + 1];
 	int					ipv4;
@@ -375,7 +380,9 @@ typedef struct			s_com
 
 struct s_env			e;
 
-t_file					*get_users_list(void);
+t_file					*get_users_list(t_env *e);
+t_file					*add_in_users(t_file *users, t_fd *cl);
+void					add_in_userslist(t_file *users, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
@@ -404,6 +411,7 @@ void					sv_msg(char **cmds, t_env *e, t_fd *cl);
 void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_notice(int fd, char *str, t_env *e);
+void					sv_pass(char **cmds, t_env *e, t_fd *cl);
 void					sv_quit(int sig);
 void					sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
@@ -414,5 +422,6 @@ void					sv_topic(char **cmds, t_env *e, t_fd *cl);
 void					sv_user(char **cmds, t_env *e, t_fd *cl);
 void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
+void					update_users_file(t_env *e);
 
 #endif

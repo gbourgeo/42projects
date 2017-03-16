@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:09:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 12:05:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 		nb++;
 	if (cl->reg.registered <= 0 && LOCK_SERVER)
 		sv_get_cl_password(cl, e);
-	else if (cl->reg.registered > 0 || nb == 7 || nb == 10)
+	else if (cl->reg.registered > 0 || (nb >= 7 && nb <= 10))
 		com[nb].fct(cmds, e, cl);
 	else if (cl->reg.registered == 0)
 	{

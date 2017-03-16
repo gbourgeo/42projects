@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:23:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/16 12:13:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ static void		send_newnick(char *newnick, t_fd *cl, t_env *e)
 		else
 			send(cl->fd, newnick, len, 0);
 		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+		other = other->next;
 	}
 	ft_strncpy(cl->reg.nick, newnick, NICK_LEN);
 }
@@ -97,11 +98,8 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 		return (sv_err(ERR_NICKNAMEINUSE, cmds[1], NULL, cl, e));
 	if (cl->reg.umode & USR_RESTRICT)
 		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl, e));
-	if (cl->reg.registered == 0 && cl->reg.realname && *cl->reg.realname)
-	{
+	if (cl->reg.registered <= 0)
 		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
-		sv_welcome(e, cl);
-	}
 	else if (sv_strcmp(cl->reg.nick, cmds[1]))
 		send_newnick(cmds[1], cl, e);
 }
