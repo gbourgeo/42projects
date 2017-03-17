@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 12:05:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 05:13:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ static void			sv_aff_wr(t_fd *cl)
 
 static void			sv_null(char **cmds, t_env *e, t_fd *cl)
 {
-	sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl, e);
+	(void)e;
+	sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 }
 
 static void			sv_cmd_client(t_env *e, t_fd *cl)
@@ -56,7 +57,8 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 
 static void			sv_clean_buf(t_buf *wr)
 {
-	while (wr->head && (*wr->head == ' ' || *wr->head == '\t'))
+	while (wr->head &&
+			(*wr->head == ' ' || *wr->head == '\t'))
 	{
 		wr->head++;
 		if (wr->head >= wr->end)
@@ -69,7 +71,8 @@ void				sv_cl_write(t_env *e, t_fd *cl)
 	if (cl->wr.tail && *cl->wr.tail == '\n')
 	{
 		sv_clean_buf(&cl->wr);
-		sv_cmd_client(e, cl);
+		if (cl->wr.head != cl->wr.tail)
+			sv_cmd_client(e, cl);
 		if (cl->wr.tail)
 			*cl->wr.tail = '\0';
 		cl->wr.head = cl->wr.tail;

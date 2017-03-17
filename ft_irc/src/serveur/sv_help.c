@@ -6,43 +6,63 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 21:00:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 01:31:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		sv_explain(int nb, t_fd *cl)
+static void		sv_help_msg(char *num, char *txt, t_env *e, t_fd *cl)
 {
-	static char	*msg[] = { SV_HELPMSG1, SV_HELPMSG2, SV_HELPMSG3 };
-
-	send(cl->fd, msg[nb], ft_strlen(msg[nb]), 0);
-}
-
-static void		sv_specific_help(char **name, char **cmds, t_fd *cl)
-{
-	static char	*syntax[] = { SYNTAX1, SYNTAX2, SYNTAX3, SYNTAX4 };
 	int			nb;
 
-	while (*(++cmds))
+	nb = 0;
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, num, 3, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+	send(cl->fd, " ", 1, 0);
+	send(cl->fd, e->ptr, ft_strlen(e->ptr), 0);
+	send(cl->fd, " :", 2, 0);
+	send(cl->fd, txt, ft_strlen(txt), 0);
+	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
+static void		sv_explain(int nb, t_fd *cl, t_env *e)
+{
+	static char	*msg[][80] = { HELP1, HELP2, HELP3 };
+	int			pos;
+
+	pos = 0;
+	while (msg[nb][pos])
+	{
+		sv_help_msg("705", msg[nb][pos], e, cl);
+		pos++;
+	}
+	sv_help_msg("705", "", e, cl);
+}
+
+static void		sv_specific_help(char **name, char **cmds, t_fd *cl, t_env *e)
+{
+	static char	*s[] = { SYNTAX1, SYNTAX2, SYNTAX3, SYNTAX4, SYNTAX5, SYNTAX6 };
+	int			nb;
+
+	while (*cmds)
 	{
 		nb = 0;
-		ft_strtoupper(*cmds);
 		while (name[nb] && sv_strcmp(name[nb], *cmds))
 			nb++;
-		send(cl->fd, "*** HELP : ", 11, 0);
-		send(cl->fd, *cmds, ft_strlen(*cmds), 0);
 		if (name[nb] == NULL)
-			send(cl->fd, "\nCommand not available.", 23, 0);
+			sv_help_msg("524", ":Help not found", e, cl);
 		else
 		{
-			send(cl->fd, " ", 1, 0);
-			send(cl->fd, syntax[nb], ft_strlen(syntax[nb]), 0);
-			send(cl->fd, "\n", 1, 0);
-			sv_explain(nb, cl);
+			e->ptr = *cmds;
+			sv_help_msg("704", s[nb], e, cl);
+			sv_help_msg("705", "", e, cl);
+			sv_explain(nb, cl, e);
 		}
-		if (*(cmds + 1))
-			send(cl->fd, "\n\n", 2, 0);
+		cmds++;
 	}
 }
 
@@ -51,25 +71,19 @@ void			sv_help(char **cmds, t_env *e, t_fd *cl)
 	static char	*name[] = { COMMANDS1, COMMANDS2 };
 	int			nb;
 
-	(void)e;
 	nb = 0;
 	if (!cmds[1] || !*cmds[1])
 	{
-		send(cl->fd, "\e[33m*** Help: FT_IRC Commands:\e[0m", 35, 0);
+		e->ptr = "index";
+		sv_help_msg("704", "Help commands available to users:", e, cl);
+		sv_help_msg("705", "", e, cl);
 		while (name[nb])
-		{
-			send(cl->fd, "\n", 1, 0);
-			send(cl->fd, name[nb], ft_strlen(name[nb]), 0);
-			nb++;
-		}
-		send(cl->fd, "\n\nType /help <command> to get help about a ", 43, 0);
-		send(cl->fd, "particular command.\n", 20, 0);
-		send(cl->fd, "For example \"/help nick\" gives you help about", 45, 0);
-		send(cl->fd, " the /nick command.\nTo use a command you must", 45, 0);
-		send(cl->fd, " prefix it with a slash \"/\".\n", 29, 0);
-		send(cl->fd, "*** End Help", 12, 0);
+			sv_help_msg("705", name[nb++], e, cl);
+		sv_help_msg("705", "Type HELP [<command>] to get help about a ", e, cl);
+		sv_help_msg("705", "specific command.", e, cl);
 	}
 	else
-		sv_specific_help(name, cmds, cl);
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+		sv_specific_help(name, cmds + 1, cl, e);
+	sv_help_msg("706", "End of /HELP", e, cl);
+	e->ptr = NULL;
 }

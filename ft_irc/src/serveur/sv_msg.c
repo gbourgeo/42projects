@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 23:20:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 05:17:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 ** Checker si l'user n'est pas ban du chan.
 */
 
-static void		sv_search_chan(char *chan_name, char **cmds, t_fd *cl, t_env *e)
+static void		sv_search_chan(char *chan_name, char **cmds, t_fd *cl)
 {
 	t_listin	*chans;
 
@@ -74,7 +74,7 @@ static void		sv_search_chan(char *chan_name, char **cmds, t_fd *cl, t_env *e)
 		}
 		chans = chans->next;
 	}
-	sv_err(ERR_CANNOTSENDTOCHAN, chan_name, NULL, cl, e);
+	sv_err(ERR_CANNOTSENDTOCHAN, chan_name, NULL, cl);
 }
 
 static void		sv_search_client(char *nick, char **cmds, t_fd *cl, t_env *e)
@@ -102,7 +102,7 @@ static void		sv_search_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 		}
 		fd = fd->next;
 	}
-	sv_err(ERR_NOSUCHNICK, nick, NULL, cl, e);
+	sv_err(ERR_NOSUCHNICK, nick, NULL, cl);
 }
 
 void			sv_msg(char **cmds, t_env *e, t_fd *cl)
@@ -111,9 +111,9 @@ void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 	int			i;
 
 	if (!cmds[1] || *cmds[1] == '\0')
-		return (sv_err(ERR_NORECIPIENT, "MSG", NULL, cl, e));
+		return (sv_err(ERR_NORECIPIENT, "MSG", NULL, cl));
 	if (!cmds[2] || !*cmds[2])
-		return (sv_err(ERR_NOTEXTTOSEND, "MSG", NULL, cl, e));
+		return (sv_err(ERR_NOTEXTTOSEND, "MSG", NULL, cl));
 	ft_strtolower(cmds[1]);
 	if ((targets = ft_strsplit(cmds[1], ',')) == NULL)
 		sv_error("ERROR: Server out of memory", e);
@@ -121,7 +121,7 @@ void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 	while (targets[i])
 	{
 		if (ISCHAN(*targets[i]))
-			sv_search_chan(targets[i], cmds, cl, e);
+			sv_search_chan(targets[i], cmds, cl);
 		else
 			sv_search_client(targets[i], cmds, cl, e);
 		i++;

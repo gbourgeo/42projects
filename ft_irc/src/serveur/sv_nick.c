@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 12:13:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 06:12:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,13 +91,13 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 
 	err = sv_check_name_valid(cmds);
 	if (err == 1)
-		return (sv_err(ERR_NONICKNAMEGIVEN, "NICK", NULL, cl, e));
+		return (sv_err(ERR_NONICKNAMEGIVEN, "NICK", NULL, cl));
 	if (err == 2)
-		return (sv_err(ERR_ERRONEUSNICKNAME, cmds[1], NULL, cl, e));
+		return (sv_err(ERR_ERRONEUSNICKNAME, cmds[1], NULL, cl));
 	if (is_registered_nick(cmds[1], cl, e))
-		return (sv_err(ERR_NICKNAMEINUSE, cmds[1], NULL, cl, e));
+		return (sv_err(ERR_NICKNAMEINUSE, cmds[1], NULL, cl));
 	if (cl->reg.umode & USR_RESTRICT)
-		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl, e));
+		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl));
 	if (cl->reg.registered <= 0)
 		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
 	else if (sv_strcmp(cl->reg.nick, cmds[1]))

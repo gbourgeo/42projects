@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 12:36:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 05:20:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 t_file			*add_in_users(t_file *users, t_fd *cl)
 {
-	t_file			*new;
+	t_file		*new;
 
 	if ((new = malloc(sizeof(*new))) == NULL)
 		return (users);
@@ -55,7 +55,7 @@ void			add_in_userslist(t_file *users, t_fd *cl)
 		write(e.fd, " ", 1);
 		write(e.fd, *(ptr - 1), ft_strlen(*(ptr - 1)));
 	}
-	write(e.fd, "\n", 1);			
+	write(e.fd, "\n", 1);
 }
 
 void			update_users_file(t_env *e)
@@ -72,10 +72,10 @@ void			update_users_file(t_env *e)
 	close(e->fd);
 }
 
-static t_file		*new_user(char **str, t_file *next)
+static t_file	*new_user(char **str, t_file *next)
 {
-	int				len;
-	t_file			*new;
+	int			len;
+	t_file		*new;
 
 	len = ft_tablen(str);
 	if (len < 5 || len > 15 || sv_check_name_valid(str + 2))
@@ -95,11 +95,11 @@ static t_file		*new_user(char **str, t_file *next)
 	return (new);
 }
 
-t_file				*get_users_list(t_env *e)
+t_file			*get_users_list(t_env *e)
 {
-	char			*buf;
-	char			**str;
-	t_file			*first;
+	char		*buf;
+	char		**str;
+	t_file		*first;
 
 	first = NULL;
 	buf = NULL;

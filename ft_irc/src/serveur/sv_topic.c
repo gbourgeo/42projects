@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:27:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 05:19:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,22 +60,22 @@ void			sv_topic(char **cmds, t_env *e, t_fd *cl)
 	t_listin	*chan;
 
 	if (!cmds[0] || !*cmds[0])
-		return (sv_err(ERR_NEEDMOREPARAMS, "TOPIC", NULL, cl, e));
+		return (sv_err(ERR_NEEDMOREPARAMS, "TOPIC", NULL, cl));
 	if (!ISCHAN(*cmds[0]))
-		return (sv_err(ERR_NOSUCHCHANNEL, cmds[0], NULL, cl, e));
+		return (sv_err(ERR_NOSUCHCHANNEL, cmds[0], NULL, cl));
 	chan = cl->chans;
 	while (chan)
 	{
 		if (!sv_strcmp(((t_chan *)chan->is)->name, cmds[0]))
 		{
 			if (!(chan->mode & USR_CHANOP))
-				return (sv_err(ERR_CHANOPRIVSNEEDED, cmds[0], NULL, cl, e));
+				return (sv_err(ERR_CHANOPRIVSNEEDED, cmds[0], NULL, cl));
 			else if (!(((t_chan *)chan->is)->cmode & CHFL_TOPIC))
-				return (sv_err(ERR_NOCHANMODES, cmds[0], NULL, cl, e));
+				return (sv_err(ERR_NOCHANMODES, cmds[0], NULL, cl));
 			else
 				sv_set_topic(cmds, chan->is, cl, e);
 		}
 		chan = chan->next;
 	}
-	sv_err(ERR_NOTONCHANNEL, cmds[0], NULL, cl, e);
+	sv_err(ERR_NOTONCHANNEL, cmds[0], NULL, cl);
 }

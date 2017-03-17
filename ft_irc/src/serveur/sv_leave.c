@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:37:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 03:51:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 05:16:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
 	}
 }
 
-static void		sv_find_chaninuser(t_chan *chan, t_fd *cl, t_env *e)
+static void		sv_find_chaninuser(t_chan *chan, t_fd *cl)
 {
 	t_listin	*tmp;
 
@@ -60,17 +60,19 @@ static void		sv_find_chaninuser(t_chan *chan, t_fd *cl, t_env *e)
 	while (tmp && sv_strcmp(((t_chan *)tmp->is)->name, chan->name))
 		tmp = tmp->next;
 	if (tmp == NULL)
-		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl, e));
+		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl));
 	if (tmp->prev)
 		tmp->prev->next = tmp->next;
 	else
 		cl->chans = tmp->next;
 	if (tmp->next)
 		tmp->next->prev = tmp->prev;
+	tmp->is = NULL;
 	free(tmp);
+	tmp = NULL;
 }
 
-static void		sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl, t_env *e)
+static void		sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl)
 {
 	t_listin	*tmp;
 
@@ -78,7 +80,8 @@ static void		sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl, t_env *e)
 	while (tmp && sv_strcmp(((t_fd *)tmp->is)->reg.nick, cl->reg.nick))
 		tmp = tmp->next;
 	if (tmp == NULL)
-		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl, e));
+		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl));
+	chan->nbusers--;
 	sv_send_leavemsg(cmd, chan, cl);
 	if (tmp->prev)
 		tmp->prev->next = tmp->next;
@@ -86,8 +89,10 @@ static void		sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl, t_env *e)
 		chan->users = tmp->next;
 	if (tmp->next)
 		tmp->next->prev = tmp->prev;
+	tmp->is = NULL;
 	free(tmp);
-	sv_find_chaninuser(chan, cl, e);
+	tmp = NULL;
+	sv_find_chaninuser(chan, cl);
 }
 
 void			sv_leave(char **cmds, t_env *e, t_fd *cl)
@@ -97,7 +102,7 @@ void			sv_leave(char **cmds, t_env *e, t_fd *cl)
 	t_chan		*chan;
 
 	if (!cmds[1] || *cmds[1] == '\0')
-		return (sv_err(ERR_NEEDMOREPARAMS, "LEAVE", NULL, cl, e));
+		return (sv_err(ERR_NEEDMOREPARAMS, "LEAVE", NULL, cl));
 	if ((list = ft_strsplit(cmds[1], ',')) == NULL)
 		sv_error("ERROR: SERVER: Out of memory", e);
 	i = 0;
@@ -107,9 +112,9 @@ void			sv_leave(char **cmds, t_env *e, t_fd *cl)
 		while (chan && sv_strcmp(list[i], chan->name))
 			chan = chan->next;
 		if (chan == NULL)
-			sv_err(ERR_NOSUCHCHANNEL, list[i], NULL, cl, e);
+			sv_err(ERR_NOSUCHCHANNEL, list[i], NULL, cl);
 		else
-			sv_find_userinchan(cmds, chan, cl, e);
+			sv_find_userinchan(cmds, chan, cl);
 		i++;
 	}
 	ft_free(&list);

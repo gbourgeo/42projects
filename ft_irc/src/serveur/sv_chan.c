@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:09:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 04:16:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 {
 	t_listin	*new;
 
+	chan->nbusers++;
 	if ((new = malloc(sizeof(*new))) == NULL)
 		sv_error("ERROR: SERVER: out of memory", &e);
 	send_joinmsg_toothers(chan, cl);

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/16 22:06:54 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/17 04:53:32 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,12 +31,14 @@ SV_SRC	= get_users_list.c	\
 		sv_cl_register.c 	\
 		sv_cl_write.c 		\
 		sv_clear_client.c 	\
+		sv_check_clients.c	\
 		sv_connect.c 		\
 		sv_err.c 			\
 		sv_error.c 			\
 		sv_help.c 			\
 		sv_init_server.c 	\
 		sv_join.c 			\
+		sv_join_channel.c	\
 		sv_leave.c 			\
 		sv_list.c 			\
 		sv_loop.c 			\
@@ -63,6 +65,8 @@ COM_DIR	= src/common/
 COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c sv_strcmp.c sv_strncmp.c
 
 COM_OBJ	= $(COM_SRC:.c=.o)
+
+COM_HDR = common.h err_list.h help.h commands.h flags.h
 
 OBJ_DIR	= obj/
 
@@ -96,10 +100,10 @@ $(SERVEUR): $(OBJ_SV) $(OBJ_COM) | lib
 	@$(WWW) -o $@ $^ -L $(LIBFT) -lft
 	@echo CREATED: $@
 
-$(OBJ_DIR)%.o: $(CL_DIR)%.c $(CL_DIR)cl_main.h $(COM_DIR)common.h | $(OBJ_DIR)
+$(OBJ_DIR)%.o: $(CL_DIR)%.c $(CL_DIR)cl_main.h $(addprefix $(COM_DIR), $(COM_HDR)) | $(OBJ_DIR)
 	$(WWW) -c $< -o $@ -I $(LIBFT_H) -I $(COM_DIR)
 
-$(OBJ_DIR)%.o: $(SV_DIR)%.c $(SV_DIR)sv_main.h $(COM_DIR)common.h | $(OBJ_DIR)
+$(OBJ_DIR)%.o: $(SV_DIR)%.c $(SV_DIR)sv_main.h $(addprefix $(COM_DIR), $(COM_HDR)) | $(OBJ_DIR)
 	$(WWW) -c $< -o $@ -I $(LIBFT_H) -I $(COM_DIR)
 
 $(OBJ_DIR)%.o: $(COM_DIR)%.c | $(OBJ_DIR)

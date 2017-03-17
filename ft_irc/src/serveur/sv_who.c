@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 04:30:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 05:19:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ static void		sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 void			sv_who(char **cmds, t_env *e, t_fd *cl)
 {
 	if (!cmds[1] || !*cmds[1])
-		return (sv_err(ERR_NEEDMOREPARAMS, "WHO", NULL, cl, e));
+		return (sv_err(ERR_NEEDMOREPARAMS, "WHO", NULL, cl));
 	if (ISCHAN(*cmds[1]))
 		sv_who_chan(cmds, cl, e);
 	else
