@@ -6,9 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 01:28:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 06:22:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef FLAGS_H
+# define FLAGS_H
 
 /*
 ** The various modes available for channels are as follows:
@@ -65,3 +68,5 @@
 # define CHFL_TOPIC		0x0400
 # define CHFL_KEY		0x1000
 # define CHFL_LIMIT		0x2000
+
+#endif

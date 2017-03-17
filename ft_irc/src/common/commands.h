@@ -6,9 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:24:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 01:24:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 06:23:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef COMMANDS_H
+# define COMMANDS_H
 
 /*
 ** Here i regroup all commands the server will handle and their associated
@@ -35,3 +38,5 @@
 
 # define SV_COMMANDS1 AWAY, CONNECT, HELP, JOIN, LEAVE, LIST, MSG, NICK, PASS
 # define SV_COMMANDS2 QUIT, USER, TOPIC, WHO, END
+
+#endif

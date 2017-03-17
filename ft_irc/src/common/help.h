@@ -6,14 +6,16 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:14:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 01:23:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 06:22:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef HELP_H
+# define HELP_H
 
 /*
 ** Here are the defined Messages displayed in help <command>
 */
-
 # define SYNTAX1 "AWAY [<message>]", "CONNECT <_host_> [<port>]"
 # define SYNTAX2 "HELP [<command>]", "JOIN <[#|&|+|!]channel> [key]"
 # define SYNTAX3 "LEAVE <[#|&|+|!]channel>", "LIST [[#|&|+|!]channel]"
@@ -87,3 +89,5 @@
 # define HELP1 SV_HELP1, SV_HELP2, SV_HELP3, SV_HELP4, SV_HELP5, SV_HELP6
 # define HELP2 SV_HELP7, SV_HELP8, SV_HELP9, SV_HELP10, SV_HELP11
 # define HELP3 SV_HELP12, SV_HELP13
+
+#endif

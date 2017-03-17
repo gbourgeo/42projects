@@ -6,9 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:15:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 06:09:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/17 06:23:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef ERR_LIST_H
+# define ERR_LIST_H
 
 /*
 ** Errors list
@@ -151,3 +154,5 @@
 # define ER_ALL5 ER_43 ER_44 ER_45 ER_46 ER_47 ER_48 ER_49 ER_50 ER_51 ER_52
 # define ER_ALL6 ER_53 ER_54 ER_55 ER_56 ER_57 ER_58 ER_59 ER_60 ER_61 ER_62
 # define ER_ALL7 ER_63 ER_64 ER_65 ER_66 ER_67 ER_68 ER_69 ER_70 ER_71 ER_72
+
+#endif
