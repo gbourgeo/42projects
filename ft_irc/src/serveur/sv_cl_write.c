@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 04:19:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 05:18:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,6 @@ static void			sv_nocommand(char **cmds, t_env *e, t_fd *cl)
 {
 	(void)e;
 	sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
-}
-
-static void			sv_mode(char **cmds, t_env *e, t_fd *cl)
-{
-	(void)cmds;
-	(void)e;
-	(void)cl;
 }
 
 static void			sv_cmd_client(t_env *e, t_fd *cl)

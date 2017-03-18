@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:19:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 07:37:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void		sv_info_next(t_fd *user, t_listin *info, t_fd *cl)
 		send(cl->fd, "*", 1, 0);
 	if (info && info->mode & USR_CHANOP)
 		send(cl->fd, "@", 1, 0);
-	if (info && info->mode & USR_VOICED)
+	if (info && info->mode & USR_VOICE)
 		send(cl->fd, "+", 1, 0);
 	send(cl->fd, " :0", 3, 0);
 	tmp = user->reg.realname;

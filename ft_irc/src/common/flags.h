@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 05:12:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 07:36:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,18 @@
 /*
 ** User flags.
 */
-# define USER_MODES "Oovir"
+# define USER_MODES "Oovira"
 
 # define USR_CREATOR	0x0001
 # define USR_CHANOP		0x0002
-# define USR_VOICED		0x0004
+# define USR_VOICE		0x0004
 # define USR_INVISIBL	0x0010
 # define USR_RESTRICT	0x0020
 # define USR_AWAY		0x0100
 # define IRC_OPERATOR	0x1000
+
+# define US_MODS1 USR_CREATOR, USR_CHANOP, USR_VOICE, USR_INVISIBL, USR_RESTRICT
+# define US_MODS2 USR_AWAY
 
 /*
 ** Channel flags.
@@ -68,5 +71,8 @@
 # define CHFL_TOPIC		0x0200
 # define CHFL_KEY		0x0400
 # define CHFL_LIMIT		0x1000
+
+# define CH_MODS1 CHFL_ANNON, CHFL_INVITE, CHFL_MOD, CHFL_NOMSG, CHFL_QUIET
+# define CH_MODS2 CHFL_PRIV, CHFL_SECRET, CHFL_TOPIC, CHFL_KEY, CHFL_LIMIT
 
 #endif

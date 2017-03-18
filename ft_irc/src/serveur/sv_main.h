@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 03:45:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 05:19:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,7 @@ int						sv_join_channel(char *chan_name, t_fd *cl, t_env *e);
 void					sv_leave(char **cmds, t_env *e, t_fd *cl);
 void					sv_list(char **cmds, t_env *e, t_fd *cl);
 int						sv_loop(t_env *e);
+void					sv_mode(char **cmds, t_env *e, t_fd *cl);
 void					sv_msg(char **cmds, t_env *e, t_fd *cl);
 void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
