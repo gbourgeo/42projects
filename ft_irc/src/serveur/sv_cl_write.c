@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:13:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 04:19:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,24 @@ static void			sv_aff_wr(t_fd *cl)
 	write(1, "\n", 1);
 }
 
-static void			sv_null(char **cmds, t_env *e, t_fd *cl)
+static void			sv_nocommand(char **cmds, t_env *e, t_fd *cl)
 {
 	(void)e;
 	sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 }
 
+static void			sv_mode(char **cmds, t_env *e, t_fd *cl)
+{
+	(void)cmds;
+	(void)e;
+	(void)cl;
+}
+
 static void			sv_cmd_client(t_env *e, t_fd *cl)
 {
+	static t_com	com[] = { SV_COMMANDS1, SV_COMMANDS2 };
 	char			**cmds;
 	int				nb;
-	static t_com	com[] = { SV_COMMANDS1, SV_COMMANDS2 };
 
 	nb = 0;
 	if ((cmds = sv_split(&cl->wr)) == NULL)
@@ -43,7 +50,7 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 		nb++;
 	if (cl->reg.registered <= 0 && LOCK_SERVER)
 		sv_get_cl_password(cl, e);
-	else if (cl->reg.registered > 0 || (nb >= 7 && nb <= 10))
+	else if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
 		com[nb].fct(cmds, e, cl);
 	else if (cl->reg.registered == 0)
 	{

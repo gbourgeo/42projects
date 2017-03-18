@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:14:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 06:22:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 05:15:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,22 @@
 /*
 ** Here are the defined Messages displayed in help <command>
 */
-# define SYNTAX1 "AWAY [<message>]", "CONNECT <_host_> [<port>]"
-# define SYNTAX2 "HELP [<command>]", "JOIN <[#|&|+|!]channel> [key]"
-# define SYNTAX3 "LEAVE <[#|&|+|!]channel>", "LIST [[#|&|+|!]channel]"
-# define SYNTAX4 "MSG <nick> <message>", "NICK <nick>", "PASS <password>"
-# define SYNTAX5 "QUIT [<comment>]", "USER <user> <mode> <unused> <realname>"
-# define SYNTAX6 "TOPIC <[#|&|+|!]channel> [topic]", "WHO <channel|user>", NULL
+# define SYN1 "AWAY [<message>]"
+# define SYN2 "CONNECT <_host_> [<port>]"
+# define SYN3 "HELP [<command>]"
+# define SYN4 "JOIN <[#|&|+|!]channel> [key]"
+# define SYN5 "LEAVE <[#|&|+|!]channel>"
+# define SYN6 "LIST [[#|&|+|!]channel]"
+# define SYN7 "MSG <nick> <message>"
+# define SYN8 "MODE <nick> <+/-> <mode>, MODE <channel> <+|-> <modes>"
+# define SYN9 "NICK <nick>", "PASS <password>"
+# define SYN10 "QUIT [<comment>]"
+# define SYN11 "USER <user> <mode> <unused> <realname>"
+# define SYN12 "TOPIC <[#|&|+|!]channel> [topic]"
+# define SYN13 "WHO <channel|user>"
+
+# define SYNTAX1 SYN1, SYN2, SYN3, SYN4, SYN5, SYN6, SYN7, SYN8, SYN9
+# define SYNTAX2 SYN10, SYN11, SYN12, SYN13
 
 # define AWAY_1 "Without an argument, it will set you back.  With an argument,"
 # define AWAY_2	"it will set you as AWAY with the specified message."
@@ -42,6 +52,29 @@
 # define LIST_4 "If an argument supplied is a channel name, LIST will give just"
 # define LIST_5 "the statistics for the given channel."
 # define MSG_1 "MSG will send a message to the user or channel specified."
+# define M_1 "MODE <nick> <+|-> <modes>"
+# define M_2 "   USERMODE      DESCRIPTION"
+# define M_3 "-----------------------------------------------------------------"
+# define M_4 "      +O       - Designates this user is a local IRC operator"
+# define M_5 "      +o       - Designates this user is an IRC operator"
+# define M_6 "      +i       - Marks this users as invisible"
+# define M_7 "      +r       - Designates the user has restricted connection"
+# define M_8 ""
+# define M_9 ""
+# define M_10 "MODE <channle> <+|-> <modes>"
+# define M_11 "  CHANNELMODE   DESCRIPTION"
+# define M_12 "----------------------------------------------------------------"
+# define M_13 "     +a       - Anonymous channel"
+# define M_14 "     +i       - Invite-only channel"
+# define M_15 "     +m       - moderated channel"
+# define M_16 "     +n       - No messages from client on the outside"
+# define M_17 "     +q       - quiet channel"
+# define M_18 "     +p       - Private channel"
+# define M_19 "     +s       - Secret channel"
+# define M_20 "     +t       - Topic settable by chanop only channel"
+# define M_21 "     +k       - Set/remove channel key"
+# define M_22 "     +l       - Set/remove user limit channel"
+
 # define NICK_1 "When first connected to the IRC server, NICK is required to"
 # define NICK_2 "set the client's nickname."
 # define NICK_3 "NICK will also change the client's nickname once a connection"
@@ -79,15 +112,18 @@
 # define SV_HELP5 { LEAVE_1, LEAVE_2, LEAVE_3, NULL }
 # define SV_HELP6 { LIST_1, LIST_2, LIST_3, LIST_4, LIST_5, NULL }
 # define SV_HELP7 { MSG_1, NULL }
-# define SV_HELP8 { NICK_1, NICK_2, NICK_3, NICK_4, NULL }
-# define SV_HELP9 { PASS_1, PASS_2, NULL }
-# define SV_HELP10 { QUIT_1, QUIT_2, QUIT_3, NULL}
-# define SV_HELP11 { USER_1, USER_2, USER_3, USER_4, USER_5, NULL}
-# define SV_HELP12 { TOPIC_1, TOPIC_2, TOPIC_3, TOPIC_4, TOPIC_5, NULL }
-# define SV_HELP13 { W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, NULL}
+# define SV_HELP8 { M_1, M_2, M_3, M_4, M_5, M_6, M_7, M_8, M_9, M_10, M_11
+# define SV_HELP9 M_12, M_13, M_14, M_15, M_16, M_17, M_18, M_19, M_20, M_21
+# define SV_HELP10 M_22, NULL }
+# define SV_HELP11 { NICK_1, NICK_2, NICK_3, NICK_4, NULL }
+# define SV_HELP12 { PASS_1, PASS_2, NULL }
+# define SV_HELP13 { QUIT_1, QUIT_2, QUIT_3, NULL}
+# define SV_HELP14 { USER_1, USER_2, USER_3, USER_4, USER_5, NULL}
+# define SV_HELP15 { TOPIC_1, TOPIC_2, TOPIC_3, TOPIC_4, TOPIC_5, NULL }
+# define SV_HELP16 { W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, NULL}
 
 # define HELP1 SV_HELP1, SV_HELP2, SV_HELP3, SV_HELP4, SV_HELP5, SV_HELP6
 # define HELP2 SV_HELP7, SV_HELP8, SV_HELP9, SV_HELP10, SV_HELP11
-# define HELP3 SV_HELP12, SV_HELP13
+# define HELP3 SV_HELP12, SV_HELP13, SV_HELP14, SV_HELP15, SV_HELP16
 
 #endif

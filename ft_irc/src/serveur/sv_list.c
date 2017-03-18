@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:16:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 04:04:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void		sv_send_chaninfo(t_chan *chan, t_fd *cl, t_env *e)
 {
 	char		*visible;
 
-	visible = ft_itoa(chan->cmode);
+	visible = ft_itoa(chan->nbusers);
 	send(cl->fd, e->name, SERVER_LEN, 0);
 	send(cl->fd, " 322 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
@@ -28,6 +28,7 @@ static void		sv_send_chaninfo(t_chan *chan, t_fd *cl, t_env *e)
 	send(cl->fd, " :", 2, 0);
 	send(cl->fd, chan->topic, ft_strlen(chan->topic), 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	free(visible);
 }
 
 static void		sv_list_specific_chan(char **cmds, t_fd *cl, t_env *e)
@@ -62,11 +63,11 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 {
 	t_chan		*chan;
 
+	chan = e->chans;
 	if (cmds[1])
 		sv_list_specific_chan(cmds, cl, e);
 	else
 	{
-		chan = e->chans;
 		while (chan)
 		{
 			sv_send_chaninfo(chan, cl, e);

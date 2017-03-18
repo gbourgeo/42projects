@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 06:22:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 05:12:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,19 +43,20 @@
 /*
 ** User flags.
 */
-# define USER_MODES "Oov"
+# define USER_MODES "Oovir"
 
 # define USR_CREATOR	0x0001
 # define USR_CHANOP		0x0002
 # define USR_VOICED		0x0004
-# define USR_AWAY		0x0010
+# define USR_INVISIBL	0x0010
 # define USR_RESTRICT	0x0020
-# define IRC_OPERATOR	0x0040
+# define USR_AWAY		0x0100
+# define IRC_OPERATOR	0x1000
 
 /*
 ** Channel flags.
 */
-# define CHAN_MODES "aimnqpsrtkl"
+# define CHAN_MODES "aimnqpstkl"
 
 # define CHFL_ANNON		0x0001
 # define CHFL_INVITE	0x0002
@@ -64,9 +65,8 @@
 # define CHFL_QUIET		0x0020
 # define CHFL_PRIV		0x0040
 # define CHFL_SECRET	0x0100
-# define CHFL_REOP		0x0200
-# define CHFL_TOPIC		0x0400
-# define CHFL_KEY		0x1000
-# define CHFL_LIMIT		0x2000
+# define CHFL_TOPIC		0x0200
+# define CHFL_KEY		0x0400
+# define CHFL_LIMIT		0x1000
 
 #endif

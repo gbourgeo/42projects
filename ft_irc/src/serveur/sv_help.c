@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 01:31:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 04:41:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static void		sv_explain(int nb, t_fd *cl, t_env *e)
 
 static void		sv_specific_help(char **name, char **cmds, t_fd *cl, t_env *e)
 {
-	static char	*s[] = { SYNTAX1, SYNTAX2, SYNTAX3, SYNTAX4, SYNTAX5, SYNTAX6 };
+	static char	*s[] = { SYNTAX1, SYNTAX2 };
 	int			nb;
 
 	while (*cmds)

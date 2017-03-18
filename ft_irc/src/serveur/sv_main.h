@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:12:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 03:45:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,7 @@ typedef struct			s_fd
 	char				buf_read[BUFF + 1];
 	char				buf_write[BUFF + 1];
 	int					leaved;
+	char				*reason;
 	struct s_fd			*next;
 }						t_fd;
 
@@ -215,7 +216,7 @@ t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
 void					sv_away(char **cmds, t_env *e, t_fd *cl);
 void					sv_check_clients(t_env *e);
-int						sv_check_name_valid(char **cmds);
+int						sv_check_name_valid(char *name);
 void					sv_cl_read(t_env *e, t_fd *cl);
 void					sv_cl_write(t_env *e, t_fd *cl);
 t_fd					*sv_clear_client(t_env *e, t_fd *cl);

@@ -6,25 +6,25 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 06:12:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 03:45:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-int				sv_check_name_valid(char **cmds)
+int				sv_check_name_valid(char *name)
 {
 	char		*tmp;
 
-	if (!cmds[1] || !*cmds[1])
+	if (!name || !*name)
 		return (1);
-	if (!sv_strcmp(cmds[1], "anonymous"))
+	if (!sv_strcmp(name, "anonymous"))
 		return (2);
-	if (ft_isalpha(*cmds[1]) || ISSPECIAL(*cmds[1]))
+	if (ft_isalpha(*name) || ISSPECIAL(*name))
 	{
-		tmp = cmds[1] + 1;
-		while (*tmp && tmp - cmds[1] < NICK_LEN)
+		tmp = name + 1;
+		while (*tmp && tmp - name < NICK_LEN)
 		{
 			if (ft_isalpha(*tmp) || ft_isdigit(*tmp) || ISSPECIAL(*tmp) ||
 				*tmp == '-')
@@ -89,7 +89,7 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 {
 	int			err;
 
-	err = sv_check_name_valid(cmds);
+	err = sv_check_name_valid(cmds[1]);
 	if (err == 1)
 		return (sv_err(ERR_NONICKNAMEGIVEN, "NICK", NULL, cl));
 	if (err == 2)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 22:04:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 03:52:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,31 @@ static void		sv_free_client(t_fd *cl, t_env *e)
 	sv_free_client_onchans(cl, NULL);
 }
 
+//ERROR :Closing Link: 78.252.122.166 (Invalid username [~&toto])
+
+static void		sv_send_reason(t_fd *cl)
+{
+	send(cl->fd, "ERROR :Closing Link: ", 21, 0);
+	send(cl->fd, cl->addr, ADDR_LEN, 0);
+	send(cl->fd, " (", 2, 0);
+	send(cl->fd, cl->reason, ft_strlen(cl->reason), 0);
+	if (cl->leaved == 2)
+	{
+		send(cl->fd, "[~", 2, 0);
+		send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
+		send(cl->fd, "]", 1, 0);
+	}
+	send(cl->fd, ")", 1, 0);
+	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
 t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 {
 	t_fd		*ret;
 
 	FD_CLR(cl->fd, &e->fd_read);
 	FD_CLR(cl->fd, &e->fd_write);
+	sv_send_reason(cl);
 	sv_free_client(cl, e);
 	close(cl->fd);
 	if (e->verb)
