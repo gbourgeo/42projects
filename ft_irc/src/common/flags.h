@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 07:36:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 00:23:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,23 +43,26 @@
 /*
 ** User flags.
 */
-# define USER_MODES "Oovira"
+# define USER_MODES "aiwroO"
 
-# define USR_CREATOR	0x0001
-# define USR_CHANOP		0x0002
-# define USR_VOICE		0x0004
-# define USR_INVISIBL	0x0010
-# define USR_RESTRICT	0x0020
-# define USR_AWAY		0x0100
-# define IRC_OPERATOR	0x1000
+# define USR_AWAY		0x0001
+# define USR_INVISIBL	0x0002
+# define USR_WALLOPS	0x0004
+# define USR_RESTRICT	0x0010
+# define USR_OP			0x0020
+# define USR_LOCALOP	0x0040
 
-# define US_MODS1 USR_CREATOR, USR_CHANOP, USR_VOICE, USR_INVISIBL, USR_RESTRICT
-# define US_MODS2 USR_AWAY
+# define US_MODS1 USR_AWAY, USR_INVISIBL, USR_WALLOPS, USR_RESTRICT, USR_OP
+# define US_MODS2 USR_LOCALOP
 
 /*
 ** Channel flags.
 */
-# define CHAN_MODES "aimnqpstkl"
+# define CHAN_MODES "Oovaimnqpsrtkl"
+
+# define CHFL_CREATOR	0x0001
+# define CHFL_CHANOP	0x0002
+# define CHFL_VOICE		0x0004
 
 # define CHFL_ANNON		0x0001
 # define CHFL_INVITE	0x0002
@@ -69,10 +72,12 @@
 # define CHFL_PRIV		0x0040
 # define CHFL_SECRET	0x0100
 # define CHFL_TOPIC		0x0200
+
 # define CHFL_KEY		0x0400
 # define CHFL_LIMIT		0x1000
 
-# define CH_MODS1 CHFL_ANNON, CHFL_INVITE, CHFL_MOD, CHFL_NOMSG, CHFL_QUIET
-# define CH_MODS2 CHFL_PRIV, CHFL_SECRET, CHFL_TOPIC, CHFL_KEY, CHFL_LIMIT
+# define CH_MODS1 CHFL_CREATOR, CHFL_CHANOP, CHFL_VOICE
+# define CH_MODS2 CHFL_ANNON, CHFL_INVITE, CHFL_MOD, CHFL_NOMSG, CHFL_QUIET
+# define CH_MODS3 CHFL_PRIV, CHFL_SECRET, CHFL_TOPIC, CHFL_KEY, CHFL_LIMIT
 
 #endif

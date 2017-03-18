@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/18 05:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 07:39:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 00:22:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,10 @@
 
 static void			change_chan_mode(char c, char mode, t_chan *ch, t_fd *cl)
 {
-	static int		chan_nbr[] = { CH_MODS1, CH_MODS2 };
+	static int		chan_nbr[] = { CH_MODS1, CH_MODS2, CH_MODS3 };
 	char			*tmp;
 
 	tmp = ft_strchr(CHAN_MODES, mode);
-	if (mode == 'O')
-		return ;
 	if (c)
 		ch->cmode |= chan_nbr[tmp - CHAN_MODES];
 	else
@@ -74,7 +72,7 @@ static void			channel_mode(char **cmds, t_chan *ch, t_fd *cl)
 	}
 	if (list == NULL)
 		return (sv_err(ERR_USERNOTINCHANNEL, cl->reg.nick, ch->name, cl));
-	if (!(list->mode & USR_CREATOR) && !(list->mode & USR_CHANOP))
+	if (!(list->mode & CHFL_CREATOR) && !(list->mode & CHFL_CHANOP))
 		return (sv_err(ERR_CHANOPRIVSNEEDED, ch->name, NULL, cl));
 	check_channel_mode(cmds, ch, cl);
 }

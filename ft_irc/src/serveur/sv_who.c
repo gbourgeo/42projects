@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 07:37:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 00:25:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ static void		sv_info_next(t_fd *user, t_listin *info, t_fd *cl)
 {
 	char		**tmp;
 
-	if (user->reg.umode & IRC_OPERATOR)
+	if (user->reg.umode & USR_OP || user->reg.umode & USR_LOCALOP)
 		send(cl->fd, "*", 1, 0);
-	if (info && info->mode & USR_CHANOP)
+	if (info && info->mode & CHFL_CHANOP)
 		send(cl->fd, "@", 1, 0);
-	if (info && info->mode & USR_VOICE)
+	if (info && info->mode & CHFL_VOICE)
 		send(cl->fd, "+", 1, 0);
 	send(cl->fd, " :0", 3, 0);
 	tmp = user->reg.realname;
@@ -88,7 +88,7 @@ static void		sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 				while (list)
 				{
 					if (!cmds[2] || ft_strcmp(cmds[2], "o") ||
-						list->mode & USR_CHANOP)
+						list->mode & CHFL_CHANOP)
 						sv_who_info(list->is, ((t_fd *)list->is)->chans, cl, e);
 					list = list->next;
 				}

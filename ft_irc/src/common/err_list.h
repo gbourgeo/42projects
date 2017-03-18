@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:15:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 06:23:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/18 23:43:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@
 # define ER_49 { NULL, NULL, ":Channel key already set" },
 # define ER_50 { NULL, NULL, NULL }, { NULL, NULL, NULL }, { NULL, NULL, NULL },
 # define ER_51 { NULL, NULL, ":Cannot join channel (+1)" },
-# define ER_52 { NULL, ":is unknown mode char to me for ", NULL }
+# define ER_52 { NULL, ":is unknown mode char to me for", NULL }
 # define ER_53 { NULL, NULL, ":Cannot join channel (+i)" },
 # define ER_54 { NULL, NULL, ":Cannot join channel (+b)" },
 # define ER_55 { NULL, NULL, ":Cannot join channel (+k)" },

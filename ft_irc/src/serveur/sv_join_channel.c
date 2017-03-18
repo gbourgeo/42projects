@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:48:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 04:50:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 00:22:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,9 @@ static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
 	new->users = NULL;
 	new->users = sv_add_usertochan(cl, new);
 	if (*new->name == '!')
-		new->users->mode |= USR_CREATOR;
+		new->users->mode |= CHFL_CREATOR;
 	if (*new->name != '+')
-		new->users->mode |= USR_CHANOP;
+		new->users->mode |= CHFL_CHANOP;
 	new->next = e->chans;
 	if (e->chans)
 		e->chans->prev = new;
@@ -136,8 +136,8 @@ int				sv_join_channel(char *chan_name, t_fd *cl, t_env *e)
 	if ((cl->chans = sv_add_chantouser(e->chans, cl)) == NULL)
 		return (0);
 	if (*chan_name == '!')
-		cl->chans->mode |= USR_CREATOR;
+		cl->chans->mode |= CHFL_CREATOR;
 	else if (*chan_name != '+')
-		cl->chans->mode |= USR_CHANOP;
+		cl->chans->mode |= CHFL_CHANOP;
 	return (1);
 }

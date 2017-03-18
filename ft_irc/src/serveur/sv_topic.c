@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 08:39:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 00:23:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void			sv_topic(char **cmds, t_env *e, t_fd *cl)
 	{
 		if (!sv_strcmp(((t_chan *)chan->is)->name, cmds[1]))
 		{
-			if (!(chan->mode & USR_CHANOP))
+			if (!(chan->mode & CHFL_CHANOP))
 				return (sv_err(ERR_CHANOPRIVSNEEDED, cmds[1], NULL, cl));
 			else if (cmds[2] && !(((t_chan *)chan->is)->cmode & CHFL_TOPIC))
 				return (sv_err(ERR_NOCHANMODES, cmds[1], NULL, cl));
