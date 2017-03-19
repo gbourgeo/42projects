@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/11 04:01:19 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 06:18:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 06:19:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ static void		do_that(char *reply, char *cmd, char *cmd2, t_fd *cl)
 
 void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl)
 {
-	static char	*replies[][50] = { ER_ALL1, ER_ALL2, ER_ALL3, ER_ALL4, ER_ALL5,
-									ER_ALL6, ER_ALL7 };
+	static char	*replies[][50] = { ERROR1, ERROR2, ERROR3, ERROR4, ERROR5,
+									ERROR6, ERROR7, ERROR8, ERROR9, ERROR10 };
 	long		pos;
 
 	if (ft_strlen(err) != 3)

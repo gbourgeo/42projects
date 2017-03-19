@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:15:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 06:21:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 	{
 		if (!ISCHAN(*chans[i]) || !chans[i][1])
 			sv_err(ERR_NOSUCHCHANNEL, chans[i], NULL, cl);
+		else if (ft_strchr(chans[i], 7))
+			sv_err(ERR_ILLEGALNAME, chans[i], NULL, cl);
 		else if (!inchannel(chans[i], cl) && sv_join_channel(chans[i], cl, e))
 		{
 			save = cmds[1];

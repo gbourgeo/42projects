@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 04:19:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 07:15:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,8 @@ static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 	char			*tmp;
 
 	tmp = ft_strchr(USER_MODES, mode);
-	if (c && (mode == 'O' || mode == 'o'))
-		return ;
-	if (!c && mode == 'r')
+	if ((c && us->reg.umode & user_nbr[tmp - USER_MODES]) ||
+		(!c && !(us->reg.umode & user_nbr[tmp - USER_MODES])))
 		return ;
 	if (c)
 		us->reg.umode |= user_nbr[tmp - USER_MODES];
@@ -42,8 +41,6 @@ void				sv_user_mode(char **cmds, t_fd *us, t_fd *cl)
 	char			c;
 
 	c = 1;
-	if (us->fd != cl->fd)
-		return (sv_err(ERR_USERSDONTMATCH, NULL, NULL, cl));
 	while (*cmds)
 	{
 		ptr = *cmds;
@@ -55,7 +52,9 @@ void				sv_user_mode(char **cmds, t_fd *us, t_fd *cl)
 				c = 0;
 			else if (!ft_strchr(USER_MODES, *ptr))
 				return (sv_err(ERR_UMODEUNKNOWNFLAG, NULL, NULL, cl));
-			else
+			else if (*ptr != 'a' &&
+					((c && *ptr != 'O' && *ptr != 'o') ||
+					(!c && *ptr != 'r')))
 				change_user_mode(c, *ptr, us, cl);
 			ptr++;
 		}

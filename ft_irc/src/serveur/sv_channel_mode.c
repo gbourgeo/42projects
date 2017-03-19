@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 05:44:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 07:36:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@ static void			change_chan_mode(char c, char mode, t_chan *ch, t_fd *cl)
 	char			*tmp;
 
 	tmp = ft_strchr(CHAN_MODES, mode);
+	if ((c && ch->cmode & chan_nbr[tmp - CHAN_MODES]) ||
+		(!c && !(ch->cmode & chan_nbr[tmp - CHAN_MODES])))
+		return ;
 	if (c)
 		ch->cmode |= chan_nbr[tmp - CHAN_MODES];
 	else
@@ -46,14 +49,14 @@ static void			check_channel_mode(char **cmds, t_chan *ch, t_fd *cl)
 			c = 0;
 		else if (!ft_strchr(CHAN_MODES, *ptr))
 			return (sv_err(ERR_UNKNOWNMODE, ptr, ch->name, cl));
-		else if (*ptr == 'O' || *ptr == 'o' || *ptr == 'v')
+		else if (*ptr == 'o' || *ptr == 'v')
 		{
 			if (c)
 				usermode_on(*ptr, &cmds, ch, cl);
 			else
 				usermode_off(*ptr, &cmds, ch, cl);
 		}
-		else
+		else if (*ptr != 'O')
 			change_chan_mode(c, *ptr, ch, cl);
 		ptr++;
 	}

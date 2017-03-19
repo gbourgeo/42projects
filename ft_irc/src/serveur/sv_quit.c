@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 03:49:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 07:40:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,6 @@ void			sv_quit(char **cmds, t_env *e, t_fd *cl)
 		{
 			if (((t_fd *)us->is)->fd != cl->fd)
 				sv_quit_msg(cmds, cl, us->is);
-			else
-
 			us = us->next;
 		}
 		ch = ch->next;

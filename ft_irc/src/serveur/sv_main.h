@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 05:45:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 07:34:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,12 @@ typedef struct			s_listin
 	int					mode;
 	struct s_listin		*next;
 }						t_listin;
+
+typedef struct			s_grp
+{
+	t_listin			*list;
+	char				c;
+}						t_grp;
 
 typedef struct			s_reg
 {

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/18 05:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 05:17:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 06:53:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,13 @@ static void			search_user(char **cmds, t_fd *cl, t_env *e)
 void				sv_mode(char **cmds, t_env *e, t_fd *cl)
 {
 	if (!cmds[1] || !cmds[2])
-		return (sv_err(ERR_NEEDMOREPARAMS, "MODE", NULL, cl));
-	if (ISCHAN(*cmds[1]))
+		sv_err(ERR_NEEDMOREPARAMS, "MODE", NULL, cl);
+	else if (cl->reg.umode & USR_RESTRICT)
+		sv_err(ERR_RESTRICTED, NULL, NULL, cl);
+	else if (ISCHAN(*cmds[1]))
 		search_channel(cmds, cl, e);
+	else if (sv_strcmp(cl->reg.nick, cmds[1]))
+		sv_err(ERR_USERSDONTMATCH, NULL, NULL, cl);
 	else
 		search_user(cmds, cl, e);
 }
