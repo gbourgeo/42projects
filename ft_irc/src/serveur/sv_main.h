@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 05:19:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/19 05:45:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,7 @@ void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
 void					sv_away(char **cmds, t_env *e, t_fd *cl);
+void					sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl);
 void					sv_check_clients(t_env *e);
 int						sv_check_name_valid(char *name);
 void					sv_cl_read(t_env *e, t_fd *cl);
@@ -251,8 +252,11 @@ char					**sv_split(t_buf *buf);
 char					*sv_strchr(const t_buf *b, int c);
 void					sv_topic(char **cmds, t_env *e, t_fd *cl);
 void					sv_user(char **cmds, t_env *e, t_fd *cl);
+void					sv_user_mode(char **cmds, t_fd *us, t_fd *cl);
 void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
 void					update_users_file(t_env *e);
+void					usermode_off(char m, char ***cmd, t_chan *ch, t_fd *cl);
+void					usermode_on(char m, char ***cmd, t_chan *ch, t_fd *cl);
 
 #endif

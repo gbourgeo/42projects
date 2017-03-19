@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/18 05:18:37 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/19 05:45:47 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -27,6 +27,8 @@ SV_SRC	= get_users_list.c	\
 		sv_accept.c 		\
 		sv_away.c 			\
 		sv_chan.c 			\
+		sv_channel_mode.c 	\
+		sv_change_mode.c	\
 		sv_cl_read.c 		\
 		sv_cl_register.c 	\
 		sv_cl_write.c 		\
@@ -56,6 +58,7 @@ SV_SRC	= get_users_list.c	\
 		sv_strchr.c 		\
 		sv_topic.c 			\
 		sv_user.c 			\
+		sv_user_mode.c		\
 		sv_welcome.c 		\
 		sv_who.c
 
