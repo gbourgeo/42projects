@@ -18,8 +18,6 @@ défaut, maximum 9 charactères, comme dans la RFC).
 serveur ou à un channel.
 • connect <machine> [port]: Connexion au serveur depuis le client.
 • Passage du code en mode non-bloquant.
-• Respect de la RFC 2813.
-• Support de l’IPv6.
 
 Bonus:
 • away <msg> :Envoi automatique de réponse a des messages privés.
@@ -31,3 +29,6 @@ Bonus:
 • pass <motdepasse>
 • user <username> <mode> <unused> <real name>
 • topic <channel> [topic message]
+• Respect de la RFC 2811, 2812. (exceptions des wildcards)
+• Support de l’IPv6.
+• Gestion d'un login/password pour se connecter.
