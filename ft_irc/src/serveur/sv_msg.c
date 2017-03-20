@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:17:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 04:09:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void		sv_sendtoclient(t_fd *to, char **cmds, t_fd *cl)
 	send(to->fd, "@", 1, 0);
 	send(to->fd, cl->addr, ADDR_LEN, 0);
 	send(to->fd, " MSG ", 5, 0);
-	send(to->fd, cmds[1], ft_strlen(cmds[1]), 0);
+	send(to->fd, to->reg.nick, NICK_LEN, 0);
 	send(to->fd, " :", 2, 0);
 	while (cmds[i])
 	{
@@ -37,47 +37,7 @@ static void		sv_sendtoclient(t_fd *to, char **cmds, t_fd *cl)
 	send(to->fd, END_CHECK, END_CHECK_LEN, 0);
 }
 
-static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
-{
-	t_listin	*us;
-	t_fd		*to;
-
-	us = chan->users;
-	while (us)
-	{
-		to = (t_fd *)us->is;
-		if (to->fd != cl->fd)
-			sv_sendtoclient(to, cmds, cl);
-		us = us->next;
-	}
-}
-
-/*
-** Dans sv_search_chan(...) { while(chan)... }
-** Checker si l'user n'est pas sur le channel et que le chan a le mode +n.
-** Checker si l'user est sur le chan mais que le chan n'est pas en mode +m et
-** qu'il n'est pas chan op.
-** Checker si l'user n'est pas ban du chan.
-*/
-
-static void		sv_search_chan(char *chan_name, char **cmds, t_fd *cl)
-{
-	t_listin	*chans;
-
-	chans = cl->chans;
-	while (chans)
-	{
-		if (!sv_strcmp(chan_name, ((t_chan *)chans->is)->name))
-		{
-			if (1)
-				return (sv_sendtochan(cmds, chans->is, cl));
-		}
-		chans = chans->next;
-	}
-	sv_err(ERR_CANNOTSENDTOCHAN, chan_name, NULL, cl);
-}
-
-static void		sv_search_client(char *nick, char **cmds, t_fd *cl, t_env *e)
+static void		sv_msg_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 {
 	t_fd		*fd;
 
@@ -114,16 +74,15 @@ void			sv_msg(char **cmds, t_env *e, t_fd *cl)
 		return (sv_err(ERR_NORECIPIENT, "MSG", NULL, cl));
 	if (!cmds[2] || !*cmds[2])
 		return (sv_err(ERR_NOTEXTTOSEND, "MSG", NULL, cl));
-	ft_strtolower(cmds[1]);
 	if ((targets = ft_strsplit(cmds[1], ',')) == NULL)
 		sv_error("ERROR: Server out of memory", e);
 	i = 0;
 	while (targets[i])
 	{
 		if (ISCHAN(*targets[i]))
-			sv_search_chan(targets[i], cmds, cl);
+			sv_msg_chan(targets[i], cmds, cl);
 		else
-			sv_search_client(targets[i], cmds, cl, e);
+			sv_msg_client(targets[i], cmds, cl, e);
 		i++;
 	}
 	ft_free(&targets);

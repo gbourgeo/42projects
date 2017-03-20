@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 00:23:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 08:04:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,16 @@
 /*
 ** Channel flags.
 */
-# define CHAN_MODES "Oovaimnqpsrtkl"
+# define CHAN_MODES "Oovamnqpstkl"
 
 # define CHFL_CREATOR	0x0001
 # define CHFL_CHANOP	0x0002
 # define CHFL_VOICE		0x0004
 
-# define CHFL_ANNON		0x0001
-# define CHFL_INVITE	0x0002
+# define CHFL_ANON		0x0001
+/*
+** # define CHFL_INVITE	0x0002
+*/
 # define CHFL_MOD		0x0004
 # define CHFL_NOMSG		0x0010
 # define CHFL_QUIET		0x0020
@@ -77,7 +79,7 @@
 # define CHFL_LIMIT		0x1000
 
 # define CH_MODS1 CHFL_CREATOR, CHFL_CHANOP, CHFL_VOICE
-# define CH_MODS2 CHFL_ANNON, CHFL_INVITE, CHFL_MOD, CHFL_NOMSG, CHFL_QUIET
+# define CH_MODS2 CHFL_ANON, CHFL_MOD, CHFL_NOMSG, CHFL_QUIET
 # define CH_MODS3 CHFL_PRIV, CHFL_SECRET, CHFL_TOPIC, CHFL_KEY, CHFL_LIMIT
 
 #endif

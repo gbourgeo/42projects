@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 22:08:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 08:49:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static void		ft_kill_channels(t_chan *chan)
 		ft_kill_channels(chan->next);
 	if (e.verb)
 		printf("\n\e[31mCHAN\e[0m %s \e[31mdeleted\e[0m\n", chan->name);
-	ft_bzero(chan->name, CHAN_LEN);
+	ft_bzero(chan->name, CHANNAME_LEN);
 	ft_bzero(chan->topic, TOPIC_LEN);
 	while (chan->users)
 	{

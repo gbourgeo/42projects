@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 00:23:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 09:19:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void		sv_rpl_notopic(t_chan *chan, t_fd *cl, t_env *e)
 	send(cl->fd, " 331 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " ", 1, 0);
-	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, chan->name, CHANNAME_LEN, 0);
 	send(cl->fd, " :No topic is set", 17, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
 }
@@ -30,7 +30,7 @@ static void		sv_rpl_topic(t_chan *chan, t_fd *cl, t_env *e)
 	send(cl->fd, " 332 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " ", 1, 0);
-	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, chan->name, CHANNAME_LEN, 0);
 	send(cl->fd, " :", 2, 0);
 	send(cl->fd, chan->topic, TOPIC_LEN, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
@@ -38,7 +38,7 @@ static void		sv_rpl_topic(t_chan *chan, t_fd *cl, t_env *e)
 	send(cl->fd, " 333 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " ", 1, 0);
-	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, chan->name, CHANNAME_LEN, 0);
 	send(cl->fd, " ", 1, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, "!~", 2, 0);
@@ -57,7 +57,7 @@ static void		sv_rpl_topic_user(t_chan *chan, t_fd *cl)
 	send(cl->fd, "@", 1, 0);
 	send(cl->fd, cl->addr, ADDR_LEN, 0);
 	send(cl->fd, " TOPIC ", 7, 0);
-	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, chan->name, CHANNAME_LEN, 0);
 	send(cl->fd, " :", 2, 0);
 	send(cl->fd, chan->topic, TOPIC_LEN, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
@@ -105,11 +105,12 @@ void			sv_topic(char **cmds, t_env *e, t_fd *cl)
 	{
 		if (!sv_strcmp(((t_chan *)chan->is)->name, cmds[1]))
 		{
-			if (!(chan->mode & CHFL_CHANOP))
+			if (cmds[2] && ((t_chan *)chan->is)->cmode & CHFL_TOPIC &&
+				!(chan->mode & CHFL_CHANOP))
 				return (sv_err(ERR_CHANOPRIVSNEEDED, cmds[1], NULL, cl));
 			else if (cmds[2] && !(((t_chan *)chan->is)->cmode & CHFL_TOPIC))
 				return (sv_err(ERR_NOCHANMODES, cmds[1], NULL, cl));
-			else
+			else if (!((t_chan *)chan->is)->cmode & CHFL_SECRET)
 				return (sv_set_topic(cmds + 1, chan->is, cl, e));
 		}
 		chan = chan->next;

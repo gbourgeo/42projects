@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 06:46:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 07:10:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,30 +59,39 @@ static int		is_registered_nick(char *nick, t_fd *cl, t_env *e)
 	return (0);
 }
 
-static void		send_newnick(char *newnick, t_fd *cl, t_env *e)
+static void		send_to(char *nick, int len, t_fd *to, t_fd *cl)
 {
-	t_fd		*other;
-	int			len;
+	send(to->fd, ":", 1, 0);
+	send(to->fd, cl->reg.nick, NICK_LEN, 0);
+	send(to->fd, "!~", 2, 0);
+	send(to->fd, cl->reg.username, USERNAME_LEN, 0);
+	send(to->fd, "@", 1, 0);
+	send(to->fd, cl->addr, ADDR_LEN, 0);
+	send(to->fd, " NICK :", 7, 0);
+	send(to->fd, nick, (len > NICK_LEN) ? NICK_LEN : len, 0);
+	send(to->fd, END_CHECK, END_CHECK_LEN, 0);
+}
 
-	other = e->fds;
-	len = ft_strlen(newnick);
-	while (other)
+static void		send_newnick(char *nick, int len, t_fd *cl)
+{
+	t_listin	*ch;
+	t_listin	*us;
+
+	ch = cl->chans;
+	while (ch)
 	{
-		send(cl->fd, ":", 1, 0);
-		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-		send(cl->fd, "!~", 2, 0);
-		send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
-		send(cl->fd, "@", 1, 0);
-		send(cl->fd, cl->addr, ADDR_LEN, 0);
-		send(cl->fd, " NICK :", 7, 0);
-		if (len > NICK_LEN)
-			send(cl->fd, newnick, NICK_LEN, 0);
-		else
-			send(cl->fd, newnick, len, 0);
-		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-		other = other->next;
+		if (!(((t_chan *)ch->is)->cmode & CHFL_QUIET))
+		{
+			us = ((t_chan *)ch->is)->users;
+			while (us)
+			{
+				if (((t_fd *)us->is)->fd != cl->fd)
+					send_to(nick, len, us->is, cl);
+				us = us->next;
+			}
+		}
+		ch = ch->next;
 	}
-	ft_strncpy(cl->reg.nick, newnick, NICK_LEN);
 }
 
 void			sv_nick(char **cmds, t_env *e, t_fd *cl)
@@ -101,5 +110,10 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 	if (cl->reg.registered <= 0)
 		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
 	else if (sv_strcmp(cl->reg.nick, cmds[1]))
-		send_newnick(cmds[1], cl, e);
+	{
+		err = ft_strlen(cmds[1]);
+		send_to(cmds[1], err, cl, cl);
+		send_newnick(cmds[1], err, cl);
+		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
+	}
 }

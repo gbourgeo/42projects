@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:14:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 05:15:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 06:26:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@
 # define M_11 "  CHANNELMODE   DESCRIPTION"
 # define M_12 "----------------------------------------------------------------"
 # define M_13 "     +a       - Anonymous channel"
-# define M_14 "     +i       - Invite-only channel"
 # define M_15 "     +m       - moderated channel"
 # define M_16 "     +n       - No messages from client on the outside"
 # define M_17 "     +q       - quiet channel"
@@ -113,7 +112,7 @@
 # define SV_HELP6 { LIST_1, LIST_2, LIST_3, LIST_4, LIST_5, NULL }
 # define SV_HELP7 { MSG_1, NULL }
 # define SV_HELP8 { M_1, M_2, M_3, M_4, M_5, M_6, M_7, M_8, M_9, M_10, M_11
-# define SV_HELP9 M_12, M_13, M_14, M_15, M_16, M_17, M_18, M_19, M_20, M_21
+# define SV_HELP9 M_12, M_13, M_15, M_16, M_17, M_18, M_19, M_20, M_21
 # define SV_HELP10 M_22, NULL }
 # define SV_HELP11 { NICK_1, NICK_2, NICK_3, NICK_4, NULL }
 # define SV_HELP12 { PASS_1, PASS_2, NULL }

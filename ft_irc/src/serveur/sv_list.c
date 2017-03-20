@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 04:04:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 08:49:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void		sv_send_chaninfo(t_chan *chan, t_fd *cl, t_env *e)
 	send(cl->fd, " 322 ", 5, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " ", 1, 0);
-	send(cl->fd, chan->name, CHAN_LEN, 0);
+	send(cl->fd, chan->name, CHANNAME_LEN, 0);
 	send(cl->fd, " ", 1, 0);
 	send(cl->fd, visible, ft_strlen(visible), 0);
 	send(cl->fd, " :", 2, 0);
@@ -45,7 +45,7 @@ static void		sv_list_specific_chan(char **cmds, t_fd *cl, t_env *e)
 		tmp = e->chans;
 		while (tmp)
 		{
-			if (!sv_strcmp(tmp->name, chans[i]))
+			if (!sv_strcmp(tmp->name, chans[i]) && !(tmp->cmode & CHFL_SECRET))
 			{
 				sv_send_chaninfo(tmp, cl, e);
 				break ;
@@ -70,7 +70,8 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 	{
 		while (chan)
 		{
-			sv_send_chaninfo(chan, cl, e);
+			if (!(chan->cmode & CHFL_PRIV) && !(chan->cmode & CHFL_SECRET))
+				sv_send_chaninfo(chan, cl, e);
 			chan = chan->next;
 		}
 	}

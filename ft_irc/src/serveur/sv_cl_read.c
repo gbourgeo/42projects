@@ -6,18 +6,24 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 07:50:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 08:48:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_quit_msg(t_fd *cl, t_fd *us)
+static void		sv_leave_msg(t_chan *ch, t_fd *us)
 {
-	int			i;
+	send(us->fd, ":anonymous!~anonymous@anonymous LEAVE ", 1, 0);
+	send(us->fd, ch->name, CHANNAME_LEN, 0);
+	send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+}
 
-	i = 1;
+static void		sv_quit_msg(t_chan *ch, t_fd *cl, t_fd *us)
+{
+	if (ch->cmode & CHFL_ANON)
+		return (sv_leave_msg(ch, us));
 	send(us->fd, ":", 1, 0);
 	send(us->fd, cl->reg.nick, NICK_LEN, 0);
 	send(us->fd, "!~", 2, 0);
@@ -40,7 +46,7 @@ static void		sv_cl_quit(t_fd *cl)
 		while (us)
 		{
 			if (((t_fd *)us->is)->fd != cl->fd)
-				sv_quit_msg(cl, us->is);
+				sv_quit_msg(ch->is, cl, us->is);
 			us = us->next;
 		}
 		ch = ch->next;

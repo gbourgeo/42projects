@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:15:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 06:20:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 09:44:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@
 # define ER_68 { NULL, NULL, NULL },
 # define ER_69 { NULL, NULL, NULL },
 # define ER_70 { NULL, NULL, NULL },
-# define ER_71 { NULL, NULL, ":Cannot join channel (+1)" },
+# define ER_71 { NULL, NULL, ":Cannot join channel (+l)" },
 # define ER_72 { NULL, ":is unknown mode char to me for", NULL }
 # define ER_73 { NULL, NULL, ":Cannot join channel (+i)" },
 # define ER_74 { NULL, NULL, ":Cannot join channel (+b)" },

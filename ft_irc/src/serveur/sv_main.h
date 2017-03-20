@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 07:34:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 10:27:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,15 @@
 # define CHAN_LIMIT	120
 
 /*
-** CHAN_LEN			The maximum length a channels' name can be. Over this value,
+** CHANNAME_LEN		The maximum length a channels' name can be. Over this value,
 **					a channel name will be truncated.
 */
-# define CHAN_LEN	50
+# define CHANNAME_LEN	50
+
+/*
+** CHANKEY_LEN		THe maximum length a channel key can be.
+*/
+# define CHANKEY_LEN 23
 
 /*
 ** TOPIC_LEN		The maximum length of a topic. Over this value, the
@@ -124,12 +129,6 @@ typedef struct			s_listin
 	struct s_listin		*next;
 }						t_listin;
 
-typedef struct			s_grp
-{
-	t_listin			*list;
-	char				c;
-}						t_grp;
-
 typedef struct			s_reg
 {
 	int					registered;
@@ -168,10 +167,12 @@ typedef struct			s_fd
 typedef struct			s_chan
 {
 	struct s_chan		*prev;
-	char				name[CHAN_LEN + 1];
+	char				name[CHANNAME_LEN + 1];
 	char				topic[TOPIC_LEN + 1];
 	int					cmode;
-	size_t				nbusers;
+	int					nbusers;
+	int					limit;
+	char				key[CHANKEY_LEN];
 	t_listin			*users;
 	struct s_chan		*next;
 }						t_chan;
@@ -212,6 +213,16 @@ typedef struct			s_com
 	void				(*fct)(char **, t_env *, t_fd *);
 }						t_com;
 
+typedef struct			s_grp
+{
+	t_listin			*list;
+	char				*ptr;
+	char				c;
+	t_fd				*from;
+	t_chan				*on;
+	t_fd				*to;
+}						t_grp;
+
 struct s_env			e;
 
 t_file					*get_users_list(t_env *e);
@@ -222,6 +233,7 @@ t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
 void					sv_away(char **cmds, t_env *e, t_fd *cl);
 void					sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl);
+void					sv_chan_user_mode(t_grp *grp, char ***cmd);
 void					sv_check_clients(t_env *e);
 int						sv_check_name_valid(char *name);
 void					sv_cl_read(t_env *e, t_fd *cl);
@@ -239,12 +251,13 @@ void					sv_get_cl_password(t_fd *cl, t_env *e);
 void					sv_help(char **cmds, t_env *e, t_fd *cl);
 void					sv_init_server(t_env *e);
 void					sv_join(char **cmds, t_env *e, t_fd *cl);
-int						sv_join_channel(char *chan_name, t_fd *cl, t_env *e);
+void					sv_join_chan(char *name, char ***c, t_fd *cl, t_env *e);
 void					sv_leave(char **cmds, t_env *e, t_fd *cl);
 void					sv_list(char **cmds, t_env *e, t_fd *cl);
 int						sv_loop(t_env *e);
 void					sv_mode(char **cmds, t_env *e, t_fd *cl);
 void					sv_msg(char **cmds, t_env *e, t_fd *cl);
+void					sv_msg_chan(char *chan_name, char **cmds, t_fd *cl);
 void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_notice(int fd, char *str, t_env *e);
@@ -256,13 +269,13 @@ void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);
 char					**sv_split(t_buf *buf);
 char					*sv_strchr(const t_buf *b, int c);
+int						sv_tabcmp(char **t1, char **t2);
 void					sv_topic(char **cmds, t_env *e, t_fd *cl);
 void					sv_user(char **cmds, t_env *e, t_fd *cl);
 void					sv_user_mode(char **cmds, t_fd *us, t_fd *cl);
 void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
+void					sv_who_chan(char **cmds, t_fd *cl, t_env *e);
 void					update_users_file(t_env *e);
-void					usermode_off(char m, char ***cmd, t_chan *ch, t_fd *cl);
-void					usermode_on(char m, char ***cmd, t_chan *ch, t_fd *cl);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 06:21:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 10:48:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,28 +48,23 @@ static void		sv_leaveall_channels(t_fd *cl, t_env *e)
 static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 {
 	char		**chans;
-	char		*save;
 	int			i;
 
-	if ((chans = ft_strsplit(cmds[1], ',')) == NULL)
+	if ((chans = ft_strsplit(cmds[0], ',')) == NULL)
 		sv_error("ERROR: SERVER: out of memory", e);
 	i = 0;
-	if (!ft_strcmp("0", cmds[ft_tablen(cmds) - 1]) ||
-		(!ft_strcmp("0", chans[i]) && ++i))
+	if ((!ft_strcmp("0", chans[i]) && ++i) ||
+		!ft_strcmp("0", cmds[ft_tablen(cmds) - 1]))
 		sv_leaveall_channels(cl, e);
+	cmds++;
 	while (chans[i])
 	{
 		if (!ISCHAN(*chans[i]) || !chans[i][1])
 			sv_err(ERR_NOSUCHCHANNEL, chans[i], NULL, cl);
 		else if (ft_strchr(chans[i], 7))
 			sv_err(ERR_ILLEGALNAME, chans[i], NULL, cl);
-		else if (!inchannel(chans[i], cl) && sv_join_channel(chans[i], cl, e))
-		{
-			save = cmds[1];
-			cmds[1] = chans[i];
-			sv_who(cmds, e, cl);
-			cmds[1] = save;
-		}
+		else if (!inchannel(chans[i], cl))
+			sv_join_chan(chans[i], &cmds, cl, e);
 		i++;
 	}
 	ft_free(&chans);
@@ -79,5 +74,5 @@ void			sv_join(char **cmds, t_env *e, t_fd *cl)
 {
 	if (!cmds[1] || *cmds[1] == '\0')
 		return (sv_err(ERR_NEEDMOREPARAMS, "JOIN", NULL, cl));
-	sv_check_channels(cmds, e, cl);
+	sv_check_channels(cmds + 1, e, cl);
 }

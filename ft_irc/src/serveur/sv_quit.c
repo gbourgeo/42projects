@@ -6,18 +6,27 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 07:40:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 08:49:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_quit_msg(char **cmds, t_fd *cl, t_fd *us)
+static void		sv_leave_msg(t_chan *ch, t_fd *us)
+{
+	send(us->fd, ":anonymous!~anonymous@anonymous LEAVE ", 1, 0);
+	send(us->fd, ch->name, CHANNAME_LEN, 0);
+	send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
+static void		sv_quit_msg(char **cmds, t_chan *ch, t_fd *cl, t_fd *us)
 {
 	int			i;
 
 	i = 1;
+	if (ch && ch->cmode & CHFL_ANON)
+		return (sv_leave_msg(ch, us));
 	send(us->fd, ":", 1, 0);
 	send(us->fd, cl->reg.nick, NICK_LEN, 0);
 	send(us->fd, "!~", 2, 0);
@@ -49,12 +58,12 @@ void			sv_quit(char **cmds, t_env *e, t_fd *cl)
 		while (us)
 		{
 			if (((t_fd *)us->is)->fd != cl->fd)
-				sv_quit_msg(cmds, cl, us->is);
+				sv_quit_msg(cmds, ch->is, cl, us->is);
 			us = us->next;
 		}
 		ch = ch->next;
 	}
-	sv_quit_msg(NULL, cl, cl);
+	sv_quit_msg(NULL, NULL, cl, cl);
 	if (*cl->reg.username && cl->reg.password && *cl->reg.nick)
 	{
 		add_in_userslist(e->users, cl);

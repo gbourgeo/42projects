@@ -10,15 +10,24 @@ votre client et votre serveur. Ils doivent communiquer correctement ensemble.
 La communication entre le client et le serveur se fera en TCP/IP (v4).
 
 Vous devrez implémenter les fonctionnalités suivantes :
-• /nick <nickname>: Implémenter la notion de nickname (un surnom, le login par
+• nick <nickname>: Implémenter la notion de nickname (un surnom, le login par
 défaut, maximum 9 charactères, comme dans la RFC).
-• /join <#chan>, /leave [#channel], etc... : Implémenter la notion de channel
-• /who : Qui est loggué sur le channel ?
-• /msg <nick> <message>: Envoi de messages à un utilisateur particulier sur le
-serveur.
-• /connect <machine> [port]: Connexion au serveur depuis le client.
+• join <#chan>, leave [#channel], etc... : Implémenter la notion de channel
+• who <user|channel> : Qui est loggué ? sur le channel ?
+• msg <nick|channel> <message>: Envoi de messages à un utilisateur particulier sur le
+serveur ou à un channel.
+• connect <machine> [port]: Connexion au serveur depuis le client.
 • Passage du code en mode non-bloquant.
-• Gestion d’un prompt dans le client.
 • Respect de la RFC 2813.
 • Support de l’IPv6.
 
+Bonus:
+• away <msg> :Envoi automatique de réponse a des messages privés.
+• help [command] : Fourni une aide sur les commandes disponibles et une aide spécifique à
+  chaque commande.
+• mode <user> <[+|-][aiwroO]> : Permet de définir différents mode pour
+  un utilisateur (invisible, recoit les wallops, etc).
+• mode <channel> <[+|-][Oovamnqpstkl]> [params]
+• pass <motdepasse>
+• user <username> <mode> <unused> <real name>
+• topic <channel> [topic message]

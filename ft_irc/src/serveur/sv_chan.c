@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 04:16:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 07:20:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,11 @@ t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 	chan->nbusers++;
 	if ((new = malloc(sizeof(*new))) == NULL)
 		sv_error("ERROR: SERVER: out of memory", &e);
-	send_joinmsg_toothers(chan, cl);
+	if (!(chan->cmode & CHFL_QUIET))
+		send_joinmsg_toothers(chan, cl);
 	new->prev = NULL;
 	new->is = cl;
+	new->mode = 0;
 	new->next = chan->users;
 	if (chan->users)
 		chan->users->prev = new;
@@ -58,6 +60,7 @@ t_listin		*sv_add_chantouser(t_chan *chan, t_fd *cl)
 		sv_error("ERROR: SERVER: out of memory", &e);
 	new->prev = NULL;
 	new->is = chan;
+	new->mode = 0;
 	new->next = cl->chans;
 	if (cl->chans)
 		cl->chans->prev = new;

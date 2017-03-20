@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:37:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/17 05:16:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/20 08:48:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,20 @@ static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
 	while (list)
 	{
 		us = (t_fd *)list->is;
-		send(us->fd, ":", 1, 0);
-		send(us->fd, cl->reg.nick, NICK_LEN, 0);
-		send(us->fd, "!~", 2, 0);
-		send(us->fd, cl->reg.username, USERNAME_LEN, 0);
-		send(us->fd, "@", 1, 0);
-		send(us->fd, cl->addr, ADDR_LEN, 0);
-		send(us->fd, " LEAVE ", 7, 0);
-		send(us->fd, chan->name, CHAN_LEN, 0);
-		if (cmd[2])
-			sv_send_more(cmd, us);
-		send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+		if (!(chan->cmode & CHFL_QUIET) || us->fd == cl->fd)
+		{
+			send(us->fd, ":", 1, 0);
+			send(us->fd, cl->reg.nick, NICK_LEN, 0);
+			send(us->fd, "!~", 2, 0);
+			send(us->fd, cl->reg.username, USERNAME_LEN, 0);
+			send(us->fd, "@", 1, 0);
+			send(us->fd, cl->addr, ADDR_LEN, 0);
+			send(us->fd, " LEAVE ", 7, 0);
+			send(us->fd, chan->name, CHANNAME_LEN, 0);
+			if (cmd[2])
+				sv_send_more(cmd, us);
+			send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+		}
 		list = list->next;
 	}
 }
