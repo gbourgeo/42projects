@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:48:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 10:54:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:41:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static int		sv_channel_ident(char *name, t_chan *new, t_fd *cl, t_env *e)
 
 /*
 ** Afficher les nouveaux mode du chan si on implemente la commande MODE
+** new->cmode |= (*new->name == '+') ? CHFL_TOPIC : CHFL_NOMSG | CHFL_SECRET;
 */
 
 static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
@@ -58,7 +59,6 @@ static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
 		return (e->chans);
 	if (!*new->name)
 		ft_bzero(new->topic, TOPIC_LEN + 1);
-//	new->cmode |= (*new->name == '+') ? CHFL_TOPIC : CHFL_NOMSG | CHFL_SECRET;
 	new->users = sv_add_usertochan(cl, new);
 	if (*new->name == '!')
 		new->users->mode |= CHFL_CREATOR;
@@ -82,13 +82,7 @@ static int		sv_check_safe_chan(char *name, t_fd *cl, t_env *e)
 		if (*ch->name == '!' &&
 			sv_strncmp(ch->name, name, len - 5) == ch->name[len - 5])
 		{
-			send(cl->fd, e->name, SERVER_LEN, 0);
-			send(cl->fd, " ERROR ", 7, 0);
-			send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-			send(cl->fd, " ", 1, 0);
-			send(cl->fd, name, ft_strlen(name), 0);
-			send(cl->fd, " :Short name for safe channel already in use", 44, 0);
-			send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+			sv_err(ERR_TOOMANYTARGETS, name, NULL, cl);
 			return (0);
 		}
 		ch = ch->next;
@@ -98,13 +92,15 @@ static int		sv_check_safe_chan(char *name, t_fd *cl, t_env *e)
 
 static void		sv_check_chan_modes(char *n, t_chan *ch, char ***cmd, t_fd *cl)
 {
-	if (ch->cmode & CHFL_KEY && ft_strcmp((**cmd) ? *((*cmd)++) : **cmd, ch->key))
+	if (ch->cmode & CHFL_KEY &&
+		ft_strcmp((**cmd) ? *((*cmd)++) : **cmd, ch->key))
 		return (sv_err(ERR_BADCHANNELKEY, ch->name, NULL, cl));
 	if (ch->cmode & CHFL_LIMIT && ch->nbusers >= ch->limit)
 		return (sv_err(ERR_CHANNELISFULL, ch->name, NULL, cl));
 	ch->users = sv_add_usertochan(cl, ch);
 	cl->chans = sv_add_chantouser(ch, cl);
-	sv_who_chan(&n, cl, &e);
+	send_joinmsg_toothers(ch, cl);
+	sv_who(&n, &e, cl);
 }
 
 void			sv_join_chan(char *name, char ***c, t_fd *cl, t_env *e)
@@ -124,9 +120,11 @@ void			sv_join_chan(char *name, char ***c, t_fd *cl, t_env *e)
 		return ;
 	if ((cl->chans = sv_add_chantouser(e->chans, cl)) == NULL)
 		return ;
+	cl->chansnb++;
 	if (*name == '!')
 		cl->chans->mode |= CHFL_CREATOR;
-	else if (*name != '+')
+	if (*name != '+')
 		cl->chans->mode |= CHFL_CHANOP;
-	sv_who_chan(&name, cl, e);
+	send_joinmsg_toothers(e->chans, cl);
+	sv_who(&name, e, cl);
 }

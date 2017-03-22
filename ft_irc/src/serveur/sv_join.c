@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 10:48:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 19:56:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 	char		**chans;
 	int			i;
 
-	if ((chans = ft_strsplit(cmds[0], ',')) == NULL)
+	if ((chans = ft_strsplit(*cmds, ',')) == NULL)
 		sv_error("ERROR: SERVER: out of memory", e);
 	i = 0;
 	if ((!ft_strcmp("0", chans[i]) && ++i) ||
@@ -63,6 +63,8 @@ static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 			sv_err(ERR_NOSUCHCHANNEL, chans[i], NULL, cl);
 		else if (ft_strchr(chans[i], 7))
 			sv_err(ERR_ILLEGALNAME, chans[i], NULL, cl);
+		else if (cl->chansnb >= CHAN_LIMIT)
+			sv_err(ERR_TOOMANYCHANNELS, chans[i], NULL, cl);
 		else if (!inchannel(chans[i], cl))
 			sv_join_chan(chans[i], &cmds, cl, e);
 		i++;
@@ -72,7 +74,7 @@ static void		sv_check_channels(char **cmds, t_env *e, t_fd *cl)
 
 void			sv_join(char **cmds, t_env *e, t_fd *cl)
 {
-	if (!cmds[1] || *cmds[1] == '\0')
+	if (!cmds[0] || *cmds[0] == '\0')
 		return (sv_err(ERR_NEEDMOREPARAMS, "JOIN", NULL, cl));
-	sv_check_channels(cmds + 1, e, cl);
+	sv_check_channels(cmds, e, cl);
 }

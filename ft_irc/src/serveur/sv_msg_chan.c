@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 06:34:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:05:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 static void		sv_sendtoclients(t_fd *to, char **cmds, t_chan *chan, t_fd *cl)
 {
-	int			i;
-
-	i = 2;
 	if (chan->cmode & CHFL_ANON)
 		send(to->fd, ":anonymous!~anonymous@anonymous", 31, 0);
 	else
@@ -31,12 +28,13 @@ static void		sv_sendtoclients(t_fd *to, char **cmds, t_chan *chan, t_fd *cl)
 	send(to->fd, " MSG ", 5, 0);
 	send(to->fd, to->reg.nick, NICK_LEN, 0);
 	send(to->fd, " :", 2, 0);
-	while (cmds[i])
+	send(to->fd, *cmds, ft_strlen(*cmds), 0);
+	cmds++;
+	while (*cmds)
 	{
-		if (i > 2)
-			send(to->fd, " ", 1, 0);
-		send(to->fd, cmds[i], ft_strlen(cmds[i]), 0);
-		i++;
+		send(to->fd, " ", 1, 0);
+		send(to->fd, *cmds, ft_strlen(*cmds), 0);
+		cmds++;
 	}
 	send(to->fd, END_CHECK, END_CHECK_LEN, 0);
 }
@@ -55,7 +53,6 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 		us = us->next;
 	}
 }
-
 
 static int		user_got_mod(t_chan *ch, t_fd *cl)
 {

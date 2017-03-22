@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 04:41:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 19:55:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void			sv_help(char **cmds, t_env *e, t_fd *cl)
 	int			nb;
 
 	nb = 0;
-	if (!cmds[1] || !*cmds[1])
+	if (!cmds[0] || !*cmds[0])
 	{
 		e->ptr = "index";
 		sv_help_msg("704", "Help commands available to users:", e, cl);
@@ -83,7 +83,7 @@ void			sv_help(char **cmds, t_env *e, t_fd *cl)
 		sv_help_msg("705", "specific command.", e, cl);
 	}
 	else
-		sv_specific_help(name, cmds + 1, cl, e);
+		sv_specific_help(name, cmds, cl, e);
 	sv_help_msg("706", "End of /HELP", e, cl);
 	e->ptr = NULL;
 }

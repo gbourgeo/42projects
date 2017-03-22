@@ -6,52 +6,53 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 03:52:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 16:42:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static int			error_loggin_in(char *err, t_fd *cl)
+static void			error_loggin_in(t_file *us, t_fd *cl, t_env *e)
 {
-	cl->reg.registered = 0;
-	send(cl->fd, err, ft_strlen(err), 0);
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " NOTICE ", 8, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+	send(cl->fd, " :This nickname is registered.", 30, 0);
+	send(cl->fd, " Please choose a different nickname.", 36, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-	ft_strclr(cl->reg.username);
-	free(cl->reg.password);
-	cl->reg.password = NULL;
-	cl->reg.umode = 0;
-	ft_strclr(cl->reg.nick);
-	ft_free(&cl->reg.realname);
-	return (0);
+	if (cl->reg.password)
+	{
+		send(cl->fd, e->name, SERVER_LEN, 0);
+		send(cl->fd, " NOTICE ", 8, 0);
+		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+		send(cl->fd, " :Invalid password for ", 23, 0);
+		send(cl->fd, us->nick, NICK_LEN, 0);
+		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	}
 }
 
-static int			check_username(t_fd *cl, t_env *e)
+static void			check_registered(t_fd *cl, t_env *e)
 {
 	t_file			*us;
 
 	us = e->users;
 	while (us)
 	{
-		if (!ft_strcmp(us->username, cl->reg.username))
+		if (!ft_strcmp(us->nick, cl->reg.nick))
 		{
-			if (!ft_strcmp(us->password, cl->reg.password))
+			if (cl->reg.password && !ft_strcmp(us->password, cl->reg.password))
 			{
-				cl->reg.registered = 1;
 				cl->reg.umode = us->mode;
 				ft_strncpy(cl->reg.nick, us->nick, NICK_LEN);
+				ft_strncpy(cl->reg.username, us->username, NICK_LEN);
 				ft_free(&cl->reg.realname);
 				cl->reg.realname = us->realname;
-				sv_welcome(e, cl);
-				return (0);
+				return ;
 			}
-			return (error_loggin_in("ERROR: failed to loggin.", cl));
+			return (error_loggin_in(us, cl, e));
 		}
-		else if (!ft_strcmp(us->nick, cl->reg.nick))
-			return (error_loggin_in("ERROR: Nick collision.", cl));
 		us = us->next;
 	}
-	return (1);
 }
 
 static void			wrong_username(t_fd *cl, t_env *e)
@@ -80,15 +81,13 @@ void				sv_check_clients(t_env *e)
 			cl = sv_clear_client(e, cl);
 		else if (cl->reg.registered <= 0 && *cl->reg.nick && *cl->reg.username)
 		{
-			if (sv_check_name_valid(cl->reg.username))
-				return (wrong_username(cl, e));
-			if (cl->reg.password)
-			{
-				if (check_username(cl, e))
-					return (sv_welcome(e, cl));
-			}
+			if (!ft_strisalnum(cl->reg.username))
+				wrong_username(cl, e);
 			else
-				return (sv_welcome(e, cl));
+			{
+				sv_welcome(e, cl);
+				check_registered(cl, e);
+			}
 		}
 		else
 			cl = cl->next;

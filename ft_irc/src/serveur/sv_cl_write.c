@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 05:18:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 19:54:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,6 @@ static void			sv_aff_wr(t_fd *cl)
 	write(1, "\n", 1);
 }
 
-static void			sv_nocommand(char **cmds, t_env *e, t_fd *cl)
-{
-	(void)e;
-	sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
-}
-
 static void			sv_cmd_client(t_env *e, t_fd *cl)
 {
 	static t_com	com[] = { SV_COMMANDS1, SV_COMMANDS2 };
@@ -43,15 +37,18 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 		nb++;
 	if (cl->reg.registered <= 0 && LOCK_SERVER)
 		sv_get_cl_password(cl, e);
-	else if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
-		com[nb].fct(cmds, e, cl);
-	else if (cl->reg.registered == 0)
+	else if (com[nb].name)
 	{
-		send(cl->fd, e->name, SERVER_LEN, 0);
-		send(cl->fd, " 451 * :You have not registered", 31, 0);
-		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-		cl->reg.registered = -1;
+		if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
+			com[nb].fct(cmds + 1, e, cl);
+		else if (cl->reg.registered == 0)
+		{
+			sv_err(ERR_NOTREGISTERED, NULL, NULL, cl);
+			cl->reg.registered = -1;
+		}
 	}
+	else if (cl->reg.registered > 0)
+		sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 	ft_free(&cmds);
 }
 

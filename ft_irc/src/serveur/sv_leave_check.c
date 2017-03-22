@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_pass.c                                          :+:      :+:    :+:   */
+/*   sv_leave_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/16 10:02:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:20:38 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/22 17:44:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void			sv_pass(char **cmds, t_env *e, t_fd *cl)
+t_chan			*check_safe_channel(char *name, t_fd *cl, t_env *e)
 {
-	(void)e;
-	if (!cmds[0] || !*cmds[0])
-		return (sv_err(ERR_NEEDMOREPARAMS, "PASS", NULL, cl));
-	if (cl->reg.registered > 0)
-		return (sv_err(ERR_ALREADYREGISTERED, NULL, NULL, cl));
-	if (cl->reg.password)
-		free(cl->reg.password);
-	cl->reg.password = ft_strdup(cmds[0]);
+	chan = e->chans;
+	while (chan && sv_strcmp(list[i], chan->name))
+		chan = chan->next;
+}
+
+t_chan			*check_normal_channel(char *name, t_fd *cl, t_env *e)
+{
+	chan = e->chans;
+	while (chan && sv_strcmp(list[i], chan->name))
+		chan = chan->next;
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 05:06:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 06:34:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 16:44:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,17 @@
 **        <available channel modes>"
 */
 
-static void			pre_requisit(int fd, char *name, char *num, char *nick)
+static void			rpl_1_2_3(t_env *e, t_fd *cl)
 {
-	send(fd, name, SERVER_LEN, 0);
-	send(fd, num, 5, 0);
-	send(fd, nick, NICK_LEN, 0);
-}
-
-void				sv_welcome(t_env *e, t_fd *cl)
-{
-	pre_requisit(cl->fd, e->name, " 001 ", cl->reg.nick);
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " 001 ", 5, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " :Welcome to the GBOURGEO Internet Relay Chat ", 46, 0);
 	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-	pre_requisit(cl->fd, e->name, " 002 ", cl->reg.nick);
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " 002 ", 5, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " :Your host is ", 15, 0);
 	send(cl->fd, e->name + 1, SERVER_LEN - 1, 0);
 	send(cl->fd, "[", 1, 0);
@@ -47,16 +44,32 @@ void				sv_welcome(t_env *e, t_fd *cl)
 	send(cl->fd, e->port, ft_strlen(e->port), 0);
 	send(cl->fd, "], running version 1.0", 22, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-	pre_requisit(cl->fd, e->name, " 003 ", cl->reg.nick);
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " 003 ", 5, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " :This server was created ", 26, 0);
 	send(cl->fd, e->creation, ft_strlen(e->creation) - 1, 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
-	pre_requisit(cl->fd, e->name, " 004 ", cl->reg.nick);
+}
+
+static void			rpl_4(t_env *e, t_fd *cl)
+{
+	send(cl->fd, e->name, SERVER_LEN, 0);
+	send(cl->fd, " 004 ", 5, 0);
+	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
 	send(cl->fd, " ", 1, 0);
 	send(cl->fd, e->name + 1, SERVER_LEN - 1, 0);
+	send(cl->fd, " 1.0 ", 5, 0);
+	send(cl->fd, USER_MODES, ft_strlen(USER_MODES), 0);
 	send(cl->fd, " ", 1, 0);
-	send(cl->fd, "1.0", 3, 0);
+	send(cl->fd, CHAN_MODES, ft_strlen(CHAN_MODES), 0);
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+}
+
+void				sv_welcome(t_env *e, t_fd *cl)
+{
+	rpl_1_2_3(e, cl);
+	rpl_4(e, cl);
 	cl->reg.registered = 1;
 	e->members++;
 }

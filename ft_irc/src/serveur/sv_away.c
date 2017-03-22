@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 16:16:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 23:26:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 19:54:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void			sv_away(char **cmds, t_env *e, t_fd *cl)
 		free(cl->away);
 		cl->away = NULL;
 	}
-	if (!cmds[1] || !*cmds[1])
+	if (!cmds[0] || !*cmds[0])
 		sv_away_msg("305", ":You are no longer marked as being away", cl, e);
 	else
 	{

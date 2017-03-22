@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:15:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 09:44:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 13:23:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@
 # define ER_13 { NULL, NULL, ":No toplevel domain specified" },
 # define ER_14 { NULL, NULL, ":Wildcard in toplevel domain" },
 # define ER_15 { NULL, NULL, ":Bad Server/host mask" },
-# define ER_16 { NULL, NULL, NULL }, 
+# define ER_16 { NULL, NULL, NULL },
 # define ER_17 { NULL, NULL, NULL },
 # define ER_18 { NULL, NULL, NULL },
 # define ER_19 { NULL, NULL, NULL },

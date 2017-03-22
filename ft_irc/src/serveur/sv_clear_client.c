@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 03:52:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 13:24:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ static void		sv_free_client(t_fd *cl, t_env *e)
 		cl->next->prev = cl->prev;
 	sv_free_client_onchans(cl, NULL);
 }
-
-//ERROR :Closing Link: 78.252.122.166 (Invalid username [~&toto])
 
 static void		sv_send_reason(t_fd *cl)
 {

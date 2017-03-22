@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/14 11:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 20:56:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 16:04:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ typedef struct			s_buf
 void					ft_free(char ***cmds);
 char					*ft_strtoupper(char *str);
 char					*ft_strtolower(char *str);
+int						ft_strisalnum(char *str);
 int						sv_strcmp(const char *s1, const char *s2);
 int						sv_strncmp(const char *s1, const char *s2, size_t n);
 

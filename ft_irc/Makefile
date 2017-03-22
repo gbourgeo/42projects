@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/20 04:59:41 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/22 15:08:49 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -62,13 +62,15 @@ SV_SRC	= get_users_list.c	\
 		sv_user.c 			\
 		sv_user_mode.c		\
 		sv_welcome.c 		\
-		sv_who.c
+		sv_who.c			\
+		sv_who_info.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 
 COM_DIR	= src/common/
 
-COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c sv_strcmp.c sv_strncmp.c
+COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c sv_strcmp.c sv_strncmp.c \
+		ft_strisalnum.c
 
 COM_OBJ	= $(COM_SRC:.c=.o)
 

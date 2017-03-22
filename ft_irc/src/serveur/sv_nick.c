@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 07:10:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:19:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,24 +37,24 @@ int				sv_check_name_valid(char *name)
 	return (2);
 }
 
-static int		is_registered_nick(char *nick, t_fd *cl, t_env *e)
+static int		is_connected_nick(char *nick, t_fd *cl, t_env *e)
 {
-	t_file		*f;
+	t_file		*us;
 	t_fd		*fds;
 
-	f = e->users;
-	while (f)
-	{
-		if (!sv_strncmp(f->nick, nick, NICK_LEN))
-			return (1);
-		f = f->next;
-	}
 	fds = e->fds;
 	while (fds)
 	{
 		if (fds->fd != cl->fd && !sv_strncmp(nick, fds->reg.nick, NICK_LEN))
 			return (1);
 		fds = fds->next;
+	}
+	us = e->users;
+	while (cl->reg.registered > 0 && us)
+	{
+		if (!sv_strncmp(nick, us->nick, NICK_LEN))
+			return (1);
+		us = us->next;
 	}
 	return (0);
 }
@@ -98,22 +98,22 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 {
 	int			err;
 
-	err = sv_check_name_valid(cmds[1]);
+	err = sv_check_name_valid(*cmds);
 	if (err == 1)
 		return (sv_err(ERR_NONICKNAMEGIVEN, "NICK", NULL, cl));
 	if (err == 2)
-		return (sv_err(ERR_ERRONEUSNICKNAME, cmds[1], NULL, cl));
-	if (is_registered_nick(cmds[1], cl, e))
-		return (sv_err(ERR_NICKNAMEINUSE, cmds[1], NULL, cl));
+		return (sv_err(ERR_ERRONEUSNICKNAME, *cmds, NULL, cl));
+	if (is_connected_nick(*cmds, cl, e))
+		return (sv_err(ERR_NICKNAMEINUSE, *cmds, NULL, cl));
 	if (cl->reg.umode & USR_RESTRICT)
 		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl));
 	if (cl->reg.registered <= 0)
-		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
-	else if (sv_strcmp(cl->reg.nick, cmds[1]))
+		ft_strncpy(cl->reg.nick, *cmds, NICK_LEN);
+	else if (sv_strcmp(cl->reg.nick, *cmds))
 	{
-		err = ft_strlen(cmds[1]);
-		send_to(cmds[1], err, cl, cl);
-		send_newnick(cmds[1], err, cl);
-		ft_strncpy(cl->reg.nick, cmds[1], NICK_LEN);
+		err = ft_strlen(*cmds);
+		send_to(*cmds, err, cl, cl);
+		send_newnick(*cmds, err, cl);
+		ft_strncpy(cl->reg.nick, *cmds, NICK_LEN);
 	}
 }

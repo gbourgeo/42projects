@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 10:27:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 19:34:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,7 @@ typedef struct			s_fd
 	char				flood;
 	char				*away;
 	t_listin			*chans;
+	int					chansnb;
 	void				(*fct_read)();
 	void				(*fct_write)();
 	t_buf				rd;
@@ -228,6 +229,7 @@ struct s_env			e;
 t_file					*get_users_list(t_env *e);
 t_file					*add_in_users(t_file *users, t_fd *cl);
 void					add_in_userslist(t_file *users, t_fd *cl);
+void					send_joinmsg_toothers(t_chan *chan, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
@@ -276,6 +278,7 @@ void					sv_user_mode(char **cmds, t_fd *us, t_fd *cl);
 void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
 void					sv_who_chan(char **cmds, t_fd *cl, t_env *e);
+void					sv_who_info(t_fd *us, t_listin *in, t_fd *cl, t_env *e);
 void					update_users_file(t_env *e);
 
 #endif

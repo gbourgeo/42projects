@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:24:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 04:29:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 19:53:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # define USER		{ "USER", sv_user }
 # define TOPIC		{ "TOPIC", sv_topic }
 # define WHO		{ "WHO", sv_who }
-# define END		{ NULL, sv_nocommand }
+# define END		{ NULL, NULL }
 
 # define COMMANDS1 "AWAY", "CONNECT", "HELP", "JOIN", "LEAVE", "LIST", "MSG"
 # define COMMANDS2 "MODE", "NICK", "PASS", "QUIT", "USER", "TOPIC", "WHO", NULL

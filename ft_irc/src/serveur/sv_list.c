@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 08:49:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:00:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void		sv_list_specific_chan(char **cmds, t_fd *cl, t_env *e)
 	t_chan		*tmp;
 	int			i;
 
-	if ((chans = ft_strsplit(cmds[1], ',')) == NULL)
+	if ((chans = ft_strsplit(*cmds, ',')) == NULL)
 		sv_error("ERROR: SERVER: out of memory", e);
 	i = 0;
 	while (chans[i])
@@ -64,7 +64,7 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 	t_chan		*chan;
 
 	chan = e->chans;
-	if (cmds[1])
+	if (cmds[0])
 		sv_list_specific_chan(cmds, cl, e);
 	else
 	{

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 04:40:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 03:20:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:25:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,10 @@ void				sv_user(char **cmds, t_env *e, t_fd *cl)
 {
 	if (cl->reg.registered > 0)
 		return (already_registered(cl, e));
-	if (ft_tablen(cmds) < 5)
+	if (ft_tablen(cmds) < 4)
 		return (missing_parameters(cl, e));
-	ft_strncpy(cl->reg.username, cmds[1], USERNAME_LEN);
-	cl->reg.umode = ft_atoi(cmds[2]);
+	ft_strncpy(cl->reg.username, *cmds, USERNAME_LEN);
 	if (cl->reg.realname)
 		ft_free(&cl->reg.realname);
-	cl->reg.realname = ft_tabdup(&cmds[4]);
+	cl->reg.realname = ft_tabdup(&cmds[3]);
 }

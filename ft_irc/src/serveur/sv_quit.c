@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 08:49:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:22:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void		sv_quit_msg(char **cmds, t_chan *ch, t_fd *cl, t_fd *us)
 {
 	int			i;
 
-	i = 1;
+	i = 0;
 	if (ch && ch->cmode & CHFL_ANON)
 		return (sv_leave_msg(ch, us));
 	send(us->fd, ":", 1, 0);
@@ -34,11 +34,11 @@ static void		sv_quit_msg(char **cmds, t_chan *ch, t_fd *cl, t_fd *us)
 	send(us->fd, "@", 1, 0);
 	send(us->fd, cl->addr, ADDR_LEN, 0);
 	send(us->fd, " QUIT :", 7, 0);
-	if (cmds == NULL || !cmds[1])
+	if (cmds == NULL || !*cmds)
 		send(us->fd, "Client Quit", 11, 0);
 	while (cmds && cmds[i])
 	{
-		if (i > 1)
+		if (i > 0)
 			send(us->fd, " ", 1, 0);
 		send(us->fd, cmds[i], ft_strlen(cmds[i]), 0);
 		i++;
