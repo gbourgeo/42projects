@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:35:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:52:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void			sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 {
 	t_chan		*chan;
 	t_listin	*list;
+	t_fd		*fd;
 
 	chan = e->chans;
 	while (chan)
@@ -60,11 +61,12 @@ void			sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 			list = chan->users;
 			while (list)
 			{
-				if (chan->cmode & CHFL_ANON && ((t_fd *)list->is)->fd != cl->fd)
+				fd = (t_fd *)list->is;
+				if (chan->cmode & CHFL_ANON && fd->fd != cl->fd)
 					continue ;
 				if (!cmds[1] || ft_strcmp(cmds[2], "o") ||
 					list->mode & CHFL_CHANOP)
-					return (sv_who_info(list->is, ((t_fd *)list->is)->chans, cl, e));
+					return (sv_who_info(list->is, fd->chans, cl, e));
 				list = list->next;
 			}
 		}
@@ -87,7 +89,7 @@ static void		sv_who_user(char **cmds, t_fd *cl, t_env *e)
 		}
 		else if (!sv_strncmp(user->addr, cmds[0], ADDR_LEN) ||
 				!sv_tabcmp(user->reg.realname, &cmds[0]) ||
-				 !sv_strncmp(user->reg.nick, cmds[0], NICK_LEN))
+				!sv_strncmp(user->reg.nick, cmds[0], NICK_LEN))
 			return (sv_who_info(user, user->chans, cl, e));
 		user = user->next;
 	}

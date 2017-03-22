@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 19:34:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/22 20:48:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,6 +249,7 @@ void					sv_error(char *str, t_env *e);
 /*
 ** int						sv_flood_protect(t_env *e, int id);
 */
+void					sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl);
 void					sv_get_cl_password(t_fd *cl, t_env *e);
 void					sv_help(char **cmds, t_env *e, t_fd *cl);
 void					sv_init_server(t_env *e);

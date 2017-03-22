@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/22 15:08:49 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/22 20:48:47 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -42,6 +42,7 @@ SV_SRC	= get_users_list.c	\
 		sv_join.c 			\
 		sv_join_channel.c	\
 		sv_leave.c 			\
+		sv_leave_check.c 	\
 		sv_list.c 			\
 		sv_loop.c 			\
 		sv_main.c 			\
