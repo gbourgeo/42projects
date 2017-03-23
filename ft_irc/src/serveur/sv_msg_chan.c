@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:05:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 12:40:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,28 +72,6 @@ static int		user_got_mod(t_chan *ch, t_fd *cl)
 	return (0);
 }
 
-static int		user_in_channel(t_chan *ch, t_fd *cl)
-{
-	t_listin	*list;
-
-	list = ch->users;
-	while (list)
-	{
-		if (((t_fd *)list->is)->fd == cl->fd)
-			return (1);
-		list = list->next;
-	}
-	return (0);
-}
-
-/*
-** Dans sv_search_chan(...) { while(chan)... }
-** Checker si l'user n'est pas sur le channel et que le chan a le mode +n.
-** Checker si l'user est sur le chan mais que le chan n'est pas en mode +m et
-** qu'il n'est pas chan op.
-** Checker si l'user n'est pas ban du chan.
-*/
-
 void			sv_msg_chan(char *chan_name, char **cmds, t_fd *cl)
 {
 	t_listin	*chans;
@@ -106,7 +84,7 @@ void			sv_msg_chan(char *chan_name, char **cmds, t_fd *cl)
 		if (!sv_strcmp(chan_name, ch->name))
 		{
 			if ((ch->cmode & CHFL_MOD && !user_got_mod(ch, cl)) ||
-				(ch->cmode & CHFL_NOMSG && !user_in_channel(ch, cl)))
+				(ch->cmode & CHFL_NOMSG && !is_chan_member(ch, cl)))
 				break ;
 			return (sv_sendtochan(cmds, chans->is, cl));
 		}

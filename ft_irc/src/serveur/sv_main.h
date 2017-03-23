@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:48:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 12:19:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@
 ** CHANNAME_LEN		The maximum length a channels' name can be. Over this value,
 **					a channel name will be truncated.
 */
-# define CHANNAME_LEN	50
+# define CHANNAME_LEN 50
 
 /*
 ** CHANKEY_LEN		THe maximum length a channel key can be.
@@ -229,6 +229,7 @@ struct s_env			e;
 t_file					*get_users_list(t_env *e);
 t_file					*add_in_users(t_file *users, t_fd *cl);
 void					add_in_userslist(t_file *users, t_fd *cl);
+int						is_chan_member(t_chan *ch, t_fd *cl);
 void					send_joinmsg_toothers(t_chan *chan, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);

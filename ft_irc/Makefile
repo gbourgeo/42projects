@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/22 20:48:47 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/23 12:08:19 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -24,6 +24,7 @@ SERVEUR	= serveur
 SV_DIR	= src/serveur/
 
 SV_SRC	= get_users_list.c	\
+		is_chan_member.c	\
 		sv_accept.c 		\
 		sv_away.c 			\
 		sv_chan.c 			\
