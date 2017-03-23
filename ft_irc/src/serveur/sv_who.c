@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:52:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 19:30:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,19 +56,19 @@ void			sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 	{
 		if (!sv_strcmp(chan->name, cmds[0]))
 		{
-			if (chan->cmode & CHFL_SECRET)
-				return ;
 			list = chan->users;
-			while (list)
+			while (list && !(chan->cmode & CHFL_SECRET))
 			{
 				fd = (t_fd *)list->is;
 				if (chan->cmode & CHFL_ANON && fd->fd != cl->fd)
 					continue ;
-				if (!cmds[1] || ft_strcmp(cmds[2], "o") ||
-					list->mode & CHFL_CHANOP)
-					return (sv_who_info(list->is, fd->chans, cl, e));
+				if ((!cmds[1] &&
+					(!(fd->reg.umode & USR_INVISIBL) || is_modo(chan, cl))) ||
+					ft_strcmp(cmds[1], "o") || list->mode & CHFL_CHANOP)
+					sv_who_info(fd, cl, e);
 				list = list->next;
 			}
+			return ;
 		}
 		chan = chan->next;
 	}
@@ -85,12 +85,12 @@ static void		sv_who_user(char **cmds, t_fd *cl, t_env *e)
 		{
 			if (user->fd != cl->fd && !(user->reg.umode & USR_INVISIBL) &&
 				!have_common_channel(user, cl))
-				sv_who_info(user, user->chans, cl, e);
+				sv_who_info(user, cl, e);
 		}
 		else if (!sv_strncmp(user->addr, cmds[0], ADDR_LEN) ||
 				!sv_tabcmp(user->reg.realname, &cmds[0]) ||
 				!sv_strncmp(user->reg.nick, cmds[0], NICK_LEN))
-			return (sv_who_info(user, user->chans, cl, e));
+			return (sv_who_info(user, cl, e));
 		user = user->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 19:42:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 18:40:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 	new->is = cl;
 	new->mode = 0;
 	new->next = chan->users;
-	if (chan->users)
-		chan->users->prev = new;
+	if (new->next)
+		new->next->prev = new;
 	return (new);
 }
 
@@ -63,7 +63,7 @@ t_listin		*sv_add_chantouser(t_chan *chan, t_fd *cl)
 	new->is = chan;
 	new->mode = 0;
 	new->next = cl->chans;
-	if (cl->chans)
-		cl->chans->prev = new;
+	if (new->next)
+		new->next->prev = new;
 	return (new);
 }

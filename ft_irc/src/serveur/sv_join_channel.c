@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:48:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 11:40:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 18:39:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
 		return (e->chans);
 	if (!*new->name)
 		ft_bzero(new->topic, TOPIC_LEN + 1);
+	new->cmode = 0;
 	new->users = sv_add_usertochan(cl, new);
 	if (*new->name == '!')
 		new->users->mode |= CHFL_CREATOR;
@@ -125,6 +126,6 @@ void			sv_join_chan(char *name, char ***c, t_fd *cl, t_env *e)
 		cl->chans->mode |= CHFL_CREATOR;
 	if (*name != '+')
 		cl->chans->mode |= CHFL_CHANOP;
-	send_joinmsg_toothers(e->chans, cl);
+	send_joinmsg_toothers(cl->chans->is, cl);
 	sv_who(&name, e, cl);
 }

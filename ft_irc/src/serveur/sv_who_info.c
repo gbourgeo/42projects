@@ -6,21 +6,23 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 13:30:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 13:38:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 18:15:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		sv_info_next(t_fd *user, t_listin *info, t_fd *cl)
+static void		sv_info_next(t_fd *user, t_fd *cl)
 {
+	t_listin	*li;
 	char		**tmp;
 
+	li = user->chans;
 	if (user->reg.umode & USR_OP || user->reg.umode & USR_LOCALOP)
 		send(cl->fd, "*", 1, 0);
-	if (info && info->mode & CHFL_CHANOP)
+	if (li && li->mode & CHFL_CHANOP)
 		send(cl->fd, "@", 1, 0);
-	if (info && info->mode & CHFL_VOICE)
+	if (li && li->mode & CHFL_VOICE)
 		send(cl->fd, "+", 1, 0);
 	send(cl->fd, " :0", 3, 0);
 	tmp = user->reg.realname;
@@ -33,7 +35,7 @@ static void		sv_info_next(t_fd *user, t_listin *info, t_fd *cl)
 	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
 }
 
-void			sv_who_info(t_fd *us, t_listin *in, t_fd *cl, t_env *e)
+void			sv_who_info(t_fd *us, t_fd *cl, t_env *e)
 {
 	send(cl->fd, e->name, SERVER_LEN, 0);
 	send(cl->fd, " 352 ", 5, 0);
@@ -56,5 +58,5 @@ void			sv_who_info(t_fd *us, t_listin *in, t_fd *cl, t_env *e)
 		send(cl->fd, "G", 1, 0);
 	else
 		send(cl->fd, "H", 1, 0);
-	sv_info_next(us, in, cl);
+	sv_info_next(us, cl);
 }

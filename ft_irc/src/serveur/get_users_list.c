@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/18 03:46:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 19:28:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ t_file			*get_users_list(t_env *e)
 		ft_putstr_fd("Unable to open the users' file.", 2);
 		return (NULL);
 	}
-	while (get_next_line(e->fd, &buf) > 0)
+	while (get_next_line(e->fd, &buf) > 0 || buf)
 	{
 		str = NULL;
 		if (buf && *buf != '#' && (str = ft_strsplit(buf, ' ')))

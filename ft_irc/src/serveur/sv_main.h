@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 12:19:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/23 19:05:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 ** LOCK_SERVER		If the value is different of 0 the server will ask for login
 **					and password to each new connection.
 */
-# define LOCK_SERVER 0
+# define LOCK_SERVER 1
 # define USERS_FILE ".irc_users"
 
 /*
@@ -230,6 +230,7 @@ t_file					*get_users_list(t_env *e);
 t_file					*add_in_users(t_file *users, t_fd *cl);
 void					add_in_userslist(t_file *users, t_fd *cl);
 int						is_chan_member(t_chan *ch, t_fd *cl);
+int						is_modo(t_chan *chan, t_fd *cl);
 void					send_joinmsg_toothers(t_chan *chan, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
@@ -280,7 +281,7 @@ void					sv_user_mode(char **cmds, t_fd *us, t_fd *cl);
 void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
 void					sv_who_chan(char **cmds, t_fd *cl, t_env *e);
-void					sv_who_info(t_fd *us, t_listin *in, t_fd *cl, t_env *e);
+void					sv_who_info(t_fd *us, t_fd *cl, t_env *e);
 void					update_users_file(t_env *e);
 
 #endif
