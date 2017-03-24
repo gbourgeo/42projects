@@ -6,11 +6,33 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 07:15:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 21:21:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
+
+void				rpl_mode(t_grp *grp, char *limit)
+{
+	sv_cl_write(":", &grp->from->wr);
+	sv_cl_write(grp->from->reg.nick, &grp->from->wr);
+	sv_cl_write("!~", &grp->from->wr);
+	sv_cl_write(grp->from->reg.username, &grp->from->wr);
+	sv_cl_write("@", &grp->from->wr);
+	sv_cl_write(grp->from->addr, &grp->from->wr);
+	sv_cl_write(" MODE ", &grp->from->wr);
+	sv_cl_write(grp->on->name, &grp->from->wr);
+	sv_cl_write((grp->c) ? " +" : " -", &grp->from->wr);
+	sv_cl_write(grp->ptr, &grp->from->wr);
+	if ((*grp->ptr == 'l' || *grp->ptr == 'k') && grp->c)
+	{
+		sv_cl_write(" ", &grp->from->wr);
+		sv_cl_write((*grp->ptr == 'l') ? limit : grp->on->key, &grp->from->wr);
+	}
+	sv_cl_write(END_CHECK, &grp->from->wr);
+	if (limit)
+		free(limit);
+}
 
 static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 {
@@ -25,14 +47,16 @@ static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 		us->reg.umode |= user_nbr[tmp - USER_MODES];
 	else
 		us->reg.umode &= ~(user_nbr[tmp - USER_MODES]);
-	send(cl->fd, ":", 1, 0);
-	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-	send(cl->fd, " MODE ", 6, 0);
-	send(cl->fd, us->reg.nick, NICK_LEN, 0);
-	send(cl->fd, " :", 2, 0);
-	send(cl->fd, (c) ? "+" : "-", 1, 0);
-	send(cl->fd, &mode, 1, 0);
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write(" MODE ", &cl->wr);
+	sv_cl_write(us->reg.nick, &cl->wr);
+	sv_cl_write(" :", &cl->wr);
+	sv_cl_write((c) ? "+" : "-", &cl->wr);
+	sv_cl_write(&mode, &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 }
 
 void				sv_user_mode(char **cmds, t_fd *us, t_fd *cl)

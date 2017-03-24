@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 22:09:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:40:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,10 @@ static void			sv_init_env(t_env *e)
 	if (MAX_CLIENT > rlp.rlim_cur)
 		sv_error("MAX_CLIENT > rlim_cur. Check MAX_CLIENT and reduce it.", e);
 	e->users = get_users_list(e);
+	e->wr.start = &e->buf_write[0];
+	e->wr.end = &e->buf_write[BUFF];
+	e->wr.head = e->wr.start;
+	e->wr.tail = e->wr.head;
 }
 
 static void			sv_signals(void)

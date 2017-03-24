@@ -6,46 +6,60 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 16:16:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 19:54:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 17:43:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
+void			rpl_away(t_fd *to, t_fd *cl, t_env *e)
+{
+	sv_cl_write(e->name, &e->wr);
+	sv_cl_write(" 301 ", &e->wr);
+	sv_cl_write(to->reg.nick, &e->wr);
+	sv_cl_write(" ", &e->wr);
+	sv_cl_write(cl->reg.nick, &e->wr);
+	sv_cl_write(" :", &e->wr);
+	sv_cl_write(cl->away, &e->wr);
+	sv_cl_write(END_CHECK, &e->wr);
+}
+
 static void		sv_away_msg(char *num, char *msg, t_fd *cl, t_env *e)
 {
-	send(cl->fd, e->name, SERVER_LEN, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, num, 3, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, msg, ft_strlen(msg), 0);
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(e->name, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(num, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(msg, &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 }
 
 static char		*sv_find_msg(t_fd *cl)
 {
 	char		*ptr;
 
-	ptr = cl->wr.head;
-	while (ptr != cl->wr.tail && *ptr == ' ')
+	ptr = cl->rd.head;
+	while (ptr != cl->rd.tail && *ptr == ' ')
 	{
 		ptr++;
-		if (ptr == cl->wr.end)
-			ptr = cl->wr.start;
+		if (ptr == cl->rd.end)
+			ptr = cl->rd.start;
 	}
-	while (ptr != cl->wr.tail && *ptr != ' ')
+	while (ptr != cl->rd.tail && *ptr != ' ')
 	{
 		ptr++;
-		if (ptr == cl->wr.end)
-			ptr = cl->wr.start;
+		if (ptr == cl->rd.end)
+			ptr = cl->rd.start;
 	}
-	while (ptr != cl->wr.tail && *ptr == ' ')
+	while (ptr != cl->rd.tail && *ptr == ' ')
 	{
 		ptr++;
-		if (ptr == cl->wr.end)
-			ptr = cl->wr.start;
+		if (ptr == cl->rd.end)
+			ptr = cl->rd.start;
 	}
 	return (ptr);
 }
@@ -57,22 +71,22 @@ static void		sv_dupmsg(t_fd *cl)
 
 	ptr = sv_find_msg(cl);
 	len = 0;
-	while (ptr != cl->wr.tail)
+	while (ptr != cl->rd.tail)
 	{
 		ptr++;
 		len++;
-		if (ptr == cl->wr.end)
-			ptr = cl->wr.start;
+		if (ptr == cl->rd.end)
+			ptr = cl->rd.start;
 	}
 	if (len == 0 || (cl->away = ft_strnew(len + 1)) == NULL)
 		return ;
 	ptr = sv_find_msg(cl);
 	len = 0;
-	while (ptr != cl->wr.tail)
+	while (ptr != cl->rd.tail)
 	{
 		cl->away[len++] = *ptr++;
-		if (ptr == cl->wr.end)
-			ptr = cl->wr.start;
+		if (ptr == cl->rd.end)
+			ptr = cl->rd.start;
 	}
 }
 

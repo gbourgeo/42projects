@@ -6,36 +6,36 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 12:46:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 20:33:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		rpl_quit_msg(t_chan *ch, t_fd *cl)
+static void			rpl_quit_msg(t_chan *ch, t_fd *cl)
 {
 	if (ch->cmode & CHFL_ANON)
 	{
-		sv_cl_write(":anonymous!~anonymous@anonymous LEAVE ", cl);
-		sv_cl_write(ch->name, cl);
-		sv_cl_write(END_CHECK, cl);
+		sv_cl_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
+		sv_cl_write(ch->name, &cl->wr);
+		sv_cl_write(END_CHECK, &cl->wr);
 		return ;
 	}
-	sv_cl_write(":", cl);
-	sv_cl_write(cl->reg.nick, cl);
-	sv_cl_write("!~", cl);
-	sv_cl_write(cl->reg.username, cl);
-	sv_cl_write("@", cl);
-	sv_cl_write(cl->addr, cl);
-	sv_cl_write(" QUIT :Remote host closed the connection", cl);
-	sv_cl_write(END_CHECK, cl);
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" QUIT :Remote host closed the connection", &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
 }
 
-static void		sv_cl_quit(t_fd *cl)
+static void			sv_cl_quit(t_fd *cl)
 {
-	t_listin	*ch;
-	t_listin	*us;
+	t_listin		*ch;
+	t_listin		*us;
 
 	ch = cl->chans;
 	while (ch)
@@ -45,7 +45,7 @@ static void		sv_cl_quit(t_fd *cl)
 		while (us)
 		{
 			if (((t_fd *)us->is)->fd != cl->fd)
-				sv_cl_send_to(us->is, cl);
+				sv_cl_send_to(us->is, &cl->wr);
 			us = us->next;
 		}
 		ch = ch->next;
@@ -82,9 +82,9 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 	ft_free(&cmds);
 }
 
-void			sv_cl_read(t_env *e, t_fd *cl)
+void				sv_cl_read(t_env *e, t_fd *cl)
 {
-	int			ret;
+	int				ret;
 
 	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, 0);
 	if (ret <= 0)

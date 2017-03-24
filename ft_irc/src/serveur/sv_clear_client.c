@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 13:24:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:49:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,18 +60,19 @@ static void		sv_free_client(t_fd *cl, t_env *e)
 
 static void		sv_send_reason(t_fd *cl)
 {
-	send(cl->fd, "ERROR :Closing Link: ", 21, 0);
-	send(cl->fd, cl->addr, ADDR_LEN, 0);
-	send(cl->fd, " (", 2, 0);
-	send(cl->fd, cl->reason, ft_strlen(cl->reason), 0);
+	sv_cl_write("ERROR :Closing Link: ", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" (", &cl->wr);
+	sv_cl_write(cl->reason, &cl->wr);
 	if (cl->leaved == 2)
 	{
-		send(cl->fd, "[~", 2, 0);
-		send(cl->fd, cl->reg.username, USERNAME_LEN, 0);
-		send(cl->fd, "]", 1, 0);
+		sv_cl_write("[~", &cl->wr);
+		sv_cl_write(cl->reg.username, &cl->wr);
+		sv_cl_write("]", &cl->wr);
 	}
-	send(cl->fd, ")", 1, 0);
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(")", &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
 }
 
 t_fd			*sv_clear_client(t_env *e, t_fd *cl)

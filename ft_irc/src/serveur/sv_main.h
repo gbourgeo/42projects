@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 12:22:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 21:07:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,6 +205,8 @@ typedef struct			s_env
 	t_chan				*chans;
 	fd_set				fd_read;
 	fd_set				fd_write;
+	t_buf				wr;
+	char				buf_write[BUFF + 1];
 	char				*ptr;
 }						t_env;
 
@@ -231,6 +233,8 @@ t_file					*add_in_users(t_file *users, t_fd *cl);
 void					add_in_userslist(t_file *users, t_fd *cl);
 int						is_chan_member(t_chan *ch, t_fd *cl);
 int						is_modo(t_chan *chan, t_fd *cl);
+void					rpl_away(t_fd *to, t_fd *cl, t_env *e);
+void					rpl_mode(t_grp *grp, char *limit);
 void					send_joinmsg_toothers(t_chan *chan, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
@@ -241,8 +245,8 @@ void					sv_chan_user_mode(t_grp *grp, char ***cmd);
 void					sv_check_clients(t_env *e);
 int						sv_check_name_valid(char *name);
 void					sv_cl_read(t_env *e, t_fd *cl);
-void					sv_cl_send_to(t_fd *to, t_fd *cl);
-void					sv_cl_write(char *str, t_fd *cl);
+void					sv_cl_send_to(t_fd *to, t_buf *buf);
+void					sv_cl_write(char *str, t_buf *buf);
 t_fd					*sv_clear_client(t_env *e, t_fd *cl);
 void					sv_connect(char **cmds, t_env *e, t_fd *cl);
 int						sv_connect_client(t_fd *cl, t_env *e);

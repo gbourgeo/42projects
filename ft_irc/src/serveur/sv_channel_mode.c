@@ -6,45 +6,26 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 19:29:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 21:06:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void			sv_send_channel(t_grp *grp, char *ptr, t_listin *list)
+static void			sv_send_channel(t_grp *grp)
 {
-	t_fd			*us;
+	t_listin		*list;
 
 	list = grp->on->users;
 	while (list)
 	{
-		us = (t_fd *)list->is;
-		send(us->fd, ":", 1, 0);
-		send(us->fd, grp->from->reg.nick, NICK_LEN, 0);
-		send(us->fd, "!~", 1, 0);
-		send(us->fd, grp->from->reg.username, USERNAME_LEN, 0);
-		send(us->fd, "@", 1, 0);
-		send(us->fd, grp->from->addr, ADDR_LEN, 0);
-		send(us->fd, " MODE ", 6, 0);
-		send(us->fd, grp->on->name, CHANNAME_LEN, 0);
-		send(us->fd, (grp->c) ? " +" : " -", 2, 0);
-		send(us->fd, grp->ptr, 1, 0);
-		if ((*grp->ptr == 'l' || *grp->ptr == 'k') && grp->c)
-		{
-			send(us->fd, " ", 1, 0);
-			send(us->fd, (*grp->ptr == 'l') ? ptr : grp->on->key,
-				(*grp->ptr == 'l') ? ft_strlen(ptr) : CHANKEY_LEN, 0);
-		}
-		send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+		sv_cl_send_to(list->is, &grp->from->wr);
 		list = list->next;
 	}
 }
 
 static void			sv_change_more(t_grp *grp, char ***cmd)
 {
-	char			*ptr;
-
 	if (grp->c && *(*cmd + 1) == NULL)
 		return ;
 	if (!grp->c)
@@ -57,16 +38,15 @@ static void			sv_change_more(t_grp *grp, char ***cmd)
 		{
 			if ((grp->on->limit = ft_atoi(**cmd)) > 0)
 			{
-				ptr = ft_itoa(grp->on->limit);
-				sv_send_channel(grp, ptr, NULL);
-				free(ptr);
-				return ;
+				rpl_mode(grp, ft_itoa(grp->on->limit));
+				return (sv_send_channel(grp));
 			}
 		}
 		else if (*grp->ptr == 'k')
 			ft_strncpy(grp->on->key, **cmd, CHANKEY_LEN);
 	}
-	sv_send_channel(grp, NULL, NULL);
+	rpl_mode(grp, NULL);
+	sv_send_channel(grp);
 }
 
 static void			sv_change_mode(t_grp *grp)
@@ -84,7 +64,8 @@ static void			sv_change_mode(t_grp *grp)
 		grp->on->cmode |= chan_nbr[tmp - CHAN_MODES];
 	else
 		grp->on->cmode &= ~(chan_nbr[tmp - CHAN_MODES]);
-	sv_send_channel(grp, NULL, NULL);
+	rpl_mode(grp, NULL);
+	sv_send_channel(grp);
 }
 
 static void			sv_get_mode(t_grp *grp, char **cmd)
@@ -136,4 +117,5 @@ void				sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl)
 	grp.on = ch;
 	grp.to = NULL;
 	sv_get_mode(&grp, cmds);
+	cl->wr.head = cl->wr.tail;
 }

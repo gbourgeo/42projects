@@ -6,26 +6,36 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:47:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:56:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		sv_send_more(char **cmd, t_fd *us)
+static void		rpl_leave(char **cmd, t_chan *chan, t_fd *cl)
 {
-	send(us->fd, ":", 1, 0);
-	send(us->fd, *cmd, ft_strlen(*cmd), 0);
-	cmd++;
-	while (*cmd)
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" LEAVE ", &cl->wr);
+	sv_cl_write(chan->name, &cl->wr);
+	if (*cmd)
 	{
-		send(us->fd, " ", 1, 0);
-		send(us->fd, *cmd, ft_strlen(*cmd), 0);
-		cmd++;
+		sv_cl_write(":", &cl->wr);
+		sv_cl_write(*cmd, &cl->wr);
+		while (*++cmd)
+		{
+			sv_cl_write(" ", &cl->wr);
+			sv_cl_write(*cmd, &cl->wr);
+		}
 	}
+	sv_cl_write(END_CHECK, &cl->wr);
 }
 
-static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
+static void		sv_send_leavemsg(t_chan *chan, t_fd *cl)
 {
 	t_listin	*list;
 	t_fd		*us;
@@ -35,21 +45,10 @@ static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
 	{
 		us = (t_fd *)list->is;
 		if (!(chan->cmode & CHFL_QUIET) || us->fd == cl->fd)
-		{
-			send(us->fd, ":", 1, 0);
-			send(us->fd, cl->reg.nick, NICK_LEN, 0);
-			send(us->fd, "!~", 2, 0);
-			send(us->fd, cl->reg.username, USERNAME_LEN, 0);
-			send(us->fd, "@", 1, 0);
-			send(us->fd, cl->addr, ADDR_LEN, 0);
-			send(us->fd, " LEAVE ", 7, 0);
-			send(us->fd, chan->name, CHANNAME_LEN, 0);
-			if (*cmd)
-				sv_send_more(cmd, us);
-			send(us->fd, END_CHECK, END_CHECK_LEN, 0);
-		}
+			sv_cl_send_to(us, &cl->wr);
 		list = list->next;
 	}
+	cl->wr.head = cl->wr.tail;
 }
 
 static void		sv_find_chaninuser(t_chan *chan, t_fd *cl)
@@ -83,7 +82,8 @@ void			sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl));
 	chan->nbusers--;
 	cl->chansnb--;
-	sv_send_leavemsg(cmd, chan, cl);
+	rpl_leave(cmd, chan, cl);
+	sv_send_leavemsg(chan, cl);
 	if (tmp->prev)
 		tmp->prev->next = tmp->next;
 	else

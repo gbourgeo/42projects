@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 12:45:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 19:40:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static void		send_to_chans(t_fd *cl)
 			while (us)
 			{
 				if (((t_fd *)us->is)->fd != cl->fd)
-					sv_cl_send_to(us->is, cl);
+					sv_cl_send_to(us->is, &cl->wr);
 				us = us->next;
 			}
 		}
@@ -83,15 +83,15 @@ static void		send_to_chans(t_fd *cl)
 
 static void		rpl_nick(char *nick, t_fd *cl)
 {
-	sv_cl_write(":", cl);
-	sv_cl_write(cl->reg.nick, cl);
-	sv_cl_write("!~", cl);
-	sv_cl_write(cl->reg.username, cl);
-	sv_cl_write("@", cl);
-	sv_cl_write(cl->addr, cl);
-	sv_cl_write(" NICK :", cl);
-	sv_cl_write(nick, cl);
-	sv_cl_write(END_CHECK, cl);
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" NICK :", &cl->wr);
+	sv_cl_write(nick, &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
 }
 
 void			sv_nick(char **cmds, t_env *e, t_fd *cl)
@@ -113,7 +113,8 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 	{
 		rpl_nick(*cmds, cl);
 		send_to_chans(cl);
-		sv_cl_send_to(cl, cl);
+		sv_cl_send_to(cl, &cl->wr);
+		cl->wr.head = cl->wr.tail;
 		ft_strncpy(cl->reg.nick, *cmds, NICK_LEN);
 	}
 }

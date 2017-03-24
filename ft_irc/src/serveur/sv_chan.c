@@ -6,35 +6,40 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 18:40:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:46:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
+
+static void		rpl_join(t_chan *chan, t_fd *cl)
+{
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" JOIN ", &cl->wr);
+	sv_cl_write(chan->name, &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+}
 
 void			send_joinmsg_toothers(t_chan *chan, t_fd *cl)
 {
 	t_listin	*other;
 	t_fd		*us;
 
+	rpl_join(chan, cl);
 	other = chan->users;
 	while (other)
 	{
 		us = (t_fd *)other->is;
 		if (!(chan->cmode & CHFL_QUIET) || us->fd == cl->fd)
-		{
-			send(us->fd, ":", 1, 0);
-			send(us->fd, cl->reg.nick, NICK_LEN, 0);
-			send(us->fd, "!~", 2, 0);
-			send(us->fd, cl->reg.username, USERNAME_LEN, 0);
-			send(us->fd, "@", 1, 0);
-			send(us->fd, cl->addr, ADDR_LEN, 0);
-			send(us->fd, " JOIN ", 6, 0);
-			send(us->fd, chan->name, ft_strlen(chan->name), 0);
-			send(us->fd, END_CHECK, END_CHECK_LEN, 0);
-		}
+			sv_cl_send_to(us, &cl->wr);
 		other = other->next;
 	}
+	cl->wr.head = cl->wr.tail;
 }
 
 t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)

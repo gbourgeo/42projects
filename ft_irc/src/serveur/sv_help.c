@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 19:55:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:55:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,18 @@ static void		sv_help_msg(char *num, char *txt, t_env *e, t_fd *cl)
 	int			nb;
 
 	nb = 0;
-	send(cl->fd, e->name, SERVER_LEN, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, num, 3, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, e->ptr, ft_strlen(e->ptr), 0);
-	send(cl->fd, " :", 2, 0);
-	send(cl->fd, txt, ft_strlen(txt), 0);
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(e->name, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(num, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(e->ptr, &cl->wr);
+	sv_cl_write(" :", &cl->wr);
+	sv_cl_write(txt, &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 }
 
 static void		sv_explain(int nb, t_fd *cl, t_env *e)

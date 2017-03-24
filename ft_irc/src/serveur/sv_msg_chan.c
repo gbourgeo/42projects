@@ -6,37 +6,35 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 12:40:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 19:21:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		sv_sendtoclients(t_fd *to, char **cmds, t_chan *chan, t_fd *cl)
+static void		rpl_msg_chan(t_fd *to, char **cmds, t_chan *chan, t_fd *cl)
 {
 	if (chan->cmode & CHFL_ANON)
-		send(to->fd, ":anonymous!~anonymous@anonymous", 31, 0);
+		sv_cl_write(":anonymous!~anonymous@anonymous", &cl->wr);
 	else
 	{
-		send(to->fd, ":", 1, 0);
-		send(to->fd, cl->reg.nick, NICK_LEN, 0);
-		send(to->fd, "!~", 2, 0);
-		send(to->fd, cl->reg.username, USERNAME_LEN, 0);
-		send(to->fd, "@", 1, 0);
-		send(to->fd, cl->addr, ADDR_LEN, 0);
+		sv_cl_write(":", &cl->wr);
+		sv_cl_write(cl->reg.nick, &cl->wr);
+		sv_cl_write("!~", &cl->wr);
+		sv_cl_write(cl->reg.username, &cl->wr);
+		sv_cl_write("@", &cl->wr);
+		sv_cl_write(cl->addr, &cl->wr);
 	}
-	send(to->fd, " MSG ", 5, 0);
-	send(to->fd, to->reg.nick, NICK_LEN, 0);
-	send(to->fd, " :", 2, 0);
-	send(to->fd, *cmds, ft_strlen(*cmds), 0);
-	cmds++;
-	while (*cmds)
+	sv_cl_write(" MSG ", &cl->wr);
+	sv_cl_write(to->reg.nick, &cl->wr);
+	sv_cl_write(" :", &cl->wr);
+	sv_cl_write(*cmds, &cl->wr);
+	while (*++cmds)
 	{
-		send(to->fd, " ", 1, 0);
-		send(to->fd, *cmds, ft_strlen(*cmds), 0);
-		cmds++;
+		sv_cl_write(" ", &cl->wr);
+		sv_cl_write(*cmds, &cl->wr);
 	}
-	send(to->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(END_CHECK, &cl->wr);
 }
 
 static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
@@ -49,9 +47,13 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 	{
 		to = (t_fd *)us->is;
 		if (to->fd != cl->fd)
-			sv_sendtoclients(to, cmds, chan, cl);
+		{
+			rpl_msg_chan(to, cmds, chan, cl);
+			sv_cl_send_to(to, &cl->wr);
+		}
 		us = us->next;
 	}
+	cl->wr.head = cl->wr.tail;
 }
 
 static int		user_got_mod(t_chan *ch, t_fd *cl)
@@ -74,21 +76,19 @@ static int		user_got_mod(t_chan *ch, t_fd *cl)
 
 void			sv_msg_chan(char *chan_name, char **cmds, t_fd *cl)
 {
-	t_listin	*chans;
 	t_chan		*ch;
 
-	chans = cl->chans;
-	while (chans)
+	ch = e.chans;
+	while (ch)
 	{
-		ch = (t_chan *)chans->is;
-		if (!sv_strcmp(chan_name, ch->name))
+		if (!sv_strcmp(ch->name, chan_name))
 		{
 			if ((ch->cmode & CHFL_MOD && !user_got_mod(ch, cl)) ||
 				(ch->cmode & CHFL_NOMSG && !is_chan_member(ch, cl)))
 				break ;
-			return (sv_sendtochan(cmds, chans->is, cl));
+			return (sv_sendtochan(cmds, ch, cl));
 		}
-		chans = chans->next;
+		ch = ch->next;
 	}
 	sv_err(ERR_CANNOTSENDTOCHAN, chan_name, NULL, cl);
 }

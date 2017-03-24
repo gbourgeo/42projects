@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 12:35:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 16:51:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,22 @@
 
 static void			error_loggin_in(t_file *us, t_fd *cl, t_env *e)
 {
-	sv_cl_write(e->name, cl);
-	sv_cl_write(" NOTICE ", cl);
-	sv_cl_write(cl->reg.nick, cl);
-	sv_cl_write(" :This nickname is registered.", cl);
-	sv_cl_write(" Please choose a different nickname.", cl);
-	sv_cl_write(END_CHECK, cl);
-	sv_cl_send_to(cl, cl);
+	sv_cl_write(e->name, &cl->wr);
+	sv_cl_write(" NOTICE ", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write(" :This nickname is registered.", &cl->wr);
+	sv_cl_write(" Please choose a different nickname.", &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
 	if (cl->reg.password)
 	{
-		sv_cl_write(e->name, cl);
-		sv_cl_write(" NOTICE ", cl);
-		sv_cl_write(cl->reg.nick, cl);
-		sv_cl_write(" :Invalid password for ", cl);
-		sv_cl_write(us->nick, cl);
-		sv_cl_write(END_CHECK, cl);
-		sv_cl_send_to(cl, cl);
+		sv_cl_write(e->name, &cl->wr);
+		sv_cl_write(" NOTICE ", &cl->wr);
+		sv_cl_write(cl->reg.nick, &cl->wr);
+		sv_cl_write(" :Invalid password for ", &cl->wr);
+		sv_cl_write(us->nick, &cl->wr);
+		sv_cl_write(END_CHECK, &cl->wr);
+		sv_cl_send_to(cl, &cl->wr);
 	}
 }
 
@@ -61,16 +61,16 @@ static void			wrong_username(t_fd *cl, t_env *e)
 {
 	cl->leaved = 2;
 	cl->reason = "Invalid username";
-	sv_cl_write(e->name, cl);
-	sv_cl_write(" ", cl);
-	sv_cl_write("NOTICE", cl);
-	sv_cl_write(" ", cl);
-	sv_cl_write(cl->reg.nick, cl);
-	sv_cl_write(" :*** Your username is invalid. Please make sure ", cl);
-	sv_cl_write("that your username contains only alphanumeric ", cl);
-	sv_cl_write("characters.", cl);
-	sv_cl_write(END_CHECK, cl);
-	sv_cl_send_to(cl, cl);
+	sv_cl_write(e->name, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write("NOTICE", &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write(" :*** Your username is invalid. Please make sure ", &cl->wr);
+	sv_cl_write("that your username contains only alphanumeric ", &cl->wr);
+	sv_cl_write("characters.", &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
 }
 
 void				sv_check_clients(t_env *e)

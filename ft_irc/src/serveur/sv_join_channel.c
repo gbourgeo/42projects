@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:48:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 18:39:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 19:06:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <time.h>
 
-static int		sv_channel_ident(char *name, t_chan *new, t_fd *cl, t_env *e)
+static int		sv_channel_ident(char *name, t_chan *new, t_fd *cl)
 {
 	time_t		store;
 	u_char		*ptr;
@@ -22,13 +22,7 @@ static int		sv_channel_ident(char *name, t_chan *new, t_fd *cl, t_env *e)
 
 	if (time(&store) == -1)
 	{
-		send(cl->fd, e->name, SERVER_LEN, 0);
-		send(cl->fd, " ERROR ", 7, 0);
-		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, name, CHANNAME_LEN, 0);
-		send(cl->fd, " :Server failed to create your channel", 38, 0);
-		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+		sv_err(ERR_CREATECHANNELFAIL, name, NULL, cl);
 		free(new);
 		return (0);
 	}
@@ -55,11 +49,11 @@ static t_chan	*sv_new_chan(char *name, t_fd *cl, t_env *e)
 		sv_error("ERROR: SERVER: Out of memory", e);
 	ft_memset(new, 0, sizeof(*new));
 	ft_strncpy(new->name, name, CHANNAME_LEN);
-	if (*name == '!' && !sv_channel_ident(name, new, cl, e))
+	if (*name == '!' && !sv_channel_ident(name, new, cl))
 		return (e->chans);
 	if (!*new->name)
 		ft_bzero(new->topic, TOPIC_LEN + 1);
-	new->cmode = 0;
+	ft_memset(&new->cmode, 0, sizeof(new->cmode));
 	new->users = sv_add_usertochan(cl, new);
 	if (*new->name == '!')
 		new->users->mode |= CHFL_CREATOR;

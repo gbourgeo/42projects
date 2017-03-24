@@ -6,21 +6,23 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 19:30:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 20:24:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		sv_who_end(char *cmd, t_fd *cl, t_env *e)
+static void		rpl_who_end(char *cmd, t_fd *cl, t_env *e)
 {
-	send(cl->fd, e->name, SERVER_LEN, 0);
-	send(cl->fd, " 315 ", 5, 0);
-	send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, cmd, ft_strlen(cmd), 0);
-	send(cl->fd, " :End of /WHO list.", 19, 0);
-	send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(e->name, &cl->wr);
+	sv_cl_write(" 315 ", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write(" ", &cl->wr);
+	sv_cl_write(cmd, &cl->wr);
+	sv_cl_write(" :End of /WHO list.", &cl->wr);
+	sv_cl_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 }
 
 static int		have_common_channel(t_fd *to, t_fd *cl)
@@ -103,5 +105,5 @@ void			sv_who(char **cmds, t_env *e, t_fd *cl)
 		sv_who_chan(cmds, cl, e);
 	else
 		sv_who_user(cmds, cl, e);
-	sv_who_end(*cmds, cl, e);
+	rpl_who_end(*cmds, cl, e);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 19:56:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 17:09:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ static int		inchannel(char *name, t_fd *cl)
 static void		sv_leaveall_channels(t_fd *cl, t_env *e)
 {
 	t_listin	*ch;
-	char		*cmd[3];
+	char		*cmd[2];
 
 	ch = cl->chans;
-	cmd[2] = NULL;
+	cmd[1] = NULL;
 	while (ch)
 	{
-		cmd[1] = ((t_chan *)ch->is)->name;
+		cmd[0] = ((t_chan *)ch->is)->name;
 		sv_leave(cmd, e, cl);
 		ch = cl->chans;
 	}

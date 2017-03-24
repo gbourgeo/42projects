@@ -6,44 +6,38 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 20:22:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 19:55:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_leave_msg(t_chan *ch, t_fd *us)
+static void		rpl_quit(char **cmds, t_chan *ch, t_fd *cl)
 {
-	send(us->fd, ":anonymous!~anonymous@anonymous LEAVE ", 1, 0);
-	send(us->fd, ch->name, CHANNAME_LEN, 0);
-	send(us->fd, END_CHECK, END_CHECK_LEN, 0);
-}
-
-static void		sv_quit_msg(char **cmds, t_chan *ch, t_fd *cl, t_fd *us)
-{
-	int			i;
-
-	i = 0;
 	if (ch && ch->cmode & CHFL_ANON)
-		return (sv_leave_msg(ch, us));
-	send(us->fd, ":", 1, 0);
-	send(us->fd, cl->reg.nick, NICK_LEN, 0);
-	send(us->fd, "!~", 2, 0);
-	send(us->fd, cl->reg.username, USERNAME_LEN, 0);
-	send(us->fd, "@", 1, 0);
-	send(us->fd, cl->addr, ADDR_LEN, 0);
-	send(us->fd, " QUIT :", 7, 0);
-	if (cmds == NULL || !*cmds)
-		send(us->fd, "Client Quit", 11, 0);
-	while (cmds && cmds[i])
 	{
-		if (i > 0)
-			send(us->fd, " ", 1, 0);
-		send(us->fd, cmds[i], ft_strlen(cmds[i]), 0);
-		i++;
+		sv_cl_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
+		sv_cl_write(ch->name, &cl->wr);
+		sv_cl_write(END_CHECK, &cl->wr);
+		return ;
 	}
-	send(us->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" QUIT :", &cl->wr);
+	if (cmds == NULL || !*cmds)
+		sv_cl_write("Client Quit", &cl->wr);
+	while (cmds && *cmds)
+	{
+		sv_cl_write(*cmds, &cl->wr);
+		if (*++cmds)
+			sv_cl_write(" ", &cl->wr);
+	}
+	sv_cl_write(END_CHECK, &cl->wr);
 }
 
 void			sv_quit(char **cmds, t_env *e, t_fd *cl)
@@ -54,16 +48,16 @@ void			sv_quit(char **cmds, t_env *e, t_fd *cl)
 	ch = cl->chans;
 	while (ch)
 	{
+		rpl_quit(cmds, ch->is, cl);
 		us = ((t_chan *)ch->is)->users;
 		while (us)
 		{
 			if (((t_fd *)us->is)->fd != cl->fd)
-				sv_quit_msg(cmds, ch->is, cl, us->is);
+				sv_cl_send_to(us->is, &cl->wr);
 			us = us->next;
 		}
 		ch = ch->next;
 	}
-	sv_quit_msg(NULL, NULL, cl, cl);
 	if (*cl->reg.username && cl->reg.password && *cl->reg.nick)
 	{
 		add_in_userslist(e->users, cl);

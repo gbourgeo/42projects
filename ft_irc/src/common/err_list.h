@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:15:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 13:23:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 14:42:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # define ERR_NOMOTD "422"
 # define ERR_NOADMININFO "423"
 # define ERR_FILEERROR "424"
+# define ERR_CREATECHANNELFAIL "426"
 # define ERR_NONICKNAMEGIVEN "431"
 # define ERR_ERRONEUSNICKNAME "432"
 # define ERR_NICKNAMEINUSE "433"
@@ -101,7 +102,7 @@
 # define ER_23 { NULL, NULL, ":No administrative info available" },
 # define ER_24 { NULL, NULL, ":File error..." },
 # define ER_25 { NULL, NULL, NULL },
-# define ER_26 { NULL, NULL, NULL },
+# define ER_26 { NULL, NULL, ":Server failed to create your channel" },
 # define ER_27 { NULL, NULL, NULL },
 # define ER_28 { NULL, NULL, NULL },
 # define ER_29 { NULL, NULL, NULL },

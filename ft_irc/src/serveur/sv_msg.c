@@ -6,33 +6,31 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 12:31:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 17:44:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_sendtoclient(t_fd *to, char **cmds, t_fd *cl)
+static void		rpl_msg(char **cmds, t_fd *to, t_fd *cl)
 {
-	send(to->fd, ":", 1, 0);
-	send(to->fd, cl->reg.nick, NICK_LEN, 0);
-	send(to->fd, "!~", 2, 0);
-	send(to->fd, cl->reg.username, USERNAME_LEN, 0);
-	send(to->fd, "@", 1, 0);
-	send(to->fd, cl->addr, ADDR_LEN, 0);
-	send(to->fd, " MSG ", 5, 0);
-	send(to->fd, to->reg.nick, NICK_LEN, 0);
-	send(to->fd, " :", 2, 0);
-	send(to->fd, *cmds, ft_strlen(*cmds), 0);
-	cmds++;
-	while (*cmds)
+	sv_cl_write(":", &cl->wr);
+	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write(" MSG ", &cl->wr);
+	sv_cl_write(to->reg.nick, &cl->wr);
+	sv_cl_write(" :", &cl->wr);
+	sv_cl_write(*cmds, &cl->wr);
+	while (*++cmds)
 	{
-		send(to->fd, " ", 1, 0);
-		send(to->fd, *cmds, ft_strlen(*cmds), 0);
-		cmds++;
+		sv_cl_write(" ", &cl->wr);
+		sv_cl_write(*cmds, &cl->wr);
 	}
-	send(to->fd, END_CHECK, END_CHECK_LEN, 0);
+	sv_cl_write(END_CHECK, &cl->wr);
 }
 
 static void		sv_msg_client(char *nick, char **cmds, t_fd *cl, t_env *e)
@@ -44,18 +42,14 @@ static void		sv_msg_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 	{
 		if (!sv_strcmp(nick, fd->reg.nick))
 		{
-			sv_sendtoclient(fd, cmds, cl);
+			rpl_msg(cmds, fd, cl);
+			sv_cl_send_to(fd, &cl->wr);
 			if (fd->reg.umode &= USR_AWAY)
 			{
-				send(cl->fd, e->name, SERVER_LEN, 0);
-				send(cl->fd, " 301 ", 5, 0);
-				send(cl->fd, cl->reg.nick, NICK_LEN, 0);
-				send(cl->fd, " ", 1, 0);
-				send(cl->fd, fd->reg.nick, NICK_LEN, 0);
-				send(cl->fd, " :", 2, 0);
-				send(cl->fd, fd->away, ft_strlen(fd->away), 0);
-				send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+				rpl_away(cl, fd, e);
+				sv_cl_send_to(cl, &e->wr);
 			}
+			cl->wr.head = cl->wr.tail;
 			return ;
 		}
 		fd = fd->next;
