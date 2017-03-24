@@ -1,28 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_cl_write.c                                      :+:      :+:    :+:   */
+/*   sv_cl_send.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 12:20:19 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/24 12:19:37 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/24 13:00:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-#include <sys/socket.h>
 
-void				sv_cl_write(char *str, t_fd *cl)
+void			sv_cl_send_to(t_fd *to, t_fd *cl)
 {
-	if (!str || !cl)
-		return ;
-	while (*str)
+	if (cl->wr.tail < cl->wr.head)
 	{
-		*cl->wr.tail = *str;
-		cl->wr.tail++;
-		if (cl->wr.tail == cl->wr.end)
-			cl->wr.tail = cl->wr.start;
-		str++;
+		send(to->fd, cl->wr.head, cl->wr.end - cl->wr.head, 0);
+		send(to->fd, cl->wr.start, cl->wr.tail - cl->wr.start, 0);
 	}
+	else
+		send(to->fd, cl->wr.head, cl->wr.tail - cl->wr.head + 1, 0);
 }

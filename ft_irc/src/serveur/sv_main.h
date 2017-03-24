@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 19:05:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 12:22:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 ** LOCK_SERVER		If the value is different of 0 the server will ask for login
 **					and password to each new connection.
 */
-# define LOCK_SERVER 1
+# define LOCK_SERVER 0
 # define USERS_FILE ".irc_users"
 
 /*
@@ -241,7 +241,8 @@ void					sv_chan_user_mode(t_grp *grp, char ***cmd);
 void					sv_check_clients(t_env *e);
 int						sv_check_name_valid(char *name);
 void					sv_cl_read(t_env *e, t_fd *cl);
-void					sv_cl_write(t_env *e, t_fd *cl);
+void					sv_cl_send_to(t_fd *to, t_fd *cl);
+void					sv_cl_write(char *str, t_fd *cl);
 t_fd					*sv_clear_client(t_env *e, t_fd *cl);
 void					sv_connect(char **cmds, t_env *e, t_fd *cl);
 int						sv_connect_client(t_fd *cl, t_env *e);

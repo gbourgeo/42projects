@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 12:27:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 11:43:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void			sv_init_buf(t_buf *info, char *buff)
 	info->end = &buff[BUFF];
 	info->head = &buff[0];
 	info->tail = &buff[0];
-	info->len = 0;
+	info->len = BUFF;
 }
 
 static void			new_client_error(int fd, char *str, t_env *e)

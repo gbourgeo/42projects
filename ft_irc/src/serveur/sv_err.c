@@ -6,64 +6,54 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/11 04:01:19 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/19 06:19:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 12:58:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static int		sv_size(char *str)
-{
-	int			i;
-
-	i = 0;
-	while (str && str[i])
-		i++;
-	return (i);
-}
-
 static void		do_this(char *reply, char *reply2, char *cmd, t_fd *cl)
 {
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, reply, sv_size(reply), 0);
+	sv_cl_write(" ", cl);
+	sv_cl_write(reply, cl);
 	if (reply2)
 	{
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, reply2, sv_size(reply2), 0);
+		sv_cl_write(" ", cl);
+		sv_cl_write(reply2, cl);
 	}
 	else if (reply == NULL)
 	{
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, cmd, sv_size(cmd), 0);
+		sv_cl_write(" ", cl);
+		sv_cl_write(cmd, cl);
 	}
 }
 
 static void		do_that(char *reply, char *cmd, char *cmd2, t_fd *cl)
 {
-	send(cl->fd, " ", 1, 0);
-	send(cl->fd, cmd, sv_size(cmd), 0);
+	sv_cl_write(" ", cl);
+	sv_cl_write(cmd, cl);
 	if (reply)
 	{
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, reply, sv_size(reply), 0);
+		sv_cl_write(" ", cl);
+		sv_cl_write(reply, cl);
 		if (cmd2)
 		{
-			send(cl->fd, " ", 1, 0);
-			send(cl->fd, cmd2, sv_size(cmd2), 0);
+			sv_cl_write(" ", cl);
+			sv_cl_write(cmd2, cl);
 		}
 	}
 	else if (cmd2)
 	{
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, cmd2, sv_size(cmd2), 0);
+		sv_cl_write(" ", cl);
+		sv_cl_write(cmd2, cl);
 	}
 }
 
 void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl)
 {
 	static char	*replies[][50] = { ERROR1, ERROR2, ERROR3, ERROR4, ERROR5,
-									ERROR6, ERROR7, ERROR8, ERROR9, ERROR10 };
+								   ERROR6, ERROR7, ERROR8, ERROR9, ERROR10 };
 	long		pos;
 
 	if (ft_strlen(err) != 3)
@@ -71,20 +61,22 @@ void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl)
 	pos = ft_atoi(err) - 401;
 	if (pos >= 0 && pos < 102)
 	{
-		send(cl->fd, e.name, SERVER_LEN, 0);
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, err, sv_size(err), 0);
-		send(cl->fd, " ", 1, 0);
-		send(cl->fd, cl->reg.nick, NICK_LEN, 0);
+		sv_cl_write(e.name, cl);
+		sv_cl_write(" ", cl);
+		sv_cl_write(err, cl);
+		sv_cl_write(" ", cl);
+		sv_cl_write(cl->reg.nick, cl);
 		if (replies[pos][0])
 			do_this(replies[pos][0], replies[pos][1], cmd, cl);
 		else if (cmd)
 			do_that(replies[pos][1], cmd, cmd2, cl);
 		if (replies[pos][2])
 		{
-			send(cl->fd, " ", 1, 0);
-			send(cl->fd, replies[pos][2], sv_size(replies[pos][2]), 0);
+			sv_cl_write(" ", cl);
+			sv_cl_write(replies[pos][2], cl);
 		}
-		send(cl->fd, END_CHECK, END_CHECK_LEN, 0);
+		sv_cl_write(END_CHECK, cl);
 	}
+	sv_cl_send_to(cl, cl);
+	cl->wr.head = cl->wr.tail;
 }
