@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 00:10:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:53:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void		sv_free_client(t_fd *cl, t_env *e)
 {
 	if (cl->reg.password)
 		free(cl->reg.password);
-	cl->reg.realname = NULL;
+	ft_free(&cl->reg.realname);
 	if (cl->away)
 		free(cl->away);
 	if (cl->prev)

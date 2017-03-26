@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 01:43:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:51:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 ** LOCK_SERVER		If the value is different of 0 the server will ask for login
 **					and password to each new connection.
 */
-# define LOCK_SERVER 1
+# define LOCK_SERVER 0
 # define USERS_FILE ".irc_users"
 
 /*
