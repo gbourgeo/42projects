@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/25 23:17:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:59:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,20 +63,23 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 	nb = 0;
 	if ((cmds = sv_split(&cl->rd)) == NULL)
 		return (sv_error("Server: split failed.", e));
-	while (com[nb].name && sv_strcmp(com[nb].name, cmds[0]))
-		nb++;
-	if (com[nb].name)
+	if (*cmds && **cmds)
 	{
-		if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
-			com[nb].fct(cmds + 1, e, cl);
-		else if (cl->reg.registered == 0)
+		while (com[nb].name && sv_strcmp(com[nb].name, cmds[0]))
+			nb++;
+		if (com[nb].name)
 		{
-			sv_err(ERR_NOTREGISTERED, NULL, NULL, cl);
-			cl->reg.registered = -1;
+			if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
+				com[nb].fct(cmds + 1, e, cl);
+			else if (cl->reg.registered == 0)
+			{
+				sv_err(ERR_NOTREGISTERED, NULL, NULL, cl);
+				cl->reg.registered = -1;
+			}
 		}
+		else if (cl->reg.registered > 0)
+			sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 	}
-	else if (cl->reg.registered > 0)
-		sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 	ft_free(&cmds);
 }
 
