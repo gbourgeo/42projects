@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:16:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 12:18:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 22:27:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ static void			sv_send(int fd, char *str, t_env *e)
 	if (fd > 0)
 	{
 		send(fd, str, ft_strlen(str), 0);
-		send(fd, END_CHECK, END_CHECK_LEN, 0);
 		close(fd);
 	}
 }
@@ -63,9 +62,9 @@ void				sv_accept(t_env *e, int ipv6)
 	if (fd == -1)
 		sv_error("ERROR: SERVER: Accept() returned.", e);
 	if (e->members + 1 >= MAX_CLIENT)
-		sv_send(fd, "ERROR: SERVER: Maximum clients reached.", e);
+		sv_send(fd, "ERROR: SERVER: Maximum clients reached.\r\n", e);
 	else if (sv_check_clone(e, &csin) >= MAX_CLIENT_BY_IP)
-		sv_send(fd, "ERROR: SERVER: Max Clients per IP reached.", e);
+		sv_send(fd, "ERROR: SERVER: Max Clients per IP reached.\r\n", e);
 	else
 		sv_new_client(fd, &csin, e);
 }

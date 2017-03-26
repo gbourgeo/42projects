@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 10:27:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 22:32:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,7 @@ void			sv_error(char *str, t_env *e)
 	while (e->fds && i < MAX_CLIENT)
 	{
 		if (e->fds[i].type == FD_CLIENT)
-		{
 			send(e->fds[i].fd, str, len, 0);
-			send(e->fds[i].fd, END_CHECK, END_CHECK_LEN, 0);
-		}
 		close(e->fds[i].fd);
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 20:24:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:09:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static void		rpl_who_end(char *cmd, t_fd *cl, t_env *e)
 {
+	sv_cl_write(":", &cl->wr);
 	sv_cl_write(e->name, &cl->wr);
 	sv_cl_write(" 315 ", &cl->wr);
 	sv_cl_write(cl->reg.nick, &cl->wr);
@@ -62,11 +63,10 @@ void			sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 			while (list && !(chan->cmode & CHFL_SECRET))
 			{
 				fd = (t_fd *)list->is;
-				if (chan->cmode & CHFL_ANON && fd->fd != cl->fd)
-					continue ;
-				if ((!cmds[1] &&
+				if ((!(chan->cmode & CHFL_ANON) || fd->fd == cl->fd) &&
+					((!cmds[1] &&
 					(!(fd->reg.umode & USR_INVISIBL) || is_modo(chan, cl))) ||
-					ft_strcmp(cmds[1], "o") || list->mode & CHFL_CHANOP)
+					ft_strcmp(cmds[1], "o") || list->mode & CHFL_CHANOP))
 					sv_who_info(fd, cl, e);
 				list = list->next;
 			}

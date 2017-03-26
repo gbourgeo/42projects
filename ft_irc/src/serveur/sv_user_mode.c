@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 21:21:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 23:51:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,14 @@
 void				rpl_mode(t_grp *grp, char *limit)
 {
 	sv_cl_write(":", &grp->from->wr);
-	sv_cl_write(grp->from->reg.nick, &grp->from->wr);
+	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
+				"anonymous" : grp->from->reg.nick, &grp->from->wr);
 	sv_cl_write("!~", &grp->from->wr);
-	sv_cl_write(grp->from->reg.username, &grp->from->wr);
+	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
+				"anonymous" : grp->from->reg.username, &grp->from->wr);
 	sv_cl_write("@", &grp->from->wr);
-	sv_cl_write(grp->from->addr, &grp->from->wr);
+	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
+				"anonymous" : grp->from->addr, &grp->from->wr);
 	sv_cl_write(" MODE ", &grp->from->wr);
 	sv_cl_write(grp->on->name, &grp->from->wr);
 	sv_cl_write((grp->c) ? " +" : " -", &grp->from->wr);
@@ -49,6 +52,10 @@ static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 		us->reg.umode &= ~(user_nbr[tmp - USER_MODES]);
 	sv_cl_write(":", &cl->wr);
 	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write("!~", &cl->wr);
+	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write("@", &cl->wr);
+	sv_cl_write(cl->addr, &cl->wr);
 	sv_cl_write(" MODE ", &cl->wr);
 	sv_cl_write(us->reg.nick, &cl->wr);
 	sv_cl_write(" :", &cl->wr);

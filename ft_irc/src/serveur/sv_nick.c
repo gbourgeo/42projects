@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 19:40:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 22:43:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ static void		send_to_chans(t_fd *cl)
 	ch = cl->chans;
 	while (ch)
 	{
-		if (!(((t_chan *)ch->is)->cmode & CHFL_QUIET))
+		if (!(((t_chan *)ch->is)->cmode & CHFL_QUIET) &&
+			!(((t_chan *)ch->is)->cmode & CHFL_ANON))
 		{
 			us = ((t_chan *)ch->is)->users;
 			while (us)

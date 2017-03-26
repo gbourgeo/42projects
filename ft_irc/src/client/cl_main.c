@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/16 02:17:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 18:35:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int				main(int ac, char **av)
 	(void)ac;
 	ft_memset(&cl, 0, sizeof(cl));
 	cl.sock = -1;
+	ft_strcpy(cl.nick, "fuury");
 	if (!av[1] || cl_getaddrinfo(av[1], av[2], &cl))
 	{
 		ft_putendl("Usage: ./client [host_name] [port]");

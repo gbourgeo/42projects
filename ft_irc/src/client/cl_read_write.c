@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/01 22:53:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 20:58:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 21:41:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,16 @@ static void			read_command(t_client *cl)
 	static t_cmd	cmd[] = { CONNECT, HELP, NICK, PASS, QUIT, USER, END };
 
 	i = 0;
+	if (*cl->read == '\n')
+		return ;
 	if ((args = ft_split_whitespaces(cl->read)) == NULL)
 		cl_error("Client: split failed\n", cl);
-	while (cmd[i].name && sv_strcmp(cmd[i].name, args[0]))
-		i++;
-	cmd[i].fct(args, cl);
+	if (*args && **args)
+	{
+		while (cmd[i].name && sv_strcmp(cmd[i].name, args[0]))
+			i++;
+		cmd[i].fct(args, cl);
+	}
 	ft_free(&args);
 }
 
@@ -53,6 +58,10 @@ void				read_server(t_client *cl)
 	if (ret == -1)
 		cl_error("Client: read_server: recv() failed", cl);
 	if (ret == 0)
-		cl_error("Connection closed by foreign host.", cl);
+	{
+		ft_putendl("Connection closed by foreign host.");
+		close(cl->sock);
+		cl->sock = -1;
+	}
 	write(STDOUT_FILENO, cl->write, ret);
 }

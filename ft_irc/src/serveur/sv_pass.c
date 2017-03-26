@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 10:02:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 19:42:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 23:16:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,5 @@ void			sv_pass(char **cmds, t_env *e, t_fd *cl)
 		return (sv_err(ERR_ALREADYREGISTERED, NULL, NULL, cl));
 	if (cl->reg.password)
 		free(cl->reg.password);
-	cl->reg.password = ft_strdup(cmds[0]);
+	cl->reg.password = ft_strdup(*cmds);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 16:16:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 17:43:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:03:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void			rpl_away(t_fd *to, t_fd *cl, t_env *e)
 {
+	sv_cl_write(":", &e->wr);
 	sv_cl_write(e->name, &e->wr);
 	sv_cl_write(" 301 ", &e->wr);
 	sv_cl_write(to->reg.nick, &e->wr);

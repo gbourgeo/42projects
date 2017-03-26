@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 04:40:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 17:03:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:05:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static void			already_registered(t_fd *cl, t_env *e)
 {
+	sv_cl_write(":", &e->wr);
 	sv_cl_write(e->name, &cl->wr);
 	sv_cl_write(" 462 ", &cl->wr);
 	sv_cl_write(cl->reg.nick, &cl->wr);
@@ -25,6 +26,7 @@ static void			already_registered(t_fd *cl, t_env *e)
 
 static void			missing_parameters(t_fd *cl, t_env *e)
 {
+	sv_cl_write(":", &e->wr);
 	sv_cl_write(e->name, &cl->wr);
 	sv_cl_write(" 461 * USER :Not enough parameters", &cl->wr);
 	sv_cl_write(END_CHECK, &cl->wr);

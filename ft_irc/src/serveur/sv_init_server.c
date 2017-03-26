@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 12:26:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:02:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,7 @@ static void				sv_getaddrinfo(t_env *e)
 
 void					sv_init_server(t_env *e)
 {
-	struct passwd		*p;
-
-	p = getpwuid(getuid());
-	*e->name = ':';
-	ft_strncpy(e->name + 1, (p) ? p->pw_name : "unknown", SERVER_LEN - 1);
-	ft_strcat(e->name, "_server");
+	gethostname(e->name, SERVER_LEN);
 	e->ipv4 = -1;
 	e->ipv6 = -1;
 	sv_getaddrinfo(e);

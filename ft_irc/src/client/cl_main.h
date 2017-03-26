@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/12 03:50:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 18:16:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 
 typedef struct		s_client
 {
-	int				first;
 	int				sock;
 	fd_set			fds;
 	char			*pass;

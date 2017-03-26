@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 16:56:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 23:19:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,20 @@
 
 static void		rpl_leave(char **cmd, t_chan *chan, t_fd *cl)
 {
+	t_buf		*b;
+
+	b = &cl->wr;
 	sv_cl_write(":", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
+	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, b);
 	sv_cl_write("!~", &cl->wr);
-	sv_cl_write(cl->reg.username, &cl->wr);
+	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, b);
 	sv_cl_write("@", &cl->wr);
-	sv_cl_write(cl->addr, &cl->wr);
+	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, b);
 	sv_cl_write(" LEAVE ", &cl->wr);
 	sv_cl_write(chan->name, &cl->wr);
+	sv_cl_write(" :", &cl->wr);
 	if (*cmd)
 	{
-		sv_cl_write(":", &cl->wr);
 		sv_cl_write(*cmd, &cl->wr);
 		while (*++cmd)
 		{

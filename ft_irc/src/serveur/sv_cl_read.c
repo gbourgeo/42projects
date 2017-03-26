@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 20:33:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 23:17:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,7 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 		return (sv_error("Server: split failed.", e));
 	while (com[nb].name && sv_strcmp(com[nb].name, cmds[0]))
 		nb++;
-	if (cl->reg.registered <= 0 && LOCK_SERVER)
-		sv_get_cl_password(cl, e);
-	else if (com[nb].name)
+	if (com[nb].name)
 	{
 		if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
 			com[nb].fct(cmds + 1, e, cl);

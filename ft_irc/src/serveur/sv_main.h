@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 21:07:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:43:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 ** LOCK_SERVER		If the value is different of 0 the server will ask for login
 **					and password to each new connection.
 */
-# define LOCK_SERVER 0
+# define LOCK_SERVER 1
 # define USERS_FILE ".irc_users"
 
 /*
@@ -51,7 +51,7 @@
 ** SERV_SIZE		The maximum length a servers' name can be. Over this value,
 **					a server name will be truncated.
 */
-# define SERVER_LEN	63
+# define SERVER_LEN	1023
 
 /*
 ** CHAN_LIMIT		The maximum number of channels a client can join.
@@ -146,6 +146,7 @@ typedef struct			s_fd
 	struct sockaddr		csin;
 	char				addr[ADDR_LEN + 1];
 	char				port[32];
+	char				uid[10];
 	t_reg				reg;
 	short				type;
 	long				flags;
@@ -192,6 +193,7 @@ typedef struct			s_env
 {
 	char				verb;
 	int					fd;
+	char				userid[10];
 	t_file				*users;
 	char				name[SERVER_LEN + 1];
 	int					ipv4;
@@ -235,6 +237,7 @@ int						is_chan_member(t_chan *ch, t_fd *cl);
 int						is_modo(t_chan *chan, t_fd *cl);
 void					rpl_away(t_fd *to, t_fd *cl, t_env *e);
 void					rpl_mode(t_grp *grp, char *limit);
+void					rpl_motd(t_fd *cl, t_env *e);
 void					send_joinmsg_toothers(t_chan *chan, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
@@ -270,7 +273,7 @@ void					sv_msg(char **cmds, t_env *e, t_fd *cl);
 void					sv_msg_chan(char *chan_name, char **cmds, t_fd *cl);
 void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
-void					sv_notice(int fd, char *str, t_env *e);
+void					sv_notice(char *str, t_fd *cl, t_env *e);
 void					sv_pass(char **cmds, t_env *e, t_fd *cl);
 void					sv_quit(char **cmds, t_env *e, t_fd *cl);
 void					sv_server_killed(int sig);

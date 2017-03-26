@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/15 20:57:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 21:18:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,9 @@ void			cl_quit(char **cmds, t_client *cl)
 	if (cl->sock > 0)
 		close(cl->sock);
 	FD_ZERO(&cl->fds);
+	if (cl->pass)
+		free(cl->pass);
+	ft_free(&cl->user);
 	ft_memset(cl, 0, sizeof(*cl));
 	ft_putendl("User leaved the client.");
 	exit(0);
@@ -105,10 +108,10 @@ void			cl_connect(char **cmds, t_client *cl)
 	port = (cmds[2] == NULL) ? DEF_PORT : cmds[2];
 	if (cl_getaddrinfo(cmds[1], port, cl))
 		return ;
-	if (cl->pass)
+	if (cl->pass && sleep(1))
 		cl_send(cl->sock, "PASS ", cl->pass, NULL);
-	if (*cl->nick)
+	if (*cl->nick && sleep(1))
 		cl_send(cl->sock, "NICK ", cl->nick, NULL);
-	if (cl->user)
+	if (cl->user && sleep(1))
 		cl_send(cl->sock, "USER ", *cl->user, cl->user);
 }

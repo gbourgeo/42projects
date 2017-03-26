@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 13:30:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 20:29:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:09:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ static void		sv_info_next(t_fd *user, t_fd *cl)
 
 void			sv_who_info(t_fd *us, t_fd *cl, t_env *e)
 {
+	sv_cl_write(":", &cl->wr);
 	sv_cl_write(e->name, &cl->wr);
 	sv_cl_write(" 352 ", &cl->wr);
 	sv_cl_write(cl->reg.nick, &cl->wr);
@@ -52,7 +53,7 @@ void			sv_who_info(t_fd *us, t_fd *cl, t_env *e)
 	sv_cl_write(" ", &cl->wr);
 	sv_cl_write(us->addr, &cl->wr);
 	sv_cl_write(" ", &cl->wr);
-	sv_cl_write(e->name + 1, &cl->wr);
+	sv_cl_write(e->name, &cl->wr);
 	sv_cl_write(" ", &cl->wr);
 	sv_cl_write(us->reg.nick, &cl->wr);
 	sv_cl_write(" ", &cl->wr);

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/24 12:22:37 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/26 01:41:55 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,7 +31,6 @@ SV_SRC	= get_users_list.c	\
 		sv_channel_mode.c 	\
 		sv_chan_user_mode.c	\
 		sv_cl_read.c 		\
-		sv_cl_register.c 	\
 		sv_cl_send.c		\
 		sv_cl_write.c 		\
 		sv_clear_client.c 	\
@@ -49,6 +48,7 @@ SV_SRC	= get_users_list.c	\
 		sv_loop.c 			\
 		sv_main.c 			\
 		sv_mode.c 			\
+		sv_motd.c			\
 		sv_msg.c			\
 		sv_msg_chan.c		\
 		sv_new_client.c 	\

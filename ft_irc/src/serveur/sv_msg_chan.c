@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 19:21:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/24 23:03:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		rpl_msg_chan(t_fd *to, char **cmds, t_chan *chan, t_fd *cl)
+static void		rpl_msg_chan(char **cmds, t_chan *chan, t_fd *cl)
 {
 	if (chan->cmode & CHFL_ANON)
 		sv_cl_write(":anonymous!~anonymous@anonymous", &cl->wr);
@@ -26,7 +26,7 @@ static void		rpl_msg_chan(t_fd *to, char **cmds, t_chan *chan, t_fd *cl)
 		sv_cl_write(cl->addr, &cl->wr);
 	}
 	sv_cl_write(" MSG ", &cl->wr);
-	sv_cl_write(to->reg.nick, &cl->wr);
+	sv_cl_write(chan->name, &cl->wr);
 	sv_cl_write(" :", &cl->wr);
 	sv_cl_write(*cmds, &cl->wr);
 	while (*++cmds)
@@ -48,7 +48,7 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 		to = (t_fd *)us->is;
 		if (to->fd != cl->fd)
 		{
-			rpl_msg_chan(to, cmds, chan, cl);
+			rpl_msg_chan(cmds, chan, cl);
 			sv_cl_send_to(to, &cl->wr);
 		}
 		us = us->next;

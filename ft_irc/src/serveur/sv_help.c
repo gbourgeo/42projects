@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 16:55:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 01:04:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static void		sv_help_msg(char *num, char *txt, t_env *e, t_fd *cl)
 	int			nb;
 
 	nb = 0;
+	sv_cl_write(":", &e->wr);
 	sv_cl_write(e->name, &cl->wr);
 	sv_cl_write(" ", &cl->wr);
 	sv_cl_write(num, &cl->wr);

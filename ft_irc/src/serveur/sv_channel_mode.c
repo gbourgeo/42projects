@@ -6,20 +6,23 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 21:06:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/25 00:06:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void			sv_send_channel(t_grp *grp)
+static void			sv_send_channel(t_grp *grp, int limit)
 {
 	t_listin		*list;
 
 	list = grp->on->users;
 	while (list)
 	{
-		sv_cl_send_to(list->is, &grp->from->wr);
+		grp->to = (t_fd *)list->is;
+		rpl_mode(grp, (limit) ? ft_itoa(grp->on->limit) : NULL);
+		sv_cl_send_to(grp->to, &grp->from->wr);
+		grp->from->wr.head = grp->from->wr.tail;
 		list = list->next;
 	}
 }
@@ -37,16 +40,12 @@ static void			sv_change_more(t_grp *grp, char ***cmd)
 		if (*grp->ptr == 'l')
 		{
 			if ((grp->on->limit = ft_atoi(**cmd)) > 0)
-			{
-				rpl_mode(grp, ft_itoa(grp->on->limit));
-				return (sv_send_channel(grp));
-			}
+				return (sv_send_channel(grp, 1));
 		}
 		else if (*grp->ptr == 'k')
 			ft_strncpy(grp->on->key, **cmd, CHANKEY_LEN);
 	}
-	rpl_mode(grp, NULL);
-	sv_send_channel(grp);
+	sv_send_channel(grp, 0);
 }
 
 static void			sv_change_mode(t_grp *grp)
@@ -64,8 +63,7 @@ static void			sv_change_mode(t_grp *grp)
 		grp->on->cmode |= chan_nbr[tmp - CHAN_MODES];
 	else
 		grp->on->cmode &= ~(chan_nbr[tmp - CHAN_MODES]);
-	rpl_mode(grp, NULL);
-	sv_send_channel(grp);
+	sv_send_channel(grp, 0);
 }
 
 static void			sv_get_mode(t_grp *grp, char **cmd)

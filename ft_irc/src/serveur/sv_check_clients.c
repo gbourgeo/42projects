@@ -6,30 +6,40 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 16:51:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/26 00:01:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void			error_loggin_in(t_file *us, t_fd *cl, t_env *e)
+static void			wrong_username(t_fd *cl, t_env *e)
 {
-	sv_cl_write(e->name, &cl->wr);
-	sv_cl_write(" NOTICE ", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write(" :This nickname is registered.", &cl->wr);
-	sv_cl_write(" Please choose a different nickname.", &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	if (cl->reg.password)
+	char			*ptr;
+
+	ptr = "Your username is invalid. Please make sure that your "\
+		"username contains only alphanumeric characters.";
+	cl->leaved = 2;
+	cl->reason = "Invalid username";
+	sv_notice(ptr, cl, e);
+}
+
+static void			error_loggin_in(int err, t_fd *cl, t_env *e)
+{
+	char			*ptr;
+
+	if (err == 0)
 	{
-		sv_cl_write(e->name, &cl->wr);
-		sv_cl_write(" NOTICE ", &cl->wr);
-		sv_cl_write(cl->reg.nick, &cl->wr);
-		sv_cl_write(" :Invalid password for ", &cl->wr);
-		sv_cl_write(us->nick, &cl->wr);
-		sv_cl_write(END_CHECK, &cl->wr);
-		sv_cl_send_to(cl, &cl->wr);
+		ptr = "This nickname is registered. Please choose a different "\
+			"nickname.";
+		sv_notice(ptr, cl, e);
+		if (cl->reg.password)
+			sv_notice("Invalid password.", cl, e);
+	}
+	else
+	{
+		cl->leaved = err;
+		cl->reason = (err == 1) ? "Invalid username" : "Invalid password";
+		sv_notice("You failed to log to the server. Try again later.", cl, e);
 	}
 }
 
@@ -40,7 +50,7 @@ static void			check_registered(t_fd *cl, t_env *e)
 	us = e->users;
 	while (us)
 	{
-		if (!ft_strcmp(us->nick, cl->reg.nick))
+		if (!sv_strcmp(us->nick, cl->reg.nick))
 		{
 			if (cl->reg.password && !ft_strcmp(us->password, cl->reg.password))
 			{
@@ -51,26 +61,36 @@ static void			check_registered(t_fd *cl, t_env *e)
 				cl->reg.realname = us->realname;
 				return ;
 			}
-			return (error_loggin_in(us, cl, e));
+			return (error_loggin_in(0, cl, e));
 		}
 		us = us->next;
 	}
 }
 
-static void			wrong_username(t_fd *cl, t_env *e)
+static void			check_password(t_fd *cl, t_env *e)
 {
-	cl->leaved = 2;
-	cl->reason = "Invalid username";
-	sv_cl_write(e->name, &cl->wr);
-	sv_cl_write(" ", &cl->wr);
-	sv_cl_write("NOTICE", &cl->wr);
-	sv_cl_write(" ", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write(" :*** Your username is invalid. Please make sure ", &cl->wr);
-	sv_cl_write("that your username contains only alphanumeric ", &cl->wr);
-	sv_cl_write("characters.", &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
+	t_file			*us;
+
+	us = e->users;
+	while (us)
+	{
+		if (!ft_strcmp(us->username, cl->reg.username))
+		{
+			if (!ft_strcmp(us->password, cl->reg.password))
+			{
+				cl->reg.umode = us->mode;
+				ft_strncpy(cl->reg.nick, us->nick, NICK_LEN);
+				ft_strncpy(cl->reg.username, us->username, NICK_LEN);
+				ft_free(&cl->reg.realname);
+				cl->reg.realname = us->realname;
+				sv_welcome(e, cl);
+				return ;
+			}
+			return (error_loggin_in(1, cl, e));
+		}
+		us = us->next;
+	}
+	error_loggin_in(2, cl, e);
 }
 
 void				sv_check_clients(t_env *e)
@@ -86,6 +106,8 @@ void				sv_check_clients(t_env *e)
 		{
 			if (!ft_strisalnum(cl->reg.username))
 				wrong_username(cl, e);
+			else if (LOCK_SERVER)
+				check_password(cl, e);
 			else
 			{
 				sv_welcome(e, cl);
