@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/04 21:38:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 16:48:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ static char		*check_path(char *path)
 	return (path);
 }
 
-
 static char		*search_path(char *cmd, char **env)
 {
 	int			i;
@@ -63,7 +62,7 @@ static char		*search_path(char *cmd, char **env)
 	i = 0;
 	ret = NULL;
 	paths = (ft_getenv("PATH", env)) ?
-		ft_strsplit(ft_getenv("PATH", env), ':') : NULL; // e->path
+		ft_strsplit(ft_getenv("PATH", env), ':') : NULL;
 	while (paths && paths[i])
 	{
 		tmp = (paths[i][ft_strlen(paths[i]) - 1] != '/') ?
@@ -100,8 +99,7 @@ int				fork_function(char **args, char **env)
 	status = 127;
 	if ((path = get_path(args, env)) != NULL)
 	{
-		pid = fork();
-		if (pid > 0)
+		if ((pid = fork()) > 0)
 		{
 			if (waitpid(pid, &status, 0) < 0)
 				ft_putendl_fd("minishell: waitpid error.", 2);

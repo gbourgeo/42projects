@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 19:09:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 16:29:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j);
 int				ft_env_check_opt_plus(char **cmd, t_opt *opt, int i);
 int				ft_enverror(char *err, char c, t_opt *opt);
 int				ft_opt_i(t_opt *opt);
-int				ft_opt_u(t_opt *opt);
+int				ft_opt_u(t_opt *opt, int i, int j);
 int				ft_opt_p(t_opt *opt, char **cmd);
 int				ft_opt_extra(t_opt *opt);
 int				ft_setenv(char **entry, t_env *e);

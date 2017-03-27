@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 18:51:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 16:28:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,10 @@ static char		**ft_new_env(t_opt *opt, int k)
 	return (new);
 }
 
-int				ft_opt_u(t_opt *opt)
+int				ft_opt_u(t_opt *opt, int i, int j)
 {
 	char		**old;
-	int			i;
-	int			j;
 
-	i = -1;
 	if (opt->ptr == NULL || opt->ptr[0] == '\0')
 		return (ft_enverror("option requires an argument", 'u', opt));
 	while (opt->ptr[++i])

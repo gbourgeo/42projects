@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 19:23:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 16:28:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int		check(char **command, t_opt *opt)
 		return (-1);
 	if ((i = ft_env_check_opt_plus(command, opt, i)) == -1)
 		return (-1);
-	if (opt->u && ft_opt_u(opt) == -1)
+	if (opt->u && ft_opt_u(opt, -1, -1) == -1)
 		return (-1);
 	if (opt->i)
 		ft_opt_i(opt);
@@ -48,15 +48,15 @@ int				ft_env(char **command, t_env *e)
 		if (command[i])
 			e->ret = check_and_exec(&command[i], opt.cpy, e);
 		else
-			ft_puttab(opt.cpy);		
+			ft_puttab(opt.cpy);
 	}
- 	ft_free(&opt.cpy);
- 	if (opt.path)
- 		free(opt.path);
- 	if (opt.cmd)
- 		free(opt.cmd);
- 	ft_free(&opt.ptr);
- 	ft_free(&opt.extra);
+	ft_free(&opt.cpy);
+	if (opt.path)
+		free(opt.path);
+	if (opt.cmd)
+		free(opt.cmd);
+	ft_free(&opt.ptr);
+	ft_free(&opt.extra);
 	return (e->ret);
 }
 

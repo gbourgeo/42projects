@@ -6,12 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:25:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 18:41:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 16:49:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
-
 
 static char		**ft_env_opt_u(char **cmd, int *i, int j, t_opt *opt)
 {
@@ -57,11 +56,32 @@ static char		*ft_env_opt_p(char **cmd, int *i, int j, t_opt *opt)
 	return (ret);
 }
 
-int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
+static int		ft_opt_pu(char **cmd, t_opt *opt, int *i, int j)
 {
 	char		**old;
 	char		*tmp;
 
+	if (cmd[*i][j] == 'P')
+	{
+		opt->p = 1;
+		tmp = opt->path;
+		if ((opt->path = ft_env_opt_p(cmd, i, j + 1, opt)) == tmp)
+			return (ft_enverror("malloc failed", 0, opt));
+	}
+	else if (cmd[*i][j] == 'u')
+	{
+		opt->u = 1;
+		old = opt->ptr;
+		if ((opt->ptr = ft_env_opt_u(cmd, i, j + 1, opt)) == old)
+			return (ft_enverror("malloc failed", 0, opt));
+	}
+	else
+		return (ft_enverror("illegal option", cmd[*i][j], opt));
+	return (0);
+}
+
+int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
+{
 	while (cmd[++i] && cmd[i][0] == '-')
 	{
 		if (!cmd[i][1])
@@ -75,20 +95,10 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 				opt->i = 1;
 			else if (cmd[i][j] == 'v')
 				opt->v = 1;
-			else if (cmd[i][j] == 'P')
+			else if (cmd[i][j] == 'P' || cmd[i][j] == 'u')
 			{
-				opt->p = 1;
-				tmp = opt->path;
-				if ((opt->path = ft_env_opt_p(cmd, &i, j + 1, opt)) == tmp)
-					return (ft_enverror("malloc failed", 0, opt));
-				break ;
-			}
-			else if (cmd[i][j] == 'u')
-			{
-				opt->u = 1;
-				old = opt->ptr;
-				if ((opt->ptr = ft_env_opt_u(cmd, &i, j + 1, opt)) == old)
-					return (ft_enverror("malloc failed", 0, opt));
+				if (ft_opt_pu(cmd, opt, &i, j))
+					return (-1);
 				break ;
 			}
 			else
