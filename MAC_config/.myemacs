@@ -1,0 +1,97 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Customisation de whitespace et de linum ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(custom-set-faces
+ '(linum ((t (:inherit (shadow default) :foreground "darkorange"))))
+ '(whitespace-hspace ((t (:background "dim gray" :foreground "darkgray"))))
+ '(whitespace-indentation ((t (:foreground "red"))))
+ '(whitespace-newline ((t (:foreground "black" :weight normal))))
+ '(whitespace-space ((t (:foreground "darkgray"))))
+ '(whitespace-space-after-tab ((t (:background "yellow" :foreground "firebrick"))))
+ '(whitespace-space-before-tab ((t (:background "red" :foreground "yellow"))))
+ '(whitespace-tab ((t (:foreground "yellow")))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;(global-set-key "\C-?" 'help-command)
+;(global-set-key "\C-h" 'delete-backward-char)
+;(global-set-key "\d" 'delete-backward-char)
+
+(add-to-list 'default-frame-alist							;; set font for all windows
+			 '(font . "DejaVu Sans Mono-10"))
+(toggle-text-mode-auto-fill)								;; always auto-fill in text mode.
+(display-time)												;; Affiche l'heure.
+(setq line-number-mode t)									;; Affiche les lignes.
+(setq column-number-mode t)									;; Affiche les colonnes.
+(autoload 'nuke-trailing-whitespace "whitespace" nil t)		;; Efface automatiquement les espaces vides en fin de lignes
+(transient-mark-mode 1)										;; Highlighted-Selection mode enabled.
+(load-library "paren")
+    (show-paren-mode 1)										;; Affiche les parantheses correspondantes.
+
+(global-set-key (kbd "C-x g") 'goto-line)					;; Se deplacer plus rapidement dans un gros fichier.
+(global-set-key (kbd "C-<deletechar>") 'backward-kill-word)	;; Supprime un mot entier a gauche.
+(global-set-key (kbd "ESC <deletechar>") 'backward-kill-word)
+(global-set-key (kbd "<C-f11>") 'beginning-of-buffer)		;; <HOME> de début de buffer.
+(global-set-key (kbd "<C-f12>") 'end-of-buffer)				;; <END>  de fin de buffer.
+(global-set-key (kbd "C-x C-a") 'whitespace-mode)			;; Affiche les TABS, espaces et retour a la ligne
+(global-set-key (kbd "C-x a") 'linum-mode)					;; Affiche les numeros de ligne sur la gauche
+(global-set-key (kbd "C-x q") 'replace-string)				;; Recherche et Remplace
+
+(global-set-key (kbd "C-x <kp-0>") 'delete-window)			;; Raccourcis windows pour delete, add des fenetres
+(global-set-key (kbd "C-x &") 'delete-other-windows)
+(global-set-key (kbd "C-x <kp-1>") 'delete-other-windows)
+(global-set-key (kbd "C-x é") 'split-window-vertically)
+(global-set-key (kbd "C-x <kp-2>") 'split-window-vertically)
+(global-set-key (kbd "C-x \"") 'split-window-horizontally)
+(global-set-key (kbd "C-x <kp-3>") 'split-window-horizontally)
+(global-set-key (kbd "C-x _") 'enlarge-window)
+(global-set-key (kbd "C-x <kp-add>") 'enlarge-window)
+(global-set-key (kbd "C-x !") 'uncomment-region)
+;(global-set-key (kbd "C-x ç") 'enlarge-window-horizontaly)
+;(global-set-key (kbd "C-x à") 'delete-window)
+;(define-key input-decode-map "\e\eOA" (kbd "<M-up>"))
+;(define-key input-decode-map "\e\eOB" (kbd "<M-down>"))
+(global-set-key (kbd "ESC <up>") 'backward-paragraph)
+(global-set-key (kbd "ESC <down>") 'forward-paragraph)
+
+(require 'mouse)											;; Souris active
+(setq mouse-sel-mode t)
+
+(add-hook 'c-mode-common-hook 'hs-minor-mode)
+(add-hook 'lisp-mode-hook 'hs-minor-mode)
+(add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
+(add-hook 'python-mode-hook 'hs-minor-mode)
+(global-set-key [f1] 'hs-hide-block)						;; Reduit la fontion sur elle meme
+(global-set-key [f2] 'hs-show-block)						;; Et la 'de'reduit
+(global-set-key [f4] 'save-buffer)							;; Sauvegarde du buffer
+(global-set-key [f5] 'find-file)							;; Rechercher un fichier
+(setq compilation-window-height 10)							;; Compiler avec le Makefile du répertoire du fichier en cours)
+(setq compilation-window-width 10)
+(global-set-key [f6] `compile)
+(setq-default gdb-many-windows t)							;; GDB
+(global-set-key [f7] `gdb)
+(global-set-key [f8] 'next-error)							;; Aller a la prochaine erreur de compilation
+(global-set-key [f9] 'save-buffers-kill-emacs)				;; Sauvegarder et Fermer emacs
+(global-set-key [f11] 'shrink-window-horizontally)			;; Diminuer taille de la fenetre
+(global-set-key [f12] 'enlarge-window-horizontally)			;; Augmenter la taille de la fenetre
+
+(defun yes-or-no-p (PROMPT)									;; Fix problem with yes-or-no-p not showing enough text.
+  (beep)
+  (y-or-n-p PROMPT))
+(fset 'yes-or-no-p 'y-or-n-p)
+(setq resize-minibuffer-window-exactly nil)
+
+(global-set-key (kbd "C-c h") 'make-header-file)
+(defun make-header-file ()
+(interactive)
+(goto-char (point-max))
+(newline)
+(insert (concat "#ifndef " (upcase (file-name-sans-extension (buffer-name))) "_H")) (newline)
+(insert (concat "# define " (upcase (file-name-sans-extension (buffer-name))) "_H")) (newline)
+(newline)
+(insert "# include \"libft.h\"") (newline)
+(newline) () (newline)
+(newline)
+(insert "#endif") (newline))
+

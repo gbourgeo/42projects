@@ -1,0 +1,24 @@
+alias gc='git clone'
+alias gA='git add -A'
+alias gs='git status'
+alias gm='git commit -m'
+alias gp='git push origin master'
+
+alias em='emacs'
+alias emz='em ~/.zshrc && source ~/.zshrc && echo ~/.zshrc MAJ'
+alias emmz='em ~/.my_zshrc && source ~/.zshrc && echo ~/.my_zshrc MAJ'
+
+alias ls='ls -G'
+alias ll='ls -l'
+alias l='ls -a'
+alias la='ls -la'
+alias lr='ls -R'
+
+alias ..='cd ..'
+
+alias c='find . -type f \( -name "*~" -or -name "._*" \) -print -delete'
+
+alias freeze='chmod 644'
+alias freezeall='find . -type f -print -exec chmod 644 {} \;'
+alias god='chmod 755'
+alias cl='clear'
