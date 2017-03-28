@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 17:44:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:46:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,22 @@
 
 static void		rpl_msg(char **cmds, t_fd *to, t_fd *cl)
 {
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write("!~", &cl->wr);
-	sv_cl_write(cl->reg.username, &cl->wr);
-	sv_cl_write("@", &cl->wr);
-	sv_cl_write(cl->addr, &cl->wr);
-	sv_cl_write(" MSG ", &cl->wr);
-	sv_cl_write(to->reg.nick, &cl->wr);
-	sv_cl_write(" :", &cl->wr);
-	sv_cl_write(*cmds, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write("!~", &cl->wr);
+	sv_write(cl->reg.username, &cl->wr);
+	sv_write("@", &cl->wr);
+	sv_write(cl->addr, &cl->wr);
+	sv_write(" MSG ", &cl->wr);
+	sv_write(to->reg.nick, &cl->wr);
+	sv_write(" :", &cl->wr);
+	sv_write(*cmds, &cl->wr);
 	while (*++cmds)
 	{
-		sv_cl_write(" ", &cl->wr);
-		sv_cl_write(*cmds, &cl->wr);
+		sv_write(" ", &cl->wr);
+		sv_write(*cmds, &cl->wr);
 	}
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 }
 
 static void		sv_msg_client(char *nick, char **cmds, t_fd *cl, t_env *e)

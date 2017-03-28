@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_notice.c                                        :+:      :+:    :+:   */
+/*   sv_cl_write.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/13 03:16:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:46:45 by gbourgeo         ###   ########.fr       */
+/*   Created: 2014/05/21 17:15:05 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/27 18:40:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
+#include <sys/socket.h>
 
-void			sv_notice(char *str, t_fd *cl, t_env *e)
+void				sv_write(char *str, t_buf *buf)
 {
-	sv_write(":", &e->wr);
-	sv_write(e->name, &e->wr);
-	sv_write(" NOTICE * :*** ", &e->wr);
-	sv_write(str, &e->wr);
-	sv_write(END_CHECK, &e->wr);
-	sv_cl_send_to(cl, &e->wr);
-	e->wr.head = e->wr.tail;
+	if (!str || !buf)
+		return ;
+	while (*str)
+	{
+		*buf->tail = *str;
+		buf->tail++;
+		if (buf->tail == buf->end)
+			buf->tail = buf->start;
+		str++;
+	}
 }

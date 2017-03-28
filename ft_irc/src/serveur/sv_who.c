@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 01:09:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:48:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 static void		rpl_who_end(char *cmd, t_fd *cl, t_env *e)
 {
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write(e->name, &cl->wr);
-	sv_cl_write(" 315 ", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write(" ", &cl->wr);
-	sv_cl_write(cmd, &cl->wr);
-	sv_cl_write(" :End of /WHO list.", &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 315 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(cmd, &cl->wr);
+	sv_write(" :End of /WHO list.", &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 	sv_cl_send_to(cl, &cl->wr);
 	cl->wr.head = cl->wr.tail;
 }

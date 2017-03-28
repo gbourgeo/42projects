@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 23:03:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:46:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,26 @@
 static void		rpl_msg_chan(char **cmds, t_chan *chan, t_fd *cl)
 {
 	if (chan->cmode & CHFL_ANON)
-		sv_cl_write(":anonymous!~anonymous@anonymous", &cl->wr);
+		sv_write(":anonymous!~anonymous@anonymous", &cl->wr);
 	else
 	{
-		sv_cl_write(":", &cl->wr);
-		sv_cl_write(cl->reg.nick, &cl->wr);
-		sv_cl_write("!~", &cl->wr);
-		sv_cl_write(cl->reg.username, &cl->wr);
-		sv_cl_write("@", &cl->wr);
-		sv_cl_write(cl->addr, &cl->wr);
+		sv_write(":", &cl->wr);
+		sv_write(cl->reg.nick, &cl->wr);
+		sv_write("!~", &cl->wr);
+		sv_write(cl->reg.username, &cl->wr);
+		sv_write("@", &cl->wr);
+		sv_write(cl->addr, &cl->wr);
 	}
-	sv_cl_write(" MSG ", &cl->wr);
-	sv_cl_write(chan->name, &cl->wr);
-	sv_cl_write(" :", &cl->wr);
-	sv_cl_write(*cmds, &cl->wr);
+	sv_write(" MSG ", &cl->wr);
+	sv_write(chan->name, &cl->wr);
+	sv_write(" :", &cl->wr);
+	sv_write(*cmds, &cl->wr);
 	while (*++cmds)
 	{
-		sv_cl_write(" ", &cl->wr);
-		sv_cl_write(*cmds, &cl->wr);
+		sv_write(" ", &cl->wr);
+		sv_write(*cmds, &cl->wr);
 	}
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 }
 
 static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)

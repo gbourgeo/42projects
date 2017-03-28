@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 01:59:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:44:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,19 @@ static void			rpl_quit_msg(t_chan *ch, t_fd *cl)
 {
 	if (ch->cmode & CHFL_ANON)
 	{
-		sv_cl_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
-		sv_cl_write(ch->name, &cl->wr);
-		sv_cl_write(END_CHECK, &cl->wr);
+		sv_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
+		sv_write(ch->name, &cl->wr);
+		sv_write(END_CHECK, &cl->wr);
 		return ;
 	}
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write("!~", &cl->wr);
-	sv_cl_write(cl->reg.username, &cl->wr);
-	sv_cl_write("@", &cl->wr);
-	sv_cl_write(cl->addr, &cl->wr);
-	sv_cl_write(" QUIT :Remote host closed the connection", &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write("!~", &cl->wr);
+	sv_write(cl->reg.username, &cl->wr);
+	sv_write("@", &cl->wr);
+	sv_write(cl->addr, &cl->wr);
+	sv_write(" QUIT :Remote host closed the connection", &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 }
 
 static void			sv_cl_quit(t_fd *cl)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 05:43:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/25 23:44:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:44:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,19 +60,19 @@ static void			sv_sendtochan(t_grp *grp, t_chan *o, t_fd *c)
 	t_fd			*us;
 
 	users = o->users;
-	sv_cl_write(":", &c->wr);
-	sv_cl_write((o->cmode & CHFL_ANON) ? "anonymous" : c->reg.nick, &c->wr);
-	sv_cl_write("!~", &c->wr);
-	sv_cl_write((o->cmode & CHFL_ANON) ? "anonymous" : c->reg.username, &c->wr);
-	sv_cl_write("@", &c->wr);
-	sv_cl_write((o->cmode & CHFL_ANON) ? "anonymous" : c->addr, &c->wr);
-	sv_cl_write(" MODE ", &c->wr);
-	sv_cl_write(o->name, &c->wr);
-	sv_cl_write((grp->c) ? " :+" : " :-", &c->wr);
-	sv_cl_write(grp->ptr, &c->wr);
-	sv_cl_write(" ", &c->wr);
-	sv_cl_write(grp->to->reg.nick, &c->wr);
-	sv_cl_write(END_CHECK, &c->wr);
+	sv_write(":", &c->wr);
+	sv_write((o->cmode & CHFL_ANON) ? "anonymous" : c->reg.nick, &c->wr);
+	sv_write("!~", &c->wr);
+	sv_write((o->cmode & CHFL_ANON) ? "anonymous" : c->reg.username, &c->wr);
+	sv_write("@", &c->wr);
+	sv_write((o->cmode & CHFL_ANON) ? "anonymous" : c->addr, &c->wr);
+	sv_write(" MODE ", &c->wr);
+	sv_write(o->name, &c->wr);
+	sv_write((grp->c) ? " :+" : " :-", &c->wr);
+	sv_write(grp->ptr, &c->wr);
+	sv_write(" ", &c->wr);
+	sv_write(grp->to->reg.nick, &c->wr);
+	sv_write(END_CHECK, &c->wr);
 	while (users)
 	{
 		us = (t_fd *)users->is;

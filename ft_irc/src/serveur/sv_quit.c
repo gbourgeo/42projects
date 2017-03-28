@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 19:55:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:46:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,27 +17,27 @@ static void		rpl_quit(char **cmds, t_chan *ch, t_fd *cl)
 {
 	if (ch && ch->cmode & CHFL_ANON)
 	{
-		sv_cl_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
-		sv_cl_write(ch->name, &cl->wr);
-		sv_cl_write(END_CHECK, &cl->wr);
+		sv_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
+		sv_write(ch->name, &cl->wr);
+		sv_write(END_CHECK, &cl->wr);
 		return ;
 	}
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write("!~", &cl->wr);
-	sv_cl_write(cl->reg.username, &cl->wr);
-	sv_cl_write("@", &cl->wr);
-	sv_cl_write(cl->addr, &cl->wr);
-	sv_cl_write(" QUIT :", &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write("!~", &cl->wr);
+	sv_write(cl->reg.username, &cl->wr);
+	sv_write("@", &cl->wr);
+	sv_write(cl->addr, &cl->wr);
+	sv_write(" QUIT :", &cl->wr);
 	if (cmds == NULL || !*cmds)
-		sv_cl_write("Client Quit", &cl->wr);
+		sv_write("Client Quit", &cl->wr);
 	while (cmds && *cmds)
 	{
-		sv_cl_write(*cmds, &cl->wr);
+		sv_write(*cmds, &cl->wr);
 		if (*++cmds)
-			sv_cl_write(" ", &cl->wr);
+			sv_write(" ", &cl->wr);
 	}
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 }
 
 void			sv_quit(char **cmds, t_env *e, t_fd *cl)

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/26 01:41:55 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/27 18:42:40 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -66,7 +66,8 @@ SV_SRC	= get_users_list.c	\
 		sv_user_mode.c		\
 		sv_welcome.c 		\
 		sv_who.c			\
-		sv_who_info.c
+		sv_who_info.c		\
+		sv_write.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 

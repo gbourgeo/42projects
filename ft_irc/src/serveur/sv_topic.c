@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 20:21:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:46:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,17 @@
 
 static void		sv_rpl_topic(t_chan *chan, t_fd *cl, t_env *e)
 {
-	sv_cl_write(e->name, &cl->wr);
-	sv_cl_write((*chan->topic) ? " 332 " : " 331 ", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write(" ", &cl->wr);
-	sv_cl_write(chan->name, &cl->wr);
-	sv_cl_write(" :", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write((*chan->topic) ? " 332 " : " 331 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(chan->name, &cl->wr);
+	sv_write(" :", &cl->wr);
 	if (*chan->topic)
-		sv_cl_write(chan->topic, &cl->wr);
+		sv_write(chan->topic, &cl->wr);
 	else
-		sv_cl_write("No topic is set", &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
+		sv_write("No topic is set", &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 	sv_cl_send_to(cl, &cl->wr);
 	cl->wr.head = cl->wr.tail;
 }
@@ -35,17 +35,17 @@ static void		sv_rpl_topic_user(t_chan *chan, t_fd *cl)
 	t_listin	*li;
 
 	li = chan->users;
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write("!~", &cl->wr);
-	sv_cl_write(cl->reg.username, &cl->wr);
-	sv_cl_write("@", &cl->wr);
-	sv_cl_write(cl->addr, &cl->wr);
-	sv_cl_write(" TOPIC ", &cl->wr);
-	sv_cl_write(chan->name, &cl->wr);
-	sv_cl_write(" :", &cl->wr);
-	sv_cl_write(chan->topic, &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write("!~", &cl->wr);
+	sv_write(cl->reg.username, &cl->wr);
+	sv_write("@", &cl->wr);
+	sv_write(cl->addr, &cl->wr);
+	sv_write(" TOPIC ", &cl->wr);
+	sv_write(chan->name, &cl->wr);
+	sv_write(" :", &cl->wr);
+	sv_write(chan->topic, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 	while (li)
 	{
 		sv_cl_send_to(li->is, &cl->wr);

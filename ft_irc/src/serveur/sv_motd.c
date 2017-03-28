@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/26 01:26:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 01:48:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 19:55:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 static void		prefix(char *str, t_fd *cl, t_env *e)
 {
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 372 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" :- ", &e->wr);
-	sv_cl_write(str, &e->wr);
-	sv_cl_write(END_CHECK, &e->wr);
-	sv_cl_send_to(cl, &e->wr);
-	e->wr.head = e->wr.tail;
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 372 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" :- ", &cl->wr);
+	sv_write(str, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 }
 
 void			rpl_motd(t_fd *cl, t_env *e)

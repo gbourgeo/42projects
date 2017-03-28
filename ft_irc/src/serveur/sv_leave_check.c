@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 23:19:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:45:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,25 @@ static void		rpl_leave(char **cmd, t_chan *chan, t_fd *cl)
 	t_buf		*b;
 
 	b = &cl->wr;
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, b);
-	sv_cl_write("!~", &cl->wr);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, b);
-	sv_cl_write("@", &cl->wr);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, b);
-	sv_cl_write(" LEAVE ", &cl->wr);
-	sv_cl_write(chan->name, &cl->wr);
-	sv_cl_write(" :", &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, b);
+	sv_write("!~", &cl->wr);
+	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, b);
+	sv_write("@", &cl->wr);
+	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, b);
+	sv_write(" LEAVE ", &cl->wr);
+	sv_write(chan->name, &cl->wr);
+	sv_write(" :", &cl->wr);
 	if (*cmd)
 	{
-		sv_cl_write(*cmd, &cl->wr);
+		sv_write(*cmd, &cl->wr);
 		while (*++cmd)
 		{
-			sv_cl_write(" ", &cl->wr);
-			sv_cl_write(*cmd, &cl->wr);
+			sv_write(" ", &cl->wr);
+			sv_write(*cmd, &cl->wr);
 		}
 	}
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 }
 
 static void		sv_send_leavemsg(t_chan *chan, t_fd *cl)

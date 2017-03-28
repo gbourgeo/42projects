@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 22:24:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:43:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@ static void		rpl_join(t_chan *chan, t_fd *cl)
 	t_buf		*b;
 
 	b = &cl->wr;
-	sv_cl_write(":", &cl->wr);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, b);
-	sv_cl_write("!~", &cl->wr);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, b);
-	sv_cl_write("@", &cl->wr);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, b);
-	sv_cl_write(" JOIN ", &cl->wr);
-	sv_cl_write(chan->name, &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, b);
+	sv_write("!~", &cl->wr);
+	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, b);
+	sv_write("@", &cl->wr);
+	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, b);
+	sv_write(" JOIN ", &cl->wr);
+	sv_write(chan->name, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 }
 
 void			send_joinmsg_toothers(t_chan *chan, t_fd *cl)

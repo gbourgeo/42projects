@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 01:04:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 19:41:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,19 @@ static void		sv_send_chaninfo(t_chan *chan, t_fd *cl, t_env *e)
 	char		*visible;
 
 	visible = ft_itoa(chan->nbusers);
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &cl->wr);
-	sv_cl_write(" 322 ", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write(" ", &cl->wr);
-	sv_cl_write(chan->name, &cl->wr);
-	sv_cl_write(" ", &cl->wr);
-	sv_cl_write(visible, &cl->wr);
-	sv_cl_write(" :", &cl->wr);
-	sv_cl_write(chan->topic, &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	cl->wr.head = cl->wr.tail;
+	sv_write(":", &e->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 322 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(chan->name, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(visible, &cl->wr);
+	sv_write(" :", &cl->wr);
+	sv_write(chan->topic, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
+//	sv_cl_send_to(cl, &cl->wr);
+//	cl->wr.head = cl->wr.tail;
 	free(visible);
 }
 
@@ -118,12 +118,12 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 			chan = chan->next;
 		}
 	}
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &cl->wr);
-	sv_cl_write(" 323 ", &cl->wr);
-	sv_cl_write(cl->reg.nick, &cl->wr);
-	sv_cl_write(" :End of /LIST", &cl->wr);
-	sv_cl_write(END_CHECK, &cl->wr);
+	sv_write(":", &e->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 323 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" :End of /LIST", &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
 	sv_cl_send_to(cl, &cl->wr);
 	cl->wr.head = cl->wr.tail;
 }

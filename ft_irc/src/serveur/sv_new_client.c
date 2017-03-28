@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/25 23:14:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 18:40:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	cl->type = FD_CLIENT;
 	cl->time = time(NULL);
 	cl->fct_read = sv_cl_read;
+	cl->fct_write = sv_cl_write;
 	sv_init_buf(&cl->rd, cl->buf_read);
 	sv_init_buf(&cl->wr, cl->buf_write);
 	if (e->fds)

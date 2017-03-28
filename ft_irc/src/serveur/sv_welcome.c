@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 05:06:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 01:26:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/27 19:55:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,96 +27,97 @@
 
 static void			rpl_1_2_3(t_env *e, t_fd *cl)
 {
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 001 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" :Welcome to the Internet Relay Network ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write("!~", &e->wr);
-	sv_cl_write(cl->reg.username, &e->wr);
-	sv_cl_write("@", &e->wr);
-	sv_cl_write(cl->addr, &e->wr);
-	sv_cl_write(END_CHECK, &e->wr);
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 002 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" :Your host is ", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write("], running version 1.0", &e->wr);
-	sv_cl_write(END_CHECK, &e->wr);
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 003 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" :This server was created ", &e->wr);
-	sv_cl_write(e->creation, &e->wr);
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 001 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" :Welcome to the Internet Relay Network ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write("!~", &cl->wr);
+	sv_write(cl->reg.username, &cl->wr);
+	sv_write("@", &cl->wr);
+	sv_write(cl->addr, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 002 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" :Your host is ", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(", running version 1.0", &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 003 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" :This server was created ", &cl->wr);
+	sv_write(e->creation, &cl->wr);
 }
 
 static void			rpl_4(t_env *e, t_fd *cl)
 {
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 004 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" ", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 1.0 ", &e->wr);
-	sv_cl_write(USER_MODES, &e->wr);
-	sv_cl_write(" ", &e->wr);
-	sv_cl_write(CHAN_MODES, &e->wr);
-	sv_cl_write(END_CHECK, &e->wr);
-	sv_cl_send_to(cl, &e->wr);
-	e->wr.head = e->wr.tail;
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 004 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 1.0 ", &cl->wr);
+	sv_write(USER_MODES, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(CHAN_MODES, &cl->wr);
+	sv_write(END_CHECK, &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 }
 
-static void			convert(int nb, t_env *e)
+static void			convert(int nb, t_fd *cl, t_env *e)
 {
 	char			*ptr;
 
+	(void)e;
 	ptr = ft_itoa(nb);
-	sv_cl_write(ptr, &e->wr);
+	sv_write(ptr, &cl->wr);
 	free(ptr);
 }
 
 static void			rpl_5_42(t_env *e, t_fd *cl)
 {
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 005 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" RFC2812 PREFIX=(ov)@+ CHANTYPES=#&!+ CHANLIMIT=", &e->wr);
-	convert(CHAN_LIMIT, e);
-	sv_cl_write(" NICK_LEN=", &e->wr);
-	convert(NICK_LEN, e);
-	sv_cl_write(" TOPIC_LEN=", &e->wr);
-	convert(TOPIC_LEN, e);
-	sv_cl_write(" CHANNELLEN=", &e->wr);
-	convert(CHANNAME_LEN, e);
-	sv_cl_write(" CHANMODES=", &e->wr);
-	sv_cl_write(CHAN_MODES + 3, &e->wr);
-	sv_cl_write(" :are supported by this server\r\n", &e->wr);
-	sv_cl_send_to(cl, &e->wr);
-	e->wr.head = e->wr.tail;
-	sv_cl_write(":", &e->wr);
-	sv_cl_write(e->name, &e->wr);
-	sv_cl_write(" 042 ", &e->wr);
-	sv_cl_write(cl->reg.nick, &e->wr);
-	sv_cl_write(" ", &e->wr);
-	sv_cl_write(cl->uid, &e->wr);
-	sv_cl_write(" :your unique ID\r\n", &e->wr);
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 005 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" RFC2812 PREFIX=(ov)@+ CHANTYPES=#&!+ CHANLIMIT=", &cl->wr);
+	convert(CHAN_LIMIT, cl, e);
+	sv_write(" NICK_LEN=", &cl->wr);
+	convert(NICK_LEN, cl, e);
+	sv_write(" TOPIC_LEN=", &cl->wr);
+	convert(TOPIC_LEN, cl, e);
+	sv_write(" CHANNELLEN=", &cl->wr);
+	convert(CHANNAME_LEN, cl, e);
+	sv_write(" CHANMODES=", &cl->wr);
+	sv_write(CHAN_MODES + 3, &cl->wr);
+	sv_write(" :are supported by this server\r\n", &cl->wr);
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
+	sv_write(":", &cl->wr);
+	sv_write(e->name, &cl->wr);
+	sv_write(" 042 ", &cl->wr);
+	sv_write(cl->reg.nick, &cl->wr);
+	sv_write(" ", &cl->wr);
+	sv_write(cl->uid, &cl->wr);
+	sv_write(" :your unique ID\r\n", &cl->wr);
 }
 
 void				sv_welcome(t_env *e, t_fd *cl)
 {
 	rpl_1_2_3(e, cl);
-	sv_cl_send_to(cl, &e->wr);
-	e->wr.head = e->wr.tail;
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 	rpl_4(e, cl);
 	rpl_5_42(e, cl);
-	sv_cl_send_to(cl, &e->wr);
-	e->wr.head = e->wr.tail;
+	sv_cl_send_to(cl, &cl->wr);
+	cl->wr.head = cl->wr.tail;
 	rpl_motd(cl, e);
 	cl->reg.registered = 1;
 	e->members++;
