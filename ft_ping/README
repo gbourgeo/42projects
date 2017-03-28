@@ -12,3 +12,17 @@ Par la suite, David L. Mills a fourni un rétro-acronyme : « Packet InterNet Gr
 • Vous devez gérer les options -v -h.
 • Vous devez gérer une IPv4 simple (adresse/hostname) comme paramètre du programme.
 • Vous devez gérer le FQDN sans pour autant effectuer la résolution DNS dans le retour du paquet.
+
+BONUS:
+• -c <count>
+  Stop after sending count ECHO_REQUEST packets. With deadline option, ping waits for count
+  ECHO_REPLY packets, until the timeout expires.
+• -n
+  Numeric output only.  No attempt will be made to lookup symbolic names for host addresses.
+• -q
+  Quiet output.  Nothing is displayed except the summary lines at startup time and when finished.
+• -t
+  ttl ping only.  Set the IP Time to Live.
+• -s <packetsize>
+  Specifies the number of data bytes to be sent. The default is 56, which translates into 64 ICMP
+  data bytes when combined with the 8 bytes of ICMP header data.

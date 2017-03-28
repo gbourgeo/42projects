@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/09 14:16:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 22:30:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/28 21:55:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <arpa/inet.h>
 
 static void				ft_init_hdr(t_hdr *hdr)
 {
@@ -58,6 +57,8 @@ void					ft_setup(void)
 		else
 			gettimeofday(&e.end_time, NULL);
 		ft_analyse((char *)e.inpack, i, &hdr.from);
+		if (e.options[opt_c] && e.nreceived == e.count)
+			break ;
 	}
 	ft_finish(0);
 }

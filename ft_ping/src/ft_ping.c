@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/03 22:55:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 20:19:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/29 00:02:24 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int		ft_usage(char illegal)
 	}
 	ft_putstr_fd("Usage: ", 2);
 	ft_putstr_fd(e.prog, 2);
-	ft_putendl_fd(" [-"OPTIONS"] host", 2);
+	ft_putendl_fd(" "OPTIONS" destination", 2);
 	exit(2);
 }
 
@@ -32,14 +32,62 @@ static int		ft_options(char **av)
 {
 	int			i;
 	int			j;
+	int			ret;
 
 	i = 1;
-	while (av[i] && *av[i] == '-')
+	ret = 0;
+	while (av[i])
 	{
+		ret = (av[i][0] == '-') ? ret : i;
 		j = 1;
-		while (av[i][j])
+		while (av[i][0] == '-' && av[i][j])
 		{
-			if (av[i][j] == 'v')
+			if (av[i][j] == 'c')
+			{
+				e.options[opt_c] = 1;
+				e.count = (av[i][j + 1]) ?
+					ft_atoi(&av[i][j + 1]) : ft_atoi(av[++i]);
+				if (e.count <= 0)
+				{
+					fprintf(stderr, "%s: bad number of packets to transmit.\n", e.prog);
+					exit(2);
+				}
+				break ;
+			}
+			else if (av[i][j] == 'n')
+				e.options[opt_n] = 1;
+			else if (av[i][j] == 'q')
+				e.options[opt_q] = 1;
+			else if (av[i][j] == 't')
+			{
+				e.ttl = (av[i][j + 1]) ?
+					ft_atoi(&av[i][j + 1]) : ft_atoi(av[++i]);
+				if (e.ttl <= 0)
+				{
+					fprintf(stderr, "%s: Can't set unicast time-to-live: Invalid argument\n", e.prog);
+					exit(2);
+				}
+				break ;
+			}
+			else if (av[i][j] == 's')
+			{
+				e.datalen = (av[i][j + 1]) ?
+					ft_atoi(&av[i][j + 1]) : ft_atoi(av[++i]);
+				if (e.datalen < 0)
+				{
+					fprintf(stderr, "%s: Illegal negative packet size %d.\n",
+							e.prog, e.datalen);
+					exit(2);
+				}
+				if (e.datalen > 65528)
+				{
+					fprintf(stderr, "%s: packet size too large: %d\n",
+							e.prog, e.datalen);
+					exit(2);
+				}					
+				break ;
+			}				
+			else if (av[i][j] == 'v')
 				e.options[opt_v] = 1;
 			else if (av[i][j] == 'h')
 				ft_usage(0);
@@ -49,7 +97,7 @@ static int		ft_options(char **av)
 		}
 		i++;
 	}
-	return (i);
+	return ((ret) ? ret : i);
 }
 
 int				main(int ac, char **av)
@@ -63,8 +111,11 @@ int				main(int ac, char **av)
 		exit(-1);
 	}
 	e.outpack = e.outpackhdr + sizeof(struct ip);
+	e.datalen = DEFDATALEN;
+	e.interval = 1;
+	e.ttl = 64;
 	ac = ft_options(av);
-	if (!av[ac] || av[ac + 1])
+	if (!av[ac])
 		ft_usage(0);
 	e.hostname = av[ac];
 	ft_init();

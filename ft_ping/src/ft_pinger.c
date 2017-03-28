@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/07 21:23:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 22:26:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/29 00:04:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static void				ft_init_ip(int offset)
 	ip->ip_tos = 0;
 	ip->ip_id = 0;
 	ip->ip_off = 0;
-	ip->ip_ttl = 64;
+	ip->ip_ttl = e.ttl;
 	ip->ip_p = IPPROTO_ICMP;
 	ip->ip_src.s_addr = INADDR_ANY;
 	ip->ip_dst = e.source.sin_addr;
@@ -91,7 +91,7 @@ void					ft_pinger(void)
 	{
 		if (i < 0)
 		{
-			fprintf(stderr, "%s: sendto \n", e.prog);
+			fprintf(stderr, "%s: sendto: ", e.prog);
 			perror("");
 			return ;
 		}

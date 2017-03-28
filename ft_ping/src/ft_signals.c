@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/09 14:23:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 21:01:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/28 23:27:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,15 @@ void			ft_finish(int sig)
 	printf("\n--- %s ping statistics ---\n", e.hostname);
 	printf("%ld packets transmitted, ", e.ntransmitted);
 	printf("%ld received, ", e.nreceived);
+	if (e.nerrors)
+		printf("+%ld errors, ", e.nerrors);
 	if (e.ntransmitted)
 		ft_aff_ntransmitted();
 	printf("time %ldms\n", 1000 * e.start_time.tv_sec +
 			e.start_time.tv_usec / 1000);
 	if (e.nreceived)
 		ft_aff_nreceived();
+	printf("\n");
 	exit(1);
 }
 

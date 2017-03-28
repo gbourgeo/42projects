@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/07 21:37:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 22:28:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/28 23:26:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
+#include "ft_err.h"
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <stdio.h>
@@ -43,6 +44,7 @@ static int			ft_print_err(struct icmp *icp, int cc)
 		if (icp->icmp_type == ICMP_TIME_EXCEEDED && icp->icmp_code > 1)
 			return (printf("Time exceeded, Bad code: %d\n", icp->icmp_code));
 		printf("%s\n", errlist[icp->icmp_type][icp->icmp_code]);
+		e.nerrors++;
 		return (0);
 	}
 	return (1);
@@ -98,6 +100,30 @@ static void			ft_check_data(struct icmp *icp, int cc)
 	}
 }
 
+static void			print_data(int cc, struct icmp *icp, struct ip *ip, double triptime)
+{
+	if (e.options[opt_n])
+		printf("%d bytes from %s: icmp_seq=%u", cc,
+				e.srcip,
+				ntohs(icp->icmp_seq));
+	else
+		printf("%d bytes from %s (%s): icmp_seq=%u", cc,
+			   e.srcname,
+			   e.srcip,
+			   ntohs(icp->icmp_seq));
+	printf(" ttl=%d", ip->ip_ttl);
+	if (triptime >= 100)
+		printf(" time=%f ms\n", triptime);
+	else if (triptime >= 10)
+		printf(" time=%.1f ms\n", triptime);
+	else if (triptime >= 1)
+		printf(" time=%.2f ms\n", triptime);
+	else
+		printf(" time=%.3f ms\n", triptime);
+	ft_check_data(icp, cc);
+	fflush(stdout);
+}
+
 void				ft_analyse(char *buf, int cc, struct sockaddr_in *from)
 {
 	struct ip		*ip;
@@ -130,29 +156,22 @@ void				ft_analyse(char *buf, int cc, struct sockaddr_in *from)
 			e.end_time.tv_usec += 1000000;
 		}
 		e.end_time.tv_sec -= tv.tv_sec;
-		triptime = ((double)e.end_time.tv_sec) * 1000.0 +
-			((double)e.end_time.tv_usec) / 1000.0;
+		if (!ft_strcmp(e.srcip, "127.0.0.1"))
+		{
+			triptime = ((double)e.end_time.tv_sec) * 10000.0 +
+				((double)e.end_time.tv_usec) / 10000.0;
+		}
+		else
+		{
+			triptime = ((double)e.end_time.tv_sec) * 1000.0 +
+				((double)e.end_time.tv_usec) / 1000.0;
+		}
 		if (triptime < e.tmin)
 			e.tmin = triptime;
 		if (triptime > e.tmax)
 			e.tmax = triptime;
-		printf("%d bytes from %s (%s): icmp_seq=%u", cc,
-				e.srcname,
-				e.srcip,
-				ntohs(icp->icmp_seq));
-		printf(" ttl=%d", ip->ip_ttl);
-		if (triptime >= 100)
-			printf(" time=%f ms\n", triptime);
-		else if (triptime >= 10)
-			printf(" time=%.1f ms\n", triptime);
-		else if (triptime >= 1)
-			printf(" time=%.2f ms\n", triptime);
-		else
-			printf(" time=%.3f ms\n", triptime);
-/* if (cc + hlen != e.datalen) */
-/* 	printf("\nwrong total lenght %d instead of %d", cc + hlen, e.datalen); */
-		ft_check_data(icp, cc);
-		fflush(stdout);
+		if (!e.options[opt_q])
+			print_data(cc, icp, ip, triptime);
 	}
 	else if (ft_print_err(icp, cc) != 0)
 		return ;

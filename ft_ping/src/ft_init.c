@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 01:35:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/07 22:24:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/28 23:54:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ static void			ft_setsockopt(void)
 	if (setsockopt(e.sock, IPPROTO_IP, IP_HDRINCL, (char *)&on, sizeof(on)) < 0)
 		ft_err("setsocket", "(IPHDRINCL)");
 	on = 64;
-//	if (setsockopt(e.sock, SOL_IP, IP_TTL, (char *)&on, sizeof(on)) < 0)
 	if (setsockopt(e.sock, IPPROTO_IP, IP_TTL, (char *)&on, sizeof(on)) < 0)
 		ft_err("setsocket", "(IPHDRINCL)");
 	on = IP_MAXPACKET + 128;
@@ -96,9 +95,7 @@ void				ft_init(void)
 	u_char			*data;
 	int				i;
 
-	e.datalen = DEFDATALEN;
 	e.tmin = LONG_MAX;
-	e.interval = 1;
 	data = &e.outpack[ICMP_MINLEN + sizeof(struct timeval)];
 	i = sizeof(struct timeval);
 	while (i < e.datalen)
