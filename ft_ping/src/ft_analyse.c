@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/07 21:37:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/28 23:26:43 by root             ###   ########.fr       */
+/*   Updated: 2017/03/29 01:06:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,12 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-static int			ft_print_err(struct icmp *icp, int cc)
+static int			ft_print_err(struct sockaddr_in *from, struct icmp *icp)
 {
 	struct ip		*oip;
 	struct icmp		*oicmp;
 	static char		*errlist[][50] = { ERRLIST_FULL };
+	char			ip[255];
 
 	oip = &icp->icmp_ip;
 	oicmp = (struct icmp *)(oip + 1);
@@ -33,7 +34,16 @@ static int			ft_print_err(struct icmp *icp, int cc)
 			(oip->ip_p == IPPROTO_ICMP) && (oicmp->icmp_type == ICMP_ECHO) &&
 			(oicmp->icmp_id == e.ident)))
 	{
-		printf("%d bytes from %s: ", cc, e.srcip);
+		getnameinfo((struct sockaddr *)from, sizeof(*from), ip, sizeof(ip),
+					NULL, 0, NI_NAMEREQD | NI_DGRAM);
+		if (*ip)
+			printf("From %s %s icmp_seq=%d ", ip,
+				   inet_ntoa(*(struct in_addr *)&from->sin_addr.s_addr),
+				   ntohs(oicmp->icmp_seq));
+		else
+			printf("From %s icmp_seq=%d ",
+				   inet_ntoa(*(struct in_addr *)&from->sin_addr.s_addr),
+				   ntohs(oicmp->icmp_seq));
 		if (icp->icmp_type > NR_ICMP_TYPES)
 			return (printf("Bad ICMP type: %d\n", icp->icmp_type));
 		if (icp->icmp_type == ICMP_DEST_UNREACH &&
@@ -173,6 +183,6 @@ void				ft_analyse(char *buf, int cc, struct sockaddr_in *from)
 		if (!e.options[opt_q])
 			print_data(cc, icp, ip, triptime);
 	}
-	else if (ft_print_err(icp, cc) != 0)
+	else if (ft_print_err(from, icp) != 0)
 		return ;
 }
