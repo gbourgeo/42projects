@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/03 22:55:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/29 00:02:24 by root             ###   ########.fr       */
+/*   Updated: 2017/03/29 02:55:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int		ft_options(char **av)
 		{
 			if (av[i][j] == 'c')
 			{
-				e.options[opt_c] = 1;
+				e.options |= OPT_COUNT;
 				e.count = (av[i][j + 1]) ?
 					ft_atoi(&av[i][j + 1]) : ft_atoi(av[++i]);
 				if (e.count <= 0)
@@ -55,9 +55,9 @@ static int		ft_options(char **av)
 				break ;
 			}
 			else if (av[i][j] == 'n')
-				e.options[opt_n] = 1;
+				e.options |= OPT_NUMERIC;
 			else if (av[i][j] == 'q')
-				e.options[opt_q] = 1;
+				e.options |= OPT_QUIET;
 			else if (av[i][j] == 't')
 			{
 				e.ttl = (av[i][j + 1]) ?
@@ -88,7 +88,7 @@ static int		ft_options(char **av)
 				break ;
 			}				
 			else if (av[i][j] == 'v')
-				e.options[opt_v] = 1;
+				e.options |= OPT_VERBOSE;
 			else if (av[i][j] == 'h')
 				ft_usage(0);
 			else
@@ -117,7 +117,7 @@ int				main(int ac, char **av)
 	ac = ft_options(av);
 	if (!av[ac])
 		ft_usage(0);
-	e.hostname = av[ac];
+	ft_memcpy(e.hostname, av[ac], sizeof(e.hostname));
 	ft_init();
 	ft_signals();
 	ft_setup();
