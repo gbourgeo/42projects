@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/01 11:49:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/30 16:16:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,30 +96,4 @@ int				ft_env_error(char *err, char c)
 	}
 	ft_putchar_fd('\n', 2);
 	return (-1);
-}
-
-void			ft_update_env(char *path, char **args, t_env *e)
-{
-	char		*tmp;
-	size_t		i;
-
-	i = 0;
-	if (path)
-	{
-		tmp = args[0];
-		args[0] = path;
-		path = tmp;
-	}
-	while (e->env && e->env[i])
-	{
-		if (ft_strncmp(e->env[i], "_=", 2) == 0)
-		{
-			free(e->env[i]);
-			e->env[i] = ft_strjoin("_=", args[ft_tablen(args) - 1]);
-			break ;
-		}
-		i++;
-	}
-	if (path)
-		free(path);
 }

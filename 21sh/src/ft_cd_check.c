@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/26 09:56:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 03:01:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/30 16:00:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ static char		*recreate_path(char *new, char **list)
 				new = ft_strcat(new, "/");
 			new = ft_strcat(new, list[i]);
 		}
+		if (chdir(new) == -1)
+			return (new);
 		i++;
 	}
 	if (new[1] && new[ft_strlen(new) - 1] == '/')
@@ -69,11 +71,10 @@ char			*ft_cd_check(char **args, int i, t_env *e)
 	}
 	else if (ft_strcmp(args[i], "-") == 0)
 	{
-		pwd = ft_getenv("OLDPWD", e->env);
-		if (pwd)
-			ft_putendl(pwd);
-		else
+		if ((pwd = ft_getenv("OLDPWD", e->env)) == NULL)
 			ft_putendl_fd("cd: OLDPWD not defined", 2);
+		else
+			ft_putendl(pwd);
 	}
 	else if (*args[i] == '/')
 		return (ft_get_path("/", args[i]));

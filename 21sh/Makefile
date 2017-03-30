@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/10 14:50:04 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/03/30 16:17:19 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -72,7 +72,8 @@ SRC		= main.c					\
 			ft_stralnum.c 			\
 			ft_strerror.c			\
 			ft_termcaps.c			\
-			ft_unsetenv.c
+			ft_unsetenv.c			\
+			ft_update_env.c
 
 OBJ_D 	= obj/
 

@@ -6,62 +6,32 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/02/25 03:24:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/30 16:13:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static void		cd_error(char *pwd, char *entry)
+static void		cd_error(char *pwd, char *entry, t_env *e)
 {
 	struct stat	buffer;
 	int			ret;
 
-	if (pwd)
+	ret = stat(pwd, &buffer);
+	if (ret == -1)
 	{
-		ret = stat(pwd, &buffer);
-		if (ret == -1)
-		{
-			if (lstat(pwd, &buffer) != -1)
-				ft_putstr("cd: too many levels of symbolic links: ");
-			else
-				ft_putstr("cd: no such file or directory: ");
-		}
-		else if (!S_ISDIR(buffer.st_mode))
-			ft_putstr("cd: not a directory: ");
+		if (lstat(pwd, &buffer) != -1)
+			ft_putstr("cd: too many levels of symbolic links: ");
 		else
-			ft_putstr("cd: permission denied: ");
-		ft_putendl(entry);
-		free(pwd);
+			ft_putstr("cd: no such file or directory: ");
 	}
-}
-
-static void		cd_write_in_pwd(char **args, int i, t_env *e)
-{
-	char		*pwd;
-	char		*tmp;
-
-	e->ret = 0;
-	pwd = ft_cd_check(args, i, e);
-	if (pwd && !*pwd)
-	{
-		free(pwd);
-		return ;
-	}
-	if (pwd && chdir(pwd) != -1)
-	{
-		tmp = pwd;
-		if (*args[i - 1] == '-' && ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
-		{
-			pwd = ft_getcwd(tmp, e->env);
-			free(tmp);
-		}
-		ft_change_pwds(pwd, e);
-		free(pwd);
-		return ;
-	}
-	cd_error(pwd, args[i]);
-	e->ret = 1;
+	else if (!S_ISDIR(buffer.st_mode))
+		ft_putstr("cd: not a directory: ");
+	else
+		ft_putstr("cd: permission denied: ");
+	ft_putendl(entry);
+	free(pwd);
+	chdir(ft_getenv("PWD", e->env));
 }
 
 static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)
@@ -89,15 +59,31 @@ static void		cd_search_in_pwd(char **args, t_env *e)
 		return ;
 	}
 	pwd = cd_change_in_pwd(pwd, tmp, args);
-	if (chdir(pwd) != -1)
+	if (chdir(pwd) == -1)
+		return (cd_error(pwd, pwd, e));
+	ft_change_pwds(pwd, e);
+	ft_putendl(pwd);
+	free(pwd);
+	e->ret = 0;
+}
+
+static void		cd_write_in_pwd(char **args, int i, t_env *e)
+{
+	char		*pwd;
+	char		*tmp;
+
+	pwd = ft_cd_check(args, i, e);
+	if (chdir(pwd) == -1)
+		return (cd_error(pwd, args[i], e));
+	tmp = pwd;
+	if (*args[i - 1] == '-' && ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
 	{
-		e->ret = 0;
-		ft_change_pwds(pwd, e);
-		ft_putendl(pwd);
-		free(pwd);
-		return ;
+		pwd = ft_getcwd(tmp, e->env);
+		free(tmp);
 	}
-	cd_error(pwd, pwd);
+	ft_change_pwds(pwd, e);
+	free(pwd);
+	e->ret = 0;
 }
 
 void			ft_cd(char **args, t_env *e)
