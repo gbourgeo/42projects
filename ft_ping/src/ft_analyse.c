@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/07 21:37:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/29 02:53:47 by root             ###   ########.fr       */
+/*   Updated: 2017/03/30 20:01:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static int			ft_print_err(struct sockaddr_in *from, struct icmp *icp)
 			(oip->ip_p == IPPROTO_ICMP) && (oicmp->icmp_type == ICMP_ECHO) &&
 			(oicmp->icmp_id == e.ident)))
 	{
+		e.nerrors++;
 		printf("From %s icmp_seq=%d ", print_from(from), ntohs(oicmp->icmp_seq));
 		if (icp->icmp_type > NR_ICMP_TYPES)
 			return (printf("Bad ICMP type: %d\n", icp->icmp_type));
@@ -61,7 +62,6 @@ static int			ft_print_err(struct sockaddr_in *from, struct icmp *icp)
 		if (icp->icmp_type == ICMP_TIME_EXCEEDED && icp->icmp_code > 1)
 			return (printf("Time exceeded, Bad code: %d\n", icp->icmp_code));
 		printf("%s\n", errlist[icp->icmp_type][icp->icmp_code]);
-		e.nerrors++;
 		return (0);
 	}
 	return (1);
