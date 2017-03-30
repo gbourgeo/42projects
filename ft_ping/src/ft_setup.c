@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/09 14:16:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/28 21:55:15 by root             ###   ########.fr       */
+/*   Updated: 2017/03/29 02:56:21 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@ static void				ft_init_hdr(t_hdr *hdr)
 	ft_memset(&e.ctrl, 0, sizeof(e.ctrl));
 	ft_memset(&hdr->msg, 0, sizeof(hdr->msg));
 	hdr->msg.msg_name = &hdr->from;
+	hdr->msg.msg_namelen = sizeof(hdr->from);
 	hdr->msg.msg_control = (caddr_t)e.ctrl;
+	hdr->msg.msg_controllen = sizeof(e.ctrl);
 	hdr->msg.msg_iov = &hdr->iov;
 	hdr->msg.msg_iovlen = 1;
 	hdr->iov.iov_base = e.inpack;
 	hdr->iov.iov_len = IP_MAXPACKET;
-	hdr->msg.msg_controllen = sizeof(e.ctrl);
-	hdr->msg.msg_namelen = sizeof(hdr->from);
 	hdr->cmsg = (struct cmsghdr *)e.ctrl;
 }
 
@@ -57,7 +57,7 @@ void					ft_setup(void)
 		else
 			gettimeofday(&e.end_time, NULL);
 		ft_analyse((char *)e.inpack, i, &hdr.from);
-		if (e.options[opt_c] && e.nreceived == e.count)
+		if (e.options & OPT_COUNT && e.nreceived == e.count)
 			break ;
 	}
 	ft_finish(0);

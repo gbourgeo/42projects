@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/07 21:37:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/28 23:26:43 by root             ###   ########.fr       */
+/*   Updated: 2017/03/29 02:53:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,24 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-static int			ft_print_err(struct icmp *icp, int cc)
+static char			*print_from(struct sockaddr_in *from)
+{
+	struct in_addr	addr;
+	char			name[255];
+	static char		buf[4096];
+
+	addr = *(struct in_addr *)&from->sin_addr.s_addr;
+	if (e.options & OPT_NUMERIC ||
+		getnameinfo((struct sockaddr *)from, sizeof(*from),
+					name, sizeof(name), NULL, 0,
+					NI_NAMEREQD | NI_DGRAM))
+		sprintf(buf, "%s", inet_ntoa(addr));
+	else
+		sprintf(buf, "%s (%s)", name, inet_ntoa(addr));
+	return (buf);
+}
+
+static int			ft_print_err(struct sockaddr_in *from, struct icmp *icp)
 {
 	struct ip		*oip;
 	struct icmp		*oicmp;
@@ -28,12 +45,12 @@ static int			ft_print_err(struct icmp *icp, int cc)
 
 	oip = &icp->icmp_ip;
 	oicmp = (struct icmp *)(oip + 1);
-	if ((e.options[opt_v] && getuid() == 0) ||
+	if ((e.options & OPT_VERBOSE && getuid() == 0) ||
 		((oip->ip_dst.s_addr == e.source.sin_addr.s_addr) &&
 			(oip->ip_p == IPPROTO_ICMP) && (oicmp->icmp_type == ICMP_ECHO) &&
 			(oicmp->icmp_id == e.ident)))
 	{
-		printf("%d bytes from %s: ", cc, e.srcip);
+		printf("From %s icmp_seq=%d ", print_from(from), ntohs(oicmp->icmp_seq));
 		if (icp->icmp_type > NR_ICMP_TYPES)
 			return (printf("Bad ICMP type: %d\n", icp->icmp_type));
 		if (icp->icmp_type == ICMP_DEST_UNREACH &&
@@ -102,15 +119,6 @@ static void			ft_check_data(struct icmp *icp, int cc)
 
 static void			print_data(int cc, struct icmp *icp, struct ip *ip, double triptime)
 {
-	if (e.options[opt_n])
-		printf("%d bytes from %s: icmp_seq=%u", cc,
-				e.srcip,
-				ntohs(icp->icmp_seq));
-	else
-		printf("%d bytes from %s (%s): icmp_seq=%u", cc,
-			   e.srcname,
-			   e.srcip,
-			   ntohs(icp->icmp_seq));
 	printf(" ttl=%d", ip->ip_ttl);
 	if (triptime >= 100)
 		printf(" time=%f ms\n", triptime);
@@ -136,7 +144,7 @@ void				ft_analyse(char *buf, int cc, struct sockaddr_in *from)
 	hlen = ip->ip_hl << 2;
 	if (cc < hlen + ICMP_MINLEN)
 	{
-		if (e.options[opt_v])
+		if (e.options & OPT_VERBOSE)
 			fprintf(stderr, "packet too short (%d bytes) from %s",
 					cc,
 					inet_ntoa(from->sin_addr));
@@ -156,23 +164,21 @@ void				ft_analyse(char *buf, int cc, struct sockaddr_in *from)
 			e.end_time.tv_usec += 1000000;
 		}
 		e.end_time.tv_sec -= tv.tv_sec;
+		triptime = ((double)e.end_time.tv_sec) * 1000.0 +
+			((double)e.end_time.tv_usec) / 1000.0;
 		if (!ft_strcmp(e.srcip, "127.0.0.1"))
-		{
-			triptime = ((double)e.end_time.tv_sec) * 10000.0 +
-				((double)e.end_time.tv_usec) / 10000.0;
-		}
-		else
-		{
-			triptime = ((double)e.end_time.tv_sec) * 1000.0 +
-				((double)e.end_time.tv_usec) / 1000.0;
-		}
+			triptime /= 10;
 		if (triptime < e.tmin)
 			e.tmin = triptime;
 		if (triptime > e.tmax)
 			e.tmax = triptime;
-		if (!e.options[opt_q])
+		if (!(e.options & OPT_QUIET))
+		{
+			printf("%d bytes from %s: icmp_seq=%u", cc,
+				   print_from(from), ntohs(icp->icmp_seq));
 			print_data(cc, icp, ip, triptime);
+		}
 	}
-	else if (ft_print_err(icp, cc) != 0)
+	else if (ft_print_err(from, icp) != 0)
 		return ;
 }

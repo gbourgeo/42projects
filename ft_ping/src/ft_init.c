@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 01:35:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/28 23:54:20 by root             ###   ########.fr       */
+/*   Updated: 2017/03/29 02:54:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,11 @@ static void			ft_setsockopt(void)
 
 static void			ft_getinfo(struct addrinfo *res)
 {
-	int				i;
-
-	ft_memcpy(e.srcname, res->ai_canonname, sizeof(e.srcname));
+	ft_memcpy(e.hostname, res->ai_canonname, sizeof(e.hostname));
 	ft_memcpy(&e.source, res->ai_addr, sizeof(e.source));
 	inet_ntop(res->ai_family, &e.source.sin_addr, e.srcip, sizeof(e.srcip));
-	if ((i = getnameinfo((struct sockaddr *)&e.source, sizeof(e.source),
-							e.srcname, sizeof(e.srcname), NULL, 0,
-							NI_NAMEREQD | NI_DGRAM)) != 0)
-		ft_err("getnameinfo:", (char *)gai_strerror(i));
+	if (!ft_strcmp(e.hostname, e.srcip))
+		e.options |= OPT_NUMERIC;
 	freeaddrinfo(res);
 }
 

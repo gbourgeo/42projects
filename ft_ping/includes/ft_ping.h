@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/03 22:56:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/29 00:05:15 by root             ###   ########.fr       */
+/*   Updated: 2017/03/29 02:48:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,10 @@
 # define OPTIONS "[-nqvh] [-c count] [-s packetsize] [-t ttl]"
 # define DEFDATALEN 56
 
-enum					e_options
-{
-	opt_c,
-	opt_n,
-	opt_q,
-	opt_v,
-	opt_len
-};
+# define OPT_COUNT		0x0001
+# define OPT_NUMERIC	0x0002
+# define OPT_QUIET		0x0004
+# define OPT_VERBOSE	0x0008
 
 typedef struct			s_hdr
 {
@@ -42,15 +38,14 @@ typedef struct			s_hdr
 typedef struct			s_env
 {
 	char				*prog;
-	char				options[opt_len];
+	int					options;
 	int					count;
 	int					ttl;
 	int					sock;
-	char				*hostname;
+	char				hostname[255];
 	double				interval;
 	int					datalen;
 	int					ident;
-	char				srcname[255];
 	char				srcip[INET_ADDRSTRLEN];
 	struct sockaddr_in	source;
 	struct timeval		start;
