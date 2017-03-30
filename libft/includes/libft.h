@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/14 12:17:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/30 23:03:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ typedef struct		s_list
 	struct s_list	*next;
 }					t_list;
 
+void				ft_freestr(char **str);
+void				ft_freetab(char ***table);
 size_t				ft_strlen(const char *s);
 char				*ft_strdup(const char *s1);
 char				*ft_strcpy(char *s1, const char *s2);
@@ -41,6 +43,7 @@ int					ft_isdigit(int c);
 int					ft_isalnum(int c);
 int					ft_isascii(int c);
 int					ft_isprint(int c);
+int					ft_iswhitespace(char c);
 int					ft_toupper(int c);
 int					ft_tolower(int c);
 void				*ft_memset(void *b, int c, size_t len);
@@ -96,5 +99,7 @@ char				*ft_strcharset(char *s1, char *s2);
 void				ft_stricpy(char *s1, const char *s2, int pos);
 char				*ft_strndup(const char *s1, int size);
 char				*ft_strrcdup(char *str, char c);
+
+int					ft_pow(int nb, int power);
 
 #endif
