@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/02 00:44:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/02 00:55:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@
 ** SERV_SIZE		The maximum length a servers' name can be. Over this value,
 **					a server name will be truncated.
 */
-# define SERVER_LEN	1023
+# define SERVER_LEN	1025
 
 /*
 ** CHAN_LIMIT		The maximum number of channels a client can join.
@@ -74,26 +74,6 @@
 **					topic will be truncated.
 */
 # define TOPIC_LEN	80
-
-/*
-** FLOOD_SPEED		Define the interval in seconds that each writes from the
-**					same is considered as flood.
-**					Over this interval, the flood value is reinitialized to 0.
-**					Example: 3 -> from the last writes plus 3 seconds, each
-**					writes will rize the flood value.
-*/
-# define FLOOD_SPEED 2
-
-/*
-** FLOOD_WARNING	Define the time in seconds a client can send before being
-**					warned.
-*/
-# define FLOOD_WARNING 3
-
-/*
-** FLOOD_KICK		Number of times a user is warned before being kicked.
-*/
-# define FLOOD_KICK 3
 
 /*
 ** Some knowledge:
@@ -207,8 +187,6 @@ typedef struct			s_env
 	t_chan				*chans;
 	fd_set				fd_read;
 	fd_set				fd_write;
-	t_buf				wr;
-	char				buf_write[BUFF + 1];
 	char				*ptr;
 }						t_env;
 
