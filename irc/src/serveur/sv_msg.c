@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:46:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:07:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,44 +15,39 @@
 
 static void		rpl_msg(char **cmds, t_fd *to, t_fd *cl)
 {
-	sv_write(":", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write("!~", &cl->wr);
-	sv_write(cl->reg.username, &cl->wr);
-	sv_write("@", &cl->wr);
-	sv_write(cl->addr, &cl->wr);
-	sv_write(" MSG ", &cl->wr);
-	sv_write(to->reg.nick, &cl->wr);
-	sv_write(" :", &cl->wr);
-	sv_write(*cmds, &cl->wr);
+	sv_cl_write(":", to);
+	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write("!~", to);
+	sv_cl_write(cl->reg.username, to);
+	sv_cl_write("@", to);
+	sv_cl_write(cl->addr, to);
+	sv_cl_write(" MSG ", to);
+	sv_cl_write(to->reg.nick, to);
+	sv_cl_write(" :", to);
+	sv_cl_write(*cmds, to);
 	while (*++cmds)
 	{
-		sv_write(" ", &cl->wr);
-		sv_write(*cmds, &cl->wr);
+		sv_cl_write(" ", to);
+		sv_cl_write(*cmds, to);
 	}
-	sv_write(END_CHECK, &cl->wr);
+	sv_cl_write(END_CHECK, to);
 }
 
 static void		sv_msg_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 {
-	t_fd		*fd;
+	t_fd		*to;
 
-	fd = e->fds;
-	while (fd)
+	to = e->fds;
+	while (to)
 	{
-		if (!sv_strcmp(nick, fd->reg.nick))
+		if (!sv_strcmp(nick, to->reg.nick))
 		{
-			rpl_msg(cmds, fd, cl);
-			sv_cl_send_to(fd, &cl->wr);
-			if (fd->reg.umode &= USR_AWAY)
-			{
-				rpl_away(cl, fd, e);
-				sv_cl_send_to(cl, &e->wr);
-			}
-			cl->wr.head = cl->wr.tail;
+			rpl_msg(cmds, to, cl);
+			if (to->reg.umode &= USR_AWAY)
+				rpl_away(cl, to, e);
 			return ;
 		}
-		fd = fd->next;
+		to = to->next;
 	}
 	sv_err(ERR_NOSUCHNICK, nick, NULL, cl);
 }

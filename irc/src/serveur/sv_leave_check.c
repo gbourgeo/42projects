@@ -6,52 +6,48 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:45:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:45:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		rpl_leave(char **cmd, t_chan *chan, t_fd *cl)
+static void		rpl_leave(char **cmd, t_chan *chan, t_fd *to, t_fd *cl)
 {
-	t_buf		*b;
-
-	b = &cl->wr;
-	sv_write(":", &cl->wr);
-	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, b);
-	sv_write("!~", &cl->wr);
-	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, b);
-	sv_write("@", &cl->wr);
-	sv_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, b);
-	sv_write(" LEAVE ", &cl->wr);
-	sv_write(chan->name, &cl->wr);
-	sv_write(" :", &cl->wr);
-	if (*cmd)
+	sv_cl_write(":", to);
+	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, to);
+	sv_cl_write("!~", to);
+	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, to);
+	sv_cl_write("@", to);
+	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
+	sv_cl_write(" LEAVE ", to);
+	sv_cl_write(chan->name, to);
+	sv_cl_write(" :", to);
+	if (cmd && *cmd)
 	{
-		sv_write(*cmd, &cl->wr);
+		sv_cl_write(*cmd, to);
 		while (*++cmd)
 		{
-			sv_write(" ", &cl->wr);
-			sv_write(*cmd, &cl->wr);
+			sv_cl_write(" ", to);
+			sv_cl_write(*cmd, to);
 		}
 	}
-	sv_write(END_CHECK, &cl->wr);
+	sv_cl_write(END_CHECK, to);
 }
 
-static void		sv_send_leavemsg(t_chan *chan, t_fd *cl)
+static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
 {
 	t_listin	*list;
-	t_fd		*us;
+	t_fd		*to;
 
 	list = chan->users;
 	while (list)
 	{
-		us = (t_fd *)list->is;
-		if (!(chan->cmode & CHFL_QUIET) || us->fd == cl->fd)
-			sv_cl_send_to(us, &cl->wr);
+		to = (t_fd *)list->is;
+		if (!(chan->cmode & CHFL_QUIET) || to->fd == cl->fd)
+			rpl_leave(cmd, chan, to, cl);
 		list = list->next;
 	}
-	cl->wr.head = cl->wr.tail;
 }
 
 static void		sv_find_chaninuser(t_chan *chan, t_fd *cl)
@@ -85,8 +81,7 @@ void			sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl));
 	chan->nbusers--;
 	cl->chansnb--;
-	rpl_leave(cmd, chan, cl);
-	sv_send_leavemsg(chan, cl);
+	sv_send_leavemsg(cmd, chan, cl);
 	if (tmp->prev)
 		tmp->prev->next = tmp->next;
 	else

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/25 00:06:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/02 00:44:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ static void			sv_send_channel(t_grp *grp, int limit)
 	while (list)
 	{
 		grp->to = (t_fd *)list->is;
-		rpl_mode(grp, (limit) ? ft_itoa(grp->on->limit) : NULL);
-		sv_cl_send_to(grp->to, &grp->from->wr);
-		grp->from->wr.head = grp->from->wr.tail;
+		rpl_cmode(grp, (limit) ? ft_itoa(grp->on->limit) : NULL);
 		list = list->next;
 	}
 }
@@ -115,5 +113,4 @@ void				sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl)
 	grp.on = ch;
 	grp.to = NULL;
 	sv_get_mode(&grp, cmds);
-	cl->wr.head = cl->wr.tail;
 }

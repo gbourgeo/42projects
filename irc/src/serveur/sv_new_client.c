@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:40:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:48:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,6 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	ft_memset(cl, 0, sizeof(*cl));
 	cl->fd = fd;
 	ft_memcpy(&cl->csin, csin, sizeof(cl->csin));
-	sv_notice("Looking up your hostname...", cl, e);
-	if (getnameinfo(&cl->csin, sizeof(cl->csin), cl->addr, NI_MAXHOST,
-					cl->port, NI_MAXSERV, NI_NUMERICSERV))
-		sv_notice("Couldn't look up your hostname", cl, e);
 	client_id(cl, e);
 	cl->type = FD_CLIENT;
 	cl->time = time(NULL);
@@ -74,6 +70,10 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	cl->fct_write = sv_cl_write;
 	sv_init_buf(&cl->rd, cl->buf_read);
 	sv_init_buf(&cl->wr, cl->buf_write);
+	sv_notice("Looking up your hostname...", cl, e);
+	if (getnameinfo(&cl->csin, sizeof(cl->csin), cl->addr, NI_MAXHOST,
+					cl->port, NI_MAXSERV, NI_NUMERICSERV))
+		sv_notice("Couldn't look up your hostname", cl, e);
 	if (e->fds)
 		e->fds->prev = cl;
 	cl->next = e->fds;

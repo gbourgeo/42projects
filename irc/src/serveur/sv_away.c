@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 16:16:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:43:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 21:27:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,27 @@
 
 void			rpl_away(t_fd *to, t_fd *cl, t_env *e)
 {
-	sv_write(":", &e->wr);
-	sv_write(e->name, &e->wr);
-	sv_write(" 301 ", &e->wr);
-	sv_write(to->reg.nick, &e->wr);
-	sv_write(" ", &e->wr);
-	sv_write(cl->reg.nick, &e->wr);
-	sv_write(" :", &e->wr);
-	sv_write(cl->away, &e->wr);
-	sv_write(END_CHECK, &e->wr);
+	sv_cl_write(":", to);
+	sv_cl_write(e->name, to);
+	sv_cl_write(" 301 ", to);
+	sv_cl_write(to->reg.nick, to);
+	sv_cl_write(" ", to);
+	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write(" :", to);
+	sv_cl_write(cl->away, to);
+	sv_cl_write(END_CHECK, to);
 }
 
 static void		sv_away_msg(char *num, char *msg, t_fd *cl, t_env *e)
 {
-	sv_write(e->name, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(num, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(msg, &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	cl->wr.head = cl->wr.tail;
+	sv_cl_write(e->name, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(num, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(msg, cl);
+	sv_cl_write(END_CHECK, cl);
 }
 
 static char		*sv_find_msg(t_fd *cl)

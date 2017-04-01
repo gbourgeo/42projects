@@ -6,35 +6,35 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:46:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:45:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		rpl_msg_chan(char **cmds, t_chan *chan, t_fd *cl)
+static void		rpl_msg_chan(char **cmds, t_chan *chan, t_fd *to, t_fd *cl)
 {
 	if (chan->cmode & CHFL_ANON)
-		sv_write(":anonymous!~anonymous@anonymous", &cl->wr);
+		sv_cl_write(":anonymous!~anonymous@anonymous", to);
 	else
 	{
-		sv_write(":", &cl->wr);
-		sv_write(cl->reg.nick, &cl->wr);
-		sv_write("!~", &cl->wr);
-		sv_write(cl->reg.username, &cl->wr);
-		sv_write("@", &cl->wr);
-		sv_write(cl->addr, &cl->wr);
+		sv_cl_write(":", to);
+		sv_cl_write(cl->reg.nick, to);
+		sv_cl_write("!~", to);
+		sv_cl_write(cl->reg.username, to);
+		sv_cl_write("@", to);
+		sv_cl_write(cl->addr, to);
 	}
-	sv_write(" MSG ", &cl->wr);
-	sv_write(chan->name, &cl->wr);
-	sv_write(" :", &cl->wr);
-	sv_write(*cmds, &cl->wr);
+	sv_cl_write(" MSG ", to);
+	sv_cl_write(chan->name, to);
+	sv_cl_write(" :", to);
+	sv_cl_write(*cmds, to);
 	while (*++cmds)
 	{
-		sv_write(" ", &cl->wr);
-		sv_write(*cmds, &cl->wr);
+		sv_cl_write(" ", to);
+		sv_cl_write(*cmds, to);
 	}
-	sv_write(END_CHECK, &cl->wr);
+	sv_cl_write(END_CHECK, to);
 }
 
 static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
@@ -47,13 +47,9 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 	{
 		to = (t_fd *)us->is;
 		if (to->fd != cl->fd)
-		{
-			rpl_msg_chan(cmds, chan, cl);
-			sv_cl_send_to(to, &cl->wr);
-		}
+			rpl_msg_chan(cmds, chan, to, cl);
 		us = us->next;
 	}
-	cl->wr.head = cl->wr.tail;
 }
 
 static int		user_got_mod(t_chan *ch, t_fd *cl)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:48:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:27:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,14 @@
 
 static void		rpl_who_end(char *cmd, t_fd *cl, t_env *e)
 {
-	sv_write(":", &cl->wr);
-	sv_write(e->name, &cl->wr);
-	sv_write(" 315 ", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(cmd, &cl->wr);
-	sv_write(" :End of /WHO list.", &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	cl->wr.head = cl->wr.tail;
+	sv_cl_write(":", cl);
+	sv_cl_write(e->name, cl);
+	sv_cl_write(" 315 ", cl);
+	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(cmd, cl);
+	sv_cl_write(" :End of /WHO list.", cl);
+	sv_cl_write(END_CHECK, cl);
 }
 
 static int		have_common_channel(t_fd *to, t_fd *cl)

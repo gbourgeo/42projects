@@ -6,49 +6,48 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:44:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 21:52:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void			rpl_quit_msg(t_chan *ch, t_fd *cl)
+static void			rpl_quit_msg(t_chan *ch, t_fd *to, t_fd *cl)
 {
 	if (ch->cmode & CHFL_ANON)
 	{
-		sv_write(":anonymous!~anonymous@anonymous LEAVE ", &cl->wr);
-		sv_write(ch->name, &cl->wr);
-		sv_write(END_CHECK, &cl->wr);
+		sv_cl_write(":anonymous!~anonymous@anonymous LEAVE ", to);
+		sv_cl_write(ch->name, to);
+		sv_cl_write(END_CHECK, to);
 		return ;
 	}
-	sv_write(":", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write("!~", &cl->wr);
-	sv_write(cl->reg.username, &cl->wr);
-	sv_write("@", &cl->wr);
-	sv_write(cl->addr, &cl->wr);
-	sv_write(" QUIT :Remote host closed the connection", &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
+	sv_cl_write(":", to);
+	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write("!~", to);
+	sv_cl_write(cl->reg.username, to);
+	sv_cl_write("@", to);
+	sv_cl_write(cl->addr, to);
+	sv_cl_write(" QUIT :Remote host closed the connection", to);
+	sv_cl_write(END_CHECK, to);
 }
 
 static void			sv_cl_quit(t_fd *cl)
 {
-	t_listin		*ch;
-	t_listin		*us;
+	t_listin		*chan;
+	t_listin		*to;
 
-	ch = cl->chans;
-	while (ch)
+	chan = cl->chans;
+	while (chan)
 	{
-		rpl_quit_msg(ch->is, cl);
-		us = ((t_chan *)ch->is)->users;
-		while (us)
+		to = ((t_chan *)chan->is)->users;
+		while (to)
 		{
-			if (((t_fd *)us->is)->fd != cl->fd)
-				sv_cl_send_to(us->is, &cl->wr);
-			us = us->next;
+			if (((t_fd *)to->is)->fd != cl->fd)
+				rpl_quit_msg(chan->is, to->is, cl);
+			to = to->next;
 		}
-		ch = ch->next;
+		chan = chan->next;
 	}
 	cl->leaved = 1;
 	cl->reason = "Remote host closed the connection";

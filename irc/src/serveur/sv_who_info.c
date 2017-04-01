@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 13:30:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:48:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:28:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,47 +19,45 @@ static void		sv_info_next(t_fd *user, t_fd *cl)
 
 	li = user->chans;
 	if (user->reg.umode & USR_OP || user->reg.umode & USR_LOCALOP)
-		sv_write("*", &cl->wr);
+		sv_cl_write("*", cl);
 	if (li && li->mode & CHFL_CHANOP)
-		sv_write("@", &cl->wr);
+		sv_cl_write("@", cl);
 	if (li && li->mode & CHFL_VOICE)
-		sv_write("+", &cl->wr);
-	sv_write(" :0", &cl->wr);
+		sv_cl_write("+", cl);
+	sv_cl_write(" :0", cl);
 	tmp = user->reg.realname;
 	while (tmp && *tmp)
 	{
-		sv_write(" ", &cl->wr);
-		sv_write(*tmp, &cl->wr);
+		sv_cl_write(" ", cl);
+		sv_cl_write(*tmp, cl);
 		tmp++;
 	}
-	sv_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	cl->wr.head = cl->wr.tail;
+	sv_cl_write(END_CHECK, cl);
 }
 
 void			sv_who_info(t_fd *us, t_fd *cl, t_env *e)
 {
-	sv_write(":", &cl->wr);
-	sv_write(e->name, &cl->wr);
-	sv_write(" 352 ", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write(" ", &cl->wr);
+	sv_cl_write(":", cl);
+	sv_cl_write(e->name, cl);
+	sv_cl_write(" 352 ", cl);
+	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(" ", cl);
 	if (us->chans)
-		sv_write(((t_chan *)us->chans->is)->name, &cl->wr);
+		sv_cl_write(((t_chan *)us->chans->is)->name, cl);
 	else
-		sv_write("*", &cl->wr);
-	sv_write(" ~", &cl->wr);
-	sv_write(us->reg.username, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(us->addr, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(e->name, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(us->reg.nick, &cl->wr);
-	sv_write(" ", &cl->wr);
+		sv_cl_write("*", cl);
+	sv_cl_write(" ~", cl);
+	sv_cl_write(us->reg.username, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(us->addr, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(e->name, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(us->reg.nick, cl);
+	sv_cl_write(" ", cl);
 	if (us->reg.umode & USR_AWAY)
-		sv_write("G", &cl->wr);
+		sv_cl_write("G", cl);
 	else
-		sv_write("H", &cl->wr);
+		sv_cl_write("H", cl);
 	sv_info_next(us, cl);
 }

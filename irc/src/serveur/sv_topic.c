@@ -6,52 +6,50 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:46:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 22:21:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 
-static void		sv_rpl_topic(t_chan *chan, t_fd *cl, t_env *e)
+static void		rpl_topic(t_chan *chan, t_fd *cl, t_env *e)
 {
-	sv_write(e->name, &cl->wr);
-	sv_write((*chan->topic) ? " 332 " : " 331 ", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write(" ", &cl->wr);
-	sv_write(chan->name, &cl->wr);
-	sv_write(" :", &cl->wr);
+	sv_cl_write(e->name, cl);
+	sv_cl_write((*chan->topic) ? " 332 " : " 331 ", cl);
+	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(" ", cl);
+	sv_cl_write(chan->name, cl);
+	sv_cl_write(" :", cl);
 	if (*chan->topic)
-		sv_write(chan->topic, &cl->wr);
+		sv_cl_write(chan->topic, cl);
 	else
-		sv_write("No topic is set", &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	cl->wr.head = cl->wr.tail;
+		sv_cl_write("No topic is set", cl);
+	sv_cl_write(END_CHECK, cl);
 }
 
 static void		sv_rpl_topic_user(t_chan *chan, t_fd *cl)
 {
-	t_listin	*li;
+	t_listin	*us;
+	t_fd		*to;
 
-	li = chan->users;
-	sv_write(":", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write("!~", &cl->wr);
-	sv_write(cl->reg.username, &cl->wr);
-	sv_write("@", &cl->wr);
-	sv_write(cl->addr, &cl->wr);
-	sv_write(" TOPIC ", &cl->wr);
-	sv_write(chan->name, &cl->wr);
-	sv_write(" :", &cl->wr);
-	sv_write(chan->topic, &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
-	while (li)
+	us = chan->users;
+	while (us)
 	{
-		sv_cl_send_to(li->is, &cl->wr);
-		li = li->next;
+		to = (t_fd *)us->is;
+		sv_cl_write(":", to);
+		sv_cl_write(cl->reg.nick, to);
+		sv_cl_write("!~", to);
+		sv_cl_write(cl->reg.username, to);
+		sv_cl_write("@", to);
+		sv_cl_write(cl->addr, to);
+		sv_cl_write(" TOPIC ", to);
+		sv_cl_write(chan->name, to);
+		sv_cl_write(" :", to);
+		sv_cl_write(chan->topic, to);
+		sv_cl_write(END_CHECK, to);
+		us = us->next;
 	}
-	cl->wr.head = cl->wr.tail;
 }
 
 static void		sv_set_topic(char **cmds, t_chan *chan, t_fd *cl, t_env *e)
@@ -62,7 +60,7 @@ static void		sv_set_topic(char **cmds, t_chan *chan, t_fd *cl, t_env *e)
 	i = 1;
 	len = TOPIC_LEN;
 	if (!cmds || !*cmds)
-		return (sv_rpl_topic(chan, cl, e));
+		return (rpl_topic(chan, cl, e));
 	if (*cmds[0] == ':')
 	{
 		ft_bzero(chan->topic, TOPIC_LEN);

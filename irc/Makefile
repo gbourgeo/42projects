@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/27 18:42:40 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/04/01 22:43:52 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,7 +31,6 @@ SV_SRC	= get_users_list.c	\
 		sv_channel_mode.c 	\
 		sv_chan_user_mode.c	\
 		sv_cl_read.c 		\
-		sv_cl_send.c		\
 		sv_cl_write.c 		\
 		sv_clear_client.c 	\
 		sv_check_clients.c	\
@@ -56,6 +55,7 @@ SV_SRC	= get_users_list.c	\
 		sv_notice.c 		\
 		sv_pass.c			\
 		sv_quit.c	 		\
+		sv_rpl.c			\
 		sv_sendtochan.c 	\
 		sv_signals.c 		\
 		sv_split.c 			\
@@ -66,8 +66,7 @@ SV_SRC	= get_users_list.c	\
 		sv_user_mode.c		\
 		sv_welcome.c 		\
 		sv_who.c			\
-		sv_who_info.c		\
-		sv_write.c
+		sv_who_info.c
 
 SV_OBJ	= $(SV_SRC:.c=.o)
 

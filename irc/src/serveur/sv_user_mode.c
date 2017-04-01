@@ -6,36 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:47:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/02 00:43:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-
-void				rpl_mode(t_grp *grp, char *limit)
-{
-	sv_write(":", &grp->from->wr);
-	sv_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->reg.nick, &grp->from->wr);
-	sv_write("!~", &grp->from->wr);
-	sv_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->reg.username, &grp->from->wr);
-	sv_write("@", &grp->from->wr);
-	sv_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->addr, &grp->from->wr);
-	sv_write(" MODE ", &grp->from->wr);
-	sv_write(grp->on->name, &grp->from->wr);
-	sv_write((grp->c) ? " +" : " -", &grp->from->wr);
-	sv_write(grp->ptr, &grp->from->wr);
-	if ((*grp->ptr == 'l' || *grp->ptr == 'k') && grp->c)
-	{
-		sv_write(" ", &grp->from->wr);
-		sv_write((*grp->ptr == 'l') ? limit : grp->on->key, &grp->from->wr);
-	}
-	sv_write(END_CHECK, &grp->from->wr);
-	if (limit)
-		free(limit);
-}
 
 static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 {
@@ -50,20 +25,18 @@ static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 		us->reg.umode |= user_nbr[tmp - USER_MODES];
 	else
 		us->reg.umode &= ~(user_nbr[tmp - USER_MODES]);
-	sv_write(":", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write("!~", &cl->wr);
-	sv_write(cl->reg.username, &cl->wr);
-	sv_write("@", &cl->wr);
-	sv_write(cl->addr, &cl->wr);
-	sv_write(" MODE ", &cl->wr);
-	sv_write(us->reg.nick, &cl->wr);
-	sv_write(" :", &cl->wr);
-	sv_write((c) ? "+" : "-", &cl->wr);
-	sv_write(&mode, &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
-	cl->wr.head = cl->wr.tail;
+	sv_cl_write(":", cl);
+	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write("!~", cl);
+	sv_cl_write(cl->reg.username, cl);
+	sv_cl_write("@", cl);
+	sv_cl_write(cl->addr, cl);
+	sv_cl_write(" MODE ", cl);
+	sv_cl_write(us->reg.nick, cl);
+	sv_cl_write(" :", cl);
+	sv_cl_write((c) ? "+" : "-", cl);
+	sv_cl_write(&mode, cl);
+	sv_cl_write(END_CHECK, cl);
 }
 
 void				sv_user_mode(char **cmds, t_fd *us, t_fd *cl)

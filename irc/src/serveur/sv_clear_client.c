@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 18:44:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/01 21:55:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,23 +60,22 @@ static void		sv_free_client(t_fd *cl, t_env *e)
 
 static void		sv_send_reason(t_fd *cl)
 {
-	sv_write("ERROR :Closing Link: ", &cl->wr);
-	sv_write(cl->reg.nick, &cl->wr);
-	sv_write("[~", &cl->wr);
-	sv_write(cl->reg.username, &cl->wr);
-	sv_write("@", &cl->wr);
-	sv_write(cl->addr, &cl->wr);
-	sv_write("] (", &cl->wr);
-	sv_write(cl->reason, &cl->wr);
+	sv_cl_write("ERROR :Closing Link: ", cl);
+	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write("[~", cl);
+	sv_cl_write(cl->reg.username, cl);
+	sv_cl_write("@", cl);
+	sv_cl_write(cl->addr, cl);
+	sv_cl_write("] (", cl);
+	sv_cl_write(cl->reason, cl);
 	if (cl->leaved == 2)
 	{
-		sv_write("[~", &cl->wr);
-		sv_write(cl->reg.username, &cl->wr);
-		sv_write("]", &cl->wr);
+		sv_cl_write("[~", cl);
+		sv_cl_write(cl->reg.username, cl);
+		sv_cl_write("]", cl);
 	}
-	sv_write(")", &cl->wr);
-	sv_write(END_CHECK, &cl->wr);
-	sv_cl_send_to(cl, &cl->wr);
+	sv_cl_write(")", cl);
+	sv_cl_write(END_CHECK, cl);
 }
 
 t_fd			*sv_clear_client(t_env *e, t_fd *cl)
