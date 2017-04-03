@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:21:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:11:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void		rpl_topic(t_chan *chan, t_fd *cl, t_env *e)
 {
 	sv_cl_write(e->name, cl);
 	sv_cl_write((*chan->topic) ? " 332 " : " 331 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(chan->name, cl);
 	sv_cl_write(" :", cl);
@@ -38,9 +38,9 @@ static void		sv_rpl_topic_user(t_chan *chan, t_fd *cl)
 	{
 		to = (t_fd *)us->is;
 		sv_cl_write(":", to);
-		sv_cl_write(cl->reg.nick, to);
+		sv_cl_write(cl->inf->nick, to);
 		sv_cl_write("!~", to);
-		sv_cl_write(cl->reg.username, to);
+		sv_cl_write(cl->inf->username, to);
 		sv_cl_write("@", to);
 		sv_cl_write(cl->addr, to);
 		sv_cl_write(" TOPIC ", to);

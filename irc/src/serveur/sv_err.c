@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/11 04:01:19 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 21:56:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:03:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl)
 		sv_cl_write(" ", cl);
 		sv_cl_write(err, cl);
 		sv_cl_write(" ", cl);
-		sv_cl_write(cl->reg.nick, cl);
+		sv_cl_write(cl->inf->nick, cl);
 		if (replies[pos][0])
 			do_this(replies[pos][0], replies[pos][1], cmd, cl);
 		else if (cmd)

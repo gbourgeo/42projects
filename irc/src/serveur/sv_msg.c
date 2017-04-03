@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 18:01:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:07:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:09:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@
 static void		rpl_msg(char **cmds, t_fd *to, t_fd *cl)
 {
 	sv_cl_write(":", to);
-	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write(cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write(cl->reg.username, to);
+	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
 	sv_cl_write(cl->addr, to);
 	sv_cl_write(" MSG ", to);
-	sv_cl_write(to->reg.nick, to);
+	sv_cl_write(to->inf->nick, to);
 	sv_cl_write(" :", to);
 	sv_cl_write(*cmds, to);
 	while (*++cmds)
@@ -40,10 +40,10 @@ static void		sv_msg_client(char *nick, char **cmds, t_fd *cl, t_env *e)
 	to = e->fds;
 	while (to)
 	{
-		if (!sv_strcmp(nick, to->reg.nick))
+		if (!sv_strcmp(nick, to->inf->nick))
 		{
 			rpl_msg(cmds, to, cl);
-			if (to->reg.umode &= USR_AWAY)
+			if (to->inf->umode &= USR_AWAY)
 				rpl_away(cl, to, e);
 			return ;
 		}

@@ -6,22 +6,22 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 21:36:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 20:58:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		rpl_join(t_chan *chan, t_fd *to, t_fd *cl)
+static void		rpl_join(t_chan *ch, t_fd *to, t_fd *cl)
 {
 	sv_cl_write(":", to);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, to);
+	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, to);
+	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
+	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
 	sv_cl_write(" JOIN ", to);
-	sv_cl_write(chan->name, to);
+	sv_cl_write(ch->name, to);
 	sv_cl_write(END_CHECK, to);
 }
 

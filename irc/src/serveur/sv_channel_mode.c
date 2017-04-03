@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/02 00:44:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 20:59:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void				sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl)
 		grp.list = grp.list->next;
 	}
 	if (grp.list == NULL)
-		return (sv_err(ERR_USERNOTINCHANNEL, cl->reg.nick, ch->name, cl));
+		return (sv_err(ERR_USERNOTINCHANNEL, cl->inf->nick, ch->name, cl));
 	if (!(grp.list->mode & CHFL_CREATOR) && !(grp.list->mode & CHFL_CHANOP))
 		return (sv_err(ERR_CHANOPRIVSNEEDED, ch->name, NULL, cl));
 	grp.from = cl;

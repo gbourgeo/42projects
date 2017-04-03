@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:12:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:10:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ static int		is_connected_nick(char *nick, t_fd *cl, t_env *e)
 	fds = e->fds;
 	while (fds)
 	{
-		if (fds->fd != cl->fd && !sv_strncmp(nick, fds->reg.nick, NICK_LEN))
+		if (fds->fd != cl->fd && !sv_strncmp(nick, fds->inf->nick, NICK_LEN))
 			return (1);
 		fds = fds->next;
 	}
 	us = e->users;
-	while (cl->reg.registered > 0 && us)
+	while (cl->registered > 0 && us)
 	{
 		if (!sv_strncmp(nick, us->nick, NICK_LEN))
 			return (1);
@@ -62,9 +62,9 @@ static int		is_connected_nick(char *nick, t_fd *cl, t_env *e)
 static void		rpl_nick(char *nick, t_fd *to, t_fd *cl)
 {
 	sv_cl_write(":", to);
-	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write(cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write(cl->reg.username, to);
+	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
 	sv_cl_write(cl->addr, to);
 	sv_cl_write(" NICK :", to);
@@ -106,14 +106,14 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 		return (sv_err(ERR_ERRONEUSNICKNAME, *cmds, NULL, cl));
 	if (is_connected_nick(*cmds, cl, e))
 		return (sv_err(ERR_NICKNAMEINUSE, *cmds, NULL, cl));
-	if (cl->reg.umode & USR_RESTRICT)
+	if (cl->inf->umode & USR_RESTRICT)
 		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl));
-	if (cl->reg.registered <= 0)
-		ft_strncpy(cl->reg.nick, *cmds, NICK_LEN);
-	else if (sv_strcmp(cl->reg.nick, *cmds))
+	if (cl->registered <= 0)
+		ft_strncpy(cl->inf->nick, *cmds, NICK_LEN);
+	else if (sv_strcmp(cl->inf->nick, *cmds))
 	{
 		rpl_nick(*cmds, cl, cl);
 		send_to_chans(*cmds, cl);
-		ft_strncpy(cl->reg.nick, *cmds, NICK_LEN);
+		ft_strncpy(cl->inf->nick, *cmds, NICK_LEN);
 	}
 }

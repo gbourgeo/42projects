@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 08:49:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 22:17:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ static void		ft_kill_connections(t_fd *client)
 	close(client->fd);
 	if (e.verb)
 		printf("CLIENT %s:%s killed\n", client->addr, client->port);
-	if (client->reg.password)
-		free(client->reg.password);
-	ft_free(&client->reg.realname);
+	if (!client->inf->pass)
+	{
+		ft_free(&client->inf->realname);
+		free(client->inf);
+	}
 	if (client->away)
 		free(client->away);
 	while (client->chans)
@@ -68,20 +70,21 @@ void			sv_server_killed(int sig)
 	if (e.verb)
 	{
 		if (sig == SIGTERM)
-			ft_putstr_fd("\nServer Killed By SIGTERM", 2);
-		if (sig == SIGINT)
-			ft_putstr_fd("\nServer Killed By SIGINT", 2);
-		if (sig == SIGBUS)
-			ft_putstr_fd("\nServer Killed By SIGBUS", 2);
+			ft_putstr_fd("\nServer Killed By SIGTERM\n", 2);
+		else if (sig == SIGINT)
+			ft_putstr_fd("\nServer Killed By SIGINT\n", 2);
+		else if (sig == SIGBUS)
+			ft_putstr_fd("\nServer Killed By SIGBUS\n", 2);
+		else
+			ft_putstr_fd("\nServer Killed By Unknown Sig\n", 2);
 	}
-	write(2, "\n", 1);
-	update_users_file(&e);
 	ft_kill_connections(e.fds);
 	ft_kill_channels(e.chans);
 	FD_ZERO(&e.fd_read);
 	FD_ZERO(&e.fd_write);
 	close(e.ipv4);
 	close(e.ipv6);
+	update_users_file(&e);
 	ft_bzero(&e, sizeof(e));
 	exit(0);
 }

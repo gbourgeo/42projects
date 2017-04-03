@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 05:43:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/02 00:45:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 20:59:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static t_fd			*did_user_exist(char *nick, t_env *e)
 	fd = e->fds;
 	while (fd)
 	{
-		if (!sv_strcmp(fd->reg.nick, nick))
+		if (!sv_strcmp(fd->inf->nick, nick))
 			break ;
 		fd = fd->next;
 	}

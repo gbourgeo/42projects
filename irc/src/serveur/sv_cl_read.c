@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 21:52:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 20:59:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ static void			rpl_quit_msg(t_chan *ch, t_fd *to, t_fd *cl)
 		return ;
 	}
 	sv_cl_write(":", to);
-	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write(cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write(cl->reg.username, to);
+	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
 	sv_cl_write(cl->addr, to);
 	sv_cl_write(" QUIT :Remote host closed the connection", to);
@@ -68,15 +68,15 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 			nb++;
 		if (com[nb].name)
 		{
-			if (cl->reg.registered > 0 || (nb >= 8 && nb <= 11))
+			if (cl->registered > 0 || (nb >= 8 && nb <= 11))
 				com[nb].fct(cmds + 1, e, cl);
-			else if (cl->reg.registered == 0)
+			else if (cl->registered == 0)
 			{
 				sv_err(ERR_NOTREGISTERED, NULL, NULL, cl);
-				cl->reg.registered = -1;
+				cl->registered = -1;
 			}
 		}
-		else if (cl->reg.registered > 0)
+		else if (cl->registered > 0)
 			sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 	}
 	ft_free(&cmds);

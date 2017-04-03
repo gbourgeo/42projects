@@ -1,19 +1,2 @@
-#
-# Fichiers des utilisateurs enregistres sur ft_irc.
-#
-# SEMANTIC: <username> <password> <usermode> <nickname> <realname>
-# Tout "username" ou "nickname" qui ne sera pas
-# a la norme irc 2812 ne sera pas pris en compte
-# lors du parsing.
-
-admin admin 1 gbourgeo Gilles BOURGEOIS
-toto titi 0 furry Henry Dumas
-encule ton_cul  0 salut ca va ?
-!non
-!ca passera ~pas tavu *o*
-Lamoule fdp 2 fuury La Belgique
-f f 3 f f
-0 g 3 toto
-0 u 1 k 3
-clara fdp 0 clara jaime les ...
-clara fdp 0 fu jaime les
+toto fdp ToTo 0 Clara Morgane
+admin admin gbourgeo 0 Gilles BOURGEOIS

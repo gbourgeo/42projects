@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/26 00:01:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 22:53:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ static void			error_loggin_in(int err, t_fd *cl, t_env *e)
 		ptr = "This nickname is registered. Please choose a different "\
 			"nickname.";
 		sv_notice(ptr, cl, e);
-		if (cl->reg.password)
-			sv_notice("Invalid password.", cl, e);
+		if (cl->inf->pass)
+			sv_notice("Invalid pass.", cl, e);
 	}
 	else
 	{
 		cl->leaved = err;
-		cl->reason = (err == 1) ? "Invalid username" : "Invalid password";
+		cl->reason = (err == 1) ? "Invalid username" : "Invalid pass";
 		sv_notice("You failed to log to the server. Try again later.", cl, e);
 	}
 }
@@ -50,39 +50,39 @@ static void			check_registered(t_fd *cl, t_env *e)
 	us = e->users;
 	while (us)
 	{
-		if (!sv_strcmp(us->nick, cl->reg.nick))
+		if (!sv_strcmp(us->nick, cl->inf->nick))
 		{
-			if (cl->reg.password && !ft_strcmp(us->password, cl->reg.password))
+			if (cl->inf->pass && !ft_strcmp(us->pass, cl->inf->pass))
 			{
-				cl->reg.umode = us->mode;
-				ft_strncpy(cl->reg.nick, us->nick, NICK_LEN);
-				ft_strncpy(cl->reg.username, us->username, NICK_LEN);
-				ft_free(&cl->reg.realname);
-				cl->reg.realname = us->realname;
-				return ;
+				free(cl->inf->pass);
+				ft_free(&cl->inf->realname);
+				free(cl->inf);
+				cl->inf = us;
+				break ;
 			}
+			sv_welcome(e, cl);
 			return (error_loggin_in(0, cl, e));
 		}
 		us = us->next;
 	}
+	sv_welcome(e, cl);
 }
 
-static void			check_password(t_fd *cl, t_env *e)
+static void			check_pass(t_fd *cl, t_env *e)
 {
 	t_file			*us;
 
 	us = e->users;
 	while (us)
 	{
-		if (!ft_strcmp(us->username, cl->reg.username))
+		if (!ft_strcmp(us->nick, cl->inf->nick))
 		{
-			if (!ft_strcmp(us->password, cl->reg.password))
+			if (!ft_strcmp(us->pass, cl->inf->pass))
 			{
-				cl->reg.umode = us->mode;
-				ft_strncpy(cl->reg.nick, us->nick, NICK_LEN);
-				ft_strncpy(cl->reg.username, us->username, NICK_LEN);
-				ft_free(&cl->reg.realname);
-				cl->reg.realname = us->realname;
+				free(cl->inf->pass);
+				ft_free(&cl->inf->realname);
+				free(cl->inf);
+				cl->inf = us;
 				sv_welcome(e, cl);
 				return ;
 			}
@@ -102,17 +102,14 @@ void				sv_check_clients(t_env *e)
 	{
 		if (cl->leaved)
 			cl = sv_clear_client(e, cl);
-		else if (cl->reg.registered <= 0 && *cl->reg.nick && *cl->reg.username)
+		else if (cl->registered <= 0 && *cl->inf->nick && *cl->inf->username)
 		{
-			if (!ft_strisalnum(cl->reg.username))
+			if (!ft_strisalnum(cl->inf->username))
 				wrong_username(cl, e);
 			else if (LOCK_SERVER)
-				check_password(cl, e);
+				check_pass(cl, e);
 			else
-			{
-				sv_welcome(e, cl);
 				check_registered(cl, e);
-			}
 		}
 		else
 			cl = cl->next;

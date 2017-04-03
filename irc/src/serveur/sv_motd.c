@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/26 01:26:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:05:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:09:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void		prefix(char *str, t_fd *cl, t_env *e)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 372 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" :- ", cl);
 	sv_cl_write(str, cl);
 	sv_cl_write(END_CHECK, cl);

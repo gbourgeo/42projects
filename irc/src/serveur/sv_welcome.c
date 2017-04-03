@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 05:06:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:27:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:13:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,18 @@ static void			rpl_1_2_3(t_env *e, t_fd *cl)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 001 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" :Welcome to the Internet Relay Network ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write("!~", cl);
-	sv_cl_write(cl->reg.username, cl);
+	sv_cl_write(cl->inf->username, cl);
 	sv_cl_write("@", cl);
 	sv_cl_write(cl->addr, cl);
 	sv_cl_write(END_CHECK, cl);
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 002 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" :Your host is ", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(", running version 1.0", cl);
@@ -49,7 +49,7 @@ static void			rpl_1_2_3(t_env *e, t_fd *cl)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 003 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" :This server was created ", cl);
 	sv_cl_write(e->creation, cl);
 }
@@ -59,7 +59,7 @@ static void			rpl_4(t_env *e, t_fd *cl)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 004 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 1.0 ", cl);
@@ -84,7 +84,7 @@ static void			rpl_5_42(t_env *e, t_fd *cl)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 005 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" RFC2812 PREFIX=(ov)@+ CHANTYPES=#&!+ CHANLIMIT=", cl);
 	convert(CHAN_LIMIT, cl, e);
 	sv_cl_write(" NICK_LEN=", cl);
@@ -99,7 +99,7 @@ static void			rpl_5_42(t_env *e, t_fd *cl)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 042 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(cl->uid, cl);
 	sv_cl_write(" :your unique ID\r\n", cl);
@@ -111,6 +111,6 @@ void				sv_welcome(t_env *e, t_fd *cl)
 	rpl_4(e, cl);
 	rpl_5_42(e, cl);
 	rpl_motd(cl, e);
-	cl->reg.registered = 1;
+	cl->registered = 1;
 	e->members++;
 }

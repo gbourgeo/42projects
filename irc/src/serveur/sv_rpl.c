@@ -6,20 +6,20 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/01 21:38:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/02 00:46:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:11:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void				rpl_cmode(t_grp *grp, char *limit)
+void			rpl_cmode(t_grp *grp, char *limit)
 {
 	sv_cl_write(":", grp->to);
 	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->reg.nick, grp->to);
+				"anonymous" : grp->from->inf->nick, grp->to);
 	sv_cl_write("!~", grp->to);
 	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->reg.username, grp->to);
+				"anonymous" : grp->from->inf->username, grp->to);
 	sv_cl_write("@", grp->to);
 	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
 				"anonymous" : grp->from->addr, grp->to);
@@ -40,9 +40,9 @@ void				rpl_cmode(t_grp *grp, char *limit)
 void			rpl_umode(t_grp *g, t_chan *c, t_fd *to, t_fd *cl)
 {
 	sv_cl_write(":", to);
-	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, to);
+	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, to);
+	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->inf->username, to);
 	sv_cl_write("@", to);
 	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
 	sv_cl_write(" MODE ", to);
@@ -50,6 +50,6 @@ void			rpl_umode(t_grp *g, t_chan *c, t_fd *to, t_fd *cl)
 	sv_cl_write((g->c) ? " :+" : " :-", to);
 	sv_cl_write(g->ptr, to);
 	sv_cl_write(" ", to);
-	sv_cl_write(g->to->reg.nick, to);
+	sv_cl_write(g->to->inf->nick, to);
 	sv_cl_write(END_CHECK, to);
 }

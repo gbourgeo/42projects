@@ -6,22 +6,22 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:45:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:18:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		rpl_leave(char **cmd, t_chan *chan, t_fd *to, t_fd *cl)
+static void		rpl_leave(char **cmd, t_chan *ch, t_fd *to, t_fd *cl)
 {
 	sv_cl_write(":", to);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.nick, to);
+	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->reg.username, to);
+	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write((chan->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
+	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
 	sv_cl_write(" LEAVE ", to);
-	sv_cl_write(chan->name, to);
+	sv_cl_write(ch->name, to);
 	sv_cl_write(" :", to);
 	if (cmd && *cmd)
 	{
@@ -75,7 +75,7 @@ void			sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl)
 	t_listin	*tmp;
 
 	tmp = chan->users;
-	while (tmp && sv_strcmp(((t_fd *)tmp->is)->reg.nick, cl->reg.nick))
+	while (tmp && sv_strcmp(((t_fd *)tmp->is)->inf->nick, cl->inf->nick))
 		tmp = tmp->next;
 	if (tmp == NULL)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl));

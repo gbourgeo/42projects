@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:16:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:34:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ static void		rpl_quit(char **cmds, t_chan *ch, t_fd *to, t_fd *cl)
 		return ;
 	}
 	sv_cl_write(":", to);
-	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write(cl->inf->nick, to);
 	sv_cl_write("!~", to);
-	sv_cl_write(cl->reg.username, to);
+	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
 	sv_cl_write(cl->addr, to);
 	sv_cl_write(" QUIT :", to);
@@ -57,11 +57,7 @@ void			sv_quit(char **cmds, t_env *e, t_fd *cl)
 		}
 		ch = ch->next;
 	}
-	if (*cl->reg.username && cl->reg.password && *cl->reg.nick)
-	{
-		add_in_userslist(e->users, cl);
-		add_in_users(e->users, cl);
-	}
 	cl->leaved = 1;
 	cl->reason = "Client Quit";
+	(void)e;
 }

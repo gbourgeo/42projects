@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 21:55:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:32:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,12 @@ static void		sv_free_client_onchans(t_fd *cl, t_listin *next)
 
 static void		sv_free_client(t_fd *cl, t_env *e)
 {
-	if (cl->reg.password)
-		free(cl->reg.password);
-	ft_free(&cl->reg.realname);
+	if (!cl->inf->pass)
+	{
+		ft_free(&cl->inf->realname);
+		free(cl->inf);
+		cl->inf = NULL;
+	}
 	if (cl->away)
 		free(cl->away);
 	if (cl->prev)
@@ -55,15 +58,14 @@ static void		sv_free_client(t_fd *cl, t_env *e)
 		e->fds = cl->next;
 	if (cl->next)
 		cl->next->prev = cl->prev;
-	sv_free_client_onchans(cl, NULL);
 }
 
 static void		sv_send_reason(t_fd *cl)
 {
 	sv_cl_write("ERROR :Closing Link: ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write("[~", cl);
-	sv_cl_write(cl->reg.username, cl);
+	sv_cl_write(cl->inf->username, cl);
 	sv_cl_write("@", cl);
 	sv_cl_write(cl->addr, cl);
 	sv_cl_write("] (", cl);
@@ -71,7 +73,7 @@ static void		sv_send_reason(t_fd *cl)
 	if (cl->leaved == 2)
 	{
 		sv_cl_write("[~", cl);
-		sv_cl_write(cl->reg.username, cl);
+		sv_cl_write(cl->inf->username, cl);
 		sv_cl_write("]", cl);
 	}
 	sv_cl_write(")", cl);
@@ -85,12 +87,13 @@ t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 	FD_CLR(cl->fd, &e->fd_read);
 	FD_CLR(cl->fd, &e->fd_write);
 	sv_send_reason(cl);
+	sv_free_client_onchans(cl, NULL);
 	sv_free_client(cl, e);
 	close(cl->fd);
 	if (e->verb)
 		printf("CLIENT: %s|%s :Has left\n", cl->addr, cl->port);
 	ret = cl->next;
-	if (cl->reg.registered > 0)
+	if (cl->registered > 0)
 		e->members--;
 	ft_memset(cl, 0, sizeof(*cl));
 	free(cl);

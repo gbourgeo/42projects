@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/02 00:55:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 00:27:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,12 @@
 **					and password to each new connection.
 */
 # define LOCK_SERVER 0
+
+/*
+** USERS_FILE		The file containing all the authentified users which will
+**					be able to connect to the locked server. Semantic:
+**					<nick> <pass> <username> <mode> <<realname> [] ...>
+*/
 # define USERS_FILE ".irc_users"
 
 /*
@@ -109,15 +115,15 @@ typedef struct			s_listin
 	struct s_listin		*next;
 }						t_listin;
 
-typedef struct			s_reg
+typedef struct			s_file
 {
-	int					registered;
-	char				nick[NICK_LEN + 1];
 	char				username[USERNAME_LEN + 1];
+	char				*pass;
 	int					umode;
-	char				*password;
+	char				nick[NICK_LEN + 1];
 	char				**realname;
-}						t_reg;
+	struct s_file		*next;
+}						t_file;
 
 typedef struct			s_fd
 {
@@ -127,11 +133,10 @@ typedef struct			s_fd
 	char				addr[ADDR_LEN + 1];
 	char				port[32];
 	char				uid[10];
-	t_reg				reg;
+	int					registered;
+	t_file				*inf;
 	short				type;
-	long				flags;
 	time_t				time;
-	char				flood;
 	char				*away;
 	t_listin			*chans;
 	int					chansnb;
@@ -141,6 +146,7 @@ typedef struct			s_fd
 	t_buf				wr;
 	char				buf_read[BUFF + 1];
 	char				buf_write[BUFF + 1];
+	char				*queue;
 	int					leaved;
 	char				*reason;
 	struct s_fd			*next;
@@ -158,16 +164,6 @@ typedef struct			s_chan
 	t_listin			*users;
 	struct s_chan		*next;
 }						t_chan;
-
-typedef struct			s_file
-{
-	char				username[USERNAME_LEN + 1];
-	char				*password;
-	int					mode;
-	char				nick[NICK_LEN + 1];
-	char				**realname;
-	struct s_file		*next;
-}						t_file;
 
 typedef struct			s_env
 {
@@ -209,8 +205,6 @@ typedef struct			s_grp
 struct s_env			e;
 
 t_file					*get_users_list(t_env *e);
-t_file					*add_in_users(t_file *users, t_fd *cl);
-void					add_in_userslist(t_file *users, t_fd *cl);
 int						is_chan_member(t_chan *ch, t_fd *cl);
 int						is_modo(t_chan *chan, t_fd *cl);
 void					rpl_away(t_fd *to, t_fd *cl, t_env *e);
@@ -227,6 +221,7 @@ void					sv_chan_user_mode(t_grp *grp, char ***cmd);
 void					sv_check_clients(t_env *e);
 int						sv_check_name_valid(char *name);
 void					sv_cl_read(t_env *e, t_fd *cl);
+void					sv_cl_send(t_fd *cl);
 void					sv_cl_write(char *str, t_fd *cl);
 t_fd					*sv_clear_client(t_env *e, t_fd *cl);
 void					sv_connect(char **cmds, t_env *e, t_fd *cl);

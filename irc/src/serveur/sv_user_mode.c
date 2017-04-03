@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/02 00:43:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:13:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,21 @@ static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 	char			*tmp;
 
 	tmp = ft_strchr(USER_MODES, mode);
-	if ((c && us->reg.umode & user_nbr[tmp - USER_MODES]) ||
-		(!c && !(us->reg.umode & user_nbr[tmp - USER_MODES])))
+	if ((c && us->inf->umode & user_nbr[tmp - USER_MODES]) ||
+		(!c && !(us->inf->umode & user_nbr[tmp - USER_MODES])))
 		return ;
 	if (c)
-		us->reg.umode |= user_nbr[tmp - USER_MODES];
+		us->inf->umode |= user_nbr[tmp - USER_MODES];
 	else
-		us->reg.umode &= ~(user_nbr[tmp - USER_MODES]);
+		us->inf->umode &= ~(user_nbr[tmp - USER_MODES]);
 	sv_cl_write(":", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write("!~", cl);
-	sv_cl_write(cl->reg.username, cl);
+	sv_cl_write(cl->inf->username, cl);
 	sv_cl_write("@", cl);
 	sv_cl_write(cl->addr, cl);
 	sv_cl_write(" MODE ", cl);
-	sv_cl_write(us->reg.nick, cl);
+	sv_cl_write(us->inf->nick, cl);
 	sv_cl_write(" :", cl);
 	sv_cl_write((c) ? "+" : "-", cl);
 	sv_cl_write(&mode, cl);

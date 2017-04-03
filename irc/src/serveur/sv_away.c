@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 16:16:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 21:27:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 20:58:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void			rpl_away(t_fd *to, t_fd *cl, t_env *e)
 	sv_cl_write(":", to);
 	sv_cl_write(e->name, to);
 	sv_cl_write(" 301 ", to);
-	sv_cl_write(to->reg.nick, to);
+	sv_cl_write(to->inf->nick, to);
 	sv_cl_write(" ", to);
-	sv_cl_write(cl->reg.nick, to);
+	sv_cl_write(cl->inf->nick, to);
 	sv_cl_write(" :", to);
 	sv_cl_write(cl->away, to);
 	sv_cl_write(END_CHECK, to);
@@ -31,7 +31,7 @@ static void		sv_away_msg(char *num, char *msg, t_fd *cl, t_env *e)
 	sv_cl_write(" ", cl);
 	sv_cl_write(num, cl);
 	sv_cl_write(" ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(msg, cl);
 	sv_cl_write(END_CHECK, cl);
@@ -91,7 +91,7 @@ static void		sv_dupmsg(t_fd *cl)
 
 void			sv_away(char **cmds, t_env *e, t_fd *cl)
 {
-	cl->reg.umode &= ~USR_AWAY;
+	cl->inf->umode &= ~USR_AWAY;
 	if (cl->away)
 	{
 		free(cl->away);
@@ -101,7 +101,7 @@ void			sv_away(char **cmds, t_env *e, t_fd *cl)
 		sv_away_msg("305", ":You are no longer marked as being away", cl, e);
 	else
 	{
-		cl->reg.umode |= USR_AWAY;
+		cl->inf->umode |= USR_AWAY;
 		sv_away_msg("306", ":You have been marked as being away", cl, e);
 		sv_dupmsg(cl);
 	}

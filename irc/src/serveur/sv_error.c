@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/25 22:32:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:36:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,12 @@ static void		sv_free_users(t_file **file)
 	f = *file;
 	if (f->next)
 		sv_free_users(&f->next);
-	if (f->password)
-		free(f->password);
+	if (f->pass)
+		free(f->pass);
+	ft_free(&f->realname);
 	ft_memset(*file, 0, sizeof(**file));
 	free(*file);
 	*file = NULL;
-	close(e.fd);
 }
 
 static void		sv_free_fds(t_fd **fds)
@@ -51,13 +51,14 @@ static void		sv_free_fds(t_fd **fds)
 	if (fds == NULL || *fds == NULL)
 		return ;
 	fd = *fds;
-	if ((*fds)->reg.password)
-		add_in_userslist(e.users, *fds);
+	if (!(*fds)->inf->pass)
+	{
+		ft_free(&(*fds)->inf->realname);
+		free((*fds)->inf);
+		(*fds)->inf = NULL;
+	}
 	if (fd->next)
 		sv_free_fds(&fd->next);
-	if (fd->reg.password)
-		free(fd->reg.password);
-	ft_free(&fd->reg.realname);
 	if (fd->away)
 		free(fd->away);
 	ft_memset(*fds, 0, sizeof(**fds));
@@ -81,6 +82,7 @@ void			sv_error(char *str, t_env *e)
 	}
 	sv_free_fds(&e->fds);
 	sv_free_users(&e->users);
+	close(e->fd);
 	sv_free_chan(&e->chans);
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);

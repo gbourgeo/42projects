@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:27:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:13:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void		rpl_who_end(char *cmd, t_fd *cl, t_env *e)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 315 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(cmd, cl);
 	sv_cl_write(" :End of /WHO list.", cl);
@@ -63,7 +63,7 @@ void			sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 				fd = (t_fd *)list->is;
 				if ((!(chan->cmode & CHFL_ANON) || fd->fd == cl->fd) &&
 					((!cmds[1] &&
-					(!(fd->reg.umode & USR_INVISIBL) || is_modo(chan, cl))) ||
+					(!(fd->inf->umode & USR_INVISIBL) || is_modo(chan, cl))) ||
 					ft_strcmp(cmds[1], "o") || list->mode & CHFL_CHANOP))
 					sv_who_info(fd, cl, e);
 				list = list->next;
@@ -83,13 +83,13 @@ static void		sv_who_user(char **cmds, t_fd *cl, t_env *e)
 	{
 		if (!ft_strcmp(cmds[0], "0"))
 		{
-			if (user->fd != cl->fd && !(user->reg.umode & USR_INVISIBL) &&
+			if (user->fd != cl->fd && !(user->inf->umode & USR_INVISIBL) &&
 				!have_common_channel(user, cl))
 				sv_who_info(user, cl, e);
 		}
 		else if (!sv_strncmp(user->addr, cmds[0], ADDR_LEN) ||
-				!sv_tabcmp(user->reg.realname, &cmds[0]) ||
-				!sv_strncmp(user->reg.nick, cmds[0], NICK_LEN))
+				!sv_tabcmp(user->inf->realname, &cmds[0]) ||
+				!sv_strncmp(user->inf->nick, cmds[0], NICK_LEN))
 			return (sv_who_info(user, cl, e));
 		user = user->next;
 	}

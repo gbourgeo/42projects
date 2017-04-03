@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 02:42:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/01 22:46:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/03 21:09:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void		sv_send_chaninfo(t_chan *chan, t_fd *cl, t_env *e)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 322 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(chan->name, cl);
 	sv_cl_write(" ", cl);
@@ -119,7 +119,7 @@ void			sv_list(char **cmds, t_env *e, t_fd *cl)
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" 323 ", cl);
-	sv_cl_write(cl->reg.nick, cl);
+	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write(" :End of /LIST", cl);
 	sv_cl_write(END_CHECK, cl);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/21 21:49:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/31 23:21:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void				ft_wait_players(void)
 	ft_place_player();
 	ft_unlock();
 	ft_termdo("sc");
-	while (TEAMS_SUMM < MIN_PLAYERS || TEAM_1 != TEAM_2)
+	while (TEAM_1 < MIN_PLAYERS || TEAM_2 < MIN_PLAYERS)
 	{
 		print_map();
 		if (TEAMS_SUMM < MIN_PLAYERS)
