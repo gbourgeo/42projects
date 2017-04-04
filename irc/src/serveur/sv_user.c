@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 04:40:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:13:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 01:58:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static void			missing_parameters(t_fd *cl, t_env *e)
 
 void				sv_user(char **cmds, t_env *e, t_fd *cl)
 {
-	if (cl->registered > 0)
+	if (cl->inf->registered > 0)
 		return (already_registered(cl, e));
 	if (ft_tablen(cmds) < 4)
 		return (missing_parameters(cl, e));

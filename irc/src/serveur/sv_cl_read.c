@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 20:59:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 01:57:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,15 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 			nb++;
 		if (com[nb].name)
 		{
-			if (cl->registered > 0 || (nb >= 8 && nb <= 11))
+			if (cl->inf->registered > 0 || (nb >= 8 && nb <= 11))
 				com[nb].fct(cmds + 1, e, cl);
-			else if (cl->registered == 0)
+			else if (cl->inf->registered == 0)
 			{
 				sv_err(ERR_NOTREGISTERED, NULL, NULL, cl);
-				cl->registered = -1;
+				cl->inf->registered = -1;
 			}
 		}
-		else if (cl->registered > 0)
+		else if (cl->inf->registered > 0)
 			sv_err(ERR_UNKNOWNCOMMAND, cmds[0], NULL, cl);
 	}
 	ft_free(&cmds);

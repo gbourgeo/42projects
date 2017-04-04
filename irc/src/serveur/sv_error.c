@@ -6,89 +6,76 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:36:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 04:44:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
+#include <stdio.h>
 
-static void		sv_free_chan(t_chan **chan)
+static void		sv_kill_channels(t_chan *chan)
 {
-	t_chan		*ch;
+	t_listin	*next;
 
-	if (chan == NULL || *chan == NULL)
+	if (chan == NULL)
 		return ;
-	ch = *chan;
-	if (ch->next)
-		sv_free_chan(&ch->next);
-	ft_memset(*chan, 0, sizeof(**chan));
-	free(*chan);
-	*chan = NULL;
-}
-
-static void		sv_free_users(t_file **file)
-{
-	t_file		*f;
-
-	if (file == NULL || *file == NULL)
-		return ;
-	f = *file;
-	if (f->next)
-		sv_free_users(&f->next);
-	if (f->pass)
-		free(f->pass);
-	ft_free(&f->realname);
-	ft_memset(*file, 0, sizeof(**file));
-	free(*file);
-	*file = NULL;
-}
-
-static void		sv_free_fds(t_fd **fds)
-{
-	t_fd		*fd;
-
-	if (fds == NULL || *fds == NULL)
-		return ;
-	fd = *fds;
-	if (!(*fds)->inf->pass)
+	if (chan->next)
+		sv_kill_channels(chan->next);
+	if (e.verb)
+		printf("\n\e[31mCHAN\e[0m %s \e[31mdeleted\e[0m\n", chan->name);
+	ft_bzero(chan->name, CHANNAME_LEN);
+	ft_bzero(chan->topic, TOPIC_LEN);
+	while (chan->users)
 	{
-		ft_free(&(*fds)->inf->realname);
-		free((*fds)->inf);
-		(*fds)->inf = NULL;
+		next = chan->users->next;
+		free(chan->users);
+		chan->users = next;
 	}
-	if (fd->next)
-		sv_free_fds(&fd->next);
-	if (fd->away)
-		free(fd->away);
-	ft_memset(*fds, 0, sizeof(**fds));
-	free(*fds);
-	*fds = NULL;
+	free(chan);
+	chan = NULL;
+}
+
+static void		sv_kill_connections(t_fd *client)
+{
+	t_listin	*next;
+
+	if (client == NULL)
+		return ;
+	if (client->next)
+		sv_kill_connections(client->next);
+	close(client->fd);
+	if (e.verb)
+		printf("CLIENT %s:%s killed\n", client->addr, client->port);
+	if (!client->inf->pass)
+	{
+		ft_free(&client->inf->realname);
+		free(client->inf);
+	}
+	if (client->away)
+		free(client->away);
+	while (client->chans)
+	{
+		next = client->chans->next;
+		free(client->chans);
+		client->chans = next;
+	}
+	ft_bzero(client, sizeof(*client));
+	free(client);
+	client = NULL;
 }
 
 void			sv_error(char *str, t_env *e)
 {
-	size_t		i;
-	size_t		len;
-
-	i = 0;
-	len = ft_strlen(str);
-	while (e->fds && i < MAX_CLIENT)
-	{
-		if (e->fds[i].type == FD_CLIENT)
-			send(e->fds[i].fd, str, len, 0);
-		close(e->fds[i].fd);
-		i++;
-	}
-	sv_free_fds(&e->fds);
-	sv_free_users(&e->users);
-	close(e->fd);
-	sv_free_chan(&e->chans);
+	sv_kill_connections(e->fds);
+	sv_kill_channels(e->chans);
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);
 	close(e->ipv4);
 	close(e->ipv6);
+	update_users_file(e);
 	if (e->verb)
-		ft_putendl_fd(str, 2);
+		fprintf(stderr, "\b\b:%s NOTICE * :*** %s\n", e->name, str);
+	ft_memset(e, 0, sizeof(*e));
 	exit(EXIT_FAILURE);
 }

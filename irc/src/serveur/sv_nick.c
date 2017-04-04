@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:10:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 01:58:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static int		is_connected_nick(char *nick, t_fd *cl, t_env *e)
 		fds = fds->next;
 	}
 	us = e->users;
-	while (cl->registered > 0 && us)
+	while (cl->inf->registered > 0 && us)
 	{
 		if (!sv_strncmp(nick, us->nick, NICK_LEN))
 			return (1);
@@ -108,7 +108,7 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 		return (sv_err(ERR_NICKNAMEINUSE, *cmds, NULL, cl));
 	if (cl->inf->umode & USR_RESTRICT)
 		return (sv_err(ERR_RESTRICTED, NULL, NULL, cl));
-	if (cl->registered <= 0)
+	if (cl->inf->registered <= 0)
 		ft_strncpy(cl->inf->nick, *cmds, NICK_LEN);
 	else if (sv_strcmp(cl->inf->nick, *cmds))
 	{

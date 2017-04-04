@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 00:27:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 03:23:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ typedef struct			s_listin
 
 typedef struct			s_file
 {
+	char				registered;
 	char				username[USERNAME_LEN + 1];
 	char				*pass;
 	int					umode;
@@ -133,7 +134,6 @@ typedef struct			s_fd
 	char				addr[ADDR_LEN + 1];
 	char				port[32];
 	char				uid[10];
-	int					registered;
 	t_file				*inf;
 	short				type;
 	time_t				time;

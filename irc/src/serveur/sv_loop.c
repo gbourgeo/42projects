@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 14:22:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 03:32:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void			sv_check_fd(t_env *e, int ret)
 		if (cl->type != FD_FREE)
 		{
 			if (FD_ISSET(cl->fd, &e->fd_write))
-				cl->fct_write(e, cl);
+				cl->fct_write(cl);
 			if (FD_ISSET(cl->fd, &e->fd_read))
 				cl->fct_read(e, cl);
 			if (FD_ISSET(cl->fd, &e->fd_read) ||
@@ -51,12 +51,12 @@ static int			sv_init_fd(t_env *e)
 	FD_SET(e->ipv6, &e->fd_read);
 	while (cl)
 	{
-		if (cl->type != FD_FREE)
+		if (cl->type == FD_CLIENT)
 		{
-			if (cl->fct_read)
-				FD_SET(cl->fd, &e->fd_read);
-			if (cl->fct_write)
+			if (cl->fct_write && cl->wr.len > 0)
 				FD_SET(cl->fd, &e->fd_write);
+			else if (cl->fct_read && !cl->leaved)
+				FD_SET(cl->fd, &e->fd_read);
 			if (cl->fd > max)
 				max = cl->fd;
 		}

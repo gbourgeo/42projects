@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 00:30:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 02:21:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,5 @@ void				sv_new_client(int fd, struct sockaddr *csin, t_env *e)
 	if (LOCK_SERVER)
 		sv_notice("The server runs in registered-user only mode.", cl, e);
 	if (e->verb)
-		printf("\e[32mNew connection from\e[0m %s :%s\n", cl->addr, cl->port);
+		printf("\e[32mNew connection from\e[0m %s:%s\n", cl->addr, cl->port);
 }

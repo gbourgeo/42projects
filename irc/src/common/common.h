@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/14 11:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 20:54:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 01:09:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 ** The size of this server / client Ringbuffer on read and write.
 */
 
-# define BUFF		2048
+# define BUFF		512
 
 /*
 ** The maximum lenght a nickname can be.

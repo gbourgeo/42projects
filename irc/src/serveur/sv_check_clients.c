@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 22:53:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 04:44:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ static void			wrong_username(t_fd *cl, t_env *e)
 	sv_notice(ptr, cl, e);
 }
 
-static void			error_loggin_in(int err, t_fd *cl, t_env *e)
+static void			error_loggin_in(char *err, t_fd *cl, t_env *e)
 {
 	char			*ptr;
 
-	if (err == 0)
+	if (*err == 0)
 	{
 		ptr = "This nickname is registered. Please choose a different "\
 			"nickname.";
@@ -37,8 +37,8 @@ static void			error_loggin_in(int err, t_fd *cl, t_env *e)
 	}
 	else
 	{
-		cl->leaved = err;
-		cl->reason = (err == 1) ? "Invalid username" : "Invalid pass";
+		cl->leaved = 1;
+		cl->reason = err;
 		sv_notice("You failed to log to the server. Try again later.", cl, e);
 	}
 }
@@ -61,7 +61,7 @@ static void			check_registered(t_fd *cl, t_env *e)
 				break ;
 			}
 			sv_welcome(e, cl);
-			return (error_loggin_in(0, cl, e));
+			return (error_loggin_in("", cl, e));
 		}
 		us = us->next;
 	}
@@ -77,20 +77,20 @@ static void			check_pass(t_fd *cl, t_env *e)
 	{
 		if (!ft_strcmp(us->nick, cl->inf->nick))
 		{
-			if (!ft_strcmp(us->pass, cl->inf->pass))
-			{
-				free(cl->inf->pass);
-				ft_free(&cl->inf->realname);
-				free(cl->inf);
-				cl->inf = us;
-				sv_welcome(e, cl);
-				return ;
-			}
-			return (error_loggin_in(1, cl, e));
+			if (ft_strcmp(us->pass, cl->inf->pass))
+				return (error_loggin_in("Invalid pass", cl, e));
+			if (cl->inf->registered)
+				return (error_loggin_in("Already registered", cl, e));
+			free(cl->inf->pass);
+			ft_free(&cl->inf->realname);
+			free(cl->inf);
+			cl->inf = us;
+			sv_welcome(e, cl);
+			return ;
 		}
 		us = us->next;
 	}
-	error_loggin_in(2, cl, e);
+	error_loggin_in("Invalid login", cl, e);
 }
 
 void				sv_check_clients(t_env *e)
@@ -101,8 +101,12 @@ void				sv_check_clients(t_env *e)
 	while (cl)
 	{
 		if (cl->leaved)
-			cl = sv_clear_client(e, cl);
-		else if (cl->registered <= 0 && *cl->inf->nick && *cl->inf->username)
+		{
+			if (cl->wr.len == 0)
+				cl = sv_clear_client(e, cl);
+		}
+		else if (cl->inf->registered <= 0 && *cl->inf->nick &&
+				*cl->inf->username)
 		{
 			if (!ft_strisalnum(cl->inf->username))
 				wrong_username(cl, e);
@@ -111,7 +115,7 @@ void				sv_check_clients(t_env *e)
 			else
 				check_registered(cl, e);
 		}
-		else
+		if (cl)
 			cl = cl->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 05:06:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:13:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 01:58:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,6 @@ void				sv_welcome(t_env *e, t_fd *cl)
 	rpl_4(e, cl);
 	rpl_5_42(e, cl);
 	rpl_motd(cl, e);
-	cl->registered = 1;
+	cl->inf->registered = 1;
 	e->members++;
 }
