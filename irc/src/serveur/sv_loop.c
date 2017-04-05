@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 23:30:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 04:33:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,10 @@ static int			sv_init_fd(t_env *e)
 	max = (e->ipv4 > e->ipv6) ? e->ipv4 : e->ipv6;
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);
-	FD_SET(e->ipv4, &e->fd_read);
-	FD_SET(e->ipv6, &e->fd_read);
+	if (e->ipv4 > 0)
+		FD_SET(e->ipv4, &e->fd_read);
+	if (e->ipv6 > 0)
+		FD_SET(e->ipv6, &e->fd_read);
 	while (cl)
 	{
 		if (cl->type == FD_CLIENT)

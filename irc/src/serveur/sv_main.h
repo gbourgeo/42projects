@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 02:43:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 04:56:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,7 +251,7 @@ void					sv_nick_change(t_fd *cl, t_env *e);
 void					sv_notice(char *str, t_fd *cl, t_env *e);
 void					sv_pass(char **cmds, t_env *e, t_fd *cl);
 void					sv_quit(char **cmds, t_env *e, t_fd *cl);
-void					sv_server_killed(int sig);
+void					sv_signals(void);
 void					sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);

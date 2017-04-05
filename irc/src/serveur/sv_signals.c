@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 04:38:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 04:55:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void			sv_server_killed(int sig)
+static void			sv_server_killed(int sig)
 {
 	if (sig == SIGTERM)
 		sv_error("Server Killed By SIGTERM", &e);
@@ -21,4 +21,15 @@ void			sv_server_killed(int sig)
 	if (sig == SIGBUS)
 		sv_error("Server Killed By SIGBUS", &e);
 	sv_error("Server Killed By A Signal xD", &e);
+}
+
+void				sv_signals(void)
+{
+	signal(SIGWINCH, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGALRM, SIG_IGN);
+	signal(SIGINT, sv_server_killed);
+	signal(SIGTERM, sv_server_killed);
+	signal(SIGBUS, sv_server_killed);
+	signal(SIGUSR1, SIG_IGN);
 }
