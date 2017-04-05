@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/26 18:34:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 20:58:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:13:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ t_listin		*sv_add_usertochan(t_fd *cl, t_chan *chan)
 {
 	t_listin	*new;
 
-	chan->nbusers++;
+	(cl->inf->umode & USR_INVISIBL) ? chan->invisibl++ : chan->nbusers++;
 	if ((new = malloc(sizeof(*new))) == NULL)
 		sv_error("ERROR: SERVER: out of memory", &e);
 	new->prev = NULL;

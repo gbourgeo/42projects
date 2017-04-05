@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:18:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 23:29:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void			sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl)
 		tmp = tmp->next;
 	if (tmp == NULL)
 		return (sv_err(ERR_NOTONCHANNEL, chan->name, NULL, cl));
-	chan->nbusers--;
+	(cl->inf->umode & USR_INVISIBL) ? chan->invisibl-- : chan->nbusers--;
 	cl->chansnb--;
 	sv_send_leavemsg(cmd, chan, cl);
 	if (tmp->prev)

@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 04:44:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 22:07:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
+#include <time.h>
 
 static void			wrong_username(t_fd *cl, t_env *e)
 {
@@ -23,17 +24,18 @@ static void			wrong_username(t_fd *cl, t_env *e)
 	sv_notice(ptr, cl, e);
 }
 
-static void			error_loggin_in(char *err, t_fd *cl, t_env *e)
+static void			error_loggin_in(char *err, t_file *us, t_fd *cl, t_env *e)
 {
 	char			*ptr;
 
 	if (*err == 0)
 	{
-		ptr = "This nickname is registered. Please choose a different "\
-			"nickname.";
+		ptr = "This nickname is registered. You have 30 sec to choose a "\
+			"different nickname or it will be changed automatically.";
 		sv_notice(ptr, cl, e);
-		if (cl->inf->pass)
+		if (cl->inf->pass && ft_strcmp(us->pass, cl->inf->pass))
 			sv_notice("Invalid pass.", cl, e);
+		time(&cl->inf->must_change_nick);
 	}
 	else
 	{
@@ -52,7 +54,8 @@ static void			check_registered(t_fd *cl, t_env *e)
 	{
 		if (!sv_strcmp(us->nick, cl->inf->nick))
 		{
-			if (cl->inf->pass && !ft_strcmp(us->pass, cl->inf->pass))
+			if (us->registered <= 0 && cl->inf->pass &&
+				!ft_strcmp(us->pass, cl->inf->pass))
 			{
 				free(cl->inf->pass);
 				ft_free(&cl->inf->realname);
@@ -61,7 +64,7 @@ static void			check_registered(t_fd *cl, t_env *e)
 				break ;
 			}
 			sv_welcome(e, cl);
-			return (error_loggin_in("", cl, e));
+			return (error_loggin_in("", us, cl, e));
 		}
 		us = us->next;
 	}
@@ -75,12 +78,12 @@ static void			check_pass(t_fd *cl, t_env *e)
 	us = e->users;
 	while (us)
 	{
-		if (!ft_strcmp(us->nick, cl->inf->nick))
+		if (!sv_strcmp(us->nick, cl->inf->nick))
 		{
 			if (ft_strcmp(us->pass, cl->inf->pass))
-				return (error_loggin_in("Invalid pass", cl, e));
+				return (error_loggin_in("Invalid pass", us, cl, e));
 			if (cl->inf->registered)
-				return (error_loggin_in("Already registered", cl, e));
+				return (error_loggin_in("Already registered", us, cl, e));
 			free(cl->inf->pass);
 			ft_free(&cl->inf->realname);
 			free(cl->inf);
@@ -90,7 +93,7 @@ static void			check_pass(t_fd *cl, t_env *e)
 		}
 		us = us->next;
 	}
-	error_loggin_in("Invalid login", cl, e);
+	error_loggin_in("Invalid login", us, cl, e);
 }
 
 void				sv_check_clients(t_env *e)
@@ -100,6 +103,8 @@ void				sv_check_clients(t_env *e)
 	cl = e->fds;
 	while (cl)
 	{
+		if (cl->inf->must_change_nick > 0)
+			sv_nick_change(cl, e);
 		if (cl->leaved)
 		{
 			if (cl->wr.len == 0)

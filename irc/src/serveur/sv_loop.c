@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 03:32:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 23:30:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ static void			sv_check_chans(t_env *e)
 	while (ch)
 	{
 		next = ch->next;
-		if (ch->nbusers <= 0)
+		if (ch->nbusers + ch->invisibl <= 0)
 		{
 			if (ch->prev)
 				ch->prev->next = ch->next;

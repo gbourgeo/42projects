@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 03:23:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:43:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ typedef struct			s_file
 	int					umode;
 	char				nick[NICK_LEN + 1];
 	char				**realname;
+	time_t				must_change_nick;
 	struct s_file		*next;
 }						t_file;
 
@@ -159,6 +160,7 @@ typedef struct			s_chan
 	char				topic[TOPIC_LEN + 1];
 	int					cmode;
 	int					nbusers;
+	int					invisibl;
 	int					limit;
 	char				key[CHANKEY_LEN];
 	t_listin			*users;
@@ -196,6 +198,7 @@ typedef struct			s_grp
 {
 	t_listin			*list;
 	char				*ptr;
+	char				mdr[2];
 	char				c;
 	t_fd				*from;
 	t_chan				*on;
@@ -207,6 +210,7 @@ struct s_env			e;
 t_file					*get_users_list(t_env *e);
 int						is_chan_member(t_chan *ch, t_fd *cl);
 int						is_modo(t_chan *chan, t_fd *cl);
+t_chan					*find_chan(char *name, t_chan *chans);
 void					rpl_away(t_fd *to, t_fd *cl, t_env *e);
 void					rpl_cmode(t_grp *grp, char *limit);
 void					rpl_umode(t_grp *g, t_chan *c, t_fd *to, t_fd *cl);
@@ -229,9 +233,6 @@ int						sv_connect_client(t_fd *cl, t_env *e);
 void					sv_err(char *err, char *cmd, char *cmd2, t_fd *cl);
 void					sv_error(char *str, t_env *e);
 
-/*
-** int						sv_flood_protect(t_env *e, int id);
-*/
 void					sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl);
 void					sv_get_cl_password(t_fd *cl, t_env *e);
 void					sv_help(char **cmds, t_env *e, t_fd *cl);
@@ -246,6 +247,7 @@ void					sv_msg(char **cmds, t_env *e, t_fd *cl);
 void					sv_msg_chan(char *chan_name, char **cmds, t_fd *cl);
 void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
+void					sv_nick_change(t_fd *cl, t_env *e);
 void					sv_notice(char *str, t_fd *cl, t_env *e);
 void					sv_pass(char **cmds, t_env *e, t_fd *cl);
 void					sv_quit(char **cmds, t_env *e, t_fd *cl);
@@ -258,7 +260,7 @@ char					*sv_strchr(const t_buf *b, int c);
 int						sv_tabcmp(char **t1, char **t2);
 void					sv_topic(char **cmds, t_env *e, t_fd *cl);
 void					sv_user(char **cmds, t_env *e, t_fd *cl);
-void					sv_user_mode(char **cmds, t_fd *us, t_fd *cl);
+void					sv_user_mode(char **cmds, t_fd *cl);
 void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
 void					sv_who_chan(char **cmds, t_fd *cl, t_env *e);

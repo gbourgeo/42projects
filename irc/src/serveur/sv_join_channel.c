@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:48:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 19:06:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:09:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ static void		sv_check_chan_modes(char *n, t_chan *ch, char ***cmd, t_fd *cl)
 	if (ch->cmode & CHFL_KEY &&
 		ft_strcmp((**cmd) ? *((*cmd)++) : **cmd, ch->key))
 		return (sv_err(ERR_BADCHANNELKEY, ch->name, NULL, cl));
-	if (ch->cmode & CHFL_LIMIT && ch->nbusers >= ch->limit)
+	if (ch->cmode & CHFL_LIMIT && ch->nbusers + ch->invisibl >= ch->limit)
 		return (sv_err(ERR_CHANNELISFULL, ch->name, NULL, cl));
 	ch->users = sv_add_usertochan(cl, ch);
 	cl->chans = sv_add_chantouser(ch, cl);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/11 04:01:19 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:03:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 01:58:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,12 @@ static void		do_that(char *reply, char *cmd, char *cmd2, t_fd *cl)
 void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl)
 {
 	static char	*replies[][50] = { ERROR1, ERROR2, ERROR3, ERROR4, ERROR5,
-									ERROR6, ERROR7, ERROR8, ERROR9, ERROR10 };
+									ERROR6, ERROR7, ERROR8, ERROR9, ERROR10,
+									ERROR11 };
 	long		pos;
 
-	pos = ft_atoi(err) - 401;
-	if (pos >= 0 && pos < 102)
+	pos = ft_atoi(err) - 400;
+	if (pos >= 0 && pos <= ERR_LEN)
 	{
 		sv_cl_write(e.name, cl);
 		sv_cl_write(" ", cl);

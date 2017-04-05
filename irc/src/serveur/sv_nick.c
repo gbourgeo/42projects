@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 01:58:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 20:42:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,5 +115,6 @@ void			sv_nick(char **cmds, t_env *e, t_fd *cl)
 		rpl_nick(*cmds, cl, cl);
 		send_to_chans(*cmds, cl);
 		ft_strncpy(cl->inf->nick, *cmds, NICK_LEN);
+		cl->inf->must_change_nick = 0;
 	}
 }

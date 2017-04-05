@@ -6,25 +6,39 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:13:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:05:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
+static void			modify_chan_nbusers(t_fd *cl)
+{
+	t_listin		*ch;
+
+	ch = cl->chans;
+	while (ch)
+	{
+		((t_chan *)ch->is)->nbusers--;
+		((t_chan *)ch->is)->invisibl++;
+		ch = ch->next;
+	}
+}
+
+static void			change_user_mode(char c, char mode, t_fd *cl)
 {
 	static int		user_nbr[] = { US_MODS1, US_MODS2 };
 	char			*tmp;
+	char			ptr[2];
 
 	tmp = ft_strchr(USER_MODES, mode);
-	if ((c && us->inf->umode & user_nbr[tmp - USER_MODES]) ||
-		(!c && !(us->inf->umode & user_nbr[tmp - USER_MODES])))
+	if ((c && cl->inf->umode & user_nbr[tmp - USER_MODES]) ||
+		(!c && !(cl->inf->umode & user_nbr[tmp - USER_MODES])))
 		return ;
-	if (c)
-		us->inf->umode |= user_nbr[tmp - USER_MODES];
-	else
-		us->inf->umode &= ~(user_nbr[tmp - USER_MODES]);
+	cl->inf->umode = (c) ? cl->inf->umode | user_nbr[tmp - USER_MODES] :
+		cl->inf->umode & ~(user_nbr[tmp - USER_MODES]);
+	if (c && *tmp == 'i')
+		modify_chan_nbusers(cl);
 	sv_cl_write(":", cl);
 	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write("!~", cl);
@@ -32,14 +46,15 @@ static void			change_user_mode(char c, char mode, t_fd *us, t_fd *cl)
 	sv_cl_write("@", cl);
 	sv_cl_write(cl->addr, cl);
 	sv_cl_write(" MODE ", cl);
-	sv_cl_write(us->inf->nick, cl);
-	sv_cl_write(" :", cl);
-	sv_cl_write((c) ? "+" : "-", cl);
-	sv_cl_write(&mode, cl);
+	sv_cl_write(cl->inf->nick, cl);
+	sv_cl_write((c) ? " :+" : " :-", cl);
+	*ptr = mode;
+	*(ptr + 1) = 0;
+	sv_cl_write(ptr, cl);
 	sv_cl_write(END_CHECK, cl);
 }
 
-void				sv_user_mode(char **cmds, t_fd *us, t_fd *cl)
+void				sv_user_mode(char **cmds, t_fd *cl)
 {
 	char			*ptr;
 	char			c;
@@ -59,7 +74,7 @@ void				sv_user_mode(char **cmds, t_fd *us, t_fd *cl)
 			else if (*ptr != 'a' &&
 					((c && *ptr != 'O' && *ptr != 'o') ||
 					(!c && *ptr != 'r')))
-				change_user_mode(c, *ptr, us, cl);
+				change_user_mode(c, *ptr, cl);
 			ptr++;
 		}
 		cmds++;

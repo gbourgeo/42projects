@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/04/01 22:43:52 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/04/05 01:17:38 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -37,6 +37,7 @@ SV_SRC	= get_users_list.c	\
 		sv_connect.c 		\
 		sv_err.c 			\
 		sv_error.c 			\
+		sv_find.c			\
 		sv_help.c 			\
 		sv_init_server.c 	\
 		sv_join.c 			\
@@ -52,6 +53,7 @@ SV_SRC	= get_users_list.c	\
 		sv_msg_chan.c		\
 		sv_new_client.c 	\
 		sv_nick.c 			\
+		sv_nick_change.c 	\
 		sv_notice.c 		\
 		sv_pass.c			\
 		sv_quit.c	 		\

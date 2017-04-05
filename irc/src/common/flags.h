@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 08:04:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:48:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,15 @@
 # define USR_AWAY		0x0001
 # define USR_INVISIBL	0x0002
 # define USR_WALLOPS	0x0004
-# define USR_RESTRICT	0x0010
-# define USR_OP			0x0020
-# define USR_LOCALOP	0x0040
+# define USR_RESTRICT	0x0008
+# define USR_OP			0x0010
+# define USR_LOCALOP	0x0020
 
 # define US_MODS1 USR_AWAY, USR_INVISIBL, USR_WALLOPS, USR_RESTRICT, USR_OP
 # define US_MODS2 USR_LOCALOP
 
 /*
-** Channel flags.
+** Channel user flags && Channel flags.
 */
 # define CHAN_MODES "Oovamnqpstkl"
 
@@ -64,18 +64,14 @@
 # define CHFL_CHANOP	0x0002
 # define CHFL_VOICE		0x0004
 
-# define CHFL_ANON		0x0001
-/*
-** # define CHFL_INVITE	0x0002
-*/
-# define CHFL_MOD		0x0004
-# define CHFL_NOMSG		0x0010
-# define CHFL_QUIET		0x0020
-# define CHFL_PRIV		0x0040
-# define CHFL_SECRET	0x0100
-# define CHFL_TOPIC		0x0200
-
-# define CHFL_KEY		0x0400
+# define CHFL_ANON		0x0010
+# define CHFL_MOD		0x0020
+# define CHFL_NOMSG		0x0040
+# define CHFL_QUIET		0x0080
+# define CHFL_PRIV		0x0100
+# define CHFL_SECRET	0x0200
+# define CHFL_TOPIC		0x0400
+# define CHFL_KEY		0x0800
 # define CHFL_LIMIT		0x1000
 
 # define CH_MODS1 CHFL_CREATOR, CHFL_CHANOP, CHFL_VOICE

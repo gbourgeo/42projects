@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:14:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/20 06:26:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 22:19:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@
 # define M_7 "      +r       - Designates the user has restricted connection"
 # define M_8 ""
 # define M_9 ""
-# define M_10 "MODE <channle> <+|-> <modes>"
+# define M_10 "MODE <channel> <+|-> <modes>"
 # define M_11 "  CHANNELMODE   DESCRIPTION"
 # define M_12 "----------------------------------------------------------------"
 # define M_13 "     +a       - Anonymous channel"

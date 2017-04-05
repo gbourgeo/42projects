@@ -6,40 +6,40 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/16 21:57:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 02:44:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/04 23:25:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <stdio.h>
 
-static void		sv_free_client_onchans(t_fd *cl, t_listin *next)
+static void		sv_free_client_onchans(t_fd *cl, t_listin *chan)
 {
 	t_listin	*list;
 
-	while (cl->chans)
+	if (!chan)
+		return ;
+	list = ((t_chan *)chan->is)->users;
+	while (list)
 	{
-		list = ((t_chan *)cl->chans->is)->users;
-		while (list)
+		if (((t_fd *)list->is)->fd == cl->fd)
 		{
-			if (((t_fd *)list->is)->fd == cl->fd)
-			{
-				((t_chan *)cl->chans->is)->nbusers--;
-				if (list->prev)
-					list->prev->next = list->next;
-				else
-					((t_chan *)cl->chans->is)->users = list->next;
-				if (list->next)
-					list->next->prev = list->prev;
-				free(list);
-				break ;
-			}
-			list = list->next;
+			(cl->inf->umode & USR_INVISIBL) ? ((t_chan *)chan->is)->invisibl-- :
+				((t_chan *)chan->is)->nbusers--;
+			if (list->prev)
+				list->prev->next = list->next;
+			else
+				((t_chan *)cl->chans->is)->users = list->next;
+			if (list->next)
+				list->next->prev = list->prev;
+			free(list);
+			break ;
 		}
-		next = cl->chans->next;
-		free(cl->chans);
-		cl->chans = next;
+		list = list->next;
 	}
+	sv_free_client_onchans(cl, chan->next);
+	ft_memset(chan, 0, sizeof(*chan));
+	free(chan);
 }
 
 static void		sv_free_client(t_fd *cl, t_env *e)
@@ -99,7 +99,7 @@ t_fd			*sv_clear_client(t_env *e, t_fd *cl)
 	FD_CLR(cl->fd, &e->fd_write);
 	if (cl->inf->registered > 0)
 		e->members--;
-	sv_free_client_onchans(cl, NULL);
+	sv_free_client_onchans(cl, cl->chans);
 	sv_free_client(cl, e);
 	close(cl->fd);
 	ft_memset(cl, 0, sizeof(*cl));

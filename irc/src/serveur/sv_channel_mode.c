@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 20:59:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:41:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,20 +66,18 @@ static void			sv_change_mode(t_grp *grp)
 
 static void			sv_get_mode(t_grp *grp, char **cmd)
 {
-	char			c[2];
-
 	grp->c = 1;
 	grp->ptr = *cmd;
-	c[1] = 0;
+	grp->mdr[1] = 0;
 	while (*grp->ptr)
 	{
-		c[0] = *grp->ptr;
+		grp->mdr[0] = *grp->ptr;
 		if (*grp->ptr == '+')
 			grp->c = 1;
 		else if (*grp->ptr == '-')
 			grp->c = 0;
 		else if (!ft_strchr(CHAN_MODES, *grp->ptr))
-			sv_err(ERR_UNKNOWNMODE, c, grp->on->name, grp->from);
+			sv_err(ERR_UNKNOWNMODE, grp->mdr, grp->on->name, grp->from);
 		else if (*grp->ptr == 'o' || *grp->ptr == 'v')
 			sv_chan_user_mode(grp, &cmd);
 		else if (*grp->ptr == 'l' || *grp->ptr == 'k')

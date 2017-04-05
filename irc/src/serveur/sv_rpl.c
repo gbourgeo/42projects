@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/01 21:38:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:11:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/05 02:43:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void			rpl_cmode(t_grp *grp, char *limit)
 	sv_cl_write(" MODE ", grp->to);
 	sv_cl_write(grp->on->name, grp->to);
 	sv_cl_write((grp->c) ? " +" : " -", grp->to);
-	sv_cl_write(grp->ptr, grp->to);
+	sv_cl_write(grp->mdr, grp->to);
 	if ((*grp->ptr == 'l' || *grp->ptr == 'k') && grp->c)
 	{
 		sv_cl_write(" ", grp->to);
