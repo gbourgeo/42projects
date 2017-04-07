@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 23:00:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 23:52:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,13 +105,11 @@ void			cl_connect(char **cmds, t_client *cl)
 		ft_putstr_fd(cmds[0], STDERR_FILENO);
 		return (ft_putendl_fd(ERR_NEEDMOREPARAMS, 2));
 	}
-	if ((port = ft_strrchr(cmds[1], ':')) != NULL)
-	{
+	port = (cmds[2]) ? cmds[2] : ft_strrchr(cmds[1], ':');
+	if (!cmds[2])
 		*port++ = 0;
-		port = (*port) ? port : DEF_PORT;
-	}
-	else
-		port = (cmds[2] == NULL) ? DEF_PORT : cmds[2];
+	if (port == NULL || *port == 0)
+		port = DEF_PORT;
 	if (cl_getaddrinfo(cmds[1], port, cl))
 		return ;
 	if (cl->pass && sleep(1))

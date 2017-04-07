@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 12:08:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 23:49:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,19 @@ int				main(int ac, char **av)
 	(void)ac;
 	ft_memset(&cl, 0, sizeof(cl));
 	cl.sock = -1;
+	port = NULL;
 	if (!av[1])
 	{
 		ft_putendl("\e[34mUsage: ./client [host_name[:port]] [port]");
 		ft_putendl("Welcome to gbourgeos' IRC client");
 		ft_putendl("You can type HELP for a list of commands.\e[0m");
 	}
+	else if (av[2])
+		port = av[2];
 	else if ((port = ft_strrchr(av[1], ':')) != NULL)
 		*port++ = 0;
-	else
-		port = (av[2]) ? av[2] : DEF_PORT;
+	if (port == NULL || *port == 0)
+		port = DEF_PORT;
 	if (av[1])
 		cl_getaddrinfo(av[1], port, &cl);
 	cl_loop(&cl);
