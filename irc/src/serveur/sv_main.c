@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 08:44:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 15:57:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ static void			sv_init_env(t_env *e)
 		sv_error("ERROR: Getrlimit(RLIMIT_NOFILE)", e);
 	if (MAX_CLIENT > rlp.rlim_cur)
 		sv_error("MAX_CLIENT > rlim_cur. Check MAX_CLIENT and reduce it.", e);
-	ft_putstr(e->name);
 	ft_memset(&e->conf, 0, sizeof(e->conf));
 	get_conf_file(e);
 	ft_strcpy(e->userid, "1234AAAAA");
