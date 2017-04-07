@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 04:52:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 07:53:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <pwd.h>
 #include <uuid/uuid.h>
 #include <sys/socket.h>
-#include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <time.h>
@@ -109,16 +108,18 @@ void					sv_init_server(t_env *e)
 	e->ipv4 = -1;
 	e->ipv6 = -1;
 	sv_getaddrinfo(e);
-	if (!*e->name)
-		gethostname(e->name, SERVER_LEN);
 	ft_putstr((e->verb) ? "IPV4: " : "");
 	if (sv_sockavail(e, 0) != -1)
 		(e->verb) ? printf("%s %s\n", e->addr4, e->port) : ft_putstr("");
 	ft_putstr((e->verb) ? "IPV6: " : "");
 	if (sv_sockavail(e, 1) != -1)
 		(e->verb) ? printf("%s %s\n", e->addr6, e->port) : ft_putstr("");
-	if (e->ipv4 >= 0 && listen(e->ipv4, MAX_CLIENT) == -1)
+	if (e->ipv4 >= 0 &&
+		listen(e->ipv4, (e->ipv6 > 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
 		sv_error("Error: listen() on ipv4.", e);
-	if (e->ipv6 >= 0 && listen(e->ipv6, MAX_CLIENT) == -1)
+	if (e->ipv6 >= 0 &&
+		listen(e->ipv6, (e->ipv4 > 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
 		sv_error("Error: listen() on ipv6.", e);
+	if (!*e->name)
+		gethostname(e->name, SERVER_LEN);
 }

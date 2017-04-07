@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 04:56:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 09:34:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,13 @@
 # include "err_list.h"
 # include "commands.h"
 # include "flags.h"
+# include "conf.h"
 # include <netinet/in.h>
+# include <netdb.h>
 
 /*
-** Neagative value of any of this defines will lead to unexpected errors !!!
+** Negative value of any of this defines will lead to unexpected behaviors !!!
 */
-
-/*
-** LOCK_SERVER		If the value is different of 0 the server will ask for login
-**					and password to each new connection.
-*/
-# define LOCK_SERVER 0
-
-/*
-** USERS_FILE		The file containing all the authentified users which will
-**					be able to connect to the locked server. Semantic:
-**					<nick> <pass> <username> <mode> <<realname> [] ...>
-*/
-# define USERS_FILE ".irc_users"
 
 /*
 ** MAX_CLIENT		Set the number of clients this program will handle. It can't
@@ -101,6 +90,9 @@ enum
 	FD_CLIENT
 };
 
+# define V4ADDR(csin) &((struct sockaddr_in *)csin)->sin_addr.s_addr
+# define V6ADDR(csin) &((struct sockaddr_in6 *)csin)->sin6_addr.s6_addr
+
 /*
 ** I had set a void * in the struct s_listin, why?
 ** Because in s_fd, that void * is a t_chan *
@@ -129,15 +121,15 @@ typedef struct			s_file
 
 typedef struct			s_fd
 {
-	struct s_fd			*prev;
 	int					fd;
 	struct sockaddr		csin;
 	char				addr[ADDR_LEN + 1];
-	char				port[32];
+	char				host[NI_MAXHOST + 1];
+	char				port[NI_MAXSERV + 1];
+	struct s_fd			*prev;
 	char				uid[10];
 	t_file				*inf;
 	short				type;
-	time_t				time;
 	char				*away;
 	t_listin			*chans;
 	int					chansnb;
@@ -170,9 +162,8 @@ typedef struct			s_chan
 typedef struct			s_env
 {
 	char				verb;
-	int					fd;
+	t_conf				conf;
 	char				userid[10];
-	t_file				*users;
 	char				name[SERVER_LEN + 1];
 	int					ipv4;
 	char				addr4[16];
@@ -180,6 +171,7 @@ typedef struct			s_env
 	char				addr6[16];
 	char				*port;
 	char				*creation;
+	t_file				*users;
 	size_t				members;
 	t_fd				*fds;
 	t_chan				*chans;
@@ -188,11 +180,14 @@ typedef struct			s_env
 	char				*ptr;
 }						t_env;
 
-typedef struct			s_com
+typedef struct			s_info
 {
-	char				*name;
-	void				(*fct)(char **, t_env *, t_fd *);
-}						t_com;
+	int					fd;
+	struct sockaddr		csin;
+	char				addr[ADDR_LEN + 1];
+	char				host[NI_MAXHOST + 1];
+	char				port[NI_MAXSERV + 1];
+}						t_info;
 
 typedef struct			s_grp
 {
@@ -207,7 +202,7 @@ typedef struct			s_grp
 
 struct s_env			e;
 
-t_file					*get_users_list(t_env *e);
+void					get_conf_file(t_env *e);
 int						is_chan_member(t_chan *ch, t_fd *cl);
 int						is_modo(t_chan *chan, t_fd *cl);
 t_chan					*find_chan(char *name, t_chan *chans);
@@ -245,10 +240,10 @@ int						sv_loop(t_env *e);
 void					sv_mode(char **cmds, t_env *e, t_fd *cl);
 void					sv_msg(char **cmds, t_env *e, t_fd *cl);
 void					sv_msg_chan(char *chan_name, char **cmds, t_fd *cl);
-void					sv_new_client(int fd, struct sockaddr *csin, t_env *e);
+void					sv_new_client(t_info *info);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_nick_change(t_fd *cl, t_env *e);
-void					sv_notice(char *str, t_fd *cl, t_env *e);
+void					sv_notice(char *str, t_fd *cl);
 void					sv_pass(char **cmds, t_env *e, t_fd *cl);
 void					sv_quit(char **cmds, t_env *e, t_fd *cl);
 void					sv_signals(void);
@@ -265,6 +260,5 @@ void					sv_welcome(t_env *e, t_fd *cl);
 void					sv_who(char **cmds, t_env *e, t_fd *cl);
 void					sv_who_chan(char **cmds, t_fd *cl, t_env *e);
 void					sv_who_info(t_fd *us, t_fd *cl, t_env *e);
-void					update_users_file(t_env *e);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/11 04:01:19 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 01:58:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 07:30:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void			sv_err(char *err, char *cmd, char *cmd2, t_fd *cl)
 	pos = ft_atoi(err) - 400;
 	if (pos >= 0 && pos <= ERR_LEN)
 	{
+		sv_cl_write(":", cl);
 		sv_cl_write(e.name, cl);
 		sv_cl_write(" ", cl);
 		sv_cl_write(err, cl);

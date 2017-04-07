@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 20:42:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 04:26:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static void		rpl_nick(char *nick, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write(cl->addr, to);
+	sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
 	sv_cl_write(" NICK :", to);
 	sv_cl_write(nick, to);
 	sv_cl_write(END_CHECK, to);

@@ -6,12 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:16:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/25 22:27:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 08:47:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 static int			sv_check_clone(t_env *e, struct sockaddr *csin)
 {
@@ -40,31 +41,85 @@ static int			sv_check_clone(t_env *e, struct sockaddr *csin)
 	return (clone);
 }
 
-static void			sv_send(int fd, char *str, t_env *e)
+static void			sv_nope(char *str, t_info *inf)
 {
-	if (e->verb)
-		ft_putendl(str);
-	if (fd > 0)
+	char			buf[248];
+
+	ft_bzero(buf, 248);
+	ft_strcpy(buf, "ERROR :Closing Link: ");
+	ft_strcat(buf, inf->addr);
+	ft_strcat(buf, ":");
+	ft_strcat(buf, inf->port);
+	ft_strcat(buf, " ");
+	ft_strcat(buf, str);
+	ft_strcat(buf, END_CHECK);
+	send(inf->fd, buf, 248, 0);
+	close(inf->fd);
+	if (e.verb)
+		ft_putstr(buf);
+}
+
+static int			sv_allow(t_info *inf)
+{
+	t_user			*ptr;
+
+	ptr = e.conf.allowed_user;
+	while (ptr)
 	{
-		send(fd, str, ft_strlen(str), 0);
-		close(fd);
+		if (!ft_strcmp(ptr->hostname, inf->host))
+			return (1);
+		if (!ft_strcmp(ptr->hostaddr, inf->addr))
+			return (1);
+		ptr = ptr->next;
 	}
+	ptr = e.conf.pass_user;
+	while (ptr)
+	{
+		if (!ft_strcmp(ptr->hostname, inf->host))
+			return (1);
+		if (!ft_strcmp(ptr->hostaddr, inf->addr))
+			return (1);
+		ptr = ptr->next;
+	}
+	return (0);
+}
+
+static void			sv_info(char *str, int fd)
+{
+	char			buf[248];
+
+	ft_bzero(buf, 248);
+	ft_strcpy(buf, ":");
+	ft_strcat(buf, e.name);
+	ft_strcat(buf, " NOTICE * :*** ");
+	ft_strcat(buf, str);
+	ft_strcat(buf, END_CHECK);
+	send(fd, buf, 248, 0);
 }
 
 void				sv_accept(t_env *e, int ipv6)
 {
-	int				fd;
-	struct sockaddr	csin;
+	t_info			inf;
 	socklen_t		len;
 
-	len = sizeof(csin);
-	fd = accept((!ipv6) ? e->ipv4 : e->ipv6, &csin, &len);
-	if (fd == -1)
+	len = sizeof(inf.csin);
+	inf.fd = accept((!ipv6) ? e->ipv4 : e->ipv6, &inf.csin, &len);
+	if (inf.fd == -1)
 		sv_error("ERROR: SERVER: Accept() returned.", e);
-	if (e->members + 1 >= MAX_CLIENT)
-		sv_send(fd, "ERROR: SERVER: Maximum clients reached.\r\n", e);
-	else if (sv_check_clone(e, &csin) >= MAX_CLIENT_BY_IP)
-		sv_send(fd, "ERROR: SERVER: Max Clients per IP reached.\r\n", e);
+	sv_info("Looking up your hostname...", inf.fd);
+	if (getnameinfo(&inf.csin, sizeof(inf.csin), inf.host, NI_MAXHOST,
+					inf.port, NI_MAXSERV, NI_NUMERICSERV))
+		sv_info("Couldn't look up your hostname", inf.fd);
+	if (ipv6)
+		inet_ntop(AF_INET6, V6ADDR(&inf.csin), inf.addr, sizeof(inf.addr));
 	else
-		sv_new_client(fd, &csin, e);
+		inet_ntop(AF_INET, V4ADDR(&inf.csin), inf.addr, sizeof(inf.addr));
+	if (e->members + 1 >= MAX_CLIENT)
+		return (sv_nope("Maximum clients reached.", &inf));
+	if (sv_check_clone(e, &inf.csin) >= MAX_CLIENT_BY_IP)
+		return (sv_nope("Max Clients per IP reached.", &inf));
+	if (!sv_allow(&inf))
+		return (sv_nope("Not allowed to login to the server.", &inf));
+	else
+		sv_new_client(&inf);
 }

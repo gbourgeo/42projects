@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 05:10:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 08:44:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static void			ft_usage(char ill, char *prog_name)
 	ft_putstr_fd("\t-h _host_\tSpecify the address to listen to.\n", 2);
 	ft_putstr_fd("\t\t\tLeave it blank to use both ipv4 and ipv6.\n", 2);
 	ft_putstr_fd("\t-v\t\tInteractive server.\n", 2);
-	ft_putstr_fd("\t\t\tIt will print some info about the server activity.\n", 2);
+	ft_putstr_fd("\t\t\tIt will print info about the server activity.\n", 2);
 	exit(EXIT_FAILURE);
 }
 
@@ -84,8 +84,10 @@ static void			sv_init_env(t_env *e)
 		sv_error("ERROR: Getrlimit(RLIMIT_NOFILE)", e);
 	if (MAX_CLIENT > rlp.rlim_cur)
 		sv_error("MAX_CLIENT > rlim_cur. Check MAX_CLIENT and reduce it.", e);
+	ft_putstr(e->name);
+	ft_memset(&e->conf, 0, sizeof(e->conf));
+	get_conf_file(e);
 	ft_strcpy(e->userid, "1234AAAAA");
-	e->users = get_users_list(e);
 }
 
 int					main(int ac, char **av)
@@ -97,8 +99,8 @@ int					main(int ac, char **av)
 	ft_memset(&e, 0, sizeof(e));
 	sv_getopt(av, &e);
 	sv_init_env(&e);
-	sv_signals();
 	sv_init_server(&e);
+	sv_signals();
 	date = time(NULL);
 	e.creation = ctime(&date);
 	sv_loop(&e);

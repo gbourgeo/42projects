@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:24:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/22 19:53:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 01:55:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,11 @@
 
 # define SV_COMMANDS1 AWAY, CONNECT, HELP, JOIN, LEAVE, LIST, MSG, MODE, NICK
 # define SV_COMMANDS2 PASS, QUIT, USER, TOPIC, WHO, END
+
+typedef struct			s_com
+{
+	char				*name;
+	void				(*fct)();
+}						t_com;
 
 #endif

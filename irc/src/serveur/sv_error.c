@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 04:44:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 07:51:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ void			sv_error(char *str, t_env *e)
 	FD_ZERO(&e->fd_write);
 	close(e->ipv4);
 	close(e->ipv6);
-	update_users_file(e);
 	if (e->verb)
 		fprintf(stderr, "\b\b:%s NOTICE * :*** %s\n", e->name, str);
 	ft_memset(e, 0, sizeof(*e));

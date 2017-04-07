@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/04/05 01:17:38 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/04/05 06:54:43 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,7 +23,7 @@ SERVEUR	= serveur
 
 SV_DIR	= src/serveur/
 
-SV_SRC	= get_users_list.c	\
+SV_SRC	= get_conf_file.c	\
 		is_chan_member.c	\
 		sv_accept.c 		\
 		sv_away.c 			\
@@ -75,7 +75,7 @@ SV_OBJ	= $(SV_SRC:.c=.o)
 COM_DIR	= src/common/
 
 COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c sv_strcmp.c sv_strncmp.c \
-		ft_strisalnum.c
+		ft_strisalnum.c sv_strsplit.c
 
 COM_OBJ	= $(COM_SRC:.c=.o)
 
@@ -93,7 +93,7 @@ LIBFT	= libft/
 
 LIBFT_H	= $(LIBFT)includes/
 
-WWW		= gcc -Wall -Werror -Wextra #-pedantic-errors -pedantic
+WWW		= gcc -Wall -Werror -Wextra
 
 .PHONY: all clean fclean re
 
@@ -105,12 +105,12 @@ lib:
 $(OBJ_DIR):
 	@mkdir -p $@
 
-$(CLIENT): $(OBJ_CL) $(OBJ_COM) | lib
-	$(WWW) -o $@ $^ -L $(LIBFT) -lft
+$(CLIENT): $(OBJ_CL) $(OBJ_COM) $(LIBFT)libft.a
+	@$(WWW) -o $@ $(OBJ_CL) $(OBJ_COM) -L $(LIBFT) -lft
 	@echo CREATED: $@
 
-$(SERVEUR): $(OBJ_SV) $(OBJ_COM) | lib
-	@$(WWW) -o $@ $^ -L $(LIBFT) -lft
+$(SERVEUR): $(OBJ_SV) $(OBJ_COM) $(LIBFT)libft.a
+	@$(WWW) -o $@ $(OBJ_SV) $(OBJ_COM) -L $(LIBFT) -lft
 	@echo CREATED: $@
 
 $(OBJ_DIR)%.o: $(CL_DIR)%.c $(CL_DIR)cl_main.h $(addprefix $(COM_DIR), $(COM_HDR)) | $(OBJ_DIR)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 04:33:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 03:39:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static void			sv_check_fd(t_env *e, int ret)
 	t_fd			*cl;
 
 	cl = e->fds;
-	if (FD_ISSET(e->ipv4, &e->fd_read))
+	if (e->ipv4 > 0 && FD_ISSET(e->ipv4, &e->fd_read))
 		sv_accept(e, 0);
-	if (FD_ISSET(e->ipv6, &e->fd_read))
+	if (e->ipv6 > 0 && FD_ISSET(e->ipv6, &e->fd_read))
 		sv_accept(e, 1);
 	while (cl && ret > 0)
 	{

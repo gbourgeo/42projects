@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/30 10:00:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:11:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 04:30:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void		sv_rpl_topic_user(t_chan *chan, t_fd *cl)
 		sv_cl_write("!~", to);
 		sv_cl_write(cl->inf->username, to);
 		sv_cl_write("@", to);
-		sv_cl_write(cl->addr, to);
+		sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
 		sv_cl_write(" TOPIC ", to);
 		sv_cl_write(chan->name, to);
 		sv_cl_write(" :", to);

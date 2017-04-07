@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:09:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 04:25:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void		rpl_msg_chan(char **cmds, t_chan *chan, t_fd *to, t_fd *cl)
 		sv_cl_write("!~", to);
 		sv_cl_write(cl->inf->username, to);
 		sv_cl_write("@", to);
-		sv_cl_write(cl->addr, to);
+		sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
 	}
 	sv_cl_write(" MSG ", to);
 	sv_cl_write(chan->name, to);

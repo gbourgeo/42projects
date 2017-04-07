@@ -6,33 +6,37 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/01 21:38:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 02:43:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 08:43:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void			rpl_cmode(t_grp *grp, char *limit)
+void			rpl_cmode(t_grp *g, char *limit)
 {
-	sv_cl_write(":", grp->to);
-	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->inf->nick, grp->to);
-	sv_cl_write("!~", grp->to);
-	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->inf->username, grp->to);
-	sv_cl_write("@", grp->to);
-	sv_cl_write((grp->on->cmode & CHFL_ANON && grp->to->fd != grp->from->fd) ?
-				"anonymous" : grp->from->addr, grp->to);
-	sv_cl_write(" MODE ", grp->to);
-	sv_cl_write(grp->on->name, grp->to);
-	sv_cl_write((grp->c) ? " +" : " -", grp->to);
-	sv_cl_write(grp->mdr, grp->to);
-	if ((*grp->ptr == 'l' || *grp->ptr == 'k') && grp->c)
+	sv_cl_write(":", g->to);
+	sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
+				"anonymous" : g->from->inf->nick, g->to);
+	sv_cl_write("!~", g->to);
+	sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
+				"anonymous" : g->from->inf->username, g->to);
+	sv_cl_write("@", g->to);
+	if (*g->from->host)
+		sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
+					"anonymous" : g->from->host, g->to);
+	else
+		sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
+					"anonymous" : g->from->addr, g->to);
+	sv_cl_write(" MODE ", g->to);
+	sv_cl_write(g->on->name, g->to);
+	sv_cl_write((g->c) ? " +" : " -", g->to);
+	sv_cl_write(g->mdr, g->to);
+	if ((*g->ptr == 'l' || *g->ptr == 'k') && g->c)
 	{
-		sv_cl_write(" ", grp->to);
-		sv_cl_write((*grp->ptr == 'l') ? limit : grp->on->key, grp->to);
+		sv_cl_write(" ", g->to);
+		sv_cl_write((*g->ptr == 'l') ? limit : g->on->key, g->to);
 	}
-	sv_cl_write(END_CHECK, grp->to);
+	sv_cl_write(END_CHECK, g->to);
 	if (limit)
 		free(limit);
 }
@@ -44,7 +48,10 @@ void			rpl_umode(t_grp *g, t_chan *c, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
+	if (*cl->host)
+		sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->host, to);
+	else
+		sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
 	sv_cl_write(" MODE ", to);
 	sv_cl_write(c->name, to);
 	sv_cl_write((g->c) ? " :+" : " :-", to);
