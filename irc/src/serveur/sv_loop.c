@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 03:39:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 12:49:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static void			sv_check_fd(t_env *e, int ret)
 	t_fd			*cl;
 
 	cl = e->fds;
-	if (e->ipv4 > 0 && FD_ISSET(e->ipv4, &e->fd_read))
+	if (e->v4.fd > 0 && FD_ISSET(e->v4.fd, &e->fd_read))
 		sv_accept(e, 0);
-	if (e->ipv6 > 0 && FD_ISSET(e->ipv6, &e->fd_read))
+	if (e->v6.fd > 0 && FD_ISSET(e->v6.fd, &e->fd_read))
 		sv_accept(e, 1);
 	while (cl && ret > 0)
 	{
@@ -44,13 +44,13 @@ static int			sv_init_fd(t_env *e)
 	int				max;
 
 	cl = e->fds;
-	max = (e->ipv4 > e->ipv6) ? e->ipv4 : e->ipv6;
+	max = (e->v4.fd > e->v6.fd) ? e->v4.fd : e->v6.fd;
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);
-	if (e->ipv4 > 0)
-		FD_SET(e->ipv4, &e->fd_read);
-	if (e->ipv6 > 0)
-		FD_SET(e->ipv6, &e->fd_read);
+	if (e->v4.fd > 0)
+		FD_SET(e->v4.fd, &e->fd_read);
+	if (e->v6.fd > 0)
+		FD_SET(e->v6.fd, &e->fd_read);
 	while (cl)
 	{
 		if (cl->type == FD_CLIENT)

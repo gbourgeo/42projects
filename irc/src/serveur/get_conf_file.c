@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 08:48:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 10:12:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 static void			sv_connection_class(char **table, t_env *e)
 {
-	ft_puttab(table);
+	(void)table;
 	(void)e;
 }
 

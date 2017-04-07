@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 07:51:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 12:34:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ void			sv_error(char *str, t_env *e)
 	sv_kill_channels(e->chans);
 	FD_ZERO(&e->fd_read);
 	FD_ZERO(&e->fd_write);
-	close(e->ipv4);
-	close(e->ipv6);
+	close(e->v4.fd);
+	close(e->v6.fd);
 	if (e->verb)
 		fprintf(stderr, "\b\b:%s NOTICE * :*** %s\n", e->name, str);
 	ft_memset(e, 0, sizeof(*e));

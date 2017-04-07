@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 03:26:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 12:08:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,23 @@ static void		cl_loop(t_client *cl)
 int				main(int ac, char **av)
 {
 	t_client	cl;
+	char		*port;
 
 	(void)ac;
 	ft_memset(&cl, 0, sizeof(cl));
 	cl.sock = -1;
-	ft_strcpy(cl.nick, "fuury");
-	if (!av[1] || cl_getaddrinfo(av[1], av[2], &cl))
+	if (!av[1])
 	{
-		ft_putendl("Usage: ./client [host_name] [port]");
-		ft_putendl("You are not connected to any IRC server.");
-		ft_putendl("\e[34mYou can type /help for a list of commands.\e[0m");
+		ft_putendl("\e[34mUsage: ./client [host_name[:port]] [port]");
+		ft_putendl("Welcome to gbourgeos' IRC client");
+		ft_putendl("You can type HELP for a list of commands.\e[0m");
 	}
+	else if ((port = ft_strrchr(av[1], ':')) != NULL)
+		*port++ = 0;
+	else
+		port = (av[2]) ? av[2] : DEF_PORT;
+	if (av[1])
+		cl_getaddrinfo(av[1], port, &cl);
 	cl_loop(&cl);
 	return (0);
 }

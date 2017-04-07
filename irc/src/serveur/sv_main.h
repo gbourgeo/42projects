@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 09:34:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 12:48:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,17 +159,24 @@ typedef struct			s_chan
 	struct s_chan		*next;
 }						t_chan;
 
+typedef struct			s_info
+{
+	int					fd;
+	struct sockaddr		csin;
+	char				addr[ADDR_LEN + 1];
+	char				host[NI_MAXHOST + 1];
+	char				port[NI_MAXSERV + 1];
+}						t_info;
+
 typedef struct			s_env
 {
 	char				verb;
 	t_conf				conf;
 	char				userid[10];
 	char				name[SERVER_LEN + 1];
-	int					ipv4;
-	char				addr4[16];
-	int					ipv6;
-	char				addr6[16];
 	char				*port;
+	t_info				v4;
+	t_info				v6;
 	char				*creation;
 	t_file				*users;
 	size_t				members;
@@ -179,15 +186,6 @@ typedef struct			s_env
 	fd_set				fd_write;
 	char				*ptr;
 }						t_env;
-
-typedef struct			s_info
-{
-	int					fd;
-	struct sockaddr		csin;
-	char				addr[ADDR_LEN + 1];
-	char				host[NI_MAXHOST + 1];
-	char				port[NI_MAXSERV + 1];
-}						t_info;
 
 typedef struct			s_grp
 {

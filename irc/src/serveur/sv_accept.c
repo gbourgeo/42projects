@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/21 17:16:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 08:47:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 12:34:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ static void			sv_nope(char *str, t_info *inf)
 	ft_bzero(buf, 248);
 	ft_strcpy(buf, "ERROR :Closing Link: ");
 	ft_strcat(buf, inf->addr);
+	ft_strcat(buf, "@");
+	ft_strcat(buf, inf->host);
 	ft_strcat(buf, ":");
 	ft_strcat(buf, inf->port);
 	ft_strcat(buf, " ");
@@ -103,10 +105,12 @@ void				sv_accept(t_env *e, int ipv6)
 	socklen_t		len;
 
 	len = sizeof(inf.csin);
-	inf.fd = accept((!ipv6) ? e->ipv4 : e->ipv6, &inf.csin, &len);
+	inf.fd = accept((!ipv6) ? e->v4.fd : e->v6.fd, &inf.csin, &len);
 	if (inf.fd == -1)
 		sv_error("ERROR: SERVER: Accept() returned.", e);
 	sv_info("Looking up your hostname...", inf.fd);
+	if (getsockname(inf.fd, &inf.csin, &len))
+		sv_info("Couldn't retreive your ident", inf.fd);
 	if (getnameinfo(&inf.csin, sizeof(inf.csin), inf.host, NI_MAXHOST,
 					inf.port, NI_MAXSERV, NI_NUMERICSERV))
 		sv_info("Couldn't look up your hostname", inf.fd);

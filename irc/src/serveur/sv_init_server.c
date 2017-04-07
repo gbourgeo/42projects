@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 07:53:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/07 14:32:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <time.h>
 #include <stdio.h>
 
-static int				sv_sockerr(char *err, int fd)
+static int			sv_sockerr(char *err, int fd)
 {
 	if (e.verb)
 	{
@@ -34,22 +34,25 @@ static int				sv_sockerr(char *err, int fd)
 	return (-1);
 }
 
-static int				sv_sockavail(t_env *e, int isv6)
+static void				sv_sockavail(t_env *e, int isv6)
 {
-	struct sockaddr_in	s4;
-	struct sockaddr_in6	s6;
 	socklen_t			len;
 
-	len = (isv6) ? sizeof(s6) : sizeof(s4);
-	if ((isv6 && getsockname(e->ipv6, (struct sockaddr *)&s6, &len)) ||
-		(!isv6 && getsockname(e->ipv4, (struct sockaddr *)&s4, &len)))
-		return (sv_sockerr("getsockname failed.", (isv6) ? e->ipv6 : e->ipv4));
-	ft_putstr((e->verb) ? "\e[32mAvailable\e[0m " : "");
+	len = sizeof(struct sockaddr);
 	if (isv6)
-		inet_ntop(AF_INET6, &s6.sin6_addr.s6_addr, e->addr6, sizeof(e->addr6));
-	else
-		inet_ntop(AF_INET, &s4.sin_addr.s_addr, e->addr4, sizeof(e->addr4));
-	return ((isv6) ? e->ipv6 : e->ipv4);
+	{
+		inet_ntop(AF_INET6, V6ADDR(&e->v6.csin), e->v6.addr, sizeof(e->v6.addr));
+		getnameinfo(&e->v6.csin, len, e->v6.host, NI_MAXHOST, e->v6.port,
+					NI_MAXHOST, NI_NUMERICSERV);
+		printf("\e[32mAvailable\e[0m %s(%s) %s\n",
+				e->v6.host, e->v6.addr, e->v6.port);
+		return ;
+	}
+	inet_ntop(AF_INET, V4ADDR(&e->v4.csin), e->v4.addr, sizeof(e->v4.addr));
+	getnameinfo(&e->v4.csin, len, e->v4.host, NI_MAXHOST, e->v4.port,
+				NI_MAXHOST, NI_NUMERICSERV);
+		printf("\e[32mAvailable\e[0m %s(%s) %s\n",
+				e->v4.host, e->v4.addr, e->v4.port);
 }
 
 static int				sv_findsocket(struct addrinfo *p, int ip)
@@ -58,6 +61,7 @@ static int				sv_findsocket(struct addrinfo *p, int ip)
 	int					on;
 
 	on = 1;
+	ft_memcpy((!ip) ? &e.v4.csin : &e.v6.csin, p->ai_addr, sizeof(e.v4.csin));
 	fd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 	if (fd < 0)
 		return (sv_sockerr("opening stream socket", fd));
@@ -69,7 +73,7 @@ static int				sv_findsocket(struct addrinfo *p, int ip)
 				return (fd);
 			return (sv_sockerr("binding stream socket", fd));
 		}
-		return (sv_sockerr("setsockopt(IPPROTO_IPV6, IPV6_ONLY) ", fd));
+		return (sv_sockerr("setsockopt(IPPROTO_IPV6, IPV6_V6ONLY) ", fd));
 	}
 	return (sv_sockerr("setsockopt(SO_REUSEADDR) ", fd));
 }
@@ -90,36 +94,40 @@ static void				sv_getaddrinfo(t_env *e)
 	p = res;
 	while (p != NULL)
 	{
-		if (e->ipv4 < 0 && p->ai_family == AF_INET)
-			e->ipv4 = sv_findsocket(p, 0);
-		if (e->ipv6 < 0 && p->ai_family == AF_INET6)
-			e->ipv6 = sv_findsocket(p, 1);
-		if (e->ipv4 != -1 && e->ipv6 != -1)
+		if (e->v4.fd < 0 && p->ai_family == AF_INET)
+			e->v4.fd = sv_findsocket(p, 0);
+		if (e->v6.fd < 0 && p->ai_family == AF_INET6)
+			e->v6.fd = sv_findsocket(p, 1);
+		if (e->v4.fd != -1 && e->v6.fd != -1)
 			break ;
 		p = p->ai_next;
 	}
 	freeaddrinfo(res);
-	if (p == NULL && e->ipv4 < 0 && e->ipv6 < 0)
+	if (p == NULL && e->v4.fd < 0 && e->v6.fd < 0)
 		sv_error("Error: Invalid or Unavailable port.", e);
 }
 
 void					sv_init_server(t_env *e)
 {
-	e->ipv4 = -1;
-	e->ipv6 = -1;
+	e->v4.fd = -1;
+	e->v6.fd = -1;
 	sv_getaddrinfo(e);
-	ft_putstr((e->verb) ? "IPV4: " : "");
-	if (sv_sockavail(e, 0) != -1)
-		(e->verb) ? printf("%s %s\n", e->addr4, e->port) : ft_putstr("");
-	ft_putstr((e->verb) ? "IPV6: " : "");
-	if (sv_sockavail(e, 1) != -1)
-		(e->verb) ? printf("%s %s\n", e->addr6, e->port) : ft_putstr("");
-	if (e->ipv4 >= 0 &&
-		listen(e->ipv4, (e->ipv6 > 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
-		sv_error("Error: listen() on ipv4.", e);
-	if (e->ipv6 >= 0 &&
-		listen(e->ipv6, (e->ipv4 > 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
-		sv_error("Error: listen() on ipv6.", e);
+	ft_putstr((e->verb) ? "IPv4: " : "");
+	sv_sockavail(e, 0);
+	if (e->v4.fd >= 0 &&
+		listen(e->v4.fd, (e->v6.fd >= 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
+		e->v4.fd = sv_sockerr("listen() on IPv4.", e->v4.fd);
+	else if (e->verb)
+		printf("\e[32mAvailable\e[0m %s(%s) %s\n",
+				e->v4.host, e->v4.addr, e->v4.port);
+	ft_putstr((e->verb) ? "IPv6: " : "");
+	sv_sockavail(e, 1);
+	if (e->v6.fd >= 0 &&
+		listen(e->v6.fd, (e->v4.fd >= 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
+		e->v6.fd = sv_sockerr("listen() on IPv6.", e->v6.fd);
+	else if (e->verb)
+		printf("\e[32mAvailable\e[0m %s(%s) %s\n",
+				e->v6.host, e->v6.addr, e->v6.port);
 	if (!*e->name)
 		gethostname(e->name, SERVER_LEN);
 }
