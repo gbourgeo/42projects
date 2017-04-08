@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/04/05 06:54:43 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/04/08 03:12:06 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -55,6 +55,7 @@ SV_SRC	= get_conf_file.c	\
 		sv_nick.c 			\
 		sv_nick_change.c 	\
 		sv_notice.c 		\
+		sv_oper.c			\
 		sv_pass.c			\
 		sv_quit.c	 		\
 		sv_rpl.c			\

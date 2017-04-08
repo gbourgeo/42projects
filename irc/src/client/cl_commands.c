@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/02 03:00:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 23:52:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 04:54:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void			cl_connect(char **cmds, t_client *cl)
 		return (ft_putendl_fd(ERR_NEEDMOREPARAMS, 2));
 	}
 	port = (cmds[2]) ? cmds[2] : ft_strrchr(cmds[1], ':');
-	if (!cmds[2])
+	if (port && !cmds[2])
 		*port++ = 0;
 	if (port == NULL || *port == 0)
 		port = DEF_PORT;

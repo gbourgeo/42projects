@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 12:48:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 03:01:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,6 +242,7 @@ void					sv_new_client(t_info *info);
 void					sv_nick(char **cmds, t_env *e, t_fd *cl);
 void					sv_nick_change(t_fd *cl, t_env *e);
 void					sv_notice(char *str, t_fd *cl);
+void					sv_oper(char **cmds, t_env *e, t_fd *cl);
 void					sv_pass(char **cmds, t_env *e, t_fd *cl);
 void					sv_quit(char **cmds, t_env *e, t_fd *cl);
 void					sv_signals(void);

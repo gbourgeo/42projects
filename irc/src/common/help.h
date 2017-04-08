@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:14:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 22:19:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 04:36:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,15 @@
 # define SYN7 "MSG <nick> <message>"
 # define SYN8 "MODE <nick> <+/-> <mode>, MODE <channel> <+|-> <modes>"
 # define SYN9 "NICK <nick>", "PASS <password>"
-# define SYN10 "QUIT [<comment>]"
-# define SYN11 "USER <user> <mode> <unused> <realname>"
-# define SYN12 "TOPIC <[#|&|+|!]channel> [topic]"
-# define SYN13 "WHO <channel|user>"
+# define SYN10 "OPER <name> <password>"
+# define SYN11 "PASS <password>"
+# define SYN12 "QUIT [<comment>]"
+# define SYN13 "USER <user> <mode> <unused> <realname>"
+# define SYN14 "TOPIC <[#|&|+|!]channel> [topic]"
+# define SYN15 "WHO <channel|user>"
 
 # define SYNTAX1 SYN1, SYN2, SYN3, SYN4, SYN5, SYN6, SYN7, SYN8, SYN9
-# define SYNTAX2 SYN10, SYN11, SYN12, SYN13
+# define SYNTAX2 SYN10, SYN11, SYN12, SYN13, SYN14, SYN15
 
 # define AWAY_1 "Without an argument, it will set you back.  With an argument,"
 # define AWAY_2	"it will set you as AWAY with the specified message."
@@ -78,6 +80,14 @@
 # define NICK_2 "set the client's nickname."
 # define NICK_3 "NICK will also change the client's nickname once a connection"
 # define NICK_4 "has been established."
+
+# define OPER_1 "The OPER command requires two arguments to be given. The first"
+# define OPER_2 "argument is the name of the operator as specified in the"
+# define OPER_3 "configuration file. The second argument is the password for"
+# define OPER_4 "the operator matching the name and host."
+# define OPER_5 ""
+# define OPER_6 "The operator privileges are shown on a successful OPER."
+
 # define PASS_1 "PASS is used during registration to access"
 # define PASS_2 "a password protected auth {} block."
 # define QUIT_1 "Sends a message to the IRC server letting it know you would"
@@ -93,6 +103,7 @@
 # define TOPIC_3 "With a second argument, it changes the topic on that channel"
 # define TOPIC_4 "to [topic]. If the channel is +t, only chanops may change the"
 # define TOPIC_5 "topic."
+
 # define W1 "The WHO command displays information about a user,"
 # define W2 "such as their GECOS information, their user@host,"
 # define W3 "whether they are an IRC operator or not, etc."
@@ -103,7 +114,6 @@
 # define W8 "*       -       The user is an IRC operator."
 # define W9 "@       -       The user is a channel op in the channel listed."
 # define W10 "+       -       The user is voiced in the channel listed."
-
 # define SV_HELP1 { AWAY_1, AWAY_2, NULL }
 # define SV_HELP2 { CONNECT_1, CONNECT_2, NULL }
 # define SV_HELP3 { HELP_1, HELP_2, NULL }
@@ -115,14 +125,15 @@
 # define SV_HELP9 M_12, M_13, M_15, M_16, M_17, M_18, M_19, M_20, M_21
 # define SV_HELP10 M_22, NULL }
 # define SV_HELP11 { NICK_1, NICK_2, NICK_3, NICK_4, NULL }
-# define SV_HELP12 { PASS_1, PASS_2, NULL }
-# define SV_HELP13 { QUIT_1, QUIT_2, QUIT_3, NULL}
-# define SV_HELP14 { USER_1, USER_2, USER_3, USER_4, USER_5, NULL}
-# define SV_HELP15 { TOPIC_1, TOPIC_2, TOPIC_3, TOPIC_4, TOPIC_5, NULL }
-# define SV_HELP16 { W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, NULL}
+# define SV_HELP12 { OPER_1, OPER_2, OPER_3, OPER_4, OPER_5, OPER_6, NULL }
+# define SV_HELP13 { PASS_1, PASS_2, NULL }
+# define SV_HELP14 { QUIT_1, QUIT_2, QUIT_3, NULL}
+# define SV_HELP15 { USER_1, USER_2, USER_3, USER_4, USER_5, NULL}
+# define SV_HELP16 { TOPIC_1, TOPIC_2, TOPIC_3, TOPIC_4, TOPIC_5, NULL }
+# define SV_HELP17 { W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, NULL}
 
 # define HELP1 SV_HELP1, SV_HELP2, SV_HELP3, SV_HELP4, SV_HELP5, SV_HELP6
-# define HELP2 SV_HELP7, SV_HELP8, SV_HELP9, SV_HELP10, SV_HELP11
-# define HELP3 SV_HELP12, SV_HELP13, SV_HELP14, SV_HELP15, SV_HELP16
+# define HELP2 SV_HELP7, SV_HELP8, SV_HELP9, SV_HELP10, SV_HELP11, SV_HELP12
+# define HELP3 SV_HELP13, SV_HELP14, SV_HELP15, SV_HELP16, SV_HELP17
 
 #endif

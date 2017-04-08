@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:08:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 02:53:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static void		sv_specific_help(char **name, char **cmds, t_fd *cl, t_env *e)
 
 void			sv_help(char **cmds, t_env *e, t_fd *cl)
 {
-	static char	*name[] = { COMMANDS1, COMMANDS2 };
+	static char	*name[] = { COMMANDS1, COMMANDS2, COMMANDS3 };
 	int			nb;
 
 	nb = 0;

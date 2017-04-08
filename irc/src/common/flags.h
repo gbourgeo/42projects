@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:27:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 02:48:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 05:09:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@
 /*
 ** User flags.
 */
-# define USER_MODES "aiwroO"
+# define USER_MODES "aiwrOo"
 
 # define USR_AWAY		0x0001
 # define USR_INVISIBL	0x0002

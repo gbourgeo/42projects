@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 10:12:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 02:41:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ static void			sv_client_connection(char **table, t_env *e)
 {
 	t_user			*ptr;
 
-	if (ft_tablen(table) < 5)
+	if (ft_tablen(table) < 6)
 		return ;
 	if ((ptr = malloc(sizeof(*ptr))) == NULL)
 		sv_error("Malloc (t_user) failed.", e);
 	ft_memset(ptr, 0, sizeof(*ptr));
+	ptr->mode = **table++;
 	ft_strncpy(ptr->hostaddr, *table++, ADDR_LEN);
 	if (**table)
 		ptr->passwd = ft_strdup(*table);
@@ -46,11 +47,12 @@ static void			sv_operator_privilege(char **table, t_env *e)
 {
 	t_user			*ptr;
 
-	if (ft_tablen(table) < 5)
+	if (ft_tablen(table) < 6)
 		return ;
 	if ((ptr = malloc(sizeof(*ptr))) == NULL)
 		sv_error("Malloc (t_file) failed.", e);
 	ft_memset(ptr, 0, sizeof(*ptr));
+	ptr->mode = **table++;
 	ft_strncpy(ptr->hostname, *table++, ADDR_LEN);
 	if (**table)
 		ptr->passwd = ft_strdup(*table);
@@ -92,7 +94,7 @@ void				get_conf_file(t_env *e)
 		if (*buf && *buf != '#' && (table = sv_strsplit(buf, ':')))
 		{
 			if (sv_pos(CONF_LINES, table) >= 0)
-				conf[sv_pos(CONF_LINES, table)](table + 1, e);
+				conf[sv_pos(CONF_LINES, table)](table, e);
 		}
 		ft_free(&table);
 		free(buf);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 16:54:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 04:41:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ void					sv_init_server(t_env *e)
 {
 	e->v4.fd = -1;
 	e->v6.fd = -1;
+	gethostname(e->name, SERVER_LEN);
 	sv_getaddrinfo(e);
 	ft_putstr((e->verb) ? "IPv4: " : "");
 	if (e->v4.fd >= 0 &&
@@ -136,6 +137,4 @@ void					sv_init_server(t_env *e)
 		e->v6.fd = sv_sockerr("listen() on IPv6.", e->v6.fd);
 	else if (e->verb)
 		printf("\e[32mAvailable\e[0m %s(%s):%s\n", e->v6.host, e->v6.addr, e->port);
-	if (!*e->name)
-		gethostname(e->name, SERVER_LEN);
 }

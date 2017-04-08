@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:15:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 01:56:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 04:34:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@
 # define ERR_NEEDMOREPARAMS "461"
 # define ERR_ALREADYREGISTERED "462"
 # define ERR_NOPERMFORHOST "463"
-# define ERR_PASSWMISMATCH "464"
+# define ERR_PASSWDMISMATCH "464"
 # define ERR_YOUREBANNEDCREEP "465"
 # define ERR_YOUWILLBEBANNED "466"
 # define ERR_KEYSET "467"
@@ -171,7 +171,7 @@
 # define ER_88 { NULL, NULL, NULL },
 # define ER_89 { NULL, NULL, NULL },
 # define ER_90 { NULL, NULL, NULL },
-# define ER_91 { NULL, NULL, ":No O-lines for your host" }
+# define ER_91 { NULL, NULL, ":No appropriate operator blocks for your host" }
 # define ER_92 { NULL, NULL, NULL },
 # define ER_93 { NULL, NULL, NULL },
 # define ER_94 { NULL, NULL, NULL },

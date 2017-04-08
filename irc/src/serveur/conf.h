@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/07 05:20:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 07:40:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 02:41:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 typedef struct		s_user
 {
+	char			mode;
 	char			hostaddr[ADDR_LEN + 1];
 	char			*passwd;
 	char			hostname[NI_MAXHOST + 1];

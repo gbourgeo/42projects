@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 04:21:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/08 04:56:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static void			sv_cmd_client(t_env *e, t_fd *cl)
 			nb++;
 		if (com[nb].name)
 		{
-			if (cl->inf->registered > 0 || (nb >= 8 && nb <= 11))
+			if (cl->inf->registered > 0 || (nb >= 8 && nb <= 12))
 				com[nb].fct(cmds + 1, e, cl);
 			else if (cl->inf->registered == 0)
 			{
