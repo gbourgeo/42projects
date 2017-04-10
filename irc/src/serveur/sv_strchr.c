@@ -5,28 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/06/25 17:41:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/25 19:09:02 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/04/10 07:18:08 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/04/10 07:24:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include <stdlib.h>
 
-char		*sv_strchr(const t_buf *b, int c)
+char		*sv_strchr(const char *str, int c)
 {
-	char	*tmp;
-
-	tmp = b->head;
-	if (tmp && c)
-	{
-		while (tmp != b->tail && *tmp != c)
-		{
-			if (tmp > b->end)
-				tmp = b->start;
-			tmp++;
-		}
-		if (*tmp == c)
-			return (tmp);
-	}
-	return (NULL);
+	if (!str || !c)
+		return (NULL);
+	if (c >= 'a' && c <= 'z')
+		c -= 32;
+	while (*str && *str != c)
+		str++;
+	return ((*str) ? (char *)str : NULL);
 }

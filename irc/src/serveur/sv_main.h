@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 03:01:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/10 07:58:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 /*
 ** Negative value of any of this defines will lead to unexpected behaviors !!!
 */
+
+# define PORT_LEN 5
+# define SID_LEN 4
 
 /*
 ** MAX_CLIENT		Set the number of clients this program will handle. It can't
@@ -172,14 +175,16 @@ typedef struct			s_env
 {
 	char				verb;
 	t_conf				conf;
-	char				userid[10];
 	char				name[SERVER_LEN + 1];
-	char				*port;
+	char				addr[ADDR_LEN + 1];
+	char				port[PORT_LEN + 1];
+	char				sid[SID_LEN + 1];
 	t_info				v4;
 	t_info				v6;
 	char				*creation;
 	t_file				*users;
 	size_t				members;
+	char				userid[10];
 	t_fd				*fds;
 	t_chan				*chans;
 	fd_set				fd_read;
@@ -250,7 +255,7 @@ void					sv_sendto_chan(t_chan *chan, t_fd *cl, t_env *e);
 void					sv_sendto_chan_msg(char *msg, t_fd *cl);
 void					sv_sendto_chan_new(t_fd *cl);
 char					**sv_split(t_buf *buf);
-char					*sv_strchr(const t_buf *b, int c);
+char					*sv_strchr(const char *str, int c);
 int						sv_tabcmp(char **t1, char **t2);
 void					sv_topic(char **cmds, t_env *e, t_fd *cl);
 void					sv_user(char **cmds, t_env *e, t_fd *cl);

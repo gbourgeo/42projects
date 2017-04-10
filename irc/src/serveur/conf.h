@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/07 05:20:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 02:41:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/10 07:13:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,12 @@
 # include <netdb.h>
 
 # define CONF_FILE "irc.conf"
-# define CONF_LINES "YIo"
+# define AVAILABLE_LINES "MYIO"
+# define M_LINES sv_machine_information
 # define Y_LINES sv_connection_class
 # define I_LINES sv_client_connection
 # define O_LINES sv_operator_privilege
+# define ALL_LINES M_LINES, Y_LINES, I_LINES, O_LINES
 
 typedef struct		s_user
 {

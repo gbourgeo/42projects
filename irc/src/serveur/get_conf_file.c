@@ -6,12 +6,24 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 02:41:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/10 08:57:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <fcntl.h>
+
+static void			sv_machine_information(char **table, t_env *e)
+{
+	if (ft_tablen(table) < 5)
+		return ;
+	table++; //M-Line...
+	ft_strncpy(e->name, *table++, SERVER_LEN);
+	ft_strncpy(e->addr, *table++, ADDR_LEN);
+	table++; //Server Location...
+	table++; //Server UDP Port...
+	ft_strncpy(e->sid, *table++, SID_LEN);
+}
 
 static void			sv_connection_class(char **table, t_env *e)
 {
@@ -64,41 +76,42 @@ static void			sv_operator_privilege(char **table, t_env *e)
 	e->conf.opers = ptr;
 }
 
-static int			sv_pos(char *line, char **table)
+static void			get_conf_lines(char *buf, t_env *e)
 {
+	static void		(*conf[])() = { ALL_LINES };
 	char			*ptr;
+	char			**table;
 
-	ptr = line;
-	while (ptr && *ptr)
+	ptr = sv_strchr(AVAILABLE_LINES, *buf);
+	if (ptr)
 	{
-		if (*ptr == **table)
-			return (ptr - line);
-		ptr++;
+		table = sv_strsplit(buf, ':');
+		if (table)
+		{
+			conf[ptr - AVAILABLE_LINES](table, e);
+			ft_free(&table);
+		}
 	}
-	return (-1);
 }
 
 void				get_conf_file(t_env *e)
 {
 	int				fd;
 	char			*buf;
-	char			**table;
-	static void		(*conf[])() = { Y_LINES, I_LINES, O_LINES };
 
 	if ((fd = open(CONF_FILE, O_RDONLY, 0644)) < 0)
 		return ;
 	buf = NULL;
 	while (get_next_line(fd, &buf) > 0)
 	{
-		table = NULL;
-		if (*buf && *buf != '#' && (table = sv_strsplit(buf, ':')))
+		if (buf)
 		{
-			if (sv_pos(CONF_LINES, table) >= 0)
-				conf[sv_pos(CONF_LINES, table)](table, e);
+			get_conf_lines(buf, e);
+			free(buf);
+			buf = NULL;
 		}
-		ft_free(&table);
-		free(buf);
-		buf = NULL;
 	}
 	close(fd);
+	if (!*e->name)
+		gethostname(e->name, SERVER_LEN);
 }
