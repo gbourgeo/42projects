@@ -1,0 +1,487 @@
+if (0 != strcmp      ERROR();
+    if (0 != memcmp(tab3, "1234", 5))
+        ERROR();
+
+    return (1);
+	}
+#endif
+
+#ifdef TEST_STRCAT
+i
+    while (i < 1000000)
+		(10 != ft_strlcat(tab, "defghij", 7))
+			ERROR();
+
+
+strcpy(tab, "Bonbons")
+if (NULL != ft_strstr(tab, "n"))
+	ERROR()+ 1 != ft_strnstr(tab, "a", 20))
+	ERROR();999] =tab2, "abce");
+ft_strcmp(tab1, tab2);
+if (0 >= ft_strncmp("abcd", "a= atoift_atoi("- 19") != atoi("- i <= 0x7f)
+	-uuu:**-F1  main.c         77% (241,0)    (C/l Abbrev hs)----9:47AM 1.99-----------------------------------------------------------------
+    {
+        printf("ft_%s : ", tests_list[i].name);
+        fflush(stdout);
+
+        exit(0);
+    }
+    // Cas du pere
+    else
+    {
+        if (   ft_bzero(tab + 1, 8);
+               if (0 != memcmp("\xff\0\0\0\0\0\0\0\0\xff", tab, 10))
+                   ERROR();
+               return ft_memccpy(tab + 2, tab2, 'e', 7))
+            ERROR();
+        if (0 != memcmp(tab, "abccccceba", 10))
+            ERROR();
+        if (0 != strcmp(tab2, "cccccee"))
+            ERROR();
+        return (#ifdef TEST_MEMCMP
+            int     test_memcmp(void)
+            {
+                char    tab1[5];
+                char    tab2[5];
+
+                if (0 != ft_memcmp("abcdefghij", "abcdefghij", 10))
+                    ERROR();
+                if (0 !a"))
+        ERROR();
+
+    strcpy(tab, "ab");
+    ft_strlen(tab);
+    if (0 != strcmp(tab, "ab"))
+        ERROR();
+
+    return ( ft_strcpy(tab, "");
+    if (0 != strcmp(tab, ""))
+        ERROR();
+
+    tab[9] = 'a';
+    if (tab != ft_strcpy(tab, tab2))
+        ERROR();
+
+    if (0 != strcmp(tab, "abcdefghi"))
+        ERROR();
+
+    if (0 != strcmp      ERROR();
+    if (0 != memcmp(tab3, "1234", 5))
+        ERROR();
+
+    return (1);
+}
+#endif
+
+#ifdef TEST_STRCAT
+i
+    while (i < 1000000)
+ (10 != ft_strlcat(tab, "defghij", 7))
+        ERROR();
+
+
+    strcpy(tab, "Bonbons")
+    if (NULL != ft_strstr(tab, "n"))
+        ERROR()+ 1 != ft_strnstr(tab, "a", 20))
+        ERROR();999] =tab2, "abce");
+    ft_strcmp(tab1, tab2);
+    if (0 >= ft_strncmp("abcd", "a= atoift_atoi("- 19") != atoi("- i <= 0x7f)
+-uuu:**-F1  main.c         77% (241,0)    (C/l Abbrev hs)----9:48AM 1.70------------------------------------------------------------------
+    {
+        printf("ft_%s : ", tests_list[i].name);
+        fflush(stdout);
+
+        exit(0);
+    }
+    // Cas du pere
+    else
+    {
+        if (   ft_bzero(tab + 1, 8);
+               if (0 != memcmp("\xff\0\0\0\0\0\0\0\0\xff", tab, 10))
+                   ERROR();
+               return ft_memccpy(tab + 2, tab2, 'e', 7))
+            ERROR();
+        if (0 != memcmp(tab, "abccccceba", 10))
+            ERROR();
+        if (0 != strcmp(tab2, "cccccee"))
+            ERROR();
+        return (#ifdef TEST_MEMCMP
+            int     test_memcmp(void)
+            {
+                char    tab1[5];
+                char    tab2[5];
+
+                if (0 != ft_memcmp("abcdefghij", "abcdefghij", 10))
+                    ERROR();
+                if (0 !a"))
+					ERROR();
+
+				strcpy(tab, "ab");
+				ft_strlen(tab);
+				if (0 != strcmp(tab, "ab"))
+					ERROR();
+
+				return ( ft_strcpy(tab, "");
+						 if (0 != strcmp(tab, ""))
+							 ERROR();
+
+						 tab[9] = 'a';
+						 if (tab != ft_strcpy(tab, tab2))
+							 ERROR();
+
+						 if (0 != strcmp(tab, "abcdefghi"))
+							 ERROR();
+
+						 if (0 != strcmp      ERROR();
+							 if (0 != memcmp(tab3, "1234", 5))
+								 ERROR();
+
+							 return (1);
+							 }
+#endif
+
+#ifdef TEST_STRCAT
+i
+    while (i < 1000000)
+		(10 != ft_strlcat(tab, "defghij", 7))
+			ERROR();
+
+
+						 strcpy(tab, "Bonbons")
+						 if (NULL != ft_strstr(tab, "n"))
+							 ERROR()+ 1 != ft_strnstr(tab, "a", 20))
+					ERROR();999] =tab2, "abce");
+		ft_strcmp(tab1, tab2);
+		if (0 >= ft_strncmp("abcd", "a= atoift_atoi("- 19") != atoi("- i <= 0x7f)
+			-uuu:**-F1  main.c         77% (241,0)    (C/l Abbrev hs)----9:48AM 1.70-------------------------------------------------------------------
+			{
+				printf("ft_%s : ", tests_list[i].name);
+				fflush(stdout);
+
+				exit(0);
+			}
+			// Cas du pere
+			else
+			{
+				if (   ft_bzero(tab + 1, 8);
+					   if (0 != memcmp("\xff\0\0\0\0\0\0\0\0\xff", tab, 10))
+						   ERROR();
+					   return ft_memccpy(tab + 2, tab2, 'e', 7))
+					ERROR();
+				if (0 != memc(0 != memcmp(tab3, "1234",ccee"))
+            ERROR();
+        return (#ifdef TEST_MEM
+    {
+        printf("ft_%s
+										  if (0 != strcmp(tab, "abcd        if (0 != memcmp(tab, "abccccceba", 10))
+            ERROR();
+     ERROR()+ 1 != ft_strnstr(tab, "a", 20))
+        ERROR();999] =tab", 10))
+											  ERROR();
+										  printf("ft_%s : ", tests_list[i].name);
+										  fflush(stdout);
+
+										  exit(0);
+										  strcmp(tab, "abcdefghi"))
+							  ERROR();
+
+							  if (0 != strcmp      E   if (0 != memcmp(tab, "abccccc()+ 1 != ft_strnstr(tab, "a", 20))
+        ERROR();999] =tab2, "abce");
+    ft_strcmp(tab1, tab2);
+    if (0 >= ft_strncmp("abcd", ghij", 10))
+									  ERROR();
+								  if (0   {
+										  printf("ft_%s : ", tests_list[i  if (0 != strcmp(tab, "abcdefghi"))
+														 ERROR();
+
+																		if (0 != strcmp      ERROR();
+																			ERROR();
+																			if (0 != memcmp(tab, "abccccceba", 10))
+																				ERROR()))
+												 ERROR()+ 1 != ft_strnstr(tab, "a", 20))
+											  ERROR();999] =tab2, "abce");
+    ft_str"- i <= 0x7f)
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   test_libft.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dlouise <davidlouiz@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2015/09/24 02:10:35 by dlouise           #+#    #+#             */
+/*   Updated: 2017/03/16 18:08:59 by tsanzey          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+// Les tests definis ici seront effectues
+//#define TEST_MEMSET
+#define TEST_BZERO
+//#define TEST_MEMCPY
+//#define TEST_MEMCCPY
+//#define TEST_MEMMOVE
+//#define TEST_MEMCHR
+//#define TEST_MEMCMP
+//#define TEST_STRLEN
+//#define TEST_STRDUP
+//#define TEST_STRCPY
+//#define TEST_STRNCPY
+//#define TEST_STRCAT
+//#define TEST_STRNCAT
+//#define TEST_STRLCAT
+//#define TEST_STRCHR
+//#define TEST_STRRCHR
+//#define TEST_STRSTR
+//#define TEST_STRNSTR
+//#define TEST_STRCMP
+//#define TEST_STRNCMP
+//#define TEST_ATOI
+//#define TEST_ISALPHA
+//#define TEST_ISDIGIT
+//#define TEST_ISALNUM
+//#define TEST_ISASCII
+//#define TEST_ISPRINT
+//#define TEST_TOUPPER
+//#define TEST_TOLOWER
+//#define TEST_PUTS
+//#define TEST_CAT
+//#define TEST_PUTCHAR
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include "libft.h"
+
+int     test_memset(void);
+int     test_bzero(void);
+int     test_memcpy(void);
+int     test_memccpy(void);
+int     test_memmove(void);
+int     test_memchr(void);
+int     test_memcmp(void);
+int     test_strlen(void);
+int     test_strdup(void);
+int     test_strcpy(void);
+int     test_strncpy(void);
+int     test_strcat(void);
+int     test_strncat(void);
+int     test_strlcat(void);
+int     test_strchr(void);
+int     test_strrchr(void);
+int     test_strstr(void);
+int     test_strnstr(void);
+int     test_strcmp(void);
+int     test_strncmp(void);
+int     test_atoi(void);
+int     test_isalpha(void);
+int     test_isdigit(void);
+int     test_isalnum(void);
+int     test_isascii(void);
+int     test_isprint(void);
+int     test_toupper(void);
+int     test_tolower(void);
+int     test_puts(void);
+int     test_cat(void);
+int     test_putchar(void);
+
+#define ERROR() { printf("Line %d, ", __LINE__ - 1); return (0); }
+#define ADD_TEST(NAME) add_test(tests_list, #NAME, test_##NAME)
+
+typedef struct  s_test
+{
+    int         (*f)(void);
+    char        *name;
+    char        added;
+}               t_test;
+
+void    add_test(t_test *tests_list, char *name, int (*f)(void))
+{
+    static int  i = 0;
+
+    tests_list[i].f = f;
+    tests_list[i].name = name;
+    tests_list[i].added = 1;
+    i++;
+}
+
+int     main(void)
+{
+    t_test  tests_list[100];
+    int     i;
+    pid_t   pid;
+    int     status;
+
+    memset(tests_list, 0, 100 * sizeof(t_test));
+
+
+#ifdef TEST_MEMSET
+    ADD_TEST(memset);
+#endif
+#ifdef TEST_BZERO
+    ADD_TEST(bzero);
+#endif
+#ifdef TEST_MEMCPY
+    ADD_TEST(memcpy);
+#endif
+#ifdef TEST_MEMCCPY
+    ADD_TEST(memccpy);
+#endif
+#ifdef TEST_MEMMOVE
+    ADD_TEST(memmove);
+#endif
+#ifdef TEST_MEMCHR
+    ADD_TEST(memchr);
+#endif
+#ifdef TEST_MEMCMP
+    ADD_TEST(memcmp);
+#endif
+#ifdef TEST_STRLEN
+    ADD_TEST(strlen);
+#endif
+#ifdef TEST_STRDUP
+    ADD_TEST(strdup);
+#endif
+#ifdef TEST_STRCPY
+    ADD_TEST(strcpy);
+#endif
+#ifdef  TEST_STRNCPY
+    ADD_TEST(strncpy);
+#endif
+#ifdef  TEST_STRCAT
+    ADD_TEST(strcat);
+#endif
+#ifdef  TEST_STRNCAT
+    ADD_TEST(strncat);
+#endif
+#ifdef  TEST_STRLCAT
+    ADD_TEST(strlcat);
+#endif
+#ifdef  TEST_STRCHR
+    ADD_TEST(strchr);
+#endif
+#ifdef  TEST_STRRCHR
+    ADD_TEST(strrchr);
+#endif
+#ifdef  TEST_STRSTR
+    ADD_TEST(strstr);
+#endif
+#ifdef  TEST_STRNSTR
+    ADD_TEST(strnstr);
+#endif
+#ifdef  TEST_STRCMP
+    ADD_TEST(strcmp);
+#endif
+#ifdef  TEST_STRNCMP
+    ADD_TEST(strncmp);
+#endif
+#ifdef  TEST_ATOI
+    ADD_TEST(atoi);
+#endif
+#ifdef  TEST_ISALPHA
+    ADD_TEST(isalpha);
+#endif
+#ifdef  TEST_ISDIGIT
+    ADD_TEST(isdigit);
+#endif
+#ifdef  TEST_ISALNUM
+    ADD_TEST(isalnum);
+#endif
+#ifdef  TEST_ISASCII
+    ADD_TEST(isascii);
+#endif
+#ifdef  TEST_ISPRINT
+    ADD_TEST(isprint);
+#endif
+#ifdef  TEST_TOUPPER
+    ADD_TEST(toupper);
+#endif
+#ifdef  TEST_TOLOWER
+    ADD_TEST(tolower);
+#endif
+#ifdef  TEST_PUTS
+    ADD_TEST(puts);
+#endif
+#ifdef  TEST_CAT
+    ADD_TEST(cat);
+#endif
+#ifdef  TEST_PUTCHAR
+    ADD_TEST(putchar);
+#endif
+
+    i = 0;
+    while (tests_list[i].added)
+    {
+        printf("ft_%s : ", tests_list[i].name);
+        fflush(stdout);
+       
+		exit(0);
+	}
+	// Cas du pere
+	else
+	{
+		if (   ft_bzero(tab + 1, 8);
+			   if (0 != memcmp("\xff\0\0\0\0\0\0\0\0\xff", tab, 10))
+				   ERROR();
+			   return ft_memccpy(tab + 2, tab2, 'e', 7))
+			ERROR();
+		if (0 != memcmp(tab, "abccccceba", 10))
+			ERROR();
+		if (0 != strcmp(tab2, "cccccee"))
+			ERROR();
+		return (#ifdef TEST_MEMCMP
+			int     test_memcmp(void)
+			{
+				char    tab1[5];
+				char    tab2[5];
+
+				if (0 != ft_memcmp("abcdefghij", "abcdefghij", 10))
+					ERROR();
+				if (0 !a"))
+        ERROR();
+
+    strcpy(tab, "ab");
+    ft_strlen(tab);
+    if (0 != strcmp(tab, "ab"))
+        ERROR();
+
+    return ( ft_strcpy(tab, "");
+    if (0 != strcmp(tab, ""))
+        ERROR();
+
+    tab[9] = 'a';
+    if (tab != ft_strcpy(tab, tab2))
+        ERROR();
+
+    if (0 != strcmp(tab, "abcdefghi"))
+        ERROR();
+
+    if (0 != strcmp      ERROR();
+    if (0 != memcmp(tab3, "1234", 5))
+        ERROR();
+
+    return (1);
+}
+#endif
+
+#ifdef TEST_STRCAT
+i
+    while (i < 1000000)
+ (10 != ft_strlcat(tab, "defghij", 7))
+        ERROR();
+ 
+
+    strcpy(tab, "Bonbons")
+    if (NULL != ft_strstr(tab, "n"))
+        ERROR()+ 1 != ft_strnstr(tab, "a", 20))
+        ERROR();999] =tab2, "abce");
+    ft_strcmp(tab1, tab2);
+    if (0 >= ft_strncmp("abcd", "a= atoift_atoi("- 19") != atoi("- i <= 0x7f)
+    {
+        if     printf("'%c', ", i); ERERROR();
+}
+
+dup2(out, 1)

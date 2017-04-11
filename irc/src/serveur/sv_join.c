@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 17:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/24 17:09:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 20:33:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void		sv_leaveall_channels(t_fd *cl, t_env *e)
 	{
 		cmd[0] = ((t_chan *)ch->is)->name;
 		sv_leave(cmd, e, cl);
-		ch = cl->chans;
+		ch = ch->next;
 	}
 }
 
