@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 05:18:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 04:56:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:22:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void			rpl_quit_msg(t_chan *ch, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
+	sv_cl_write((*cl->i.host) ? cl->i.host : cl->i.addr, to);
 	sv_cl_write(" QUIT :Remote host closed the connection", to);
 	sv_cl_write(END_CHECK, to);
 }
@@ -43,7 +43,7 @@ static void			sv_cl_quit(t_fd *cl)
 		to = ((t_chan *)chan->is)->users;
 		while (to)
 		{
-			if (((t_fd *)to->is)->fd != cl->fd)
+			if (((t_fd *)to->is)->i.fd != cl->i.fd)
 				rpl_quit_msg(chan->is, to->is, cl);
 			to = to->next;
 		}
@@ -86,7 +86,7 @@ void				sv_cl_read(t_env *e, t_fd *cl)
 {
 	int				ret;
 
-	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, 0);
+	ret = recv(cl->i.fd, cl->rd.tail, cl->rd.len, 0);
 	if (ret <= 0)
 		return (sv_cl_quit(cl));
 	while (ret--)

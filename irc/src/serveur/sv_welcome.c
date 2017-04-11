@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/13 05:06:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 04:31:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:37:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void			rpl_1_2_3(t_env *e, t_fd *cl)
 	sv_cl_write("!~", cl);
 	sv_cl_write(cl->inf->username, cl);
 	sv_cl_write("@", cl);
-	sv_cl_write((*cl->host) ? cl->host : cl->addr, cl);
+	sv_cl_write((*cl->i.host) ? cl->i.host : cl->i.addr, cl);
 	sv_cl_write(END_CHECK, cl);
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);

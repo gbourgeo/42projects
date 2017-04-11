@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/01 21:38:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 08:43:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:36:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,18 @@
 void			rpl_cmode(t_grp *g, char *limit)
 {
 	sv_cl_write(":", g->to);
-	sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
+	sv_cl_write((g->on->cmode & CHFL_ANON && g->to->i.fd != g->from->i.fd) ?
 				"anonymous" : g->from->inf->nick, g->to);
 	sv_cl_write("!~", g->to);
-	sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
+	sv_cl_write((g->on->cmode & CHFL_ANON && g->to->i.fd != g->from->i.fd) ?
 				"anonymous" : g->from->inf->username, g->to);
 	sv_cl_write("@", g->to);
-	if (*g->from->host)
-		sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
-					"anonymous" : g->from->host, g->to);
+	if (*g->from->i.host)
+		sv_cl_write((g->on->cmode & CHFL_ANON && g->to->i.fd != g->from->i.fd) ?
+					"anonymous" : g->from->i.host, g->to);
 	else
-		sv_cl_write((g->on->cmode & CHFL_ANON && g->to->fd != g->from->fd) ?
-					"anonymous" : g->from->addr, g->to);
+		sv_cl_write((g->on->cmode & CHFL_ANON && g->to->i.fd != g->from->i.fd) ?
+					"anonymous" : g->from->i.addr, g->to);
 	sv_cl_write(" MODE ", g->to);
 	sv_cl_write(g->on->name, g->to);
 	sv_cl_write((g->c) ? " +" : " -", g->to);
@@ -48,10 +48,10 @@ void			rpl_umode(t_grp *g, t_chan *c, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->inf->username, to);
 	sv_cl_write("@", to);
-	if (*cl->host)
-		sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->host, to);
+	if (*cl->i.host)
+		sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->i.host, to);
 	else
-		sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
+		sv_cl_write((c->cmode & CHFL_ANON) ? "anonymous" : cl->i.addr, to);
 	sv_cl_write(" MODE ", to);
 	sv_cl_write(c->name, to);
 	sv_cl_write((g->c) ? " :+" : " :-", to);

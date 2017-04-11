@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/10 13:43:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 04:26:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:43:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ static int		is_connected_nick(char *nick, t_fd *cl, t_env *e)
 	fds = e->fds;
 	while (fds)
 	{
-		if (fds->fd != cl->fd && !sv_strncmp(nick, fds->inf->nick, NICK_LEN))
+		if (fds->i.fd != cl->i.fd &&
+			!sv_strncmp(nick, fds->inf->nick, NICK_LEN))
 			return (1);
 		fds = fds->next;
 	}
@@ -66,7 +67,7 @@ static void		rpl_nick(char *nick, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
+	sv_cl_write((*cl->i.host) ? cl->i.host : cl->i.addr, to);
 	sv_cl_write(" NICK :", to);
 	sv_cl_write(nick, to);
 	sv_cl_write(END_CHECK, to);
@@ -86,7 +87,7 @@ static void		send_to_chans(char *nick, t_fd *cl)
 			us = ((t_chan *)ch->is)->users;
 			while (us)
 			{
-				if (((t_fd *)us->is)->fd != cl->fd)
+				if (((t_fd *)us->is)->i.fd != cl->i.fd)
 					rpl_nick(nick, us->is, cl);
 				us = us->next;
 			}

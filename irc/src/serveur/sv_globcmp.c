@@ -1,32 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_nick_change.c                                   :+:      :+:    :+:   */
+/*   sv_globcmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/04 18:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/11 08:33:42 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/04/11 07:20:55 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/04/11 08:08:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
-#include <time.h>
+#include "libft.h"
 
-void			sv_nick_change(t_fd *cl, t_env *e)
+int			sv_globcmp(const char *s1, const char *s2)
 {
-	int			nb;
-	char		name[NICK_LEN + 1];
-	char		*ptr;
+	size_t	i;
 
-	if (time(NULL) - cl->inf->must_change_nick >= 30)
+	i = 0;
+	if (!s1 || !s2)
+		return (1);
+	while (s1[i] && s2[i] && s1[i] != '*')
 	{
-		nb = cl->i.fd;
-		ft_strncpy(name, "Guest-000", NICK_LEN + 1);
-		name[NICK_LEN - 1] += (nb % 10);
-		name[NICK_LEN - 2] += (nb / 10 % 10);
-		name[NICK_LEN - 3] += (nb / 100 % 10);
-		ptr = name;
-		sv_nick(&ptr, e, cl);
+		if (s2[i] != s1[i])
+			return (1);
+		i++;
 	}
+	if (s1[i] != '*')
+		return (1);
+	if (!s1[i + 1] || !s2[i])
+		return (0);
+	if (ft_strstr(&s2[i], &s1[i + 1]))
+		return (0);
+	return (1);
 }

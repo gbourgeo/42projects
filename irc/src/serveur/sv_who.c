@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 21:54:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 03:15:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:38:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void		sv_who_all(t_fd *cl, t_env *e)
 	all = e->fds;
 	while (all)
 	{
-		if (!(all->inf->umode & USR_INVISIBL) || all->fd == cl->fd ||
+		if (!(all->inf->umode & USR_INVISIBL) || all->i.fd == cl->i.fd ||
 			have_common_chan(all, cl))
 			sv_who_info(all, cl, e);
 		all = all->next;
@@ -62,7 +62,7 @@ void			sv_who_chan(char **cmds, t_fd *cl, t_env *e)
 	while (list)
 	{
 		fd = (t_fd *)list->is;
-		if ((!(chan->cmode & CHFL_ANON) || fd->fd == cl->fd) &&
+		if ((!(chan->cmode & CHFL_ANON) || fd->i.fd == cl->i.fd) &&
 			(!(fd->inf->umode & USR_INVISIBL) || have_common_chan(fd, cl)) &&
 			(!cmds[1] || ft_strcmp(cmds[1], "o") || list->mode & CHFL_CHANOP))
 			sv_who_info(fd, cl, e);
@@ -78,7 +78,7 @@ static void		sv_who_user(char **cmds, t_fd *cl, t_env *e)
 	while (all)
 	{
 		if ((!ft_strcmp(cmds[0], "0") ||
-			!sv_strncmp(all->addr, cmds[0], ADDR_LEN) ||
+			!sv_strncmp(all->i.addr, cmds[0], ADDR_LEN) ||
 			!sv_tabcmp(all->inf->realname, cmds) ||
 			!sv_strncmp(all->inf->nick, cmds[0], NICK_LEN)) &&
 			(!(all->inf->umode & USR_INVISIBL) ||

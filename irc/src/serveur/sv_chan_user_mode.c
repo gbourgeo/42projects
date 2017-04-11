@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 05:43:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 20:59:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:21:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static t_listin		*search_user(t_fd *us, t_chan *chan)
 	list = chan->users;
 	while (list)
 	{
-		if (((t_fd *)list->is)->fd == us->fd)
+		if (((t_fd *)list->is)->i.fd == us->i.fd)
 			break ;
 		list = list->next;
 	}

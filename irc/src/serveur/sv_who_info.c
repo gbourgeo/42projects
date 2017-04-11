@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 13:30:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/03 21:14:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:38:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void			sv_who_info(t_fd *us, t_fd *cl, t_env *e)
 	sv_cl_write(" ~", cl);
 	sv_cl_write(us->inf->username, cl);
 	sv_cl_write(" ", cl);
-	sv_cl_write(us->addr, cl);
+	sv_cl_write(us->i.addr, cl);
 	sv_cl_write(" ", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" ", cl);

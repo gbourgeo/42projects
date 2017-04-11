@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/22 17:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 04:25:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:29:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ static void		rpl_leave(char **cmd, t_chan *ch, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->inf->username, to);
 	sv_cl_write("@", to);
-	if (*cl->host)
-		sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->host, to);
+	if (*cl->i.host)
+		sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->i.host, to);
 	else
-		sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->addr, to);
+		sv_cl_write((ch->cmode & CHFL_ANON) ? "anonymous" : cl->i.addr, to);
 	sv_cl_write(" LEAVE ", to);
 	sv_cl_write(ch->name, to);
 	sv_cl_write(" :", to);
@@ -47,7 +47,7 @@ static void		sv_send_leavemsg(char **cmd, t_chan *chan, t_fd *cl)
 	while (list)
 	{
 		to = (t_fd *)list->is;
-		if (!(chan->cmode & CHFL_QUIET) || to->fd == cl->fd)
+		if (!(chan->cmode & CHFL_QUIET) || to->i.fd == cl->i.fd)
 			rpl_leave(cmd, chan, to, cl);
 		list = list->next;
 	}

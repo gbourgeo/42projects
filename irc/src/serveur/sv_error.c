@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 12:34:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:28:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ static void		sv_kill_connections(t_fd *client)
 		return ;
 	if (client->next)
 		sv_kill_connections(client->next);
-	close(client->fd);
+	close(client->i.fd);
 	if (e.verb)
-		printf("CLIENT %s:%s killed\n", client->addr, client->port);
+		printf("CLIENT %s:%s killed\n", client->i.addr, client->i.port);
 	if (!client->inf->pass)
 	{
 		ft_free(&client->inf->realname);

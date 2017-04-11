@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:19:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 05:10:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:36:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void			change_user_mode(char c, char mode, t_fd *cl)
 	sv_cl_write("!~", cl);
 	sv_cl_write(cl->inf->username, cl);
 	sv_cl_write("@", cl);
-	sv_cl_write((*cl->host) ? cl->host : cl->addr, cl);
+	sv_cl_write((*cl->i.host) ? cl->i.host : cl->i.addr, cl);
 	sv_cl_write(" MODE ", cl);
 	sv_cl_write(cl->inf->nick, cl);
 	sv_cl_write((c) ? " :+" : " :-", cl);

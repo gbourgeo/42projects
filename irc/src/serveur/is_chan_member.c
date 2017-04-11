@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/23 12:05:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/23 18:52:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:18:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int				is_chan_member(t_chan *ch, t_fd *cl)
 	while (l)
 	{
 		us = (t_fd *)l->is;
-		if (us->fd == cl->fd)
+		if (us->i.fd == cl->i.fd)
 			return (1);
 		l = l->next;
 	}
@@ -37,7 +37,7 @@ int				is_modo(t_chan *chan, t_fd *cl)
 	while (li)
 	{
 		us = (t_fd *)li->is;
-		if (us->fd == cl->fd)
+		if (us->i.fd == cl->i.fd)
 			return (li->mode & CHFL_CHANOP);
 		li = li->next;
 	}

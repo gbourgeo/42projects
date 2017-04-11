@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 18:43:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 04:17:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:22:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void			sv_cl_send(t_fd *cl)
 		else
 			ft_strncpy(ptr, cl->wr.head, cl->wr.tail - cl->wr.head);
 		ptr[cl->wr.len] = 0;
-		if ((ret = send(cl->fd, ptr, cl->wr.len, 0)) <= 0)
+		if ((ret = send(cl->i.fd, ptr, cl->wr.len, 0)) <= 0)
 			return ;
 		move_head(ret, cl);
 		check_queue(cl);

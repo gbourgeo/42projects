@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 12:49:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:30:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ static void			sv_check_fd(t_env *e, int ret)
 	{
 		if (cl->type != FD_FREE)
 		{
-			if (FD_ISSET(cl->fd, &e->fd_write))
+			if (FD_ISSET(cl->i.fd, &e->fd_write))
 				cl->fct_write(cl);
-			if (FD_ISSET(cl->fd, &e->fd_read))
+			if (FD_ISSET(cl->i.fd, &e->fd_read))
 				cl->fct_read(e, cl);
-			if (FD_ISSET(cl->fd, &e->fd_read) ||
-				FD_ISSET(cl->fd, &e->fd_write))
+			if (FD_ISSET(cl->i.fd, &e->fd_read) ||
+				FD_ISSET(cl->i.fd, &e->fd_write))
 				ret--;
 		}
 		cl = cl->next;
@@ -56,11 +56,11 @@ static int			sv_init_fd(t_env *e)
 		if (cl->type == FD_CLIENT)
 		{
 			if (cl->fct_write && cl->wr.len > 0)
-				FD_SET(cl->fd, &e->fd_write);
+				FD_SET(cl->i.fd, &e->fd_write);
 			else if (cl->fct_read && !cl->leaved)
-				FD_SET(cl->fd, &e->fd_read);
-			if (cl->fd > max)
-				max = cl->fd;
+				FD_SET(cl->i.fd, &e->fd_read);
+			if (cl->i.fd > max)
+				max = cl->i.fd;
 		}
 		cl = cl->next;
 	}

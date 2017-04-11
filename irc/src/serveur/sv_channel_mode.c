@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 04:20:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 02:41:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:21:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void				sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl)
 	grp.list = ch->users;
 	while (grp.list)
 	{
-		if (((t_fd *)grp.list->is)->fd == cl->fd)
+		if (((t_fd *)grp.list->is)->i.fd == cl->i.fd)
 			break ;
 		grp.list = grp.list->next;
 	}
