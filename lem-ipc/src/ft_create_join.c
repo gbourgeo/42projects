@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/21 23:23:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/14 23:25:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void				ft_create_game(void)
 		ft_exit_server(1, "msgget IPC_CREAT");
 	if (msgctl(e.msgqid, IPC_STAT, &buf) < 0)
 		ft_exit_server(1, "msgctl IPC_STAT");
+	e.creator = 1;
 }
 
 void				ft_join_game(void)
@@ -57,8 +58,8 @@ void				ft_join_game(void)
 	e.data = shmat(e.shmid, NULL, 0);
 	if (e.data == (void *)-1)
 		ft_exit_client(1, "shmat");
-	if (TEAMS_SUMM >= MIN_PLAYERS)
-		ft_exit_client(0, "Game already full.\nBye.");
+	if (TEAMS_SUMM >= WIDTH * HEIGTH - 1)
+		ft_exit_client(0, "Game full.\nBye.");
 	if (e.data->game_in_process)
 		ft_exit_client(0, "Game in process.\nCan't join the battle.");
 	*((int *)e.data + e.team) += 1;
@@ -66,4 +67,5 @@ void				ft_join_game(void)
 	e.msgqid = msgget(e.key, SHM_R | SHM_W);
 	if (e.msgqid < 0)
 		ft_exit_client(1, "msgget");
+	e.creator = 0;
 }

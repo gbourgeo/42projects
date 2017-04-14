@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/21 16:13:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/12 19:26:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,8 @@ void			ft_launch_game(void)
 	while (1)
 	{
 		ft_lock();
-		ft_termdo("rc");
-		ft_termdo("cd");
-		print_map();
+		if (e.creator)
+			print_map();
 		if (e.data->end)
 			break ;
 		if (ft_check_if_surrounded(ennemy) >= 2)

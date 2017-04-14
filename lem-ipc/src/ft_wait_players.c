@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/31 23:21:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/14 23:20:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <time.h>
 #include <unistd.h>
 
-static void			ft_quit(char *err)
+static void		ft_quit(char *err)
 {
 	*((int *)e.data + e.team) -= 1;
 	if (e.map != (void *)-1 && e.x >= 0 && e.y >= 0)
@@ -26,9 +26,9 @@ static void			ft_quit(char *err)
 	ft_exit_server(1, err);
 }
 
-static void			ft_place_player(void)
+static void		ft_place_player(void)
 {
-	printf("Placing your player... ");
+	printf("Positionning your player... ");
 	while (1)
 	{
 		e.x = rand() % WIDTH;
@@ -39,24 +39,26 @@ static void			ft_place_player(void)
 		break ;
 	}
 	printf("(x:%d, y:%d)\n", e.x + 1, e.y + 1);
+	printf("Your team is %d\n", e.team);
+	ft_termdo("sc");
 }
 
-void				ft_wait_players(void)
+void			ft_wait_players(void)
 {
 	srand(time(NULL));
 	ft_place_player();
 	ft_unlock();
-	ft_termdo("sc");
 	while (TEAM_1 < MIN_PLAYERS || TEAM_2 < MIN_PLAYERS)
 	{
-		print_map();
-		if (TEAMS_SUMM < MIN_PLAYERS)
+		if (e.creator)
+			print_map();
+		if (TEAMS_SUMM < MIN_PLAYERS * 2)
 			printf("\033[32mWAITING FOR PLAYERS... (%d more)\033[0m\n",
-					MIN_PLAYERS - TEAMS_SUMM);
+					MIN_PLAYERS * 2 - TEAMS_SUMM);
 		else
 			printf("\033[34mWAITING FOR EVEN TEAMS...\033[0m\n");
 		printf("one:%d two:%d\n", TEAM_1, TEAM_2);
-		usleep(800);
+		sleep(1);
 		ft_termdo("rc");
 		ft_termdo("cd");
 	}
@@ -69,12 +71,13 @@ void				ft_wait_players(void)
 
 void			print_map(void)
 {
-	int				i;
-	int				j;
-	char			c;
+	int			i;
+	int			j;
+	char		c;
 
 	i = 0;
-	printf("Your team is %d\n", e.team);
+	ft_termdo("rc");
+	ft_termdo("cd");
 	while (i < HEIGTH)
 	{
 		j = 0;

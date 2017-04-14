@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signal.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/10/22 18:32:33 by root              #+#    #+#             */
-/*   Updated: 2016/12/21 15:44:18 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/04/14 23:23:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ static void	catch_sig(int sig)
 {
 	char		*err;
 	static char	*signals[] = { "0", "SIGUP", "SIGINT", "SIGQUIT", "SIGILL",
-								"SIGTRAP", "SIGABRT", "SIGPOLL/SIGEMT", "SIGFPE"
-								,"SIGKILL", "SIGBUS", "SIGSEGV", "SIGSYS",
-								"SIGPIPE", "SIGALRM", "SIGTERM", "SIGURG",
-								"SIGSTOP", "SIGTSTP", "SIGCONT", "SIGCHLD",
-								"SIGTTIN", "SIGTTOU", "SIGIO", "SIGXCPU",
-								"SIGXFSZ", "SIGVTALRM", "SIGPROF", "SIGWINCH",
-								"SIGINFO", "SIGUSR1", "SIGUSR2" };
+								"SIGTRAP", "SIGABRT", "SIGPOLL/SIGEMT",
+								"SIGFPE", "SIGKILL", "SIGBUS", "SIGSEGV",
+								"SIGSYS", "SIGPIPE", "SIGALRM", "SIGTERM",
+								"SIGURG", "SIGSTOP", "SIGTSTP", "SIGCONT",
+								"SIGCHLD", "SIGTTIN", "SIGTTOU", "SIGIO",
+								"SIGXCPU", "SIGXFSZ", "SIGVTALRM", "SIGPROF",
+								"SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2" };
 
 	err = (sig >= 0 && sig < NSIG) ? signals[sig] : "Unknown signal error";
 	printf("\n");

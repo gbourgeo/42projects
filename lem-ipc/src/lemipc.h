@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lemipc.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/10/19 14:54:34 by root              #+#    #+#             */
-/*   Updated: 2016/12/22 14:02:37 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/04/14 23:20:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 # define WIDTH			10
 # define HEIGTH			10
-# define MIN_PLAYERS	4
+# define MIN_PLAYERS	2
 # define TEAM_1			e.data->connected[0]
 # define TEAM_2			e.data->connected[1]
 # define TEAMS_SUMM		(TEAM_1 + TEAM_2)
@@ -43,21 +43,21 @@ typedef struct		s_player
 
 typedef struct		s_msg
 {
-	int				x;
-	int				y;
-	int				dist;
+	t_player		ally;
+	t_player		ennemy;
 }					t_msg;
 
 typedef	struct		s_msgbuf
 {
 	long			mtype;
-	t_msg			ennemy;
+	t_msg			msg;
 }					t_msgbuf;
 
 typedef struct		s_env
 {
 	char			*prog;
 	struct termios	term;
+	char			creator;
 	int				team;
 	key_t			key;
 	size_t			size;
@@ -75,7 +75,7 @@ typedef struct		s_env
 	t_msgbuf		rcv;
 }					t_env;
 
-t_env				e;
+struct s_env		e;
 
 void				ft_termcaps(char **env);
 void				ft_restore_term(void);
@@ -94,5 +94,6 @@ void				ft_strategy(void);
 void				print_map(void);
 void				ft_sendmsg(void);
 void				ft_rcvmsg(void);
+char				*ft_getenv(char *str, char **env);
 
 #endif
