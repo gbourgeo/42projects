@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/17 23:39:21 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:25:01 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 23:57:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void				ft_getaddr(void)
 
 	ft_memset(&hints, 0, sizeof(hints));
 	hints.ai_family = e.af;
-	hints.ai_flags = 0x0040; //AI_IDN
+	hints.ai_flags = AI_ALL;
 	if ((ret = getaddrinfo(e.src, NULL, &hints, &res)))
 		ft_err(e.src, (char *)gai_strerror(ret));
 	tmp = res;

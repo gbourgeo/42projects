@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:42:00 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 21:57:42 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 22:23:40 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,10 @@
 # define MAX_HOPS		255
 # define DEF_PROBES		3
 # define MAX_PROBES		10
-# define DEF_SIM_QUERIE	16
+# define DEF_SIM_PROBES	16
 # define DEF_SEND_SECS	0.0001
 # define DEF_START_PORT	33434
 # define DEF_UDP_PORT	53
-# define DEF_AF			AF_INET
 # define DEF_SOCKTYPE	SOCK_DGRAM
 # define DEF_PROTOCOL	IPPROTO_UDP
 
@@ -74,7 +73,7 @@ typedef struct			s_env
 	int					first_hop;
 	int					sim_probes;
 	double				send_secs;
-	double				wait;
+	double				wait_secs;
 	size_t				port;
 	int					ident;
 	struct sockaddr_in	source;

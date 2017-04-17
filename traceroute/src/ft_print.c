@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 17:12:41 by root              #+#    #+#             */
-/*   Updated: 2016/09/26 17:33:35 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 21:20:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ static void			ft_print_addr(t_probe *pb)
 	*numeric = 0;
 	if ((i = getnameinfo((struct sockaddr *)&pb->res, sizeof(pb->res),
 							numeric, sizeof(numeric), 0, 0, NI_NUMERICHOST)))
-		ft_err("error", (char *)gai_strerror(i));
+	{;} //		ft_err("error", (char *)gai_strerror(i));
 	*name = 0;
 	if ((i = getnameinfo((struct sockaddr *)&pb->res, sizeof(pb->res),
 						 name, sizeof(name), 0, 0, 0)))
-		ft_err("error", (char *)gai_strerror(i));
+	{;} //ft_err("error", (char *)gai_strerror(i));
 	printf(" %s (%s)", *name ? name : numeric, numeric);
 }
 
