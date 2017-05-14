@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/08/26 12:25:22 by root              #+#    #+#              #
-#    Updated: 2016/09/26 17:37:37 by root             ###   ########.fr        #
+#    Updated: 2017/04/18 00:02:40 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,8 +14,18 @@ NAME = ft_traceroute
 
 SRC_D = src/
 
-SRC = main.c ft_options.c ft_init.c ft_loop.c ft_atod.c ft_err.c \
-	ft_getaddr.c ft_send.c ft_recv.c ft_parse_reply.c ft_print.c
+SRC = main.c			\
+	ft_atod.c			\
+	ft_err.c			\
+	ft_getaddr.c		\
+	ft_init.c			\
+	ft_loop.c			\
+	ft_options.c		\
+	ft_parse_reply.c	\
+	ft_print.c			\
+	ft_recv.c			\
+	ft_send.c			\
+	ft_usage.c
 
 OBJ_D = obj/
 

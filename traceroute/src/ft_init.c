@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/29 02:29:04 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 21:55:39 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 00:04:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void				ft_init_udp(void)
 	}
 	e.num_probes = e.max_hops * e.nprobes;
 	if ((e.probes = calloc(e.num_probes, sizeof(t_probe))) == NULL)
-		ft_err("malloc", NULL);
+		ft_err("calloc", NULL);
 	if (!e.port)
 		e.port = (e.module == DEFAULT) ? DEF_START_PORT : DEF_UDP_PORT;
 	e.dest.sin_port = (e.module == DEFAULT) ? htons(e.port) : htons((u_int16_t)e.port);

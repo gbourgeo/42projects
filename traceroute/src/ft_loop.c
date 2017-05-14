@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 16:32:47 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 21:56:43 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 00:20:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ static void			ft_do_select(double timeout)
 	ft_init_select(&maxfd, &fds);
 	wait.tv_sec = (int)timeout;
 	wait.tv_usec = (timeout - (int)timeout) * 1000000.0;
-	ft_bzero(&e.inpack, sizeof(e.inpack));
 	while (maxfd)
 	{
 		ret = select(maxfd + 1, &fds, (fd_set *)0, (fd_set *)0, &wait);
@@ -103,16 +102,14 @@ void				ft_loop(void)
 		while (++n < end)
 		{
 			pb = &e.probes[n];
-			if (!pb->done &&
-				pb->send_time &&
-				now_time - pb->send_time >= e.wait)
+			if (!pb->done && pb->send_time &&
+				now_time - pb->send_time >= e.wait_secs)
 			{
 				if (pb->fd)
 					close(pb->fd);
 				pb->fd = 0;
 				pb->seq = 0;
 				pb->done = 1;
-//				ft_check_expired(pb);
 			}
 
 			if (pb->done)
@@ -131,7 +128,7 @@ void				ft_loop(void)
 			{
 				if (e.send_secs && (now_time - last_send) < e.send_secs)
 				{
-					next_time = (last_send + e.send_secs) - e.wait;
+					next_time = (last_send + e.send_secs) - e.wait_secs;
 					break ;
 				}
 				ttl = n / e.nprobes + 1;
@@ -155,7 +152,7 @@ void				ft_loop(void)
 		}
 		if (next_time)
 		{
-			timeout = (next_time + e.wait) - now_time;
+			timeout = (next_time + e.wait_secs) - now_time;
 			if (timeout < 0)
 				timeout = 0;
 			ft_do_select(timeout);
