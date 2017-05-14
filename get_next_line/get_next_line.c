@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/03 23:26:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/01 01:00:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/05/14 23:54:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,12 @@ static int	create_line(int const fd, char **line, t_gnl *tmp, t_gnl **gnl)
 			return (1);
 		ft_bzero(*line, BUFF_SIZE + 1);
 	}
+	if (ret < 0)
+		return (-1);
 	free(*line);
 	*line = ft_strdup(tmp->copy);
 	gnl_free(tmp, gnl);
-	return (ret);
+	return (*line ? 1 : 0);
 }
 
 static int	check_struct(int const fd, char **line, t_gnl **gnl)

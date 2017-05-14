@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2017/04/12 17:06:37 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/04/19 21:01:46 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -20,6 +20,7 @@ SRC = main.c 				\
 		ft_game.c			\
 		ft_getenv.c			\
 		ft_init_sem.c 		\
+		ft_move.c			\
 		ft_msg.c 			\
 		ft_signal.c 		\
 		ft_strategy.c 		\

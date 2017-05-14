@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/14 23:20:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/19 21:46:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ typedef struct		s_env
 	int				players[2];
 	t_msgbuf		snd;
 	t_msgbuf		rcv;
+	t_player		target;
+	int				dir;
 }					t_env;
 
 struct s_env		e;
@@ -93,7 +95,8 @@ void				ft_launch_game(void);
 void				ft_strategy(void);
 void				print_map(void);
 void				ft_sendmsg(void);
-void				ft_rcvmsg(void);
+int					ft_rcvmsg(void);
 char				*ft_getenv(char *str, char **env);
+void				ft_move_to_target(void);
 
 #endif

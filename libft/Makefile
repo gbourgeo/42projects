@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/20 18:41:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/03/30 23:03:27 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/05/15 00:13:02 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -39,9 +39,9 @@ WWW	= -Wall -Werror -Wextra
 
 .PHONY: all clean fclean re
 
-all: $(OBJ_DIR) $(NAME)
+all: premade $(NAME)
 
-$(OBJ_DIR):
+premade:
 	@echo Generating my libft...
 	@mkdir -p $(OBJ_DIR)
 
@@ -50,7 +50,7 @@ $(NAME): $(OBJ)
 	@ranlib $@
 	@echo CREATED: $(NAME)
 
-$(OBJ_DIR)%.o: %.c
+$(OBJ_DIR)%.o: %.c | premade
 	@gcc $(WWW) -o $@ -c $< -I includes/
 
 clean:

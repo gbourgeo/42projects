@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/14 23:21:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/19 21:19:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void		ft_get_players_position(void)
 	}
 }
 
-static void		ft_get_distance(void)
+static void		ft_get_nearest_ennemy(void)
 {
 	int			i;
 	int			last;
@@ -62,7 +62,7 @@ static void		ft_get_distance(void)
 		printf("Ennemy #%d dist: %d\n", i, e.ennemy[i].dist);
 		if (e.ennemy[i].dist < last)
 		{
-			ft_memcpy(&e.snd.msg.ennemy, &e.ennemy[i], sizeof(*e.ennemy));
+			ft_memcpy(&e.target, &e.ennemy[i], sizeof(e.target));
 			last = e.ennemy[i].dist;
 		}
 		i++;
@@ -77,9 +77,17 @@ void			ft_strategy(void)
 		ft_termdo("do");
 	}
 	ft_get_players_position();
-	ft_get_distance();
-	printf("I'm attacking ennemy in x:%d y:%d dist: %d\n",
-		e.snd.msg.ennemy.x + 1, e.snd.msg.ennemy.y + 1, e.snd.msg.ennemy.dist);
-	ft_rcvmsg();
-	ft_sendmsg();
+	ft_get_nearest_ennemy();
+	if (ft_rcvmsg())
+	{
+		printf("I decide to attack x:%d y:%d dist: %d\n", e.target.x + 1,
+				e.target.y + 1, e.target.dist);
+		ft_sendmsg();
+	}
+	else
+	{
+		ft_memcpy(&e.target, &e.rcv.msg.ennemy, sizeof(e.target));
+		printf("I follow and attack x:%d y:%d ", e.target.x + 1, e.target.y + 1);
+	}
+	ft_move_to_target();
 }
