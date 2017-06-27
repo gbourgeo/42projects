@@ -1,0 +1,20 @@
+static void	o(void)
+{
+	system("/bin/sh");
+	_exit(1);
+}
+
+static void	n(void)
+{
+	char	buff[520];
+
+	fgets(buff, 512, STDIN_FILENO);
+	printf(buff);
+	exit(1);
+}
+
+int			main(void)
+{
+	n();
+	return 0;
+}

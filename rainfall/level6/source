@@ -1,0 +1,23 @@
+static void	m(void)
+{
+	puts("Nope");
+}
+
+static void	n(void)
+{
+	system("/bin/cat /home/user/level7/.pass");
+}
+
+int		main(int ac, char **av)
+{
+	void	(*f)(void);
+	void	*ptr;		esp+0x1c
+	void	*ptr2; 		esp+0x18
+
+	ptr = malloc(64);
+	ptr2 = malloc(4);
+	f = m();
+	strcpy(ptr, argv[1]);
+	f();
+	return 0;
+}

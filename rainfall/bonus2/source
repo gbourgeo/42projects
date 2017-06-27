@@ -1,0 +1,49 @@
+static char	language = 0;			// 0x8049988
+static char fi[] = "Hyvää päivää ";	// 0x8048717
+static char nl[] = "Goedemiddag! ";	// 0x804872a
+static char dft[] = "Hello ";	 	// 0x8048710
+
+static void greetuser(char *buff)
+{
+	char	ptr[72];					// -0x48(%ebp) 0xbffff620
+
+	if (language == 1)
+	{
+		ptr = fi;
+	}
+	else if (language == 2)
+	{
+		ptr = nl;
+	}
+	else if (language == 0)
+	{
+		ptr = dft;
+	}
+	strcat(ptr, buff);
+	puts(ptr);
+}
+
+int			main(int ac, char **av)
+{
+	char	buff[76];				// 0x50(%esp) 0xbffff5f0
+	char	*lang;					// 0x9c(%esp)
+
+	if (ac != 3)
+	    return 1;
+	for (int i = 19; i > 0; i--)
+		 buff[i] = 0;
+	strncpy(buff, av[1], 40);
+	strncpy(buff + 40, av[2], 32);
+	lang = getenv("LANG");
+	if (lang != NULL)
+	{
+		if (memcmp(lang, "fi", 2) == 0)
+		    language = 1;
+		if (memcmp(lang, "nl", 2) == 0)
+		    language = 2;		
+	}
+	for (int j = 19; j > 0; j--)
+		 lang[j] = buff[j];
+	greetuser(buff);
+	return 0;
+}

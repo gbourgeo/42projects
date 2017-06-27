@@ -1,0 +1,39 @@
+
+void		_ZN1N13setAnnotationEPc(char *, char *)
+{
+	int		len;
+
+	len = strlen(av[1]);
+	memcpy(, av[1], len);
+}
+
+void		_ZN1NC2Ei(void *p, unsigned int nb)
+{
+	p = 
+}
+
+void		*_Znwj(unsigned int nb)			-> _Znwj
+{
+	void	*p;
+
+	if (nb == 0)
+	   nb = 1;
+	if ((p = malloc(nb) == NULL)
+	   return NULL;
+	return p;
+}
+
+int			main(int ac, char **av)
+{
+	void	*p;
+
+	if (ac <= 1)
+	   exit(1);
+	p = _Znwj(108);
+	_ZN1NC2Ei(p, 5);
+	p = _Znwj(108);
+	_ZN1NC2Ei(p, 6);
+
+	_ZN1N13setAnnotationEPc(??, av[1]);
+	return 0;
+}

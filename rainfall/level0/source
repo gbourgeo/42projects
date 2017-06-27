@@ -1,0 +1,23 @@
+int			main(int ac, char **av)
+{
+	char	*ptr[] = { NULL, NULL };
+	int		nbr;
+	gid_t	gid;
+	uid_t	uid;
+	FILE 	*stderr;
+
+	nbr = atoi(av[1]);
+	if (nbr == 423)
+	{
+		*ptr = strdup("/bin/sh");
+		*(ptr + 1) = NULL;
+		gid = getegid();
+		uid = geteuid();
+		setresgid(gid, gid, gid);
+		setresuid(uid, uid, uid);
+		execv(*ptr, ptr);
+	}
+	else
+		fwrite("NO !\n", 1, 5, stderr);
+	return 0;
+}

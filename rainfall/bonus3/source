@@ -1,0 +1,23 @@
+static char mode[] = "r";						// 0x80486f0
+static char	path[] = "/home/user/end/.pass";	// 0x80486f2
+
+int main(int ac, char **av)
+{
+	char	buf[132];							// 0x18(%esp)
+	FILE	*f;									// 0x9c(%esp)
+
+	f = fopen(path, mode);
+	for (int i = 33; i > 0; i--)
+		buf[i] = 0;
+	if (f == NULL || ac != 2)
+	    return -1;
+	fread(buf, 1, 66, f);
+	buf + 89 = 0;
+	buf + atoi(av[1]) = 0;
+	fread(buf + 66, 1, 65, f);
+	fclose(f);
+	if (strcmp(buf, av[1]) == 0)
+	    execl("/bin/sh", "sh", NULL);
+	puts(buf + 66);
+	return 0;
+}
