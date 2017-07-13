@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/04/10 07:20:46 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/04/11 08:38:58 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -26,6 +26,7 @@ SV_DIR	= src/serveur/
 SV_SRC	= get_conf_file.c	\
 		is_chan_member.c	\
 		sv_accept.c 		\
+		sv_allowed.c		\
 		sv_away.c 			\
 		sv_chan.c 			\
 		sv_channel_mode.c 	\
@@ -38,6 +39,7 @@ SV_SRC	= get_conf_file.c	\
 		sv_err.c 			\
 		sv_error.c 			\
 		sv_find.c			\
+		sv_globcmp.c		\
 		sv_help.c 			\
 		sv_init_server.c 	\
 		sv_join.c 			\

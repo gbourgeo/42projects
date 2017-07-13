@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 04:52:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 09:28:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:28:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,23 +73,12 @@ static void			check_allowed(t_fd *cl, t_env *e)
 {
 	t_user			*us;
 
-	us = e->conf.allowed_user;
-	while (us)
+	if (sv_allowed(&cl->i, e->conf.allowed_user))
+		return (check_registered(cl, e));
+	if ((us = sv_allowed(&cl->i, e->conf.pass_user)))
 	{
-		if (!ft_strcmp(us->hostname, cl->host) ||
-			!ft_strcmp(us->hostaddr, cl->addr))
-			return (check_registered(cl, e));
-		us = us->next;
-	}
-	us = e->conf.pass_user;
-	while (us)
-	{
-		if (!ft_strcmp(us->hostname, cl->host))
-		{
-			if (!ft_strcmp(us->passwd, cl->inf->pass))
-				return (sv_welcome(e, cl));
-		}
-		us = us->next;
+		if (!ft_strcmp(us->passwd, cl->inf->pass))
+			return (sv_welcome(e, cl));
 	}
 	error_loggin_in("Not allowed to login", cl);
 }

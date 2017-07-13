@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 18:41:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/04 22:02:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:33:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void			sv_nick_change(t_fd *cl, t_env *e)
 
 	if (time(NULL) - cl->inf->must_change_nick >= 30)
 	{
-		nb = cl->fd;
+		nb = cl->i.fd;
 		ft_strncpy(name, "Guest-000", NICK_LEN + 1);
 		name[NICK_LEN - 1] += (nb % 10);
 		name[NICK_LEN - 2] += (nb / 10 % 10);

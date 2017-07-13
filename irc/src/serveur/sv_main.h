@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/10 07:58:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:43:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,14 +122,19 @@ typedef struct			s_file
 	struct s_file		*next;
 }						t_file;
 
-typedef struct			s_fd
+typedef struct			s_info
 {
 	int					fd;
 	struct sockaddr		csin;
 	char				addr[ADDR_LEN + 1];
 	char				host[NI_MAXHOST + 1];
 	char				port[NI_MAXSERV + 1];
+}						t_info;
+
+typedef struct			s_fd
+{
 	struct s_fd			*prev;
+	t_info				i;
 	char				uid[10];
 	t_file				*inf;
 	short				type;
@@ -161,15 +166,6 @@ typedef struct			s_chan
 	t_listin			*users;
 	struct s_chan		*next;
 }						t_chan;
-
-typedef struct			s_info
-{
-	int					fd;
-	struct sockaddr		csin;
-	char				addr[ADDR_LEN + 1];
-	char				host[NI_MAXHOST + 1];
-	char				port[NI_MAXSERV + 1];
-}						t_info;
 
 typedef struct			s_env
 {
@@ -217,6 +213,7 @@ void					send_joinmsg_toothers(t_chan *chan, t_fd *cl);
 void					sv_accept(t_env *e, int ip);
 t_listin				*sv_add_chantouser(t_chan *chan, t_fd *cl);
 t_listin				*sv_add_usertochan(t_fd *cl, t_chan *chan);
+t_user					*sv_allowed(t_info *inf, t_user *ptr);
 void					sv_away(char **cmds, t_env *e, t_fd *cl);
 void					sv_channel_mode(char **cmds, t_chan *ch, t_fd *cl);
 void					sv_chan_user_mode(t_grp *grp, char ***cmd);
@@ -233,6 +230,7 @@ void					sv_error(char *str, t_env *e);
 
 void					sv_find_userinchan(char **cmd, t_chan *chan, t_fd *cl);
 void					sv_get_cl_password(t_fd *cl, t_env *e);
+int						sv_globcmp(const char *s1, const char *s2);
 void					sv_help(char **cmds, t_env *e, t_fd *cl);
 void					sv_init_server(t_env *e);
 void					sv_join(char **cmds, t_env *e, t_fd *cl);

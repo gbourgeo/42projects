@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/10 08:47:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 06:38:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <time.h>
 #include <stdio.h>
 
-static int			sv_sockerr(char *err, int fd)
+static int				sv_sockerr(char *err, int fd)
 {
 	if (e.verb)
 	{
@@ -119,16 +119,16 @@ void					sv_init_server(t_env *e)
 	if (e->v4.fd >= 0 &&
 		listen(e->v4.fd, (e->v6.fd >= 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
 		e->v4.fd = sv_sockerr("listen() on IPv4.", e->v4.fd);
-	if (e->verb && e->v4.fd >= 0)	
-		printf("\e[32mAvailable\e[0m %s(%s):%s\n", e->v4.host, e->v4.addr, e->port);
-	else if (e->verb)
-		printf("\e[31mUnavailable\e[0m\n");
+	if (e->verb)
+		(e->v4.fd < 0) ? printf("\e[31mUnavailable\e[0m\n") :
+			printf("\e[32mAvailable\e[0m %s(%s):%s\n",
+					e->v4.host, e->v4.addr, e->port);
 	ft_putstr((e->verb) ? "IPv6: " : "");
 	if (e->v6.fd >= 0 &&
 		listen(e->v6.fd, (e->v4.fd >= 0) ? MAX_CLIENT / 2 : MAX_CLIENT) == -1)
 		e->v6.fd = sv_sockerr("listen() on IPv6.", e->v6.fd);
-	if (e->verb && e->v6.fd >= 0)
-		printf("\e[32mAvailable\e[0m %s(%s):%s\n", e->v6.host, e->v6.addr, e->port);
-	else if (e->verb)
-		printf("\e[31mUnavailable\e[0m\n");
+	if (e->verb)
+		(e->v6.fd < 0) ? printf("\e[31mUnavailable\e[0m\n") :
+			printf("\e[32mAvailable\e[0m %s(%s):%s\n",
+					e->v6.host, e->v6.addr, e->port);
 }

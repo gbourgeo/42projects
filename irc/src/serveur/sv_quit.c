@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/06 22:03:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 04:31:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:34:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void		rpl_quit(char **cmds, t_chan *ch, t_fd *to, t_fd *cl)
 	sv_cl_write("!~", to);
 	sv_cl_write(cl->inf->username, to);
 	sv_cl_write("@", to);
-	sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
+	sv_cl_write((*cl->i.host) ? cl->i.host : cl->i.addr, to);
 	sv_cl_write(" QUIT :", to);
 	if (cmds == NULL || !*cmds)
 		sv_cl_write("Client Quit", to);
@@ -51,7 +51,7 @@ void			sv_quit(char **cmds, t_env *e, t_fd *cl)
 		us = ((t_chan *)ch->is)->users;
 		while (us)
 		{
-			if (((t_fd *)us->is)->fd != cl->fd)
+			if (((t_fd *)us->is)->i.fd != cl->i.fd)
 				rpl_quit(cmds, ch->is, us->is, cl);
 			us = us->next;
 		}

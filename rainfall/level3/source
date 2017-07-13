@@ -1,0 +1,21 @@
+
+static char		m = "";       0x804988c <m>:	 ""
+
+void			v()
+{
+	char		buff[520];
+
+	fgets(buff, 512, STDIN_FILENO);
+	printf(buff);
+	if ( == '@')
+	{
+		fwrite("Wait what?!\n", 1, 12, STDOUT_FILENO);
+		system("/bin/sh");
+	}
+}
+
+int				main()
+{
+	v();
+	return 0;
+}

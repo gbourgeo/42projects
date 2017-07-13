@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/20 18:41:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/12/10 13:50:54 by gbourgeo         ###   ########.fr        #
+#    Updated: 2016/06/21 04:52:05 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -28,8 +28,7 @@ SRC = ft_strlen.c ft_strdup.c ft_strcpy.c ft_strncpy.c ft_strcat.c \
 	ft_tabdup.c ft_tablen.c ft_puttab.c ft_puttab_fd.c ft_tabdel.c \
 	get_next_line.c \
 	ft_split.c ft_split_whitespaces.c ft_str2join.c ft_strcdup.c \
-	ft_strcharset.c ft_stricpy.c ft_strndup.c ft_strrcdup.c \
-	ft_getenv.c
+	ft_strcharset.c ft_stricpy.c ft_strndup.c ft_strrcdup.c
 
 OBJ_DIR = obj/
 

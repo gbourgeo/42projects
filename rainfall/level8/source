@@ -1,0 +1,40 @@
+alloc memoire:				esp,0xa0 (160)
+
+
+
+char		*auth = "";				 0x8049aac;
+char		*service = "";			 0x8049ab0;
+
+int 		main()
+{
+	char	buff[128];		esp+0x20
+
+	while (1)
+	{
+		printf("%p, %p \n", auth, service);
+		if (fgets(buff, 128, STDIN_FILENO) == NULL)
+		   return 0;
+		if (!strncmp(buff, "auth ", 5))
+		{
+			auth = malloc(4);
+			*auth = 0;
+			strcpy(auth, buff +5);
+		}
+		if (!strncmp(buff, "reset", 5))
+		{
+			free(auth);
+		}
+		if (!strncmp(buff, "service", 6))
+		{
+			service = strdup(buff + 7);
+		}
+		if (!strncmp(buff, "login", 5))
+		{
+			if(auth[32] == 0)
+				fwrite("Password:\n", 1, 10, STDOU_FILENO);
+			else
+				system("/bin/sh");
+		}
+	}
+	return 0;
+}

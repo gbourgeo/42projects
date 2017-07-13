@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/07/26 17:26:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 09:35:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:32:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void				sv_new_client(t_info *info)
 	if ((cl = (t_fd *)malloc(sizeof(*cl))) == NULL)
 		sv_error("ERROR :Malloc (t_fd) failed.", &e);
 	ft_memset(cl, 0, sizeof(*cl));
-	ft_memcpy(cl, info, sizeof(*info));
+	ft_memcpy(&cl->i, info, sizeof(*info));
 	client_uid(cl);
 	if ((cl->inf = (t_file *)malloc(sizeof(*cl->inf))) == NULL)
 		sv_error("ERROR :Malloc failed\r\n", &e);
@@ -68,5 +68,5 @@ void				sv_new_client(t_info *info)
 	cl->next = e.fds;
 	e.fds = cl;
 	if (e.verb)
-		printf("New connection %s(%s):%s\n", cl->addr, cl->host, cl->port);
+		printf("Connection %s(%s):%s\n", cl->i.addr, cl->i.host, cl->i.port);
 }

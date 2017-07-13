@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 04:05:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/07 04:25:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 08:30:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void		rpl_msg_chan(char **cmds, t_chan *chan, t_fd *to, t_fd *cl)
 		sv_cl_write("!~", to);
 		sv_cl_write(cl->inf->username, to);
 		sv_cl_write("@", to);
-		sv_cl_write((*cl->host) ? cl->host : cl->addr, to);
+		sv_cl_write((*cl->i.host) ? cl->i.host : cl->i.addr, to);
 	}
 	sv_cl_write(" MSG ", to);
 	sv_cl_write(chan->name, to);
@@ -46,7 +46,7 @@ static void		sv_sendtochan(char **cmds, t_chan *chan, t_fd *cl)
 	while (us)
 	{
 		to = (t_fd *)us->is;
-		if (to->fd != cl->fd)
+		if (to->i.fd != cl->i.fd)
 			rpl_msg_chan(cmds, chan, to, cl);
 		us = us->next;
 	}
@@ -59,7 +59,7 @@ static int		user_got_mod(t_chan *ch, t_fd *cl)
 	list = ch->users;
 	while (list)
 	{
-		if (((t_fd *)list->is)->fd == cl->fd)
+		if (((t_fd *)list->is)->i.fd == cl->i.fd)
 		{
 			if (list->mode & CHFL_CHANOP || list->mode & CHFL_VOICE)
 				return (1);

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/30 19:46:21 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 21:58:16 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 22:18:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static int		ft_handle_opt(char **av, int *i, int j)
 		if (av[*i][j] == 'p')
 			e.port = ft_atoi(&av[*i][j + 1]);
 		if (av[*i][j] == 'w')
-			e.wait = ft_atod(&av[*i][j + 1]);
+			e.wait_secs = ft_atod(&av[*i][j + 1]);
 		if (av[*i][j] == 'q')
 			e.nprobes = ft_atoi(&av[*i][j + 1]);
 		if (av[*i][j] == 'z')
@@ -74,7 +74,7 @@ static int		ft_handle_opt(char **av, int *i, int j)
 			if (av[*i - 1][j] == 'p')
 				e.port = ft_atoi(av[*i]);
 			if (av[*i - 1][j] == 'w')
-				e.wait = ft_atod(av[*i]);
+				e.wait_secs = ft_atod(av[*i]);
 			if (av[*i - 1][j] == 'q')
 				e.nprobes = ft_atoi(av[*i]);
 			if (av[*i - 1][j] == 'z')

@@ -1,0 +1,40 @@
+
+char			c[69];
+
+static void		m(void)
+{
+	time_t		t;
+
+	t = time(NULL);
+	printf ("%s - %d", c, t);
+}
+
+int				main(int ac, char **av)
+{
+	char	*ptr1;
+	char	*ptr2;
+	char	*str1;
+	char	*ptr3;
+	char	*ptr4;
+	char	*str2;
+	FILE	*f;
+
+	ptr1 = malloc(8);
+	*ptr1 = 1;
+	ptr2 = malloc(8);
+	str1 = ptr1 + 4;
+	*str1 = (int)ptr2;
+	ptr3 = malloc(8);
+	*ptr3 = 2;
+	ptr4 = malloc(8);
+	str2 = ptr3 + 4;
+	*str2 = (int)ptr4;
+
+	strcpy(str1, av[1]);
+	strcpy(str2, av[2]);
+
+	f = fopen("/home/user/level8/.pass", "r");
+	fgets(c, 68, f);
+	puts("~~");
+	return 0;
+}

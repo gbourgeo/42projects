@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 14:58:35 by root              #+#    #+#             */
-/*   Updated: 2016/09/27 14:37:48 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 21:14:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void				ft_recv_udp(fd_set *fds)
 	pb = NULL;
 	if ((pb = ft_probe_by_fd(fds)))
 	{
+		ft_bzero(&e.inpack, sizeof(e.inpack));
 		rec = recvfrom(pb->fd, (char *)e.inpack, sizeof(e.inpack), 0,
 						(struct sockaddr *)&e.from, &len);
 		if (rec < 0)

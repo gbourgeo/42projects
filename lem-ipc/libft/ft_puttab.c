@@ -6,20 +6,20 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/04/04 19:44:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:51:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/12 17:04:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void			ft_puttab(char **tab)
+void			ft_puttab(char **table)
 {
 	int			i;
 
 	i = 0;
-	while (tab && tab[i])
+	while (table && table[i])
 	{
-		ft_putendl(tab[i]);
+		ft_putendl(table[i]);
 		i++;
 	}
 }

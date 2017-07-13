@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/10 08:57:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/04/11 07:05:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,12 @@ static void			sv_machine_information(char **table, t_env *e)
 {
 	if (ft_tablen(table) < 5)
 		return ;
-	table++; //M-Line...
+	table++;
 	ft_strncpy(e->name, *table++, SERVER_LEN);
 	ft_strncpy(e->addr, *table++, ADDR_LEN);
-	table++; //Server Location...
-	table++; //Server UDP Port...
+	table++;
+	table++;
 	ft_strncpy(e->sid, *table++, SID_LEN);
-}
-
-static void			sv_connection_class(char **table, t_env *e)
-{
-	(void)table;
-	(void)e;
 }
 
 static void			sv_client_connection(char **table, t_env *e)
@@ -46,7 +40,7 @@ static void			sv_client_connection(char **table, t_env *e)
 		ptr->passwd = ft_strdup(*table);
 	table++;
 	ft_strncpy(ptr->hostname, *table++, NI_MAXHOST);
-	table++;
+	ft_strncpy(ptr->port, *table++, 5);
 	ptr->class = ft_atoi(*table);
 	ptr->next = (ptr->passwd) ? e->conf.pass_user : e->conf.allowed_user;
 	if (ptr->passwd)

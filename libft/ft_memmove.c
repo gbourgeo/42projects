@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/23 21:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/01 20:56:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/05/15 00:17:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,7 @@ void			*ft_memmove(void *s1, const void *s2, size_t n)
 	const char	*ttwo;
 
 	tone = s1;
-	ttwo = ft_strdup(s2);
-	if (tone == ttwo)
-		return (s1);
+	ttwo = s2;
 	tone = ft_strncpy(tone, ttwo, n);
 	return (s1);
 }
