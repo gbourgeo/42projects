@@ -1,0 +1,53 @@
+#******************************************************************************#
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
+#    Updated: 2017/07/05 03:53:04 by gbourgeo         ###   ########.fr        #
+#                                                                              #
+#******************************************************************************#
+
+NAME = libftprintf.a
+
+SRC_DIR = src/
+
+SRC = ft_printf.c
+
+OBJ_DIR = obj/
+
+OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+
+HEADER = includes/
+
+WWW = gcc -Wall -Werror -Wextra
+
+all: prepare $(NAME) test
+
+prepare:
+	@mkdir -p $(OBJ_DIR)
+
+$(NAME): $(OBJ)
+	@ar rc $@ $^
+	@ranlib $@
+	@echo CREATED: $@
+	rm ./test
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	@$(WWW) -o $@ -c $< -I $(HEADER)
+
+clean:
+	/bin/rm -rf $(OBJ_DIR)
+
+fclean: clean
+	/bin/rm -f $(NAME)
+
+re: fclean all
+
+test: main.c
+	@rm -rf test
+	@$(WWW) -o test $< -L. -lftprintf -I $(HEADER)
+	@./test
+	@rm -rf test
