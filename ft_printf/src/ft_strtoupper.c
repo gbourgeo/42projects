@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strtoupper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/05 17:05:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 21:07:43 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/09 18:52:25 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/09 18:54:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include <stdio.h>
 
-int main()
+char		*ft_strtoupper(char *s)
 {
-	ft_printf("BONJOUR\n");
-	ft_printf("%%\n");
-	ft_printf("%5%.\n");
-	ft_printf("%-5%.\n");
-	ft_printf("%.0%.\n");
-	ft_printf("%x\n", 0);
-	ft_printf("%x\n", 42);
-	ft_printf("%X\n", 42);
-	ft_printf("%x\n", -42);
-	ft_printf("%X\n", -42);
-	return 0;
+	char	*ptr;
+
+	ptr = s;
+	if (!s)
+		return (s);
+	while (*ptr)
+	{
+		if (*ptr >= 'a' && *ptr <= 'z')
+			*ptr -= 32;
+		ptr++;
+	}
+	return (s);
 }

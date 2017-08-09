@@ -85,7 +85,6 @@ typedef struct			s_env
 	u_char				*outpack;
 	int					sendsk;
 	u_char				inpack[1280];
-	struct sockaddr_in	from;
 	int					done;
 }						t_env;
 

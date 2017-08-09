@@ -15,10 +15,10 @@
 #include <netinet/ip_icmp.h>
 
 struct ipovly {
-	caddr_t			ih_next, ih_prev;/* for protocol sequence q's */
-	u_char			ih_x1;/* (unused) */
-	u_char			ih_pr;/* protocol */
-	short			ih_len;/* protocol length */
+	caddr_t		ih_next, ih_prev;/* for protocol sequence q's */
+	u_char		ih_x1;/* (unused) */
+	u_char		ih_pr;/* protocol */
+	short		ih_len;/* protocol length */
 	struct in_addr	ih_src;/* source internet address */
 	struct in_addr	ih_dst;/* destination internet address */
 };
@@ -45,8 +45,8 @@ static u_short			in_cksum(register u_short *addr, register int len)
 static u_short			p_cksum(struct ip *ip, u_short *data, int len)
 {
 	struct ipovly		ipo;
-	u_short				sumh, sumd;
-	u_long				sumt;
+	u_short			sumh, sumd;
+	u_long			sumt;
 
 	ipo.ih_pr = ip->ip_p;
 	ipo.ih_len = htons(len);
@@ -58,12 +58,11 @@ static u_short			p_cksum(struct ip *ip, u_short *data, int len)
 	return ~in_cksum((u_short*)&sumt, sizeof(sumt));
 }
 
-static int				ft_do_send(int fd)
+static int			ft_do_send(int fd)
 {
-	int					i;
+	int			i;
 
-	i = sendto(fd, (char *)e.outpack, e.datalen, 0,
-				(struct sockaddr *)&e.dest, sizeof(e.dest));
+	i = sendto(fd, (char *)e.outpack, e.datalen, 0, (struct sockaddr *)&e.dest, sizeof(e.dest));
 	if (i < 0)
 	{
 		if (errno == ENOBUFS || errno == EAGAIN)
@@ -75,12 +74,12 @@ static int				ft_do_send(int fd)
 	return (i);
 }
 
-void					ft_send_icmp(t_probe *pb, int ttl)
+void				ft_send_icmp(t_probe *pb, int ttl)
 {
-	static int			seq = 0;
-	int					fd;
-	struct ip			*ip;
-	struct icmp			*icmp;
+	static int		seq = 0;
+	int			fd;
+	struct ip		*ip;
+	struct icmp		*icmp;
 
 	if (!seq)
 		seq = (e.port) ? e.port : 1;
@@ -108,11 +107,11 @@ void					ft_send_icmp(t_probe *pb, int ttl)
 	pb->seq = seq++;
 }
 
-void					ft_send_udp(t_probe *pb, int ttl)
+void				ft_send_udp(t_probe *pb, int ttl)
 {
-	int					fd;
-	struct ip			*ip;
-	struct udphdr		*udp;
+	int				fd;
+	struct ip		*ip;
+	struct udphdr	*udp;
 
 	fd = socket(e.af, SOCK_RAW, IPPROTO_ICMP);
 	if (fd < 0)

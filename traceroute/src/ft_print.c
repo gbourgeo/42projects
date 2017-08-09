@@ -21,18 +21,15 @@ static void			ft_print_addr(t_probe *pb)
 {
 	char			numeric[NI_MAXHOST];
 	char			name[NI_MAXHOST];
-	int				i;
 
 	if (!pb->res.sin_family)
 		return ;
-	*numeric = 0;
-	if ((i = getnameinfo((struct sockaddr *)&pb->res, sizeof(pb->res),
-							numeric, sizeof(numeric), 0, 0, NI_NUMERICHOST)))
-	{;} //		ft_err("error", (char *)gai_strerror(i));
-	*name = 0;
-	if ((i = getnameinfo((struct sockaddr *)&pb->res, sizeof(pb->res),
-						 name, sizeof(name), 0, 0, 0)))
-	{;} //ft_err("error", (char *)gai_strerror(i));
+	numeric[0] = 0;
+	getnameinfo((struct sockaddr *)&pb->res, sizeof(pb->res),
+			numeric, sizeof(numeric), 0, 0, NI_NUMERICHOST);
+	name[0] = '\0';
+	getnameinfo((struct sockaddr *)&pb->res, sizeof(pb->res),
+			name, sizeof(name), 0, 0, 32); //32 = NI_IDN <netdb.h>
 	printf(" %s (%s)", *name ? name : numeric, numeric);
 }
 

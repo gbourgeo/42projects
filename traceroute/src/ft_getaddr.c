@@ -15,10 +15,10 @@
 
 void				ft_getaddr(void)
 {
+	int				ret;
 	struct addrinfo	hints;
 	struct addrinfo	*res;
 	struct addrinfo	*tmp;
-	int				ret;
 
 	ft_memset(&hints, 0, sizeof(hints));
 	hints.ai_family = e.af;
@@ -37,11 +37,8 @@ void				ft_getaddr(void)
 	if (tmp == NULL)
 		tmp = res;
 	e.af = tmp->ai_family;
-	if (tmp->ai_family == AF_INET)
-	{
-		ft_memcpy(&e.dest, tmp->ai_addr, tmp->ai_addrlen);
-		getnameinfo((struct sockaddr *)&e.dest, sizeof(e.dest),
-					e.srcip, sizeof(e.srcip), 0, 0, NI_NUMERICHOST);
-	}
+	ft_memcpy(&e.dest, tmp->ai_addr, tmp->ai_addrlen);
+	getnameinfo((struct sockaddr *)&e.dest, sizeof(e.dest),
+			e.srcip, sizeof(e.srcip), 0, 0, NI_NUMERICHOST);
 	freeaddrinfo(res);
 }

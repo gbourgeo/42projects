@@ -16,7 +16,7 @@
 
 static void			ft_find_socket(void)
 {
-	int				on;
+	int			on;
 	socklen_t		sk;
 	struct ip		*ip;
 	u_char			*outp;

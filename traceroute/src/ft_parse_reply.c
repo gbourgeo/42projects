@@ -76,14 +76,14 @@ static int			ft_parse_udp(u_char *data, t_probe *pb)
 void				ft_parse(t_probe *pb, int cc)
 {
 	static int		(*ft_check[])(u_char *, t_probe *) = { ft_parse_udp,
-														   ft_parse_udp,
-														   ft_parse_icmp };
+									ft_parse_udp,
+									ft_parse_icmp };
 	struct ip		*ip;
 	struct icmp		*icp;
 	u_char			type;
 	u_char			code;
 	u_char			info;
-	int				hlen;
+	int			hlen;
 
 	ip = (struct ip *)e.inpack;
 	hlen = ip->ip_hl << 2;
@@ -136,6 +136,6 @@ void				ft_parse(t_probe *pb, int cc)
 			ft_reply_err(pb, type, hlen, info);
 		}
 	}
-	if (!ft_memcmp(&e.from.sin_addr, &e.dest.sin_addr, sizeof(e.from.sin_addr)))
+	if (!ft_memcmp(&pb->res.sin_addr, &e.dest.sin_addr, sizeof(pb->res.sin_addr)))
 		pb->final = 1;
 }

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/07/05 03:54:43 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/09 21:25:39 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,29 +14,33 @@ NAME = libftprintf.a
 
 SRC_DIR = src/
 
-SRC = ft_printf.c
+SRC = ft_printf.c		\
+		ft_itoa.c		\
+		ft_memset.c		\
+		ft_putnbr.c		\
+		ft_strncat.c	\
+		ft_strnew.c		\
+		ft_strlen.c		\
+		ft_strtoupper.c
 
 OBJ_DIR = obj/
 
 OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 
-HEADER = includes/
+HEADER = -I includes/
 
 WWW = gcc -Wall -Werror -Wextra
 
-all: prepare $(NAME) test
-
-prepare:
-	@mkdir -p $(OBJ_DIR)
+all: $(NAME)
 
 $(NAME): $(OBJ)
 	@ar rc $@ $^
 	@ranlib $@
 	@echo CREATED: $@
-	rm ./test
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	@$(WWW) -o $@ -c $< -I $(HEADER)
+	@mkdir -p $(OBJ_DIR)
+	@$(WWW) -o $@ -c $< $(HEADER)
 
 clean:
 	/bin/rm -rf $(OBJ_DIR)
@@ -46,7 +50,5 @@ fclean: clean
 
 re: fclean all
 
-test: main.c
-	@rm -rf test
-	@$(WWW) -o test $< -L. -lftprintf -I $(HEADER)
-	@./test
+test: re
+	gcc main.c -Iincludes -L. -lftprintf && ./a.out

@@ -71,10 +71,7 @@ int				main(int ac, char **av)
 	if (e.nprobes <= 0 || e.nprobes > MAX_PROBES)
 		ft_ex_error("no more than %d probes per hop", MAX_PROBES);
 	if (e.wait_secs < 0)
-	{
-		fprintf(stderr, "bad wait seconds `%g' specified\n", e.wait_secs);
-		exit(2);
-	}
+		ft_ex_error("bad wait seconds `%g' specified\n", e.wait_secs);
 	if (e.packetlen > MAX_DATALEN)
 		ft_ex_error("too big packetlen %d specified", e.packetlen);
 	if (e.send_secs < 0)

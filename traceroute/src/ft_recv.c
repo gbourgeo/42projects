@@ -33,21 +33,16 @@ void				ft_recv_udp(fd_set *fds)
 	socklen_t		len;
 	t_probe			*pb;
 
-	len = sizeof(e.from);
-	pb = NULL;
-	if ((pb = ft_probe_by_fd(fds)))
+	if ((pb = ft_probe_by_fd(fds)) != NULL)
 	{
+		len = sizeof(pb->res);
 		ft_bzero(&e.inpack, sizeof(e.inpack));
 		rec = recvfrom(pb->fd, (char *)e.inpack, sizeof(e.inpack), 0,
-						(struct sockaddr *)&e.from, &len);
+						(struct sockaddr *)&pb->res, &len);
 		if (rec < 0)
 			ft_err("recvfrom", NULL);
-		/* printf("\nrecv:%d %d %d", rec, pb->seq, ((struct ip *)(e.inpack))->ip_ttl); */
-		/* if (pb->seq != e.from.sin_port) */
-		/* 	return ; */
 		if (!pb->recv_time)
 			pb->recv_time = ft_get_time();
-		ft_memcpy(&pb->res, &e.from, sizeof(pb->res));
 		ft_parse(pb, rec);
 		FD_CLR(pb->fd, fds);
 		close(pb->fd);
@@ -63,20 +58,15 @@ void				ft_recv_icmp(fd_set *fds)
 	socklen_t		len;
 	t_probe			*pb;
 
-	len = sizeof(e.from);
-	pb = NULL;
 	if ((pb = ft_probe_by_fd(fds)))
 	{
+		len = sizeof(pb->res);
 		rec = recvfrom(pb->fd, (char *)e.inpack, sizeof(e.inpack), 0,
-						(struct sockaddr *)&e.from, &len);
+						(struct sockaddr *)&pb->res, &len);
 		if (rec < 0)
 			ft_err("recvfrom", NULL);
-		/* printf("\nrecv:%d %d %d", rec, pb->seq, e.from.sin_port); */
-		/* if (pb->seq != e.from.sin_port) */
-		/* 	return ; */
 		if (!pb->recv_time)
 			pb->recv_time = ft_get_time();
-		ft_memcpy(&pb->res, &e.from, sizeof(pb->res));
 		ft_parse(pb, rec);
 		FD_CLR(pb->fd, fds);
 		close(pb->fd);
