@@ -1,39 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*   ft_memccpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/25 19:53:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 17:08:31 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/01 23:39:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2015/02/01 21:50:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include <string.h>
+#include "libft.h"
 
-char		*ft_itoa(int n)
+void			*ft_memccpy(void *s1, const void *s2, int c, size_t n)
 {
-	char	*p;
-	int		sign;
-	int		i;
-	int		src;
+	size_t				i;
+	unsigned char		*dest;
+	const unsigned char	*src;
 
-	src = n;
-	i = (n < 0 ? 3 : 2);
-	while ((n /= 10))
-		++i;
-	if ((p = (char*)malloc(sizeof(*p) * i)) == NULL)
-		return (NULL);
-	p[--i] = '\0';
-	if (src == 0)
-		p[0] = '0';
-	if ((sign = (src < 0 ? -1 : 1)) < 0)
-		p[0] = '-';
-	while (src != 0)
+	i = 0;
+	dest = s1;
+	src = s2;
+	if (dest == src)
+		return (s1);
+	if (c < 0)
+		c = -c;
+	while (i < n)
 	{
-		p[--i] = ((src % 10) * sign + 48);
-		src /= 10;
+		dest[i] = src[i];
+		if (src[i] == c)
+			return (&dest[i + 1]);
+		i++;
 	}
-	return (p);
+	return (NULL);
 }

@@ -1,39 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr.c                                        :+:      :+:    :+:   */
+/*   ft_str2join.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/25 17:52:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 18:24:44 by gbourgeo         ###   ########.fr       */
+/*   Created: 2014/02/23 05:43:22 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/04/21 18:03:19 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include <unistd.h>
+#include "libft.h"
 
-void		ft_putnbr(int n)
+char		*ft_str2join(char const *s1, char const *s2, char const *s3)
 {
-	int		ret;
-	char	c;
+	int		len;
+	char	*p;
 
-	ret = 0;
-	if (n < 0)
+	p = NULL;
+	len = ft_strlen(s1) + ft_strlen(s2) + ft_strlen(s3);
+	if ((p = (char*)malloc(sizeof(*p) * (len + 1))) != NULL)
 	{
-		write(STDOUT_FILENO, "-", 1);
-		if (n == -2147483648)
-			ret = 1;
-		n = (n + ret) * (-1);
+		len = 0;
+		if (s1)
+		{
+			while (s1[len])
+			{
+				p[len] = s1[len];
+				++len;
+			}
+		}
+		p[len] = '\0';
+		p = ft_strcat(p, s2);
+		p = ft_strcat(p, s3);
 	}
-	if (n > 9)
-	{
-		ft_putnbr(n / 10);
-		ft_putnbr(n % 10 + ret);
-	}
-	else
-	{
-		c = (char)n + 48;
-		write(STDOUT_FILENO, &c, 1);
-	}
+	return (p);
 }

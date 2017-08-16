@@ -1,26 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncat.c                                       :+:      :+:    :+:   */
+/*   ft_bzero.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/21 13:42:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 16:38:27 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/23 17:50:19 by gbourgeo          #+#    #+#             */
+/*   Updated: 2014/01/10 14:02:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include <stdlib.h>
 
-char		*ft_strncat(char *s1, const char *s2, size_t n)
+void		ft_bzero(void *s, size_t n)
 {
+	char	*x;
 	size_t	i;
-	size_t	j;
 
-	j = 0;
-	i = ft_strlen(s1);
-	while (s2[j] && j < n)
-		s1[i++] = s2[j++];
-	s1[i] = '\0';
-	return (s1);
+	i = 0;
+	if (n && s)
+	{
+		x = s;
+		while (i++ < n)
+			*x++ = 0;
+	}
 }

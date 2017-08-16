@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strnew.c                                        :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/26 15:38:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 16:38:41 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/23 21:55:01 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/05/15 00:17:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#include "libft.h"
 
-char		*ft_strnew(size_t size)
+void			*ft_memmove(void *s1, const void *s2, size_t n)
 {
-	char	*p;
-	size_t	i;
+	char		*tone;
+	const char	*ttwo;
 
-	i = 0;
-	p = NULL;
-	if ((p = (char*)malloc(sizeof(*p) * (size + 1))) == NULL)
-		return (NULL);
-	while (i <= size)
-		p[i++] = '\0';
-	return (p);
+	tone = s1;
+	ttwo = s2;
+	tone = ft_strncpy(tone, ttwo, n);
+	return (s1);
 }

@@ -1,29 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/05 17:05:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 21:07:43 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/19 16:22:13 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/17 06:02:11 by pc               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include <stdio.h>
+#include <stdlib.h>
 
-int main()
+size_t		ft_strlen(const char *s)
 {
-	ft_printf("BONJOUR\n");
-	ft_printf("%%\n");
-	ft_printf("%5%.\n");
-	ft_printf("%-5%.\n");
-	ft_printf("%.0%.\n");
-	ft_printf("%x\n", 0);
-	ft_printf("%x\n", 42);
-	ft_printf("%X\n", 42);
-	ft_printf("%x\n", -42);
-	ft_printf("%X\n", -42);
-	return 0;
+	size_t	len;
+
+	len = 0;
+	if (s)
+	{
+		while (s[len])
+			len++;
+	}
+	return (len);
 }

@@ -1,26 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_stricpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/19 16:22:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 16:41:31 by gbourgeo         ###   ########.fr       */
+/*   Created: 2014/02/11 17:02:23 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/04/21 18:07:12 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "libft.h"
 
-size_t		ft_strlen(const char *s)
+void		ft_stricpy(char *s1, const char *s2, int pos)
 {
-	char	*ptr;
+	int		i;
+	int		j;
 
-	ptr = (char *)s;
-	if (ptr)
+	i = 0;
+	j = ft_strlen(s2);
+	if (s1 == NULL || s2 == NULL || pos > (int)ft_strlen(s1))
+		return ;
+	if (s1[pos] != '\0')
 	{
-		while (*ptr)
-			ptr++;
+		i = ft_strlen(s1 + pos);
+		while (i > 0)
+		{
+			s1[pos + i + j - 1] = s1[pos + i - 1];
+			i--;
+		}
 	}
-	return (ptr - s);
+	while (s2[i] != 0)
+	{
+		s1[pos + i] = s2[i];
+		i++;
+	}
 }

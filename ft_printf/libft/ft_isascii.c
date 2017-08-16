@@ -1,26 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memset.c                                        :+:      :+:    :+:   */
+/*   ft_isascii.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/22 21:07:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/09 16:41:51 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/22 20:32:17 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/11/27 21:34:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-
-void		*ft_memset(void *b, int c, size_t len)
+int		ft_isascii(int c)
 {
-	char	*d;
-
-	if (len)
-	{
-		d = b;
-		while (len--)
-			*d++ = c;
-	}
-	return (b);
+	if (c >= 0 && c <= 127)
+		return (1);
+	return (0);
 }
