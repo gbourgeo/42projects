@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/08/16 05:03:04 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/16 14:26:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -34,7 +34,8 @@ OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 LIB_DIR = libft/
 
 LIB = ft_isdigit.c ft_memset.c ft_putnbr.c ft_strchr.c ft_strdup.c ft_strjoin.c\
-	ft_strlen.c ft_strnew.c ft_putchar.c ft_strcat.c ft_strcpy.c ft_memcpy.c
+	ft_strlen.c ft_strnew.c ft_putchar.c ft_strcat.c ft_strcpy.c ft_memcpy.c\
+	ft_bzero.c ft_pow.c
 
 LIB_OBJ = $(addprefix $(OBJ_DIR), $(LIB:.c=.o))
 

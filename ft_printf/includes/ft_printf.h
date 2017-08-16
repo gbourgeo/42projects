@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 10:06:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/16 10:41:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ typedef struct		s_dt
 	t_args			flag;
 }					t_dt;
 
-int					printf(const char *restrict format, ...);
+int					ft_printf(const char *restrict format, ...);
 char				*ft_strtoupper(char *s);
 char				*ft_itoa_base(ULL nb, ULL base);
 void				pf_s(t_dt *data);

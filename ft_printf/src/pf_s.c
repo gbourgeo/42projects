@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 04:58:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/16 14:43:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,73 +14,84 @@
 #include "libft.h"
 #include <unistd.h>
 
-static void		write_wstr_t(t_dt *data, wchar_t *str)
+static char		*wchar_to_char(wchar_t *str)
 {
-	if (!str)
-		return ;
+	char		*bin;
+	char		ret[33];
+	int			i;
+	int			j;
+	int			len;
+	int			mod;
+
 	while (*str)
 	{
-		data->buff[data->pos++] = *(char *)str;
-		if (data->pos >= PRINTF_BUFF)
+		bin = ft_itoa_base(*str, 2);
+		ft_bzero(ret, 33);
+		i = 0;
+		j = 0;
+		len = ft_strlen(bin) / 6 + 1;
+		mod = 8 - ft_strlen(bin) % 6 - len - 1;
+		while (i < len)
+			ret[i++] = '1';
+		ret[i++] = '0';
+		while (mod--)
+			ret[i++] = '0';
+		while (bin[j])
 		{
-			data->ret += PRINTF_BUFF;
-			write(STDOUT_FILENO, data->buff, data->pos);
-			data->pos = 0;
+			if (i % 8 == 0)
+			{
+				write(1, &ret[i - 8], 8); write(1, " ", 1);
+				ret[i++] = '1';
+				ret[i++] = '0';
+			}
+			ret[i++] = bin[j];
+			j++;
 		}
+		ret[i] = '\0';
+		write(1, &ret[i - 8], 8); write(1, " ", 1);
+		return (ft_strdup(ret));
 		str++;
 	}
+	return (ft_strdup(ret));
 }
 
-static wchar_t	*pf_strdup(wchar_t *s)
+static int		ft_atoc(char *str)
 {
-	wchar_t		*ret;
-	size_t		i;
+	int			i;
+	int			c;
 
-	ret = NULL;
-	i = 0;
-	if (!s)
-		return (NULL);
-	while (s[i])
-		i++;
-	if ((ret = malloc((i + 1) * sizeof(wchar_t))) == NULL)
-		return (NULL);
-	i = 0;
-	while (s[i])
+	i = 8;
+	c = 0;
+	while (i-- >= 0)
 	{
-		ft_memcpy(&ret[i], &s[i], sizeof(wchar_t));
-		i++;
+		if (str[i] == '1')
+			c |= 1;
+		else
+			c |= 0;
+		c = c << 1;
 	}
-	ret[i] = L'\0';
-	return (ret);
+	ft_putnbr(c);write(1, " ", 1);
+	return (c);
 }
 
 static void		pf_big_s(t_dt *data)
 {
 	wchar_t		*str;
-	int			len;
+	char		*ptr;
+	int			i;
+	
 
-	str = pf_strdup(va_arg(data->ap, wchar_t *));
+	str = va_arg(data->ap, wchar_t *);
 	if (str == NULL)
-		str = pf_strdup(L"(null)");
-	len = 0;
-	while (str[len])
-		len++;
-	if (data->flag.point && data->flag.precision < len)
-		len = data->flag.precision;
-	str[len] = L'\0';
-	if (!data->flag.minus)
+		str = L"(null)";
+	ptr = wchar_to_char(str);
+	i = 0;
+	while (ptr[i])
 	{
-		while (data->flag.min_width > len && data->flag.min_width--)
-			write_char(data, (data->flag.zero) ? '0' : ' ');
+		write_char(data, ft_atoc(ptr + i));
+		i += 8;
 	}
-	write_wstr_t(data, str);
-	if (data->flag.minus)
-	{
-		while (data->flag.min_width > len && data->flag.min_width--)
-			write_char(data, ' ');
-	}
-	if (str)
-		free(str);
+	free(ptr);
 }
 
 static void		pf_small_s(t_dt *data)

@@ -6,12 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 10:26:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/16 12:48:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
+#include <locale.h>
 
 static int		pf_atoi(t_dt *data)
 {
@@ -97,6 +98,7 @@ int				ft_printf(const char *restrict format, ...)
 	t_dt		data;
 	char		*ptr;
 
+	setlocale(LC_ALL, "");
 	ft_memset(&data, 0, sizeof(data));
 	data.tail = (char *)format;
 	va_start(data.ap, format);
