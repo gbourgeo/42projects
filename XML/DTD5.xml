@@ -1,0 +1,48 @@
+<!--La balise répétée optionnelle
+
+Une balise peut être répétée plusieurs fois même si elle est
+optionnelle. Pour indiquer une telle balise, on fait suivre son nom
+par une étoile.
+
+<!ELEMENT balise (balise2, balise3*, balise4)>
+-->
+
+<!ELEMENT repertoire (personne*)>
+<!ELEMENT personne (nom, prenom)>
+<!ELEMENT nom (#PCDATA)>
+<!ELEMENT prenom (#PCDATA)>
+
+<!-- valide -->
+<repertoire>
+    <personne>
+        <nom>DOE</nom>
+        <prenom>John</prenom>
+    </personne>
+    <personne>
+        <nom>POPPINS</nom>
+        <prenom>Marie</prenom>
+    </personne>
+</repertoire>
+
+<!-- valide -->
+<repertoire>
+    <personne>
+        <nom>DOE</nom>
+        <prenom>John</prenom>
+    </personne>
+</repertoire>
+
+<!-- valide -->
+<repertoire ></repertoire>
+
+<!-- invalide -->
+<!-- il manque la balise  prenom dans la seconde balise personne-->
+<repertoire>
+    <personne>
+        <nom>DOE</nom>
+        <prenom>John</prenom>
+    </personne>
+    <personne>
+        <nom>POPPINS</nom>
+    </personne>
+</repertoire>

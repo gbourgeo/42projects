@@ -1,0 +1,29 @@
+<!-- La balise optionnelle
+
+Une balise peut être optionnelle. Pour indiquer qu'une balise est
+optionnelle, on fait suivre son nom par un point d’interrogation.
+
+<!ELEMENT balise (balise2, balise3?, balise4)>
+-->
+
+<!ELEMENT personne (nom, prenom?)>
+<!ELEMENT nom (#PCDATA)>
+<!ELEMENT prenom (#PCDATA)>
+
+<!-- valide -->
+<personne>
+    <nom>DOE</nom>
+</personne>
+
+<!-- valide -->
+<personne>
+    <nom>DOE</nom>
+    <prenom>John</prenom>
+</personne>
+
+<!-- invalide -->
+<!-- l'ordre des balises n'est pas respecté -->
+<personne>
+    <prenom>John</prenom>
+    <nom>DOE</nom>
+</personne>

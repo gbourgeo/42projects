@@ -1,0 +1,38 @@
+<!--
+<!ELEMENT balise (balise2, balise3, balise4, balise5, etc.)>
+-->
+<!ELEMENT personne (nom, prenom, age)>
+<!ELEMENT nom (#PCDATA)>
+<!ELEMENT prenom (#PCDATA)>
+<!ELEMENT age (#PCDATA)>
+
+<!-- valide -->
+<personne>
+    <nom>DOE</nom>
+    <prenom>John</prenom>
+    <age>24</age>
+</personne>
+
+<!-- invalide -->
+<!-- les balises ne sont pas dans le bon ordre -->
+<personne>
+    <prenom>John</prenom>
+    <nom>DOE</nom>
+    <age>24</age>
+</personne>
+
+<!-- invalide -->
+<!-- il manque une balise -->
+<personne>
+    <prenom>John</prenom>
+    <age>24</age>
+</personne>
+
+<!-- invalide -->
+<!-- il y a une balise en trop, qui plus est non déclarée -->
+<personne>
+    <nom>DOE</nom>
+    <prenom>John</prenom>
+    <age>24</age>
+    <date>12/12/2012</date>
+</personne>

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:27:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 14:22:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 19:39:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static char		*wchar_to_char(int nb)
 	return (ft_strdup(ret));
 }
 
-void			write_wchar(t_dt *data, const wchar_t *w, int len)
+void			write_wchar(t_dt *data, wchar_t *w, int *len)
 {
 	char		*ptr;
 	int			i;
@@ -68,11 +68,14 @@ void			write_wchar(t_dt *data, const wchar_t *w, int len)
 		if (w[j] > 127)
 		{
 			ptr = wchar_to_char(w[j]);
-			size += ft_strlen(ptr) / 6;
-			ft_putnbr(len);write(1, ",", 1);
-			ft_putnbr(ft_strlen(ptr) / 6 + 1 + j);write(1, " ", 1);
-			if ((int)(j + ft_strlen(ptr) / 6 + 1) > len)
-				return (free(ptr));
+			if (data->flag.point)
+			{
+				int x = w[j];
+				while ((x = x >> 6))
+					size++;
+				if (size >= len[1])
+					return (free(ptr));
+			}
 			i = 0;
 			while (ptr[i])
 			{
@@ -80,6 +83,7 @@ void			write_wchar(t_dt *data, const wchar_t *w, int len)
 				i += 8;
 			}
 			free(ptr);
+			ptr = NULL;
 		}
 		else
 			write_char(data, w[j]);

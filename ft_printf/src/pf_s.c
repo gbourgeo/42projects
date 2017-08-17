@@ -6,37 +6,40 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 14:19:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 19:48:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 
+/*
+** In pf_big_s(), the 'int len[2]'  to:
+** len[0] = the number of ints in *str.
+** len[1] = The number of characters to write to print each ints.
+*/
+
 static int		*ft_wcharlen(const int *str, int *i)
 {
-	int			len;
-	int			size;
-	char		*ptr;
+	int			w;
 
-	len = 0;
-	size = 0;
+	i[0] = 0;
+	i[1] = 0;
+	w = 0;
 	if (str)
 	{
-		while (str[len])
+		while (str[i[0]])
 		{
-			if (str[len] > 127)
+			if (str[i[0]] > 127)
 			{
-				ptr = ft_itoa_base(str[len], 2);
-				size += ft_strlen(ptr) / 6;
-				free(ptr);
+				w = str[i[0]];
+				while ((w = w >> 6))
+					i[1]++;
 			}
-			size++;
-			len++;
+			i[1]++;
+			i[0]++;
 		}
 	}
-	i[0] = len;
-	i[1] = size;
 	return (i);
 }
 
@@ -50,13 +53,13 @@ static void		pf_big_s(t_dt *data)
 		s = L"(null)";
 	ft_wcharlen(s, len);
 	if (data->flag.point && data->flag.precision < len[1])
-		len[0] = data->flag.precision;
+		len[1] = data->flag.precision;
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > len[1] && data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	write_wchar(data, s, len[1]);
+	write_wchar(data, s, len);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > len[1] && data->flag.min_width--)

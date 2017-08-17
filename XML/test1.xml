@@ -1,0 +1,10 @@
+<!-- Ceci est le prototype d'un commentaire -->
+
+<!-- La premiere chose a ecrire dans un fichier .xml est ce que l'on appelle le PROLOGUE -->
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<!-- Tout ce qui va suivre sera le CORPS de notre fichier.
+	 Il devra impérativement contenir une balise racine -->
+<root>
+
+</root>

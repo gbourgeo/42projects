@@ -1,0 +1,28 @@
+<!ELEMENT personne (nom)>
+<!ELEMENT nom (#PCDATA)>
+
+<personne>
+  <nom>Gilles B.</nom>
+</personne>
+
+------------------------------
+<!ELEMENT personne (nom)>
+<!ELEMENT nom EMPTY>
+
+<personne>
+  <nom></nom>
+</personne>
+
+------------------------------
+<!ELEMENT personne (nom)>
+<!ELEMENT nom ANY>
+
+<!-- valeur simple -->
+<personne>
+    <nom>John DOE</nom>
+</personne>
+
+<!-- vide -->
+<personne>
+    <nom ></nom>
+</personne>

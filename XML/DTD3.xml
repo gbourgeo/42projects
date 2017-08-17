@@ -1,0 +1,32 @@
+<!-- Une liste de choix permet de dire qu'une balise contient l'une des 
+	 balises décrites. Il suffit d'indiquer le nom des balises en les 
+	 séparant par une barre verticale.
+
+	 <!ELEMENT balise (balise2 | balise3 | balise4 | balise5 | etc.)>
+-->
+
+<!ELEMENT personne (nom | prenom)>
+<!ELEMENT nom (#PCDATA)>
+<!ELEMENT prenom (#PCDATA)>
+
+<!-- valide -->
+<personne>
+    <nom>DOE</nom>
+</personne>
+
+<!-- valide -->
+<personne>
+    <prenom>John</prenom>
+</personne>
+
+<!-- invalide -->
+<!-- les 2 balises prenom et nom ne peuvent pas être présentes en même --
+  -- temps. -->
+<personne>
+    <prenom>John</prenom>
+    <nom>DOE</nom>
+</personne>
+
+<!-- invalide -->
+<!-- il manque une balise -->
+<personne ></personne>

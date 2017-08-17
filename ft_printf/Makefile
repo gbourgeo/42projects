@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/08/17 09:41:47 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/17 19:53:09 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -64,6 +64,7 @@ clean:
 
 fclean: clean
 	@make -C $(LIB_DIR) fclean
+	@if test -f a.out ; then /bin/rm a.out; fi
 	/bin/rm -f $(NAME)
 
 re: fclean all

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 12:05:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 19:36:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,6 @@ void				pf_c(t_dt *data);
 void				pf_percent(t_dt *data);
 void				write_str(t_dt *data, const char *str, int len);
 void				write_char(t_dt *data, unsigned char c);
-void				write_wchar(t_dt *data, const wchar_t *w, int len);
+void				write_wchar(t_dt *data, wchar_t *w, int *len);
 
 #endif

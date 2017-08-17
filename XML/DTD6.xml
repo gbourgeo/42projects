@@ -1,0 +1,36 @@
+<!--La balise répétée
+
+Une balise peut être répétée plusieurs fois. Pour indiquer une telle
+balise, on fait suivre son nom par un plus.
+
+<!ELEMENT balise (balise2, balise3+, balise4)>
+-->
+
+<!ELEMENT repertoire (personne+)>
+<!ELEMENT personne (nom, prenom)>
+<!ELEMENT nom (#PCDATA)>
+<!ELEMENT prenom (#PCDATA)>
+
+<!-- valide -->
+<repertoire>
+    <personne>
+        <nom>DOE</nom>
+        <prenom>John</prenom>
+    </personne>
+    <personne>
+        <nom>POPPINS</nom>
+        <prenom>Marie</prenom>
+    </personne>
+</repertoire>
+
+<!-- valide -->
+<repertoire>
+    <personne>
+        <nom>DOE</nom>
+        <prenom>John</prenom>
+    </personne>
+</repertoire>
+
+<!-- invalide -->
+<!-- la balise personne doit être présente au moins une fois-->
+<repertoire ></repertoire>
