@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 07:36:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 11:07:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void			pf_u(t_dt *data)
 	while (data->flag.precision > av.len && data->flag.precision--)
 		write_char(data, '0');
 	if (!data->flag.point || av.ui)
-		write_str(data, av.s);
+		write_str(data, av.s, av.len);
 	if (data->flag.minus && data->flag.min_width > data->flag.precision)
 	{
 		while (data->flag.min_width > len && data->flag.min_width--)

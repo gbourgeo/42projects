@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/08/16 14:26:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/17 09:41:47 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -17,6 +17,7 @@ SRC_DIR = src/
 SRC = ft_printf.c		\
 	ft_strtoupper.c 	\
 	ft_itoa_base.c		\
+	ft_atouc.c			\
 	pf_s.c				\
 	pf_p.c				\
 	pf_di.c				\
@@ -68,4 +69,4 @@ fclean: clean
 re: fclean all
 
 test: re
-	gcc main.c $(HEADER) -L. -lftprintf && ./a.out
+	gcc ../main.c $(HEADER) -L. -lftprintf && ./a.out

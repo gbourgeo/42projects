@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 05:04:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 11:21:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,18 @@
 
 void		pf_c(t_dt *data)
 {
-	t_av	av;
+	int		ui;
 
-	av.ui = va_arg(data->ap, int);
+	ui = va_arg(data->ap, int);
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > 1 && data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	write_char(data, av.ui);
+	if (ui > 127)
+		write_wchar(data, &ui, 1);
+	else
+		write_char(data, ui);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > 1 && data->flag.min_width--)

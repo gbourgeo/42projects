@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_atouc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/16 10:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 13:03:35 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/17 09:35:38 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/17 09:36:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include <stdio.h>
+#include "libft.h"
 
-int main()
+unsigned char		ft_atouc(char *str)
 {
-	int ret;
-	
-	ret = ft_printf("%S", L"ç"); printf(" %d\n", ret);
-	ret =    printf("%S", L"ç"); printf(" %d\n", ret);
-	ret = ft_printf("%S", L"è"); printf(" %d\n", ret);
-	ret =    printf("%S", L"è"); printf(" %d\n", ret);
-	ret = ft_printf("%S", L"ሴ"); printf(" %d\n", ret);
-	ret =    printf("%S", L"ሴ"); printf(" %d\n", ret);
-	return 0;
+	int				i;
+	unsigned char	c;
+
+	i = 0;
+	c = 0;
+	while (i < 8)
+	{
+		if (str[i] == '1')
+			c += ft_pow(2, 7 - i);
+		i++;
+	}
+	return (c);
 }

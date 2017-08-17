@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 10:41:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 12:05:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define FT_PRINTF_H
 
 # include <stdarg.h>
+# include <stdlib.h>
 
 # define PRINTF_BUFF	1028
 # define ULL			unsigned long long
@@ -52,6 +53,7 @@ typedef struct		s_dt
 {
 	va_list			ap;
 	int				ret;
+	unsigned int	less;
 	unsigned int	pos;
 	char			buff[PRINTF_BUFF];
 	char			*tail;
@@ -62,6 +64,7 @@ typedef struct		s_dt
 int					ft_printf(const char *restrict format, ...);
 char				*ft_strtoupper(char *s);
 char				*ft_itoa_base(ULL nb, ULL base);
+unsigned char		ft_atouc(char *str);
 void				pf_s(t_dt *data);
 void				pf_p(t_dt *data);
 void				pf_di(t_dt *data);
@@ -70,7 +73,8 @@ void				pf_u(t_dt *data);
 void				pf_x(t_dt *data);
 void				pf_c(t_dt *data);
 void				pf_percent(t_dt *data);
-void				write_str(t_dt *data, const void *str);
-void				write_char(t_dt *data, char c);
+void				write_str(t_dt *data, const char *str, int len);
+void				write_char(t_dt *data, unsigned char c);
+void				write_wchar(t_dt *data, const wchar_t *w, int len);
 
 #endif

@@ -6,118 +6,85 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 14:43:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 14:19:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
-#include <unistd.h>
 
-static char		*wchar_to_char(wchar_t *str)
+static int		*ft_wcharlen(const int *str, int *i)
 {
-	char		*bin;
-	char		ret[33];
-	int			i;
-	int			j;
 	int			len;
-	int			mod;
+	int			size;
+	char		*ptr;
 
-	while (*str)
+	len = 0;
+	size = 0;
+	if (str)
 	{
-		bin = ft_itoa_base(*str, 2);
-		ft_bzero(ret, 33);
-		i = 0;
-		j = 0;
-		len = ft_strlen(bin) / 6 + 1;
-		mod = 8 - ft_strlen(bin) % 6 - len - 1;
-		while (i < len)
-			ret[i++] = '1';
-		ret[i++] = '0';
-		while (mod--)
-			ret[i++] = '0';
-		while (bin[j])
+		while (str[len])
 		{
-			if (i % 8 == 0)
+			if (str[len] > 127)
 			{
-				write(1, &ret[i - 8], 8); write(1, " ", 1);
-				ret[i++] = '1';
-				ret[i++] = '0';
+				ptr = ft_itoa_base(str[len], 2);
+				size += ft_strlen(ptr) / 6;
+				free(ptr);
 			}
-			ret[i++] = bin[j];
-			j++;
+			size++;
+			len++;
 		}
-		ret[i] = '\0';
-		write(1, &ret[i - 8], 8); write(1, " ", 1);
-		return (ft_strdup(ret));
-		str++;
 	}
-	return (ft_strdup(ret));
-}
-
-static int		ft_atoc(char *str)
-{
-	int			i;
-	int			c;
-
-	i = 8;
-	c = 0;
-	while (i-- >= 0)
-	{
-		if (str[i] == '1')
-			c |= 1;
-		else
-			c |= 0;
-		c = c << 1;
-	}
-	ft_putnbr(c);write(1, " ", 1);
-	return (c);
+	i[0] = len;
+	i[1] = size;
+	return (i);
 }
 
 static void		pf_big_s(t_dt *data)
 {
-	wchar_t		*str;
-	char		*ptr;
-	int			i;
-	
+	wchar_t		*s;
+	int			len[2];
 
-	str = va_arg(data->ap, wchar_t *);
-	if (str == NULL)
-		str = L"(null)";
-	ptr = wchar_to_char(str);
-	i = 0;
-	while (ptr[i])
+	s = va_arg(data->ap, wchar_t *);
+	if (s == NULL)
+		s = L"(null)";
+	ft_wcharlen(s, len);
+	if (data->flag.point && data->flag.precision < len[1])
+		len[0] = data->flag.precision;
+	if (!data->flag.minus)
 	{
-		write_char(data, ft_atoc(ptr + i));
-		i += 8;
+		while (data->flag.min_width > len[1] && data->flag.min_width--)
+			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	free(ptr);
+	write_wchar(data, s, len[1]);
+	if (data->flag.minus)
+	{
+		while (data->flag.min_width > len[1] && data->flag.min_width--)
+			write_char(data, ' ');
+	}
 }
 
 static void		pf_small_s(t_dt *data)
 {
 	t_av		av;
 
-	av.s = ft_strdup(va_arg(data->ap, char *));
+	av.s = va_arg(data->ap, char *);
 	if (av.s == NULL)
-		av.s = ft_strdup("(null)");
+		av.s = "(null)";
 	av.len = ft_strlen(av.s);
 	if (data->flag.point && data->flag.precision < av.len)
 		av.len = data->flag.precision;
-	av.s[av.len] = '\0';
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > av.len && data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	write_str(data, av.s);
+	write_str(data, av.s, av.len);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > av.len && data->flag.min_width--)
 			write_char(data, ' ');
 	}
-	if (av.s)
-		free(av.s);
 }
 
 void			pf_s(t_dt *data)

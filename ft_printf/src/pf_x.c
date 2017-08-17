@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 09:40:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 11:00:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void		get_data(t_dt *data, t_av *av, int *len)
 	if (data->flag.hash)
 		data->flag.hash = 2;
 	if (data->flag.hash && data->flag.zero && av->ui)
-		write_str(data, (*data->tail == 'x') ? "0x" : "0X");
+		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
 }
 
 static void		print_ox(t_dt *data, t_av *av)
@@ -57,7 +57,7 @@ static void		print_ox(t_dt *data, t_av *av)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
 	if (data->flag.hash && !data->flag.zero && av->ui)
-		write_str(data, (*data->tail == 'x') ? "0x" : "0X");
+		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
 	while (data->flag.precision > av->len &&
 			data->flag.precision--)
 		write_char(data, '0');
@@ -71,12 +71,12 @@ void			pf_x(t_dt *data)
 
 	width = 8;
 	get_data(data, &av, &width);
-	len = (data->flag.precision > av.len) ? data->flag.precision : av.len;
 	print_ox(data, &av);
+	len = ft_strlen((av.len >= width) ? &av.s[av.len - width] : av.s);
 	if (av.len >= width)
-		write_str(data, &av.s[av.len - width]);
+		write_str(data, &av.s[av.len - width], len);
 	else if (!data->flag.point || av.ui)
-		write_str(data, av.s);
+		write_str(data, av.s, len);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > av.len + data->flag.hash &&

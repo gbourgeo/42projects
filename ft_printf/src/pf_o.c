@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 09:46:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 11:07:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,10 @@ void		pf_o(t_dt *data)
 	if (*data->tail == 'o')
 	{
 		if (data->flag.hash || !data->flag.point || av.ui)
-			write_str(data, av.s);
+			write_str(data, av.s, av.len - data->flag.hash);
 	}
 	else if (!data->flag.point || *(data->flag.point + 1) != '0')
-		write_str(data, av.s);
+		write_str(data, av.s, av.len - data->flag.hash);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > len && data->flag.min_width--)

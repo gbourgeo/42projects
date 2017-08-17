@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:33:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 09:27:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/17 12:33:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,16 @@ static void	print_ox(t_dt *data, t_av *av)
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	if (!data->flag.minus)
 	{
-		if (data->flag.min_width <= len + 2)
-			write_str(data, "0x");
+		if (data->flag.min_width <= len + 2 || data->flag.zero)
+			write_str(data, "0x", 2);
 		while (data->flag.min_width > len + 2 && len++)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 		len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
-		if (data->flag.min_width >= len + 2)
-			write_str(data, "0x");
+		if (data->flag.min_width >= len + 2 && !data->flag.zero)
+			write_str(data, "0x", 2);
 	}
 	else
-		write_str(data, "0x");
+		write_str(data, "0x", 2);
 }
 
 void		pf_p(t_dt *data)
@@ -52,7 +52,7 @@ void		pf_p(t_dt *data)
 	while (data->flag.precision > av.len && data->flag.precision--)
 		write_char(data, '0');
 	if (!data->flag.point || av.ui)
-		write_str(data, av.s);
+		write_str(data, av.s, (av.len) ? av.len : 1);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > len + 2 && data->flag.min_width--)
