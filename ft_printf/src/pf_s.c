@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 19:48:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/18 08:16:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,33 @@ static int		*ft_wcharlen(const int *str, int *i)
 	return (i);
 }
 
+static void		find_precision(t_dt *data, const int *str, int *len)
+{
+	int			i;
+	int			w;
+	int			precision;
+
+	i = 0;
+	precision = 0;
+	if (!str)
+		return ;
+	len[1] = 0;
+	while (*str && len[1] < data->flag.precision)
+	{
+		if (*str > 127)
+		{
+			w = *str;
+			while ((w = w >> 6))
+				precision++;
+			if (len[1] + precision > data->flag.precision)
+				return ;
+			len[1] += precision;
+		}
+		len[1]++;
+		str++;
+	}
+}
+
 static void		pf_big_s(t_dt *data)
 {
 	wchar_t		*s;
@@ -53,7 +80,7 @@ static void		pf_big_s(t_dt *data)
 		s = L"(null)";
 	ft_wcharlen(s, len);
 	if (data->flag.point && data->flag.precision < len[1])
-		len[1] = data->flag.precision;
+		find_precision(data, s, len);
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > len[1] && data->flag.min_width--)

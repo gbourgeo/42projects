@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/08/17 19:53:09 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/17 20:02:07 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -26,7 +26,8 @@ SRC = ft_printf.c		\
 	pf_x.c				\
 	pf_c.c				\
 	pf_percent.c		\
-	pf_writes.c
+	pf_writes.c			\
+	pf_wchar.c
 
 OBJ_DIR = obj/
 
