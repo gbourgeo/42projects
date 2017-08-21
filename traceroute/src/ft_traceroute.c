@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_traceroute.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:35:30 by root              #+#    #+#             */
-/*   Updated: 2017/04/18 00:13:02 by root             ###   ########.fr       */
+/*   Updated: 2017/08/21 14:37:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -63,6 +63,8 @@ int				main(int ac, char **av)
 		ft_usage();
 	if (ft_options(av))
 		exit(2);
+	if (setuid(getuid()) < 0)
+		ft_err(e.prog, NULL);
 
 	if (e.first_hop <= 0 || e.first_hop > e.max_hops)
 		ft_ex_error("first hop out of range", 0);
@@ -81,7 +83,7 @@ int				main(int ac, char **av)
 
 	ft_getaddr();
 	if (e.af == AF_INET6)
-		ft_err(e.prog, "AF_INET6 not supported");
+		ft_err(e.prog, "IP_V6 not supported");
 
 	e.headerlen = sizeof(struct iphdr);
 	ft_init[e.module]();

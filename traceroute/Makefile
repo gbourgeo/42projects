@@ -14,7 +14,7 @@ NAME = ft_traceroute
 
 SRC_D = src/
 
-SRC = main.c			\
+SRC = ft_traceroute.c	\
 	ft_atod.c			\
 	ft_err.c			\
 	ft_getaddr.c		\
@@ -33,7 +33,7 @@ OBJ = $(addprefix $(OBJ_D), $(SRC:.c=.o))
 
 LIB_D = libft
 
-LIB_H = $(LIB_D)/includes
+HEADERS = -I includes -I $(LIB_D)/includes
 
 WWW = gcc -Wall -Werror -Wextra
 
@@ -46,8 +46,8 @@ $(OBJ_D):
 $(NAME): $(OBJ)
 	$(WWW) -o $(NAME) $^ -L $(LIB_D) -lft
 
-$(OBJ_D)%.o: $(SRC_D)%.c
-	$(WWW) -o $@ -c $< -I $(LIB_H)
+$(OBJ_D)%.o: $(SRC_D)%.c includes/ft_traceroute.h
+	$(WWW) -o $@ -c $< $(HEADERS)
 
 clean:
 	make -C $(LIB_D) clean

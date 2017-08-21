@@ -6,13 +6,25 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/29 02:29:04 by root              #+#    #+#             */
-/*   Updated: 2017/04/18 00:04:56 by root             ###   ########.fr       */
+/*   Updated: 2017/08/20 14:36:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
+
+/* static void			ft_fill_outpack(void) */
+/* { */
+/* 	int				i; */
+
+/* 	i = 0; */
+/* 	while (i < e.datalen) */
+/* 	{ */
+/* 		e.outpack[i] = 0x40 + (i & 0x3f); */
+/* 		i++; */
+/* 	} */
+/* }   */
 
 static void			ft_find_socket(void)
 {
@@ -21,7 +33,7 @@ static void			ft_find_socket(void)
 	struct ip		*ip;
 	u_char			*outp;
 
-	e.sendsk = socket(e.af, SOCK_RAW, IPPROTO_RAW);
+	e.sendsk = socket(e.af, SOCK_RAW, e.protocol);
 	if (e.sendsk < 0)
 		ft_err("socket", NULL);
 	e.ident = (getpid() & 0xffff) | 0x8000;
@@ -62,8 +74,8 @@ void				ft_init_icmp(void)
 			e.datalen = e.packetlen - e.headerlen;
 	}
 	e.num_probes = e.max_hops * e.nprobes;
-	if (!(e.probes = calloc(e.num_probes, sizeof(t_probe))))
-		ft_err("malloc", NULL);
+	if ((e.probes = ft_memalloc(sizeof(t_probe) * e.num_probes)) == NULL)
+	  ft_err("malloc", NULL);
 	e.dest.sin_port = 0;
 	if (e.datalen < (int)sizeof(struct icmphdr))
 		e.datalen = sizeof(struct icmphdr);
@@ -90,8 +102,8 @@ void				ft_init_udp(void)
 			e.datalen = e.packetlen - e.headerlen;
 	}
 	e.num_probes = e.max_hops * e.nprobes;
-	if ((e.probes = calloc(e.num_probes, sizeof(t_probe))) == NULL)
-		ft_err("calloc", NULL);
+	if ((e.probes = ft_memalloc(sizeof(t_probe) * e.num_probes)) == NULL)
+	  ft_err("malloc", NULL);
 	if (!e.port)
 		e.port = (e.module == DEFAULT) ? DEF_START_PORT : DEF_UDP_PORT;
 	e.dest.sin_port = (e.module == DEFAULT) ? htons(e.port) : htons((u_int16_t)e.port);

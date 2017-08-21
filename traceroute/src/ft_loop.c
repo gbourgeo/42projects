@@ -6,11 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 16:32:47 by root              #+#    #+#             */
-/*   Updated: 2017/04/18 00:20:26 by root             ###   ########.fr       */
+/*   Updated: 2017/08/21 15:24:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <sys/time.h>
 #include <stdio.h>
 #include <errno.h>
@@ -25,23 +25,31 @@ double				ft_get_time(void)
 	return (ret);
 }
 
-static void			ft_init_select(int *maxfd, fd_set *fds)
+static int			ft_init_select(fd_set *fds)
 {
 	int				i;
+	int				maxfd;
+	t_probe			*pb;
 	
-	FD_ZERO(fds);
-	*maxfd = 0;
+	maxfd = 0;
 	i = 0;
 	while (i < e.num_probes)
 	{
-		if (e.probes[i].fd > 0 && !FD_ISSET(e.probes[i].fd, fds))
+		pb = (t_probe *)(e.probes + i * sizeof(t_probe));
+		if (pb->fd > 0)
 		{
-			FD_SET(e.probes[i].fd, fds);
-			if (e.probes[i].fd > *maxfd)
-				*maxfd = e.probes[i].fd;
+			if (!FD_ISSET(pb->fd, fds))
+			{
+				FD_SET(pb->fd, fds);
+				if (pb->fd > maxfd)
+				maxfd = pb->fd;
+			}
+			else if (pb->fd > maxfd)
+				maxfd = pb->fd;
 		}
 		i++;
 	}
+	return maxfd;
 }
 
 static void			ft_do_select(double timeout)
@@ -52,7 +60,8 @@ static void			ft_do_select(double timeout)
 	int				ret;
 	struct timeval	wait;
 
-	ft_init_select(&maxfd, &fds);
+	FD_ZERO(&fds);
+	maxfd = ft_init_select(&fds);
 	wait.tv_sec = (int)timeout;
 	wait.tv_usec = (timeout - (int)timeout) * 1000000.0;
 	while (maxfd)
@@ -65,7 +74,7 @@ static void			ft_do_select(double timeout)
 			ft_err("select", NULL);
 		}
 		ft_recv[e.module](&fds);
-		ft_init_select(&maxfd, &fds);
+		maxfd = ft_init_select(&fds);
 		wait.tv_sec = 0;
 		wait.tv_usec = 0;
 	}
@@ -92,7 +101,7 @@ void				ft_loop(void)
 	printf("%s to %s (%s), %d hops max, %d byte packets",
 		   e.prog, e.src, e.srcip, e.max_hops, e.headerlen + e.datalen);
 	fflush(stdout);
-
+	
 	while (start < end)
 	{
 		n = start - 1;
@@ -101,11 +110,11 @@ void				ft_loop(void)
 		now_time = ft_get_time();
 		while (++n < end)
 		{
-			pb = &e.probes[n];
+			pb = (t_probe *)(e.probes + n * sizeof(t_probe));
 			if (!pb->done && pb->send_time &&
 				now_time - pb->send_time >= e.wait_secs)
 			{
-				if (pb->fd)
+				if (pb->fd > 0)
 					close(pb->fd);
 				pb->fd = 0;
 				pb->seq = 0;
@@ -150,11 +159,12 @@ void				ft_loop(void)
 			if (sim >= e.sim_probes)
 				break ;
 		}
+		fflush(stdout);
 		if (next_time)
 		{
 			timeout = (next_time + e.wait_secs) - now_time;
 			if (timeout < 0)
-				timeout = 0;
+				timeout = 0.0;
 			ft_do_select(timeout);
 		}
 	}

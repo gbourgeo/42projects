@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <stdio.h>
 
 void				ft_err(char *msg, char *err_msg)

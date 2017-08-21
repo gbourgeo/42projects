@@ -6,11 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/17 23:39:21 by root              #+#    #+#             */
-/*   Updated: 2017/04/17 23:57:18 by root             ###   ########.fr       */
+/*   Updated: 2017/08/20 14:21:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <netdb.h>
 
 void				ft_getaddr(void)
@@ -22,7 +22,9 @@ void				ft_getaddr(void)
 
 	ft_memset(&hints, 0, sizeof(hints));
 	hints.ai_family = e.af;
-	hints.ai_flags = AI_ALL;
+	hints.ai_socktype = SOCK_DGRAM;
+	hints.ai_protocol = 0;
+	hints.ai_flags = AI_ADDRCONFIG;
 	if ((ret = getaddrinfo(e.src, NULL, &hints, &res)))
 		ft_err(e.src, (char *)gai_strerror(ret));
 	tmp = res;
@@ -40,5 +42,6 @@ void				ft_getaddr(void)
 	ft_memcpy(&e.dest, tmp->ai_addr, tmp->ai_addrlen);
 	getnameinfo((struct sockaddr *)&e.dest, sizeof(e.dest),
 			e.srcip, sizeof(e.srcip), 0, 0, NI_NUMERICHOST);
+	ft_memcpy(&e.res, tmp, sizeof(e.res));
 	freeaddrinfo(res);
 }

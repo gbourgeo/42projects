@@ -6,11 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/19 01:13:01 by root              #+#    #+#             */
-/*   Updated: 2016/09/27 14:36:38 by root             ###   ########.fr       */
+/*   Updated: 2017/08/21 13:59:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <netinet/ip_icmp.h>
 #include <stdio.h>
 
@@ -95,10 +95,6 @@ void				ft_parse(t_probe *pb, int cc)
 	code = icp->icmp_code;
 	info = (code != ICMP_UNREACH_NEEDFRAG) ? 0 : ntohs(icp->icmp_nextmtu);
 
-	/* printf("0: %d:%d, %d-%d %d-%d _ ", type, ICMP_ECHOREPLY, */
-	/* 		   ((struct icmp *)icp)->icmp_id, htons(e.ident), */
-	/* 		   ((struct icmp *)icp)->icmp_seq, htons(pb->seq)); */
-
 	if (type == ICMP_ECHOREPLY &&
 		e.protocol == IPPROTO_ICMP &&
 		ft_check[e.module]((u_char *)icp, pb))
@@ -106,11 +102,6 @@ void				ft_parse(t_probe *pb, int cc)
 		pb->final = 1;
 		return ;
 	}
-
-	/* printf("1: %d %d %d, %d %d, %d %d\n", */
-	/* 	   type, ICMP_TIMXCEED, ICMP_UNREACH, */
-	/* 	   code, ICMP_TIMXCEED_INTRANS, */
-	/* 	   ip->ip_ttl, pb->seq); */
 
 	if ((type == ICMP_TIMXCEED && code == ICMP_TIMXCEED_INTRANS) ||
 		type == ICMP_UNREACH)
@@ -121,12 +112,6 @@ void				ft_parse(t_probe *pb, int cc)
 		hip = &icp->icmp_ip;
 		hlen = hip->ip_hl << 2;
 		inner = (u_char *)((u_char *)hip + hlen);
-
-		/* printf("2: %d <= %d, ", hlen + 12, cc); */
-		/* printf("%d %d, %d %d, %d %d\n", */
-		/* 	   ((struct icmp *)inner)->icmp_id, htons(e.ident), */
-		/* 	   ((struct icmp *)inner)->icmp_cksum, 0xffff, */
-		/* 	   ((struct icmp *)inner)->icmp_seq, htons(pb->seq)); */
 
 		if (hlen + 12 <= cc &&
 			hip->ip_p == e.protocol &&

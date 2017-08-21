@@ -6,11 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 00:35:46 by root              #+#    #+#             */
-/*   Updated: 2016/09/28 21:47:03 by root             ###   ########.fr       */
+/*   Updated: 2017/08/21 15:23:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <errno.h>
 #include <netinet/ip_icmp.h>
 
@@ -45,8 +45,8 @@ static u_short			in_cksum(register u_short *addr, register int len)
 static u_short			p_cksum(struct ip *ip, u_short *data, int len)
 {
 	struct ipovly		ipo;
-	u_short			sumh, sumd;
-	u_long			sumt;
+	u_short				sumh, sumd;
+	u_long				sumt;
 
 	ipo.ih_pr = ip->ip_p;
 	ipo.ih_len = htons(len);
@@ -60,9 +60,10 @@ static u_short			p_cksum(struct ip *ip, u_short *data, int len)
 
 static int			ft_do_send(int fd)
 {
-	int			i;
+	int				i;
 
-	i = sendto(fd, (char *)e.outpack, e.datalen, 0, (struct sockaddr *)&e.dest, sizeof(e.dest));
+	i = sendto(fd, (char *)e.outpack, e.datalen, 0,
+				(struct sockaddr *)&e.dest, sizeof(e.dest));
 	if (i < 0)
 	{
 		if (errno == ENOBUFS || errno == EAGAIN)
@@ -77,7 +78,7 @@ static int			ft_do_send(int fd)
 void				ft_send_icmp(t_probe *pb, int ttl)
 {
 	static int		seq = 0;
-	int			fd;
+	int				fd;
 	struct ip		*ip;
 	struct icmp		*icmp;
 

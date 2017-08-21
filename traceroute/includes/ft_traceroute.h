@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.h                                             :+:      :+:    :+:   */
+/*   ft_traceroute.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:42:00 by root              #+#    #+#             */
-/*   Updated: 2017/04/17 22:23:40 by root             ###   ########.fr       */
+/*   Updated: 2017/08/21 15:23:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 # include "libft.h"
 # include <netinet/ip.h>
 # include <linux/udp.h>
-
+# include <netdb.h>
+#include <stdio.h>
 # define DEF_DATALEN	40
 # define MAX_DATALEN	65000
 # define MIN_DATALEN	28
@@ -27,7 +28,7 @@
 # define DEF_PROBES		3
 # define MAX_PROBES		10
 # define DEF_SIM_PROBES	16
-# define DEF_SEND_SECS	0.0001
+# define DEF_SEND_SECS	0.0100
 # define DEF_START_PORT	33434
 # define DEF_UDP_PORT	53
 # define DEF_SOCKTYPE	SOCK_DGRAM
@@ -76,12 +77,13 @@ typedef struct			s_env
 	double				wait_secs;
 	size_t				port;
 	int					ident;
+	struct addrinfo		res;
 	struct sockaddr_in	source;
 	struct sockaddr_in	dest;
 	char				local;
 	char				srcname[INET6_ADDRSTRLEN];
 	char				srcip[INET6_ADDRSTRLEN];
-	t_probe				*probes;
+	void				*probes;
 	u_char				*outpack;
 	int					sendsk;
 	u_char				inpack[1280];
@@ -96,20 +98,15 @@ void					ft_getaddr(void);
 double					ft_atod(char *str);
 void					ft_init_udp(void);
 void					ft_init_icmp(void);
-void					ft_init_tcp(void);
 void					ft_loop(void);
 void					ft_send_udp(t_probe *pb, int ttl);
 void					ft_send_icmp(t_probe *pb, int ttl);
 void					ft_recv_udp(fd_set *fds);
 void					ft_recv_icmp(fd_set *fds);
-void					ft_recv_udp6(fd_set *fds);
-void					ft_recv_icmp6(fd_set *fds);
 void					ft_err(char *msg, char *err_msg);
 void					ft_parse(t_probe *pb, int cc);
 void					ft_reply_err(t_probe *pb, int type, int code, int info);
-void					ft_reply_err6(t_probe *pb, int type, int code, int info);
 double					ft_get_time(void);
 void					ft_print_probe(t_probe *pb);
-void					ft_print_probe6(t_probe *pb);
 
 #endif

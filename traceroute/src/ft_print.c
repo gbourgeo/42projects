@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.h"
+#include "ft_traceroute.h"
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -50,7 +50,7 @@ void				ft_print_probe(t_probe *pb)
 	int				prn;
 	t_probe			*p;
 
-	idx = pb - e.probes;
+	idx = pb - (t_probe *)e.probes;
 	ttl = idx / e.nprobes + 1;
 	np = idx % e.nprobes;
 	if (np == 0)
