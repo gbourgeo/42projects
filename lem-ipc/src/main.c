@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/28 17:33:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 00:04:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int					main(int ac, char **av, char **env)
 	printf("e.key: %d\n", e.key);
 	e.size = MAP_WIDTH * MAP_HEIGTH + sizeof(*e.data);
 	e.shmid = shmget(e.key, e.size, SHM_R | SHM_W);
+	e.locked = 0;
 	if (e.shmid < 0)
 		ft_create_game();
 	else

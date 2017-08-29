@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/28 17:39:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/29 23:56:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,28 +103,4 @@ void			ft_wait_players(void)
 	i = ft_nb_players(e.data->connected);
 	if ((e.players = malloc(sizeof(*e.players) * i)) == NULL)
 		ft_quit("malloc");
-}
-
-void			print_map(void)
-{
-	int			i;
-	int			j;
-	char		c;
-
-	i = 0;
-	ft_termdo("rc");
-	ft_termdo("cd");
-	while (i < MAP_HEIGTH)
-	{
-		j = 0;
-		while (j < MAP_WIDTH)
-		{
-			c = *(e.map + (i * MAP_WIDTH + j));
-			c = (c == -1) ? '.' : c + '0';
-			write(1, &c, 1);
-			j++;
-		}
-		write(1, "\n", 1);
-		i++;
-	}
 }

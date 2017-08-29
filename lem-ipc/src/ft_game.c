@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/28 17:39:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 00:11:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ static void		check_who_wins(int *players)
 	ptr = players;
 	while (ptr - players < MAX_TEAMS)
 		nb_teams += (*ptr++ > 0) ? 1 : 0;
+	ft_putnbr(nb_teams);
 	if (nb_teams == 1)
 	{
 		ptr = players;
@@ -72,14 +73,18 @@ void			ft_launch_game(void)
 	char		*winner;
 
 	winner = NULL;
-	while (1)
+	ft_termdo("rc");
+	ft_termdo("cd");
+	ft_putendl("\033[1;32mGAME IN PROGRESS...\033[00m");
+	ft_termdo("sc");
+	while (e.data->end == -1)
 	{
-/* 		if (e.creator) */
-/* 			print_map(); */
+		if (e.creator)
+			print_map();
 		ft_lock();
-		if (e.data->end != -1 || ft_check_if_surrounded(e.team) > 1)
+		if (ft_check_if_surrounded(e.team) > 1)
 			break ;
-//		ft_strategy();
+/* 		ft_strategy(); */
 		check_who_wins(e.data->connected);
 		ft_unlock();
 		sleep(1);

@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2017/08/28 01:20:26 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/29 23:55:38 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -26,7 +26,8 @@ SRC = main.c 				\
 		ft_strategy.c 		\
 		ft_termcaps.c 		\
 		ft_wait_players.c	\
-		ft_nb_players.c
+		ft_nb_players.c		\
+		ft_print_map.c
 
 OBJ_D = obj/
 

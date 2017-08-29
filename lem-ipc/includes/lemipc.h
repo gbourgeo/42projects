@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/28 01:20:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/29 23:34:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ typedef struct		s_env
 	char			*map;
 	int				semid;
 	int				msgqid;
+	int				locked;
 	int				x;
 	int				y;
 	t_player		*players;
