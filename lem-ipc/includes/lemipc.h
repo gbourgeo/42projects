@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/19 21:46:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/28 01:20:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,11 @@
 # include <sys/shm.h>
 # include <term.h>
 
-# define WIDTH			10
-# define HEIGTH			10
-# define MIN_PLAYERS	2
-# define TEAM_1			e.data->connected[0]
-# define TEAM_2			e.data->connected[1]
-# define TEAMS_SUMM		(TEAM_1 + TEAM_2)
+# define MAP_WIDTH		10
+# define MAP_HEIGTH		10
+# define MAX_TEAMS		10
+# define MIN_PPT		1
+# define MIN_TEAMS		2
 
 /*
 ** Don't change the order of the members in the s_data structure
@@ -30,12 +29,13 @@
 typedef struct		s_data
 {
 	int				end;
-	int				connected[2];
+	int				connected[MAX_TEAMS];
 	int				game_in_process;
 }					t_data;
 
 typedef struct		s_player
 {
+	int				team;
 	int				x;
 	int				y;
 	int				dist;
@@ -68,12 +68,10 @@ typedef struct		s_env
 	int				msgqid;
 	int				x;
 	int				y;
-	t_player		*ally;
-	t_player		*ennemy;
-	int				players[2];
+	t_player		*players;
 	t_msgbuf		snd;
 	t_msgbuf		rcv;
-	t_player		target;
+	t_player		*target;
 	int				dir;
 }					t_env;
 
@@ -98,5 +96,6 @@ void				ft_sendmsg(void);
 int					ft_rcvmsg(void);
 char				*ft_getenv(char *str, char **env);
 void				ft_move_to_target(void);
+int					ft_nb_players(int *players);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/14 23:13:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/28 01:48:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,16 @@ void		ft_exit_server(int print_err, char *err)
 			perror("shmctl");
 	}
 	ft_restore_term();
+	if (e.players != (void *)-1)
+		free(e.players);
 	ft_bzero(&e, sizeof(e));
 	exit(1);
 }
 
 void		ft_exit_client(int print_err, char *err)
 {
+	if (e.data != (void *)-1)
+		e.data->connected[e.team] -= 1;
 	fprintf(stderr, "%s: ", e.prog);
 	if (print_err)
 		perror(err);
@@ -52,6 +56,8 @@ void		ft_exit_client(int print_err, char *err)
 	if (e.data != (void *)-1 && shmdt(e.data) == -1)
 		perror("shmdt");
 	ft_restore_term();
+	if (e.players != (void *)-1)
+		free(e.players);
 	ft_bzero(&e, sizeof(e));
 	exit(1);
 }

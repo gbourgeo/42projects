@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/14 23:23:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/28 17:38:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,9 @@ static void	catch_sig(int sig)
 	printf("\n");
 	if (e.data != (void *)-1)
 	{
-		*((int *)e.data + e.team) -= 1;
 		if (e.map != (void *)-1 && e.x >= 0 && e.y >= 0)
-			*(e.map + e.x + e.y * WIDTH) = 0;
-		if (TEAMS_SUMM > 0)
+			*(e.map + e.x + e.y * MAP_WIDTH) = -1;
+		if (ft_nb_players(e.data->connected) > 1)
 			ft_exit_client(0, err);
 		ft_exit_server(0, err);
 	}

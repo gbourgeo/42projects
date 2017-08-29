@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2017/04/19 21:01:46 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/08/28 01:20:26 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -26,6 +26,7 @@ SRC = main.c 				\
 		ft_strategy.c 		\
 		ft_termcaps.c 		\
 		ft_wait_players.c	\
+		ft_nb_players.c
 
 OBJ_D = obj/
 
@@ -33,7 +34,7 @@ OBJ = $(addprefix $(OBJ_D), $(SRC:.c=.o))
 
 LIBFT = libft/
 
-LIBFTH = $(LIBFT)includes
+HEADERS = -I includes -I $(LIBFT)includes
 
 WWW = gcc -Wall -Werror -Wextra
 
@@ -46,8 +47,8 @@ preall:
 $(NAME): $(OBJ)
 	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses
 
-$(OBJ_D)%.o: $(SRC_D)%.c $(SRC_D)lemipc.h
-	$(WWW) -o $@ -c $< -I $(LIBFTH)
+$(OBJ_D)%.o: $(SRC_D)%.c includes/lemipc.h
+	$(WWW) -o $@ -c $< $(HEADERS)
 
 clean:
 	make -C $(LIBFT) clean

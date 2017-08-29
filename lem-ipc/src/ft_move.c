@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/19 22:27:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/28 01:56:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,81 +18,75 @@ static int	can_i_move(void)
 	int		pos;
 
 	pos = 4;
-	if (e.x == 0 || e.x == WIDTH - 1)
+	if (e.x == 0 || e.x == MAP_WIDTH - 1)
 		pos--;
-	if (e.y == 0 || e.y == HEIGTH - 1)
+	if (e.y == 0 || e.y == MAP_HEIGTH - 1)
 		pos--;
-	if (e.y > 0 && *(e.map + e.x + (e.y - 1) * WIDTH) != 0)
+	if (e.y > 0 && *(e.map + e.x + (e.y - 1) * MAP_WIDTH) != -1)
 		pos--;
-	if (e.x < WIDTH - 1 && *(e.map + (e.x + 1) + e.y * WIDTH) != 0)
+	if (e.x < MAP_WIDTH - 1 && *(e.map + (e.x + 1) + e.y * MAP_WIDTH) != -1)
 		pos --;
-	if (e.y < HEIGTH - 1 && *(e.map + e.x + (e.y + 1) * WIDTH) != 0)
+	if (e.y < MAP_HEIGTH - 1 && *(e.map + e.x + (e.y + 1) * MAP_WIDTH) != -1)
 		pos--;
-	if (e.x > 0 && *(e.map + (e.x - 1) + e.y * WIDTH) != 0)
+	if (e.x > 0 && *(e.map + (e.x - 1) + e.y * MAP_WIDTH) != -1)
 		pos--;
 	return (pos);
 }
 
 static void	move(int x, int y)
 {
-	*(e.map + e.x + e.y * WIDTH) = 0;
+	*(e.map + e.x + e.y * MAP_WIDTH) = -1;
 	e.x = x;
 	e.y = y;
-	*(e.map + e.x + e.y * WIDTH) = e.team;
+	*(e.map + e.x + e.y * MAP_WIDTH) = e.team;
 }
 
-static int	move_vert(void)
+static void	move_vert(void)
 {
-	if (e.y < e.target.y &&
-		*(e.map + e.x + (e.y + 1) * WIDTH) == 0)
+	if (e.y < e.target->y &&
+		*(e.map + e.x + (e.y + 1) * MAP_WIDTH) == -1)
 		return (move(e.x, e.y + 1));
-	if (e.y > e.target.y &&
-		*(e.map + e.x + (e.y - 1) * WIDTH) == 0)
+	if (e.y > e.target->y &&
+		*(e.map + e.x + (e.y - 1) * MAP_WIDTH) == -1)
 		return (move(e.x, e.y - 1));
-	return (0);
 }
 
-static int	move_horiz(void)
+static void	move_horiz(void)
 {
-	if (e.x == e.target.x) //Move verticaly
+	if (e.x == e.target->x) //Move verticaly
 		return (move_vert());
 	
-	return (0);
 }
 
 static void	ft_move(void)
 {
-	if (e.dir == 0) //Move horizontaly
+	if (e.dir == -1) //Move horizontaly
 	{
-		if (e.x == e.target.x)
+		if (e.x == e.target->x)
 			move_vert();
 		else
 			move_horiz();
-		if (e.x <= e.target.x && e.x < WIDTH - 1 &&
-			*(e.map + (e.x + 1) + e.y * WIDTH) == 0)
+		if (e.x <= e.target->x && e.x < MAP_WIDTH - 1 &&
+			*(e.map + (e.x + 1) + e.y * MAP_WIDTH) == -1)
 			return (move(e.x + 1, e.y));
-		if (e.x >= e.target.x && e.x > 0 &&
-			*(e.map + (e.x - 1) + e.y * WIDTH) == 0)
+		if (e.x >= e.target->x && e.x > 0 &&
+			*(e.map + (e.x - 1) + e.y * MAP_WIDTH) == -1)
 			return (move(e.x - 1, e.y));
-		if (e.y <= e.target.y && e.y < HEIGTH - 1 &&
-			*(e.map + e.x + (e.y + 1) * WIDTH) == 0)
+		if (e.y <= e.target->y && e.y < MAP_HEIGTH - 1 &&
+			*(e.map + e.x + (e.y + 1) * MAP_WIDTH) == -1)
 			return (move(e.x, e.y + 1));
-		if (e.y >= e.target.y && e.y > 0 &&
-			*(e.map + e.x + (e.y - 1) * WIDTH) == 0)
+		if (e.y >= e.target->y && e.y > 0 &&
+			*(e.map + e.x + (e.y - 1) * MAP_WIDTH) == -1)
 			return (move(e.x, e.y - 1));
 	}
-	else //Move vertically
+//	else //Move vertically
 }
 
 void		ft_move_to_target(void)
 {
-	e.target.dist = (e.x > e.target.x) ? e.x - e.target.x : e.target.x - e.x;
-	e.target.dist += (e.y > e.target.y) ? e.y - e.target.y : e.target.y - e.y;
-	printf("dist:%d ", e.target.dist);
-//	e.target.dist -= 2;
-	printf("dist:%d\n", e.target.dist);
+	printf("dist:%d\n", e.target->dist);
 	if (!can_i_move())
 		printf("I CANT MOVE !\n");
-	else if (e.target.dist > 0)
+	else if (e.target->dist > 0)
 		ft_move();
 }

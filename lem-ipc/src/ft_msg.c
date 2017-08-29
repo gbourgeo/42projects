@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/19 21:21:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/28 01:57:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ void				ft_sendmsg(void)
 	e.snd.mtype = e.team;
 	e.snd.msg.ally.x = e.x;
 	e.snd.msg.ally.y = e.y;
-	ft_memcpy(&e.snd.msg.ennemy, &e.target, sizeof(e.snd.msg.ennemy));
+	ft_memcpy(&e.snd.msg.ennemy, e.target, sizeof(e.snd.msg.ennemy));
 	if (msgsnd(e.msgqid, &e.snd, sizeof(e.snd.msg), IPC_NOWAIT) == -1)
 		ft_exit_client(1, "msgsnd");
 }
 
-int				ft_rcvmsg(void)
+int					ft_rcvmsg(void)
 {
 	int				size;
 

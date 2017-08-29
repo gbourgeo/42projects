@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/14 23:21:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/28 17:33:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,18 @@ int					main(int ac, char **av, char **env)
 	e.prog = (e.prog == NULL) ? av[0] : e.prog + 1;
 	if (ac != 2)
 		ft_usage();
+	if (!ft_isdigit(av[1][0]))
+		ft_exit(0, "Error: Team number must be a digit.");
 	ft_termcaps(env);
 	ft_signal();
-	e.team = ft_atoi(av[1]);
-	if (e.team != 1 && e.team != 2)
-		ft_exit(0, "Error: Team number must be 1 or 2");
+	e.team = (size_t)ft_atoi(av[1]);
+	if (e.team >= MAX_TEAMS)
+		ft_exit(0, "Error: Team number must less than MAX_TEAM");
 	e.key = ftok(e.prog, 'G');
 	if (e.key == -1)
 		ft_exit(1, "ftok");
 	printf("e.key: %d\n", e.key);
-	e.size = WIDTH * HEIGTH + sizeof(*e.data);
+	e.size = MAP_WIDTH * MAP_HEIGTH + sizeof(*e.data);
 	e.shmid = shmget(e.key, e.size, SHM_R | SHM_W);
 	if (e.shmid < 0)
 		ft_create_game();
