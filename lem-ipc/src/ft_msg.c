@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/28 01:57:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:48:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "libft.h"
 #include <sys/msg.h>
 #include <errno.h>
-#include <stdio.h>
 
 void				ft_sendmsg(void)
 {

@@ -6,10 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/29 23:56:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:18:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "lemipc.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,7 @@ static void		ft_place_player(void)
 		*(e.map + e.x + e.y * MAP_HEIGTH) = e.team;
 		break ;
 	}
-	printf("x:%d, y:%d\n", e.x + 1, e.y + 1);
+	printf("x:%d y:%d\n", e.x + 1, e.y + 1);
 	printf("Your team is %d\n", e.team);
 	ft_termdo("sc");
 }
@@ -53,7 +54,7 @@ int				ft_check_minimum_players(int *table)
 		tot += *ptr++;
 	if (tot < MIN_PPT * MIN_TEAMS)
 		printf("\033[32mWAITING FOR PLAYERS... (%ld needed)\033[0m\n",
-			   MIN_PPT * MIN_TEAMS - tot);
+				MIN_PPT * MIN_TEAMS - tot);
 	return (tot >= MIN_PPT * MIN_TEAMS);
 }
 
@@ -84,17 +85,15 @@ void			ft_wait_players(void)
 	int			i;
 
 	srand(time(NULL));
+	ft_lock(e.semid);
+	e.data->connected[e.team] += 1;
 	ft_place_player();
-	ft_unlock();
+	ft_unlock(e.semid);
 	while (!ft_check_minimum_players(e.data->connected) ||
 			!ft_check_even_teams(e.data->connected))
 	{
 		if (e.creator)
 			print_map();
-		i = 0;
-		while (i++ < MAX_TEAMS)
-			printf("%d:%d ", i - 1, e.data->connected[i - 1]);
-		printf("\n");
 		sleep(1);
 		ft_termdo("rc");
 		ft_termdo("cd");
@@ -103,4 +102,8 @@ void			ft_wait_players(void)
 	i = ft_nb_players(e.data->connected);
 	if ((e.players = malloc(sizeof(*e.players) * i)) == NULL)
 		ft_quit("malloc");
+	ft_termdo("rc");
+	ft_termdo("cd");
+	ft_putendl("\033[1;32mGAME IN PROGRESS...\033[00m");
+	ft_termdo("sc");
 }

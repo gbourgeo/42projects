@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 00:20:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:02:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,10 @@ void		ft_exit_server(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	ft_putnbr(e.msgqid);ft_putchar('\n');
 	if (e.msgqid != -1 && msgctl(e.msgqid, IPC_RMID, NULL))
 		perror("msgctl");
-	ft_putnbr(e.semid);ft_putchar('\n');
 	if (e.semid != -1 && semctl(e.semid, 0, IPC_RMID))
 		perror("semctl");
-	ft_putnbr(e.shmid);ft_putchar('\n');
 	if (e.shmid != -1)
 	{
 		if (e.data != (void *)-1 && shmdt(e.data))
@@ -48,15 +45,11 @@ void		ft_exit_server(int print_err, char *err)
 
 void		ft_exit_client(int print_err, char *err)
 {
-	if (e.data != (void *)-1)
-		e.data->connected[e.team] -= 1;
 	fprintf(stderr, "%s: ", e.prog);
 	if (print_err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	if (e.locked)
-		ft_unlock();
 	if (e.data != (void *)-1 && shmdt(e.data) == -1)
 		perror("shmdt");
 	ft_restore_term();
@@ -76,4 +69,29 @@ void		ft_exit(int print_err, char *err)
 	ft_restore_term();
 	ft_bzero(&e, sizeof(e));
 	exit(1);
+}
+
+void		ft_free_exit(void)
+{
+	if (ft_nb_players(e.data->connected) == 0)
+	{
+		if (e.msgqid != -1 && msgctl(e.msgqid, IPC_RMID, NULL))
+			perror("msgctl");
+		if (e.semid != -1 && semctl(e.semid, 0, IPC_RMID))
+			perror("semctl");
+		if (e.shmid != -1)
+		{
+			if (e.data != (void *)-1 && shmdt(e.data))
+				perror("shmdt");
+			if (shmctl(e.shmid, IPC_RMID, NULL))
+				perror("shmctl");
+		}
+	}
+	else if (e.data != (void *)-1 && shmdt(e.data) == -1)
+		perror("shmdt");
+	ft_restore_term();
+	if (e.players != (void *)-1)
+		free(e.players);
+	ft_bzero(&e, sizeof(e));
+	exit(0);
 }

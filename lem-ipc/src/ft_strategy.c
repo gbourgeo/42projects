@@ -6,13 +6,23 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/28 02:26:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:51:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
 #include "libft.h"
 #include <stdio.h>
+
+static void		print_info(t_player *player, char *str)
+{
+	printf("%s: Team:%d x:%d y:%d dist:%d\n",
+		   str,
+		   player->team,
+		   player->x + 1,
+		   player->y + 1,
+		   player->dist);
+}
 
 static void		ft_get_players_position(void)
 {
@@ -35,14 +45,7 @@ static void		ft_get_players_position(void)
 				e.x - e.players[p].x : e.players[p].x - e.x;
 			e.players[p].dist += (e.y > e.players[p].y) ?
 				e.y - e.players[p].y : e.players[p].y - e.y;
-			e.players[p].dist -= 2;
-
-			printf("Team:%d x:%d y:%d dist:%d\n",
-				   e.players[p].team,
-				   e.players[p].x + 1,
-				   e.players[p].y + 1,
-				   e.players[p].dist);
-
+			print_info(&e.players[p], "");
 			if (e.team != e.players[p].team &&
 				(e.target == NULL || e.players[p].dist < e.target->dist))
 				e.target = &e.players[p];
@@ -50,35 +53,11 @@ static void		ft_get_players_position(void)
 		}
 		i++;
 	}
-	printf("Target: Team%d x:%d y:%d dist:%d\n",
-		   e.target->team,
-		   e.target->x + 1,
-		   e.target->y + 1,
-		   e.target->dist);
-}
-
-static void		ft_get_target(void)
-{
-	int			i;
-
-	i = ft_nb_players(e.data->connected) * sizeof(*e.players);
-	e.target = NULL;
-	while (i > 0 && e.target == NULL)
-	{
-		i -= sizeof(*e.players);
-		if (e.rcv.msg.ennemy.x == e.players[i].x &&
-			e.rcv.msg.ennemy.y == e.players[i].y)
-			e.target = &e.players[i];
-	}
+	print_info(e.target, "Target");
 }
 
 void			ft_strategy(void)
 {
-	if (!e.creator)
-	{
-		ft_termdo("rc");
-		ft_termdo("do");
-	}
 	ft_get_players_position();
 	if (ft_rcvmsg())
 	{
@@ -87,7 +66,7 @@ void			ft_strategy(void)
 	}
 	else
 	{
-		ft_get_target();
+		e.target = &e.rcv.msg.ennemy;
 		printf("I changed Target x:%d y:%d ", e.target->x + 1, e.target->y + 1);
 	}
 	ft_move_to_target();

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/14 23:17:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:03:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void				ft_termcaps(char **env)
 	if (tcsetattr(0, TCSADRAIN, &term) == -1)
 		ft_exit(1, "termcaps: tcsetattr()");
 	ft_termdo("cl");
-	printf("Initialized TERMCAPS...\n");
+	ft_putendl("Initialized TERMCAPS...");
 }
 
 void				ft_restore_term(void)

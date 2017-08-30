@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 00:11:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:23:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
-static int		ft_check_if_surrounded(int team)
+static int		ft_check_if_surrounded(int team, int surr, int c)
 {
-	int			c;
-	int			surr;
-
-	surr = 0;
 	c = *(e.map + (e.x - 1) + ((e.y - 1) * MAP_WIDTH));
 	if (e.x > 0 && e.y > 0 && c != -1 && c != team)
 		surr++;
@@ -31,7 +27,7 @@ static int		ft_check_if_surrounded(int team)
 	if (e.x < MAP_WIDTH - 1 && e.y > 0 && c != -1 && c != team)
 		surr++;
 	c = *(e.map + (e.x + 1) + (e.y * MAP_WIDTH));
-	if (e.x < MAP_WIDTH - 1 && c != -1 && c !=team)
+	if (e.x < MAP_WIDTH - 1 && c != -1 && c != team)
 		surr++;
 	c = *(e.map + (e.x + 1) + ((e.y + 1) * MAP_WIDTH));
 	if (e.x < MAP_WIDTH - 1 && e.y < MAP_HEIGTH - 1 && c != -1 && c != team)
@@ -45,7 +41,6 @@ static int		ft_check_if_surrounded(int team)
 	c = *(e.map + (e.x - 1) + e.y * MAP_WIDTH);
 	if (e.x > 0 && c != -1 && c != team)
 		surr++;
-	printf((surr < 2 ? "" : "I'm surrouded. Aaaaargh !\n"));
 	return (surr);
 }
 
@@ -57,12 +52,11 @@ static void		check_who_wins(int *players)
 	nb_teams = 0;
 	ptr = players;
 	while (ptr - players < MAX_TEAMS)
-		nb_teams += (*ptr++ > 0) ? 1 : 0;
-	ft_putnbr(nb_teams);
+		nb_teams += (*ptr++ > 1) ? 1 : 0;
 	if (nb_teams == 1)
 	{
 		ptr = players;
-		while (ptr - players < MAX_TEAMS && *ptr == 0)
+		while (ptr - players < MAX_TEAMS && *ptr < 2)
 			ptr++;
 		e.data->end = ptr - players;
 	}
@@ -70,28 +64,23 @@ static void		check_who_wins(int *players)
 
 void			ft_launch_game(void)
 {
-	char		*winner;
-
-	winner = NULL;
-	ft_termdo("rc");
-	ft_termdo("cd");
-	ft_putendl("\033[1;32mGAME IN PROGRESS...\033[00m");
-	ft_termdo("sc");
 	while (e.data->end == -1)
 	{
 		if (e.creator)
 			print_map();
-		ft_lock();
-		if (ft_check_if_surrounded(e.team) > 1)
+		if (ft_check_if_surrounded(e.team, 0, 0) > 1)
 			break ;
-/* 		ft_strategy(); */
+		ft_lock(e.semid);
+		ft_strategy();
+		ft_unlock(e.semid);
 		check_who_wins(e.data->connected);
-		ft_unlock();
 		sleep(1);
 	}
 	*(e.map + e.x + e.y * MAP_WIDTH) = -1;
-	winner = (e.data->end == (int)e.team) ? "You Won !" : "You Looses...";
-	if (ft_nb_players(e.data->connected) > 1)
-		ft_exit_client(0, winner);
-	ft_exit_server(0, winner);
+	e.data->connected[e.team] -= 1;
+	while (e.data->end == -1 && e.creator)
+		print_map();
+	if (e.data->end != -1 && e.creator)
+		printf("Team %d has won the game !!!\n", e.data->end);
+	ft_free_exit();
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/29 23:34:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 21:25:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # define MAP_WIDTH		10
 # define MAP_HEIGTH		10
 # define MAX_TEAMS		10
-# define MIN_PPT		1
+# define MIN_PPT		2
 # define MIN_TEAMS		2
 
 /*
@@ -66,14 +66,12 @@ typedef struct		s_env
 	char			*map;
 	int				semid;
 	int				msgqid;
-	int				locked;
 	int				x;
 	int				y;
 	t_player		*players;
 	t_msgbuf		snd;
 	t_msgbuf		rcv;
 	t_player		*target;
-	int				dir;
 }					t_env;
 
 struct s_env		e;
@@ -85,10 +83,11 @@ void				ft_signal(void);
 void				ft_exit_server(int print_err, char *err);
 void				ft_exit_client(int print_err, char *err);
 void				ft_exit(int print_err, char *err);
+void				ft_free_exit(void);
 void				ft_create_game(void);
 void				ft_join_game(void);
-void				ft_lock(void);
-void				ft_unlock(void);
+void				ft_lock(int semid);
+void				ft_unlock(int semid);
 void				ft_wait_players(void);
 void				ft_launch_game(void);
 void				ft_strategy(void);
@@ -98,5 +97,7 @@ int					ft_rcvmsg(void);
 char				*ft_getenv(char *str, char **env);
 void				ft_move_to_target(void);
 int					ft_nb_players(int *players);
+void				move_horizontaly(int times);
+void				move_verticaly(int times);
 
 #endif

@@ -6,12 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/29 23:55:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/08/30 18:55:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
 #include <unistd.h>
+#include <stdio.h>
 
 void			print_map(void)
 {
@@ -35,4 +36,8 @@ void			print_map(void)
 		write(1, "\n", 1);
 		i++;
 	}
+	i = 0;
+	while (i++ < MAX_TEAMS)
+		printf("%d:%d ", i - 1, e.data->connected[i - 1]);
+	printf("\n");
 }
