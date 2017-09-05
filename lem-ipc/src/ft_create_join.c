@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:21:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/05 21:32:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,6 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <sys/msg.h>
-
-static void			print_info(void)
-{
-	printf("msgqid: %d\n", e.msgqid);
-	printf("semid: %d\n", e.semid);
-	printf("shmid: %d\n", e.shmid);
-}
 
 void				ft_create_game(void)
 {
@@ -51,7 +44,8 @@ void				ft_create_game(void)
 	if (msgctl(e.msgqid, IPC_STAT, &buf) < 0)
 		ft_exit_server(1, "msgctl IPC_STAT");
 	e.creator = 1;
-	print_info();
+	exec_print();
+	ft_signal(catch_sig);
 }
 
 void				ft_join_game(void)
@@ -71,4 +65,5 @@ void				ft_join_game(void)
 	if (e.msgqid < 0)
 		ft_exit_client(1, "msgget");
 	e.creator = 0;
+	ft_signal(catch_sig);
 }

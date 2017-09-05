@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:51:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/05 21:23:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 #include "libft.h"
 #include <stdio.h>
 
-static void		print_info(t_player *player, char *str)
-{
-	printf("%s: Team:%d x:%d y:%d dist:%d\n",
-		   str,
-		   player->team,
-		   player->x + 1,
-		   player->y + 1,
-		   player->dist);
-}
+/* static void		print_info(t_player *player, char *str) */
+/* { */
+/* 	printf("%s: Team:%d x:%d y:%d dist:%d\n", */
+/* 		   str, */
+/* 		   player->team, */
+/* 		   player->x + 1, */
+/* 		   player->y + 1, */
+/* 		   player->dist); */
+/* } */
 
 static void		ft_get_players_position(void)
 {
@@ -45,7 +45,7 @@ static void		ft_get_players_position(void)
 				e.x - e.players[p].x : e.players[p].x - e.x;
 			e.players[p].dist += (e.y > e.players[p].y) ?
 				e.y - e.players[p].y : e.players[p].y - e.y;
-			print_info(&e.players[p], "");
+//			print_info(&e.players[p], "");
 			if (e.team != e.players[p].team &&
 				(e.target == NULL || e.players[p].dist < e.target->dist))
 				e.target = &e.players[p];
@@ -53,21 +53,13 @@ static void		ft_get_players_position(void)
 		}
 		i++;
 	}
-	print_info(e.target, "Target");
+//	print_info(e.target, "Target");
 }
 
 void			ft_strategy(void)
 {
 	ft_get_players_position();
-	if (ft_rcvmsg())
-	{
-		printf("Target confirmed !!!!\n");
-		ft_sendmsg();
-	}
-	else
-	{
-		e.target = &e.rcv.msg.ennemy;
-		printf("I changed Target x:%d y:%d ", e.target->x + 1, e.target->y + 1);
-	}
+	ft_rcvmsg();
 	ft_move_to_target();
+	ft_sendmsg();
 }

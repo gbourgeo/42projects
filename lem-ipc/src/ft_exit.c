@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:02:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/05 18:38:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,9 @@ void		ft_exit_server(int print_err, char *err)
 		if (shmctl(e.shmid, IPC_RMID, NULL))
 			perror("shmctl");
 	}
-	ft_restore_term();
 	if (e.players != (void *)-1)
 		free(e.players);
-	ft_bzero(&e, sizeof(e));
+	ft_memset(&e, -1, sizeof(e));
 	exit(1);
 }
 
@@ -52,10 +51,9 @@ void		ft_exit_client(int print_err, char *err)
 		fprintf(stderr, "%s\n", err);
 	if (e.data != (void *)-1 && shmdt(e.data) == -1)
 		perror("shmdt");
-	ft_restore_term();
 	if (e.players != (void *)-1)
 		free(e.players);
-	ft_bzero(&e, sizeof(e));
+	ft_memset(&e, -1, sizeof(e));
 	exit(1);
 }
 
@@ -66,7 +64,6 @@ void		ft_exit(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	ft_restore_term();
 	ft_bzero(&e, sizeof(e));
 	exit(1);
 }
@@ -89,7 +86,6 @@ void		ft_free_exit(void)
 	}
 	else if (e.data != (void *)-1 && shmdt(e.data) == -1)
 		perror("shmdt");
-	ft_restore_term();
 	if (e.players != (void *)-1)
 		free(e.players);
 	ft_bzero(&e, sizeof(e));

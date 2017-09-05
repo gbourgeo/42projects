@@ -1,43 +1,50 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_print_map.c                                     :+:      :+:    :+:   */
+/*   ft_check.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 18:55:17 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/09/05 17:34:34 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/09/05 21:54:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
-#include <unistd.h>
-#include <stdio.h>
 
-void			print_map(void)
+int				ft_check_minimum_players(int *table)
 {
-	int			i;
-	int			j;
-	char		c;
+	size_t		need;
+	int			*ptr;
 
-	i = 0;
-	ft_termdo("rc");
-	ft_termdo("cd");
-	while (i < MAP_HEIGTH)
+	need = 0;
+	ptr = table;
+	while (ptr - table < MAX_TEAMS)
 	{
-		j = 0;
-		while (j < MAP_WIDTH)
-		{
-			c = *(e.map + (i * MAP_WIDTH + j));
-			c = (c == -1) ? '.' : c + '0';
-			write(1, &c, 1);
-			j++;
-		}
-		write(1, "\n", 1);
-		i++;
+		if (*ptr != 0 && *ptr < 2)
+			need += *ptr;
+		ptr++;
 	}
-	i = 0;
-	while (i++ < MAX_TEAMS)
-		printf("%d:%d ", i - 1, e.data->connected[i - 1]);
-	printf("\n");
+	return (need);
+}
+
+int				ft_check_even_teams(int *table)
+{
+	int			max;
+	int			*ptr;
+
+	max = 0;
+	ptr = table;
+	while (ptr - table < MAX_TEAMS)
+	{
+		if (*ptr > 0)
+		{
+			if (max == 0)
+				max = *ptr;
+			else if (max != *ptr)
+				return (1);
+		}
+		ptr++;
+	}
+	return (0);
 }

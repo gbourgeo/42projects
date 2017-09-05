@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2017/08/30 21:16:09 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/09/05 21:09:57 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -27,7 +27,8 @@ SRC = main.c 				\
 		ft_termcaps.c 		\
 		ft_wait_players.c	\
 		ft_nb_players.c		\
-		ft_print_map.c
+		ft_check.c			\
+		ft_exec_print.c
 
 OBJ_D = obj/
 
@@ -42,8 +43,8 @@ WWW = gcc -Wall -Werror -Wextra
 all: preall $(NAME)
 
 preall:
-	mkdir -p obj
-	make -C $(LIBFT)
+	@mkdir -p obj
+	@make -C $(LIBFT)
 
 $(NAME): $(OBJ)
 	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses

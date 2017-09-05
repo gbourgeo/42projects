@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 18:49:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/05 17:55:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void			ft_usage(void)
 	exit(1);
 }
 
-int					main(int ac, char **av, char **env)
+int					main(int ac, char **av)
 {
 	ft_memset(&e, -1, sizeof(e));
 	e.prog = ft_strrchr(av[0], '/');
@@ -31,8 +31,6 @@ int					main(int ac, char **av, char **env)
 		ft_usage();
 	if (!ft_isdigit(av[1][0]))
 		ft_exit(0, "Error: Team number must be a digit.");
-	ft_termcaps(env);
-	ft_signal();
 	e.team = (size_t)ft_atoi(av[1]);
 	if (e.team >= MAX_TEAMS)
 		ft_exit(0, "Error: Team number must less than MAX_TEAM");

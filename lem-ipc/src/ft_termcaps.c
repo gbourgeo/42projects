@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:03:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/05 18:18:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void				ft_termcaps(char **env)
 		ft_exit(0, "Unable to get TERM variable");
 	if (tgetent(NULL, name) != 1)
 		ft_exit(0, "termcaps: tgetent() returned.");
-	if (tcgetattr(0, &e.term) == -1)
+	if (tcgetattr(STDIN_FILENO, &e.term) == -1)
 		ft_exit(1, "termcaps: tcgetattr()");
 	ft_memcpy(&term, &e.term, sizeof(term));
 	term.c_lflag &= ~(ICANON);
@@ -34,7 +34,8 @@ void				ft_termcaps(char **env)
 	if (tcsetattr(0, TCSADRAIN, &term) == -1)
 		ft_exit(1, "termcaps: tcsetattr()");
 	ft_termdo("cl");
-	ft_putendl("Initialized TERMCAPS...");
+	ft_termdo("ho");
+	ft_termdo("vi");
 }
 
 void				ft_restore_term(void)
@@ -44,6 +45,8 @@ void				ft_restore_term(void)
 	i = -1;
 	if (e.term.c_iflag != (tcflag_t)i && tcsetattr(0, 0, &e.term) == -1)
 		perror("tcsetattr");
+	ft_termdo("ve");
+	exit(0);
 }
 
 static int			ft_outc(int c)
