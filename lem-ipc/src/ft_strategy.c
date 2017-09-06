@@ -6,23 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 12:41:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 20:50:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
 #include "libft.h"
-#include <stdio.h>
-
-/* static void		print_info(t_player *player, char *str) */
-/* { */
-/* 	printf("%s: Team:%d x:%d y:%d dist:%d\n", */
-/* 		   str, */
-/* 		   player->team, */
-/* 		   player->x + 1, */
-/* 		   player->y + 1, */
-/* 		   player->dist); */
-/* } */
+//#include <stdio.h>
 
 static void		ft_get_players_position(void)
 {
