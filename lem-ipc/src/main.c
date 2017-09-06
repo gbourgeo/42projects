@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/05 17:55:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 12:58:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int					main(int ac, char **av)
 		ft_exit(0, "Error: Team number must be a digit.");
 	e.team = (size_t)ft_atoi(av[1]);
 	if (e.team >= MAX_TEAMS)
-		ft_exit(0, "Error: Team number must less than MAX_TEAM");
+		ft_exit(0, "Error: Team number must less than MAX_TEAMS.");
 	e.key = ftok(e.prog, 'G');
 	if (e.key == -1)
 		ft_exit(1, "ftok");

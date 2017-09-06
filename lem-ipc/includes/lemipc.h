@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/05 21:54:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 12:53:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,12 @@
 # define MAP_WIDTH		10
 # define MAP_HEIGTH		10
 # define MAX_TEAMS		10
+# define MAP_VALUE		-1
+# define MV				MAP_VALUE
 
 /*
-** Don't change the order of the members in the s_data structure
+** MAP_VALUE MUST always be different from a team number,
+** from 0 to MAX_TEAMS.
 */
 
 typedef struct		s_data
@@ -42,7 +45,7 @@ typedef struct		s_player
 typedef	struct		s_msgbuf
 {
 	long			mtype;
-	t_player		target;
+	char			mtext[17];
 }					t_msgbuf;
 
 typedef struct		s_env

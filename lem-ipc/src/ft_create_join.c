@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/05 21:32:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 12:26:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void				ft_create_game(void)
 	ft_memset(e.data, -1, e.size);
 	ft_memset(e.data->connected, 0, sizeof(int) * MAX_TEAMS);
 	e.map = (char *)e.data + sizeof(*e.data);
-	ft_memset(e.map, -1, MAP_WIDTH * MAP_HEIGTH);
+	ft_memset(e.map, MAP_VALUE, MAP_WIDTH * MAP_HEIGTH);
 	e.semid = semget(e.key, 1, IPC_CREAT | IPC_EXCL | SHM_R | SHM_W);
 	if (e.semid < 0)
 		ft_exit_server(1, "semget IPC_CREAT");

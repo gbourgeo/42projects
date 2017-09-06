@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/05 17:35:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 12:28:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 static void		ft_quit(char *err)
 {
 	if (e.map != (void *)-1 && e.x >= 0 && e.y >= 0)
-		*(e.map + e.x + e.y * MAP_WIDTH) = -1;
-	if (ft_nb_players(e.data->connected) > 1)
+		*(e.map + e.x + e.y * MAP_WIDTH) = MAP_VALUE;
+	if (ft_nb_players(e.data->connected) > 0)
 		ft_exit_client(1, err);
 	ft_exit_server(1, err);
 }
@@ -32,7 +32,7 @@ static void		ft_place_player(void)
 	{
 		e.x = rand() % MAP_WIDTH;
 		e.y = rand() % MAP_HEIGTH;
-		if (*(e.map + e.x + e.y * MAP_HEIGTH) != -1)
+		if (*(e.map + e.x + e.y * MAP_HEIGTH) != MAP_VALUE)
 			continue ;
 		*(e.map + e.x + e.y * MAP_HEIGTH) = e.team;
 		break ;

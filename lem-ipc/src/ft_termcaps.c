@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/05 18:18:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 12:49:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void				ft_restore_term(void)
 	if (e.term.c_iflag != (tcflag_t)i && tcsetattr(0, 0, &e.term) == -1)
 		perror("tcsetattr");
 	ft_termdo("ve");
-	exit(0);
+	exit(1);
 }
 
 static int			ft_outc(int c)

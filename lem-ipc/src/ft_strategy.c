@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/05 21:23:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/06 12:41:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ static void		ft_get_players_position(void)
 	int			i;
 	int			p;
 
-	i = ft_nb_players(e.data->connected) * sizeof(*e.players);
-	ft_memset(e.players, 0, i);
+	i = ft_nb_players(e.data->connected);
+	ft_memset(e.players, 0, i * sizeof(*e.players));
 	i = 0;
 	p = 0;
 	e.target = NULL;
 	while (i < MAP_WIDTH * MAP_HEIGTH)
 	{
-		if (e.map[i] != -1)
+		if (e.map[i] != MAP_VALUE)
 		{
 			e.players[p].team = e.map[i];
 			e.players[p].x = i % MAP_WIDTH;
@@ -45,7 +45,6 @@ static void		ft_get_players_position(void)
 				e.x - e.players[p].x : e.players[p].x - e.x;
 			e.players[p].dist += (e.y > e.players[p].y) ?
 				e.y - e.players[p].y : e.players[p].y - e.y;
-//			print_info(&e.players[p], "");
 			if (e.team != e.players[p].team &&
 				(e.target == NULL || e.players[p].dist < e.target->dist))
 				e.target = &e.players[p];
@@ -53,7 +52,6 @@ static void		ft_get_players_position(void)
 		}
 		i++;
 	}
-//	print_info(e.target, "Target");
 }
 
 void			ft_strategy(void)
