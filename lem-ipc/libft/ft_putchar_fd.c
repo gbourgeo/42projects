@@ -1,31 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:37:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/25 17:58:55 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/11/25 17:59:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <unistd.h>
 
-void			ft_tabdel(char **table)
+void		ft_putchar_fd(char c, int fd)
 {
-	int			i;
-
-	i = 0;
-	if (table)
-	{
-		while (table[i])
-		{
-			free(table[i]);
-			table[i] = NULL;
-			i++;
-		}
-		free(table);
-		table = NULL;
-	}
+	write(fd, &c, 1);
 }

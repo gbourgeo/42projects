@@ -1,31 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_lstmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/12 05:28:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/19 17:35:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+t_list		*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem))
 {
-	char	**cpy;
-	int		i;
+	t_list	*so_fresh;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = NULL;
-	return (cpy);
+	so_fresh = (t_list*)malloc(sizeof(*so_fresh));
+	so_fresh = f(lst);
+	if (lst->next != NULL)
+		so_fresh->next = ft_lstmap(lst->next, *f);
+	return (so_fresh);
 }

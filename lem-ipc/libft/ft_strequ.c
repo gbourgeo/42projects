@@ -1,31 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_strequ.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/27 19:16:24 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/07 20:18:19 by pc               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+int		ft_strequ(char const *s1, char const *s2)
 {
-	char	**cpy;
-	int		i;
-
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = NULL;
-	return (cpy);
+	if (s1 == NULL || s2 == NULL)
+		return (0);
+	if (ft_strcmp(s1, s2) == 0)
+		return (1);
+	return (0);
 }

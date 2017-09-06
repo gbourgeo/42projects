@@ -1,31 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_lstdelone.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/11 21:08:40 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/19 17:35:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+void			ft_lstdelone(t_list **alst, void (*del)(void *, size_t))
 {
-	char	**cpy;
-	int		i;
-
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
+	if (*alst)
 	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
+		del((*alst)->content, (*alst)->content_size);
+		free(*alst);
+		*alst = NULL;
 	}
-	cpy[i] = NULL;
-	return (cpy);
 }

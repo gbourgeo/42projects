@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_strmapi.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/27 17:54:52 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/01 21:12:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+char				*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 {
-	char	**cpy;
-	int		i;
+	char			*p;
+	unsigned int	i;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
 	i = 0;
-	while (table && table[i])
+	if (s == NULL)
+		return (NULL);
+	if ((p = ft_strdup(s)) == NULL)
+		return (NULL);
+	while (s[i])
 	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
+		p[i] = f(i, s[i]);
+		++i;
 	}
-	cpy[i] = NULL;
-	return (cpy);
+	return (p);
 }

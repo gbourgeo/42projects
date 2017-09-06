@@ -1,31 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/25 17:26:55 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/17 06:04:55 by pc               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+void	ft_putstr(char const *str)
 {
-	char	**cpy;
-	int		i;
-
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
+	if (str)
 	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
+		while (*str != '\0')
+			ft_putchar(*str++);
 	}
-	cpy[i] = NULL;
-	return (cpy);
 }

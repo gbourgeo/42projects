@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/22 18:39:09 by gbourgeo          #+#    #+#             */
+/*   Updated: 2015/01/29 13:23:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-char		**ft_tabdup(char **table)
+int		ft_strcmp(const char *s1, const char *s2)
 {
-	char	**cpy;
-	int		i;
+	int	i;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
 	i = 0;
-	while (table && table[i])
+	if (s1 != 0 && s2 != 0)
 	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
+		while ((unsigned char)s1[i] == (unsigned char)s2[i] && (s1[i] || s2[i]))
+			++i;
+		return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 	}
-	cpy[i] = NULL;
-	return (cpy);
+	return (-1);
 }

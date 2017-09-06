@@ -1,31 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_iswhitespace.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/02/27 02:11:55 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/30 22:53:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-char		**ft_tabdup(char **table)
+int				ft_iswhitespace(char c)
 {
-	char	**cpy;
-	int		i;
-
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = NULL;
-	return (cpy);
+	if (c == ' ' || (c >= 9 && c <= 11))
+		return (1);
+	return (0);
 }

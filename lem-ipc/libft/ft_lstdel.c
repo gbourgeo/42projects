@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_lstdel.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/12 04:08:10 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/05/15 00:31:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+void		ft_lstdel(t_list **alst, void (*del)(void *, size_t))
 {
-	char	**cpy;
-	int		i;
+	t_list	*ptr;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = NULL;
-	return (cpy);
+	if (!alst || !*alst)
+		return ;
+	ptr = *alst;
+	del(ptr->content, ptr->content_size);
+	ft_lstdel(&ptr->next, del);
+	free(ptr);
 }

@@ -1,31 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_lstswap.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/17 08:58:48 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/19 17:34:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+void		ft_lstswap(t_list *one, t_list *two)
 {
-	char	**cpy;
-	int		i;
+	void	*cnt;
+	size_t	siz;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = NULL;
-	return (cpy);
+	cnt = one->content;
+	siz = one->content_size;
+	one->content = two->content;
+	one->content_size = two->content_size;
+	two->content = cnt;
+	two->content_size = siz;
 }

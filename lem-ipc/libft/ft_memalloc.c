@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   ft_memalloc.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:37:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/24 00:47:06 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/07 19:59:24 by pc               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdlib.h>
 
-void			ft_tabdel(char **table)
+void	*ft_memalloc(size_t size)
 {
-	int			i;
+	char	*p;
+	size_t	i;
 
 	i = 0;
-	if (table)
-	{
-		while (table[i])
-		{
-			free(table[i]);
-			table[i] = NULL;
-			i++;
-		}
-		free(table);
-		table = NULL;
-	}
+	if ((p = (char*)malloc(sizeof(*p) * size)) == NULL)
+		return (NULL);
+	else
+		while (i < size)
+			p[i++] = 0;
+	return (void*)(p);
 }

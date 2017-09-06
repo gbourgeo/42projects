@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/23 21:55:10 by gbourgeo          #+#    #+#             */
+/*   Updated: 2014/03/27 19:23:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <string.h>
 
-char		**ft_tabdup(char **table)
+void			*ft_memchr(const void *s, int c, size_t n)
 {
-	char	**cpy;
-	int		i;
+	size_t		i;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
 	i = 0;
-	while (table && table[i])
+	if (n && s != NULL)
 	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
+		while (i < n)
+		{
+			if ((unsigned char)c == ((unsigned char *)s)[i])
+				return ((void *)(s + i));
+			++i;
+		}
 	}
-	cpy[i] = NULL;
-	return (cpy);
+	return (NULL);
 }

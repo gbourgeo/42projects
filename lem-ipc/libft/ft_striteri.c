@@ -1,31 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   ft_striteri.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:37:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/26 19:24:19 by gbourgeo          #+#    #+#             */
+/*   Updated: 2013/12/01 21:07:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <string.h>
 
-void			ft_tabdel(char **table)
+void		ft_striteri(char *s, void (*f)(unsigned int, char *))
 {
-	int			i;
+	size_t	i;
 
 	i = 0;
-	if (table)
-	{
-		while (table[i])
+	if (f)
+		while (s[i])
 		{
-			free(table[i]);
-			table[i] = NULL;
-			i++;
+			f(i, &s[i]);
+			++i;
 		}
-		free(table);
-		table = NULL;
-	}
 }

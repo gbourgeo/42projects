@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   ft_strnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:37:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/26 15:38:01 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/05/15 00:33:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdlib.h>
 
-void			ft_tabdel(char **table)
+char		*ft_strnew(size_t size)
 {
-	int			i;
+	char	*p;
+	size_t	i;
 
 	i = 0;
-	if (table)
-	{
-		while (table[i])
-		{
-			free(table[i]);
-			table[i] = NULL;
-			i++;
-		}
-		free(table);
-		table = NULL;
-	}
+	p = NULL;
+	if ((p = (char*)malloc(sizeof(*p) * (size + 1))) == NULL)
+		return (NULL);
+	while (i <= size)
+		p[i++] = '\0';
+	return (p);
 }

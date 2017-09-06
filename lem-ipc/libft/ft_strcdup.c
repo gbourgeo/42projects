@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_strcdup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2014/02/04 10:58:57 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/04/21 18:03:57 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+char			*ft_strcdup(char *str, char c)
 {
-	char	**cpy;
-	int		i;
+	char		*copy;
+	int			len;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
+	len = 0;
+	if (str == NULL || !*str)
 		return (NULL);
-	i = 0;
-	while (table && table[i])
-	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
-	}
-	cpy[i] = NULL;
-	return (cpy);
+	while (str[len] != c && str[len] != '\0')
+		len++;
+	if ((copy = (char*)malloc(sizeof(char) * (len + 1))) == NULL)
+		return (NULL);
+	copy[len] = '\0';
+	while (--len >= 0)
+		copy[len] = str[len];
+	return (copy);
 }

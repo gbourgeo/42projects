@@ -1,31 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/27 19:29:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2015/04/01 00:00:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+char			*ft_strsub(char const *s, unsigned int start, size_t len)
 {
-	char	**cpy;
-	int		i;
+	size_t		i;
+	char		*p;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
 	i = 0;
-	while (table && table[i])
+	if (s == NULL)
+		return (NULL);
+	p = malloc(sizeof(*p) * (len + 1));
+	if (p == NULL)
+		return (NULL);
+	while (i < len)
 	{
-		cpy[i] = ft_strdup(table[i]);
+		p[i] = s[start + i];
 		i++;
 	}
-	cpy[i] = NULL;
-	return (cpy);
+	p[i] = '\0';
+	return (p);
 }

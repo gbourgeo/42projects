@@ -1,31 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   ft_pow.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:37:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2015/02/19 09:37:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/30 23:03:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-void			ft_tabdel(char **table)
+int				ft_pow(int nb, int power)
 {
-	int			i;
-
-	i = 0;
-	if (table)
-	{
-		while (table[i])
-		{
-			free(table[i]);
-			table[i] = NULL;
-			i++;
-		}
-		free(table);
-		table = NULL;
-	}
+	if (power <= 0)
+		return (1);
+	if (power == 1)
+		return (nb);
+	nb *= ft_pow(nb, power - 1);
+	return (nb);
 }

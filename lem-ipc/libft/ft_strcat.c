@@ -1,31 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdup.c                                        :+:      :+:    :+:   */
+/*   ft_strcat.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/06 20:36:52 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/20 16:42:45 by gbourgeo          #+#    #+#             */
+/*   Updated: 2014/01/21 14:52:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+char		*ft_strcat(char *dest, const char *src)
 {
-	char	**cpy;
-	int		i;
+	size_t	i;
+	size_t	j;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
-	if (cpy == NULL)
-		return (NULL);
-	i = 0;
-	while (table && table[i])
+	i = ft_strlen(dest);
+	j = 0;
+	if (src)
 	{
-		cpy[i] = ft_strdup(table[i]);
-		i++;
+		while (src[j])
+		{
+			dest[i + j] = src[j];
+			j++;
+		}
 	}
-	cpy[i] = NULL;
-	return (cpy);
+	dest[i + j] = '\0';
+	return (dest);
 }
