@@ -1,22 +1,31 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Server.hpp                                         :+:      :+:    :+:   //
+//   Server.cpp                                         :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
+//   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2017/04/14 23:45:23 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/04/14 23:51:54 by gbourgeo         ###   ########.fr       //
+//   Created: 2017/09/08 00:38:29 by root              #+#    #+#             //
+//   Updated: 2017/09/08 02:35:15 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-class Server
+Server::Server()
 {
 
-public:
-	Server();
-	Server(const Server&);
-	~Server();
-	Server &operator = (const Server&);
+}
 
-};
+Server::Server(const Server&)
+{
+
+}
+
+Server::~Server()
+{
+}
+
+Server & Server::operator=(Server const & rhs)
+{
+	this->oldmask = rhs.oldmask;
+	return *this;
+}
