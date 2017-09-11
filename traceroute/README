@@ -1,0 +1,6 @@
+Résumé: Ce projet consiste à recoder la commande traceroute.
+
+Traceroute (ou tracert sous Windows) est un programme utilitaire qui permet de
+suivre les chemins qu’un paquet de données (paquet IP) va prendre pour aller de la
+machine locale à une autre machine connectée au réseau IP. Il a été conçu au sein du
+Laboratoire national Lawrence-Berkeley.
