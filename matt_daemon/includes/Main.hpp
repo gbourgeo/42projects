@@ -6,11 +6,13 @@
 //   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/07 22:44:53 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/09/07 22:45:07 by gbourgeo         ###   ########.fr       //
+//   Updated: 2017/09/11 06:25:10 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #ifndef MAIN_HPP
 # define MAIN_HPP
+
+void		LaunchServer(void);
 
 #endif

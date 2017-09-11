@@ -3,23 +3,39 @@
 //                                                        :::      ::::::::   //
 //   Server.hpp                                         :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
+//   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2017/04/14 23:45:23 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/09/08 03:00:39 by root             ###   ########.fr       //
+//   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
+//   Updated: 2017/09/11 06:17:19 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-class Server
-{
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
+# define SERV_ADDR "localhost"
+# define SERV_PORT "4242"
+# define SERV_CLIENTS 3
+
+class		Server
+{
+	
 public:
-	Server();
-	Server(const Server&);
-	~Server();
+	Server(void);
+	Server( Server const & src);
+	~Server( void);
+
 	Server & operator=(Server const & rhs);
 
+	int			getServfd(void) const;
+	const char	*getError(void) const;
+	
+	int			servfd;
+	const char	*err;
+
 private:
-	sigset_t	oldmask;
-	int			logfd;
+	int findSocket(struct addrinfo *p);
+
 };
+
+#endif
