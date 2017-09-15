@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/11 06:23:22 by root             ###   ########.fr        #
+#    Updated: 2017/09/13 19:01:57 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,7 +14,7 @@ NAME = Matt_daemon
 
 SRC_D = src/
 
-SRC = Main.cpp Daemon.cpp Tintin.cpp Server.cpp LaunchServer.cpp
+SRC = Main.cpp Tintin.cpp Server.cpp Exceptions.cpp
 
 OBJ_D = obj/
 

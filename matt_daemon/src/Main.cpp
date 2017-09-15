@@ -6,12 +6,13 @@
 //   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/07 22:26:13 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/09/11 06:26:44 by root             ###   ########.fr       //
+//   Updated: 2017/09/13 22:44:51 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#include "Main.hpp"
-#include "Daemon.hpp"
+#include "Tintin.hpp"
+#include "Server.hpp"
+#include "Exceptions.hpp"
 #include <stdio.h>
 #include <unistd.h> //exit close
 #include <stdlib.h> //free
@@ -19,18 +20,8 @@
 #include <sys/resource.h>
 #include <sys/types.h> //umask
 #include <sys/stat.h>
-#include <string.h> //strlen
 #include <signal.h>
-
-static int	ft_error(int err, const char *str)
-{
-	std::cerr << "Matt_daemon: ";
-	if (err)
-		perror(str);
-	else
-		std::cerr << str << std::endl;
-	return 1;
-}
+#include <fcntl.h> //open
 
 static void	closeFileDescriptors(void)
 {
@@ -39,7 +30,7 @@ static void	closeFileDescriptors(void)
 
 	i = 3;
 	if (getrlimit(RLIMIT_NOFILE, &lim) == -1)
-		ft_error(1, "getrlimit");
+		throw DAEMONException("getrlimit");
 	while (i < lim.rlim_max)
 		close(i++);
 }
@@ -54,7 +45,7 @@ static void	resetSignalHandlers(sigset_t *oldmask)
 		signal(i++, SIG_DFL);
 	sigfillset(&newmask);
 	if (sigprocmask(SIG_SETMASK, &newmask, oldmask) < 0)
-		ft_error(1, "signals");
+		throw DAEMONException("sigprocmask");
 }
 
 static void	sanitizeEnvironnement(void)
@@ -65,31 +56,143 @@ static void	sanitizeEnvironnement(void)
 		memset(environ[i], 0, strlen(environ[i]));
 }
 
+static void		setupDaemon(void)
+{
+	int fd;
+
+	fd = open("/dev/null", O_RDWR);
+	if (fd < 0)
+		throw DAEMONException("/dev/null");
+	dup2(fd, STDIN_FILENO);
+	dup2(fd, STDOUT_FILENO);
+	dup2(fd, STDERR_FILENO);
+	close(fd);
+	umask(0);
+	if (chdir(WORKING_DIR) < 0)
+		throw DAEMONException(WORKING_DIR);
+}
+
 int				main(void)
 {
+	Tintin_reporter	*tintin;
+	Server			*server;
+	struct stat		buf;
 	sigset_t		oldmask;
 	pid_t			pid;
-	
-	if (setuid(getuid()) == -1)
-		return ft_error(1, "setuid");
-	closeFileDescriptors();
-	resetSignalHandlers(&oldmask);
-	sanitizeEnvironnement();
-	pid = fork();
-	if (pid < 0)
-		ft_error(1, "fork");
-	if (pid == 0)
+
+	tintin = NULL;
+	server = NULL;
+	try
 	{
-		if (setsid() < 0)
-			ft_error(1, "setsid");
-		pid = fork();
-		if (pid < 0)
-			ft_error(1, "2nd fork");
-		if (pid == 0)
-			LaunchServer();
-		exit(0);
+		if (setuid(getuid()) == -1)
+			throw DAEMONException("setuid");
+		closeFileDescriptors();
+		resetSignalHandlers(&oldmask);
+		sanitizeEnvironnement();
+		tintin = new Tintin_reporter();
+		tintin->log("INFO", "Started.");
+		if (stat(LOCK_FILE, &buf) == 0)
+			throw "Error file locked.";
+		tintin->lockfd.exceptions( std::ofstream::failbit | std::ofstream::badbit);
+		tintin->lockfd.open(LOCK_FILE);
+		try
+		{
+			tintin->log("INFO", "Creating server.");
+			server = new Server();
+			tintin->log("INFO", "Server created.");
+			tintin->log("INFO", "Entering Daemon mode...");
+			pid = fork();
+			if (pid < 0)
+				throw DAEMONException("fork");
+			if (pid == 0)
+			{
+				if (setsid() < 0)
+					throw DAEMONException("setsid");
+				pid = fork();
+				if (pid < 0)
+					throw DAEMONException("fork");
+				if (pid == 0)
+				{
+					tintin->log("INFO", "Done. PID: ", getpid());
+					setupDaemon();
+					tintin->log("INFO", "Launching server...");
+					server->loopServ(tintin);
+					delete server;
+					delete tintin;
+					remove(LOCK_FILE);
+					exit(0);
+				}
+				exit(0);
+			}
+		}
+		catch (DAEMONException& e)
+		{
+			if (server)
+				delete server;
+			remove(LOCK_FILE);
+			throw ;
+		}
+		catch (std::exception& e)
+		{
+			if (server)
+				delete server;
+			remove(LOCK_FILE);
+			throw ;
+		}
+		catch (int error)
+		{
+			if (server)
+				delete server;
+			remove(LOCK_FILE);
+			throw ;
+		}
+		catch (const char *str)
+		{
+			if (server)
+				delete server;
+			remove(LOCK_FILE);
+			throw ;
+		}
 	}
-	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
-		ft_error(1, "signals");
-	exit(0);
+	catch (DAEMONException& e)
+	{
+		std::cerr << "Matt_daemon: " << e.str << ": " << e.what() << std::endl;
+		if (tintin)
+		{
+			tintin->log("ERROR", e.str, e.what());
+			delete tintin;
+		}
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Matt_daemon: " << e.what() << std::endl;
+		if (tintin)
+		{
+			tintin->log("ERROR", e.what());
+			delete tintin;
+		}
+	}
+	catch (int error)
+	{
+		const char	*str;
+
+		str = strerror(error);
+		std::cerr << "Matt_daemon: " << str << std::endl;
+		if (tintin)
+		{
+			tintin->log("ERROR", str);
+			delete tintin;
+		}
+	}
+	catch (const char *str)
+	{
+		std::cerr << "Matt_daemon: " << str << std::endl;
+		if (tintin)
+		{
+			tintin->log("ERROR", str);
+			delete tintin;
+		}
+	}
+	sigprocmask(SIG_SETMASK, &oldmask, NULL);
+	return 0;
 }

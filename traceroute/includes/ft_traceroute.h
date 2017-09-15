@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:42:00 by root              #+#    #+#             */
-/*   Updated: 2017/08/21 15:23:06 by root             ###   ########.fr       */
+/*   Updated: 2017/09/15 00:47:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 # include <netinet/ip.h>
 # include <linux/udp.h>
 # include <netdb.h>
-#include <stdio.h>
+# include <stdio.h>
+
 # define DEF_DATALEN	40
 # define MAX_DATALEN	65000
 # define MIN_DATALEN	28

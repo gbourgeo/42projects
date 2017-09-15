@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:47:05 by root              #+#    #+#             //
-//   Updated: 2017/09/11 06:23:04 by root             ###   ########.fr       //
+//   Updated: 2017/09/13 02:19:33 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,9 +15,10 @@
 
 # define LOG_DIR	"/var/log/matt_daemon/"
 # define LOG_FILE	"/var/log/matt_daemon/matt_daemon.log"
+# define LOCK_FILE	"/var/lock/matt_daemon.lock"
 
-#include <iostream>
-#include <fstream>
+# include <iostream>
+# include <fstream>
 
 class			Tintin_reporter
 {
@@ -28,11 +29,15 @@ public:
 	~Tintin_reporter();
 	Tintin_reporter & operator=(Tintin_reporter const & rhs);
 
-	int		log(const char *title, const char *info);
-	int		log(const char *title, const char *info, pid_t pid);
-	int		log(const char *title, const char *info, char *buff);
+	void	log(const char *title, const char *info);
+	void	log(const char *title, const char *info, pid_t pid);
+	void	log(const char *title, const char *info, const char *buff);
 
-	std::ofstream	logfd;
+	std::ofstream	lockfd;
+
+private:
+	std::ofstream	_logfd;
+
 };
 
 #endif
