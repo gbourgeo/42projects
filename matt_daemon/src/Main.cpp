@@ -6,7 +6,7 @@
 //   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/07 22:26:13 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/09/13 22:44:51 by root             ###   ########.fr       //
+//   Updated: 2017/09/15 22:53:05 by gbourgeo         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -95,68 +95,42 @@ int				main(void)
 			throw "Error file locked.";
 		tintin->lockfd.exceptions( std::ofstream::failbit | std::ofstream::badbit);
 		tintin->lockfd.open(LOCK_FILE);
-		try
+		tintin->log("INFO", "Creating server.");
+		server = new Server();
+		tintin->log("INFO", "Server created.");
+		tintin->log("INFO", "Entering Daemon mode...");
+		pid = fork();
+		if (pid < 0)
+			throw DAEMONException("fork");
+		if (pid == 0)
 		{
-			tintin->log("INFO", "Creating server.");
-			server = new Server();
-			tintin->log("INFO", "Server created.");
-			tintin->log("INFO", "Entering Daemon mode...");
+			if (setsid() < 0)
+				throw DAEMONException("setsid");
 			pid = fork();
 			if (pid < 0)
 				throw DAEMONException("fork");
 			if (pid == 0)
 			{
-				if (setsid() < 0)
-					throw DAEMONException("setsid");
-				pid = fork();
-				if (pid < 0)
-					throw DAEMONException("fork");
-				if (pid == 0)
-				{
-					tintin->log("INFO", "Done. PID: ", getpid());
-					setupDaemon();
-					tintin->log("INFO", "Launching server...");
-					server->loopServ(tintin);
-					delete server;
-					delete tintin;
-					remove(LOCK_FILE);
-					exit(0);
-				}
+				tintin->log("INFO", "Done. PID: ", getpid());
+				setupDaemon();
+				tintin->log("INFO", "Launching server...");
+				server->loopServ(tintin);
+				delete server;
+				delete tintin;
+				remove(LOCK_FILE);
 				exit(0);
 			}
-		}
-		catch (DAEMONException& e)
-		{
-			if (server)
-				delete server;
-			remove(LOCK_FILE);
-			throw ;
-		}
-		catch (std::exception& e)
-		{
-			if (server)
-				delete server;
-			remove(LOCK_FILE);
-			throw ;
-		}
-		catch (int error)
-		{
-			if (server)
-				delete server;
-			remove(LOCK_FILE);
-			throw ;
-		}
-		catch (const char *str)
-		{
-			if (server)
-				delete server;
-			remove(LOCK_FILE);
-			throw ;
+			exit(0);
 		}
 	}
 	catch (DAEMONException& e)
 	{
 		std::cerr << "Matt_daemon: " << e.str << ": " << e.what() << std::endl;
+		if (server)
+		{
+			delete server;
+			remove(LOCK_FILE);
+		}
 		if (tintin)
 		{
 			tintin->log("ERROR", e.str, e.what());
@@ -166,6 +140,11 @@ int				main(void)
 	catch (std::exception& e)
 	{
 		std::cerr << "Matt_daemon: " << e.what() << std::endl;
+		if (server)
+		{
+			delete server;
+			remove(LOCK_FILE);
+		}
 		if (tintin)
 		{
 			tintin->log("ERROR", e.what());
@@ -178,6 +157,11 @@ int				main(void)
 
 		str = strerror(error);
 		std::cerr << "Matt_daemon: " << str << std::endl;
+		if (server)
+		{
+			delete server;
+			remove(LOCK_FILE);
+		}
 		if (tintin)
 		{
 			tintin->log("ERROR", str);
@@ -187,6 +171,11 @@ int				main(void)
 	catch (const char *str)
 	{
 		std::cerr << "Matt_daemon: " << str << std::endl;
+		if (server)
+		{
+			delete server;
+			remove(LOCK_FILE);
+		}
 		if (tintin)
 		{
 			tintin->log("ERROR", str);
