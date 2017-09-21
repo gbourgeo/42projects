@@ -1,0 +1,69 @@
+
+//    int
+//    snprintf(char * restrict str, size_t size, const char * restrict format, ...);
+
+static void		log_wrapper(FILE *f, char *str, char *file)
+{
+	//CANARY						%rbp - 0x8
+	char		buf[0x108];		// %rbp - 0x110
+	FILE		*ff = f;		// %rbp - 0x118
+	char		*ptr = str;		// %rbp - 0x120
+	char		*name = file;	// %rbp - 0x128
+	int			i;	  			// %rbp - 0x130
+
+	strcpy(buf, str);
+	i = strlen(buf);
+	int j = strlen(file);
+	snprintf(buf + i, (j > 0x108) ? 0x108 : j, file);
+	*(strcspn(buf, "\n")) = 0;
+	fprintf(f, "LOG: %s\n", buf);
+	// CANARY_CHECK
+}
+
+On a UNIX-like system, the first six parameters go into rdi, rsi, rdx, rcx, r8, and r9.
+
+int				main(int ac, char **av)
+{
+	// CANARY		   			   %rbp - 0x8
+	char		c;				// %rbp - 0x71
+	int			fd;				// %rbp - 0x78
+	FILE		*p;				// %rbp - 0x80
+	FILE		*f;				// %rbp - 0x88
+	int			argc = ac;		// %rbp - 0x94
+	char		**argv = av;	// %rbp - 0xa0
+	
+	c = -1; (0xff)
+	fd = -1;  (0xffffffff)
+	if (argc != 2)
+		printf("Usage: %s filename\n", argv[0]);
+	f = fopen("./backups/.log", "w");
+	if (f == NULL)
+	{
+		printf("ERROR: Failed to open %s\n", argv[1]);
+		exit 1;
+	}
+	log_wrapper(f, "Starting back up: ", argv[1]);
+	p = fopen(argv[1], "r");
+	if (p == NULL)
+	{
+		printf("ERROR: Failed to open %s\n", av[1]);
+		exit 1;
+	}
+	"./backups/" + av[1];
+	strncat(&rbp+0x70, av[1], strlen(av[1]));
+	fd = open(&rbp+0x70, 0xc1, 0x1b0);			// open(???, 193, 432);
+	if (fd < 0)
+	{  
+	   printf("ERROR: Failed to open %s%s\n", "./backups/", av[1]);
+	   exit 1;
+	}
+	while((c = fgetc(p) != 0xff)
+	{
+		write(fd, &c, 1);
+	}
+	log_wrapper(f, "Finished back up ", av[1]);
+	fclose(p);
+	close(fd);
+	//CANARY_CHECK
+	return 0;
+}

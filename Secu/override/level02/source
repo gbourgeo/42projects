@@ -1,0 +1,55 @@
+int main()
+{
+	FILE		*f;				// -0x8(%rbp)
+	int			nb2;			// -0xc(%rbp)
+	char		buff[100];		// -0x70(%rbp)
+	char		buff2[48];		// -0xa0(%rbp)
+	char		buff3[112];		// -0x110(%rbp)
+
+	for (i = 12; i > 0; i--)
+		buff[i] = 0;
+	for (i = 5; i > 0; i--)
+		buff2[i] = 0;
+	for (i = 12; i > 0; i--)
+		buff3[i] = 0;
+	f = NULL;
+	nb2 = 0;
+	f = fopen ("/home/users/level03/.pass", "r");	
+	if (f == NULL)
+	{
+		fwrite("ERROR: failed to open password file\n", 1, 0x24, STDERR_FILENO);
+		exit (1);
+	}
+	nb2 = fread(buff2, 41, f);
+	buff2 + strcspn(buff2, "\n") = 0;
+	if (nb2 != 41)
+	{
+		fwrite ("ERROR: failed to read password file\n", 1, 0x24, STDERR_FILENO);
+		fwrite ("ERROR: failed to read password file\n", 1, 0x24, STDERR_FILENO);
+		exit (1);
+	}
+	fclose (f);
+
+	puts ("===== [ Secure Access System v1.0 ] =====");
+	puts ("/", '*' <repeats 39 times>, "\\");
+	puts ("| You must login to access this system. |");
+	puts ("\\", '*' <repeats 38 times>, "/");
+
+	printf ("--[ Username: ");
+	fgets(buff, 100);
+	buff + strcspn(buff, "\n") = 0;
+	
+	printf ("--[ Password: ");
+	fgets(buff3, 100);
+	buff3 + strcspn(buff, "\n") = 0;
+	
+	puts ('*' <repeats 41 times>);
+	if (strncmp(buff2, buff3, 41) == 0)
+	{
+		printf ("Greetings, %s!\n", buff);
+		system("/bin/sh");
+	}
+	printf (buff);
+	puts(" does not have access!")
+	return 1;
+}

