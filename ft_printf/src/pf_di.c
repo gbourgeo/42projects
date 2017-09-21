@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:22:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/18 10:04:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/21 03:23:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,11 +93,11 @@ void		pf_di(t_dt *data)
 
 	av.ui = get_modifier(data);
 	av.s = ft_itoa_base(((LL)av.ui < 0) ? av.ui * -1 : av.ui, 10);
-	if (av.ui || data->flag.len_modifier || *data->tail == 'D' ||
-		data->flag.minus || data->flag.plus)
+/* 	if (av.ui || data->flag.len_modifier || *data->tail == 'D' || */
+/* 		data->flag.minus || data->flag.plus) */
 		av.len = ft_strlen(av.s);
-	else
-		av.len = 0;
+/* 	else */
+/* 		av.len = 0; */
 	c = '\0';
 	if ((LL)av.ui < 0)
 		c = '-';
