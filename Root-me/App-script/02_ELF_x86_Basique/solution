@@ -1,0 +1,18 @@
+$ gdb ch2.bin
+(gdb) disas main
+...
+   0x080483aa <+161>:	jne    0x80483c2 <main+185>
+   0x080483ac <+163>:	movl   $0x80a6c00,0x4(%esp)
+   0x080483b4 <+171>:	movl   $0x80a6c0c,(%esp)
+   0x080483bb <+178>:	call   0x8048db0 <printf>
+...
+En etudiant le main, on s'apercoit que le programme execute plusieur comparaison et qu'apres elles, on obtient les lignes precedentes.
+En regardant se qui se trouve aux adresses 0x80a6c00 et 0x80a6c0c on obtient:
+(gdb) x/s 0x80a6c0c
+0x80a6c0c:	"Bien joue, vous pouvez valider l'epreuve avec le mot de passe : %s !\n"
+(gdb) x/s 0x80a6c00
+0x80a6c00:	"987654321"
+
+
+DONE!
+

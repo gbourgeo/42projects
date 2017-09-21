@@ -1,0 +1,48 @@
+
+static void		insert(int nb, int nb2, int *buff)
+{
+	// CANARY		   					   %ebp - 0xc
+	int			i = nb;					// %ebp - 0x1c
+	int			j = nb2;				// %ebp - 0x20
+	int			*ptr = buff;			// %ebp - 0x24
+
+	// buff[nb] = nb2;
+	ptr[i] = j;
+	// CANARY CHECK
+}
+
+int				main(int argc, char **argv)
+{
+	?			j = 0x1000;				// %esp + 0x8
+	char		**av = argv;			// %esp + 0x18
+	int			ac = argc;				// %esp + 0x1c
+	long long	val; 					// %esp + 0x2c
+	long long	val2;					// %esp + 0x30
+	FILE		*f;						// %esp + 0x34
+	int			buff[0x1000];			// %esp + 0x38
+	char		*ptr;					// %esp + 0x1038
+	// CANARY	   	 					   %esp + 0x104c
+
+	if (ac <= 1)
+		printf ("\t Usage:%s <file>\n", *av);
+	else
+	{
+		f = NULL;
+		memset(buff, 0, 0x1000);
+		f = fopen(av[1], "r");
+		if (f != NULL)
+		{
+			while (fgets(ptr, 0x14, f) != NULL)
+			{
+				val2 = atoll(ptr);
+				fgets(ptr, 0x14, f);
+				val = atoll(ptr);
+				if (val2 == 0 || val == 0)
+				   continue ;
+				insert(val, val2, buff);
+			}
+		}
+	}
+	// CANARY CHECK
+	return 0;
+}

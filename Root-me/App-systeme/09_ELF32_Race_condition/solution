@@ -1,0 +1,1 @@
+./ch12 | cat /tmp/tmp_file.txt

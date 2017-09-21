@@ -1,0 +1,21 @@
+$ strings ./ch1.bin
+...
+PTRh@
+[^_]
+%s : "%s"
+Allocating memory
+Reallocating memory
+123456789
+############################################################
+##        Bienvennue dans ce challenge de cracking        ##
+############################################################
+Veuillez entrer le mot de passe :
+Bien joue, vous pouvez valider l'epreuve avec le pass : %s!
+Dommage, essaye encore une fois.
+GCC: (GNU) 4.1.2 (Gentoo 4.1.2 p1.0.2)
+GCC: (GNU) 4.1.2 (Gentoo 4.1.2 p1.0.2)
+GCC: (Gentoo 4.3.4 p1.0, pie-10.1.5) 4.3.4
+...
+
+J'ai essayer avec 123456789 et ca a marche... lulz.
+

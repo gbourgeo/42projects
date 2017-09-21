@@ -1,0 +1,41 @@
+static char        buf[256];    // 0x8049880
+
+static void        mprint(char *str)
+{
+    // mov str -> ebp-0x1c;
+    // CANARY  -> ebp-0xc;
+
+    printf(str);
+
+    // mov ebp->0x1c -> eax
+    // CANARY_CHECK;
+    return ;
+}
+
+                        ebp+0x8  ebp+0xc
+int                main(int ac, char **av, char **environ)
+{
+    int i = ac;            // esp+0x1c
+    char **s = av;        // esp+0x18
+    char **env = NULL;    // esp+0x28
+    // CANARY            // esp+0x2c
+
+    env = environ;
+    int j = 0;
+    while (environ && environ[j])
+    {
+        memset(environ[j], 0, strlen(environ[j]));
+        j++;
+    }
+    if (i != 2)        // i == ac;
+    {
+        printf("Usage : %s <your name>\n", *s);
+        goto: CANARY_CHECK;
+    }
+    s++;            // s == av[1];
+    strncpy(buf, *s, 255);
+    mprint(buf);
+
+    // CANARY_CHECK;
+    return 0;
+}
