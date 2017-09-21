@@ -1,0 +1,12 @@
+gdb level5
+(gdb)layout asm
+
+we observe that there is a function o() that is not called.
+since there is a printf we can assume that this is another format string attack. 
+echo "%x" | ./level5 => BINGO!
+
+python -c 'print "AAAA" + "%x-" * 100' | ./level5
+the offset of the string is the 4th element.
+
+so now we try to replace the address of exit in the G.O.T by the address of o function.
+(see the script)

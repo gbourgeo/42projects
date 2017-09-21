@@ -1,0 +1,5 @@
+analyse with gdb.
+check that the program compare argv[1] with 423
+./level0 423
+$> cd ../level1
+$> cat .pass

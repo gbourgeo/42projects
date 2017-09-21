@@ -1,0 +1,20 @@
+At first we can see that it needs 2 argument so naively we try somtheing like that :
+./bonu1 `python -c 'print "AAAA" * 50'` `python -c 'print "BBBB" * 50'`
+
+We can see that there is a segmentation fault. So i decided to investigate into gdb:
+
+signal SIGSEGV received at 0x8004242
+damn we can only control one part of the EIP;
+and since there is a limit into the 2 strncpy it means that we cannot go further into memory.
+
+What can i do ?
+By looking into the greetuser function we can see that there is a strcat that isn't secured and i changes the greeting message depending on our LANG env function.
+There is nl and fi comp in the memcmp from the main function and the result is used as a parameter in the greetuser function if we can get a larger string that "Hello " we may be able to go further into memory and get full control of the EIP.
+
+lets try that again:
+export LANG=fi
+
+signal SIGSEGV received at 0x42424242
+Boom !!!
+
+now we just have to write a classic shellcode inject it into the ENV and call its address

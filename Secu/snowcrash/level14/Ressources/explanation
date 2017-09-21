@@ -1,0 +1,9 @@
+gdb /bin/getflag
+
+break main
+r
+disas
+# chercher la valeur ou il cmp 0xbc6 avec eax (il verifie que l'uid == 3014) 
+# 3014 c'est l'id de flag14
+taper jump *(address du je qui suit le cmp) 
+TADA!!!

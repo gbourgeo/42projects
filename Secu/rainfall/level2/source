@@ -1,0 +1,23 @@
+
+
+static void p(void)
+{
+	char	buff[76];
+
+	fflush(STDOUT_FILENO);
+	gets(buff);
+	buff[64] = buff[80];
+	if (buff[64] == 'b')
+	{
+		printf("(%p)/n", &buff[64]);
+		exit(1);
+	}
+	puts(buff);
+	strdup(buff);
+}
+
+int main()
+{
+	p();
+	return 0;
+}

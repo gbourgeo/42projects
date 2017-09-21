@@ -1,0 +1,23 @@
+
+static int		m = 0;
+
+static void		p(char *buff)
+{
+	printf(buff);
+}
+
+static void		n(void)
+{
+	char		buff[520];
+
+	fgets(buff 512, STDIN_FILENO);
+	p(buff);
+	if (m == 16930116)
+		system("/bin/cat /home/user/level5/.pass");
+}
+
+int				main()
+{
+	n();
+	return 0;
+}
