@@ -1,33 +1,26 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Exceptions.hpp                                     :+:      :+:    :+:   //
+//   Main.hpp                                           :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2017/09/13 02:34:47 by root              #+#    #+#             //
-//   Updated: 2017/09/24 08:54:02 by root             ###   ########.fr       //
+//   Created: 2017/09/23 04:40:11 by root              #+#    #+#             //
+//   Updated: 2017/09/24 10:12:07 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef EXCEPTIONS_HPP
-# define EXCEPTIONS_HPP
+#ifndef MAIN_HPP
+# define MAIN_HPP
 
-# include <stdexcept>
-# include <string.h>
-# include <errno.h>
+# include "Tintin.hpp"
+# include "Server.hpp"
+# include "Exceptions.hpp"
+# include <signal.h>
 
-class			DAEMONException : public std::exception
-{
+# define LOCK_FILE	"/var/lock/matt_daemon.lock"
 
-public:
-	DAEMONException( void ) throw();
-	DAEMONException( const char *str ) throw();
-	virtual const char* what() const throw();
-	std::string explain() const throw();
-
-	char const *str;
-
-};
+void			daemonize(int lock);
+void			daemonSigHandler(int sig);
 
 #endif

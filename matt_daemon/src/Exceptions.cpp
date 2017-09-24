@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/13 18:58:54 by root              #+#    #+#             //
-//   Updated: 2017/09/13 22:32:51 by root             ###   ########.fr       //
+//   Updated: 2017/09/24 08:53:56 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -16,11 +16,23 @@ DAEMONException::DAEMONException( void ) throw() : str(NULL)
 {
 }
 
-DAEMONException::DAEMONException( const char * str ) throw() : str(str)
+DAEMONException::DAEMONException( const char *str ) throw() : str(str)
 {
 }
 
-char const * DAEMONException::what() const throw()
+const char* DAEMONException::what() const throw()
 {
-	return strerror(errno);
+	if (errno)
+		return strerror(errno);
+	return this->str;
+}
+
+std::string DAEMONException::explain() const throw()
+{
+	std::string str;
+
+	str = this->str;
+	if (errno)
+		str += ": " + (std::string)strerror(errno);
+	return str;
 }

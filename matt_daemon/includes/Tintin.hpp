@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:47:05 by root              #+#    #+#             //
-//   Updated: 2017/09/13 02:19:33 by root             ###   ########.fr       //
+//   Updated: 2017/09/24 08:59:41 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,7 +15,6 @@
 
 # define LOG_DIR	"/var/log/matt_daemon/"
 # define LOG_FILE	"/var/log/matt_daemon/matt_daemon.log"
-# define LOCK_FILE	"/var/lock/matt_daemon.lock"
 
 # include <iostream>
 # include <fstream>
@@ -32,10 +31,8 @@ public:
 	void	log(const char *title, const char *info);
 	void	log(const char *title, const char *info, pid_t pid);
 	void	log(const char *title, const char *info, const char *buff);
+	void	log(const char *title, std::string info);
 
-	std::ofstream	lockfd;
-
-private:
 	std::ofstream	_logfd;
 
 };

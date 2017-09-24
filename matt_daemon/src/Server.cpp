@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/09/13 22:43:02 by root             ###   ########.fr       //
+//   Updated: 2017/09/24 09:49:18 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -16,27 +16,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-
-int Server::findSocket(struct addrinfo *p)
-{
-	int			on;
-
-	on = 1;
-	this->servfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-	if (this->servfd < 0)
-		return -1;
-	if (setsockopt(this->servfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)))
-	{
-		close(this->servfd);
-		return -1;
-	}
-	if (bind(this->servfd, p->ai_addr, p->ai_addrlen) == -1)
-	{
-		close(this->servfd);
-		return -1;
-	}
-	return this->servfd;
-}
+#include <signal.h>
 
 Server::Server(void)
 {
@@ -51,7 +31,7 @@ Server::Server(void)
 	hints.ai_protocol = IPPROTO_TCP;
 	this->servfd = -1;
 	if (getaddrinfo(SERV_ADDR, SERV_PORT, &hints, &res))
-		throw DAEMONException("getaddrinfo");
+		throw DAEMONException("Unable to resolve the server address.");
 	p = res;
 	while (p != NULL)
 	{
@@ -63,7 +43,10 @@ Server::Server(void)
 	}
 	freeaddrinfo(res);
 	if (p == NULL || this->servfd < 0)
-		throw "Invalid address o/ Unavailable port";
+	{
+		errno = 0;
+		throw DAEMONException("Invalid address o/ Unavailable port");
+	}
 	if (listen(this->servfd, SERV_CLIENTS) == -1)
 		throw DAEMONException("listen");
 	memset(this->cl, -1, SERV_CLIENTS * sizeof(int));
@@ -96,7 +79,30 @@ Server & Server::operator=(Server const & rhs)
 	return *this;
 }
 
-int Server::setupSelect(void)
+void		Server::loopServ(Tintin_reporter *tintin)
+{
+	int		maxfd;
+	int		ret;
+
+	while (this->loop)
+	{
+		maxfd = Server::setupSelect();
+		ret = select(maxfd + 1, &this->fdr, NULL, NULL, NULL);
+		if (ret == -1)
+			throw DAEMONException("select");
+		if (FD_ISSET(this->servfd, &this->fdr))
+			acceptConnections();
+		else
+			clientRead(tintin);
+	}
+}
+
+void		Server::quit(void)
+{
+	this->loop = false;
+}
+
+int			Server::setupSelect(void)
 {
 	int		i;
 	int		max;
@@ -116,25 +122,7 @@ int Server::setupSelect(void)
 	return max;
 }
 
-void Server::loopServ(Tintin_reporter *tintin)
-{
-	int		maxfd;
-	int		ret;
-
-	while (this->loop)
-	{
-		maxfd = Server::setupSelect();
-		ret = select(maxfd + 1, &this->fdr, NULL, NULL, NULL);
-		if (ret == -1)
-			throw DAEMONException("select");
-		if (FD_ISSET(this->servfd, &this->fdr))
-			acceptConnections();
-		else
-			clientRead(tintin);
-	}
-}
-
-void	Server::acceptConnections(void)
+void		Server::acceptConnections(void)
 {
 	int				fd;
 	struct sockaddr	csin;
@@ -155,11 +143,11 @@ void	Server::acceptConnections(void)
 	// Recuperer les infos du client et les mettre dans le fichier log ??
 }
 
-void Server::clientRead(Tintin_reporter *tintin)
+void		Server::clientRead(Tintin_reporter *tintin)
 {
-	int			i;
-	int			ret;
-	char		buff[513];
+	int		i;
+	int		ret;
+	char	buff[513];
 
 	i = 0;
 	while (i < SERV_CLIENTS)
@@ -174,7 +162,7 @@ void Server::clientRead(Tintin_reporter *tintin)
 				return ;
 			}
 			buff[ret - 1] = '\0';
-			if (mystrcmp(buff, "quit") == 0)
+			if (Server::mystrcmp(buff, "quit") == 0)
 			{
 				tintin->log("INFO", "Request quit.");
 				this->loop = false;
@@ -186,9 +174,31 @@ void Server::clientRead(Tintin_reporter *tintin)
 	}
 }
 
-int	mystrcmp(const char *s1, const char *s2)
+int			Server::findSocket(struct addrinfo *p)
 {
-	int	i;
+	int		fd;
+	int		on;
+
+	on = 1;
+	fd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	if (fd < 0)
+		return -1;
+	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)))
+	{
+		close(fd);
+		return -1;
+	}
+	if (bind(fd, p->ai_addr, p->ai_addrlen) == -1)
+	{
+		close(fd);
+		return -1;
+	}
+	return fd;
+}
+
+int			Server::mystrcmp(const char *s1, const char *s2)
+{
+	int		i;
 
 	i = 0;
 	if (!s1 || !s2)

@@ -6,24 +6,21 @@
 //   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/07 22:26:13 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/09/15 22:53:05 by gbourgeo         ###   ########.fr       //
+//   Updated: 2017/09/24 10:12:17 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#include "Tintin.hpp"
-#include "Server.hpp"
-#include "Exceptions.hpp"
-#include <stdio.h>
-#include <unistd.h> //exit close
-#include <stdlib.h> //free
+#include "Main.hpp"
 #include <sys/time.h> //getrlimit
 #include <sys/resource.h>
-#include <sys/types.h> //umask
-#include <sys/stat.h>
-#include <signal.h>
+#include <unistd.h> //close
+#include <sys/file.h> //flock
 #include <fcntl.h> //open
 
-static void	closeFileDescriptors(void)
+Tintin_reporter	*tintin = NULL;
+Server			*server = NULL;
+
+static void			closeFileDescriptors(void)
 {
 	struct rlimit	lim;
 	size_t			i;
@@ -35,153 +32,127 @@ static void	closeFileDescriptors(void)
 		close(i++);
 }
 
-static void	resetSignalHandlers(sigset_t *oldmask)
+static void			sanitizeEnvironnement(void)
 {
-	size_t		i;
-	sigset_t	newmask;
-
-	i = 0;
-	while (i < _NSIG)
-		signal(i++, SIG_DFL);
-	sigfillset(&newmask);
-	if (sigprocmask(SIG_SETMASK, &newmask, oldmask) < 0)
-		throw DAEMONException("sigprocmask");
-}
-
-static void	sanitizeEnvironnement(void)
-{
-	extern char **environ;
+	extern char		**environ;
 
 	for (int i = 0; environ && environ[i]; i++)
 		memset(environ[i], 0, strlen(environ[i]));
 }
 
-static void		setupDaemon(void)
+static int			lockFile(void)
 {
-	int fd;
+	int				lock;
 
-	fd = open("/dev/null", O_RDWR);
-	if (fd < 0)
-		throw DAEMONException("/dev/null");
-	dup2(fd, STDIN_FILENO);
-	dup2(fd, STDOUT_FILENO);
-	dup2(fd, STDERR_FILENO);
-	close(fd);
-	umask(0);
-	if (chdir(WORKING_DIR) < 0)
-		throw DAEMONException(WORKING_DIR);
+	lock = open(LOCK_FILE, O_RDWR | O_CREAT | O_EXCL, 0600);
+	if (lock < 0)
+		return -1;
+	if (flock(lock, LOCK_EX | LOCK_NB))
+	{
+		close(lock);
+		return -1;
+	}
+	return lock;
 }
 
-int				main(void)
+int					main(void)
 {
-	Tintin_reporter	*tintin;
-	Server			*server;
-	struct stat		buf;
-	sigset_t		oldmask;
-	pid_t			pid;
+	int				lock;
+	bool			first_daemon = false;
 
-	tintin = NULL;
-	server = NULL;
 	try
 	{
 		if (setuid(getuid()) == -1)
-			throw DAEMONException("setuid");
+			throw DAEMONException("You need to be root !");
 		closeFileDescriptors();
-		resetSignalHandlers(&oldmask);
 		sanitizeEnvironnement();
+
 		tintin = new Tintin_reporter();
 		tintin->log("INFO", "Started.");
-		if (stat(LOCK_FILE, &buf) == 0)
-			throw "Error file locked.";
-		tintin->lockfd.exceptions( std::ofstream::failbit | std::ofstream::badbit);
-		tintin->lockfd.open(LOCK_FILE);
+
+		if ((lock = lockFile()) < 0)
+		{
+			errno = 0;
+			throw DAEMONException("Error file locked.");
+		}
+		first_daemon = true;
+		
 		tintin->log("INFO", "Creating server.");
 		server = new Server();
 		tintin->log("INFO", "Server created.");
+		
 		tintin->log("INFO", "Entering Daemon mode...");
-		pid = fork();
-		if (pid < 0)
-			throw DAEMONException("fork");
-		if (pid == 0)
-		{
-			if (setsid() < 0)
-				throw DAEMONException("setsid");
-			pid = fork();
-			if (pid < 0)
-				throw DAEMONException("fork");
-			if (pid == 0)
-			{
-				tintin->log("INFO", "Done. PID: ", getpid());
-				setupDaemon();
-				tintin->log("INFO", "Launching server...");
-				server->loopServ(tintin);
-				delete server;
-				delete tintin;
-				remove(LOCK_FILE);
-				exit(0);
-			}
-			exit(0);
-		}
+		daemonize(lock);
+		tintin->log("INFO", "Done. PID: ", getpid());
+
+		server->loopServ(tintin);
+		flock(lock, LOCK_UN);
+		remove(LOCK_FILE);
+		delete server;
+		delete tintin;
+
 	}
-	catch (DAEMONException& e)
-	{
-		std::cerr << "Matt_daemon: " << e.str << ": " << e.what() << std::endl;
+	catch (DAEMONException& e) {
+		std::cerr << "Matt_daemon: " << e.explain() << std::endl;
 		if (server)
-		{
 			delete server;
-			remove(LOCK_FILE);
-		}
 		if (tintin)
 		{
-			tintin->log("ERROR", e.str, e.what());
+			tintin->log("ERROR", e.explain());
 			delete tintin;
 		}
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << "Matt_daemon: " << e.what() << std::endl;
-		if (server)
+		if (first_daemon)
 		{
-			delete server;
+			flock(lock, LOCK_UN);
 			remove(LOCK_FILE);
 		}
+	}
+	catch (std::exception& e) {
+		std::cerr << "Matt_daemon: " << e.what() << std::endl;
+		if (server)
+			delete server;
 		if (tintin)
 		{
 			tintin->log("ERROR", e.what());
 			delete tintin;
 		}
-	}
-	catch (int error)
-	{
-		const char	*str;
-
-		str = strerror(error);
-		std::cerr << "Matt_daemon: " << str << std::endl;
-		if (server)
+		if (first_daemon)
 		{
-			delete server;
+			flock(lock, LOCK_UN);
 			remove(LOCK_FILE);
 		}
-		if (tintin)
-		{
-			tintin->log("ERROR", str);
-			delete tintin;
-		}
 	}
-	catch (const char *str)
-	{
-		std::cerr << "Matt_daemon: " << str << std::endl;
-		if (server)
-		{
-			delete server;
-			remove(LOCK_FILE);
-		}
-		if (tintin)
-		{
-			tintin->log("ERROR", str);
-			delete tintin;
-		}
-	}
-	sigprocmask(SIG_SETMASK, &oldmask, NULL);
 	return 0;
+}
+
+void			daemonSigHandler(int sig)
+{
+	struct tm	*tm;
+	time_t		t;
+	const char	*signals[] = { "0", "SIGUP", "SIGINT", "SIGQUIT", "SIGILL",
+							  "SIGTRAP", "SIGABRT", "SIGPOLL/SIGEMT",
+							  "SIGFPE", "SIGKILL", "SIGBUS", "SIGSEGV",
+							  "SIGSYS", "SIGPIPE", "SIGALRM", "SIGTERM",
+							  "SIGURG", "SIGSTOP", "SIGTSTP", "SIGCONT",
+							  "SIGCHLD", "SIGTTIN", "SIGTTOU", "SIGIO",
+							  "SIGXCPU", "SIGXFSZ", "SIGVTALRM", "SIGPROF",
+							   "SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2",
+	"UNKNOWN SIGNAL"};
+
+	if (tintin->_logfd.is_open())
+	{
+		t = time(NULL);
+		tm = localtime(&t);
+		if (sig < 0 || sig > _NSIG)
+			sig = _NSIG + 1;
+		tintin->_logfd << "[" << tm->tm_mday << "/";
+		tintin->_logfd << tm->tm_mon << "/";
+		tintin->_logfd << 1900 + tm->tm_year;
+		tintin->_logfd << "-" << tm->tm_hour;
+		tintin->_logfd << ":" << tm->tm_min;
+		tintin->_logfd<< ":" << tm->tm_sec;
+		tintin->_logfd << "] [ ERROR ] - Matt_daemon: ";
+		tintin->_logfd << signals[sig] << " caught.\n";
+	}
+	server->quit();
 }
