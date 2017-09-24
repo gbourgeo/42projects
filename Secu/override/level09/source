@@ -1,0 +1,61 @@
+
+static void	secret_backdoor()
+{
+	char	buff[0x80];
+
+	fgets(buff, 0x80, STDIN_FILENO);
+	system(buff);
+}
+
+static void	set_msg(char *buff)
+{
+	char	*ptr = buff;	// %rbp - 0x408
+	char	msg[]; 			// %rbp - 0x400
+
+	memset(msg, 0, 128);
+	puts(">: Msg @Unix-Dude");
+	printf(">>: ");
+	fgets(msg, 1024, STDIN_FILENO);
+	strncpy(ptr, msg, buff[180]);
+}
+
+static void	set_username(char *buff)
+{
+	char	*ptr = buff;	// %rbp - 0x98
+	char	user[0x86];		// %rbp - 0x90
+	int		i;				// %rbp - 0x4
+
+	memset(user, 0, 16);
+	puts(">: Enter your username");
+	printf(">>: ");
+	fgets(user, (0x80)128, STDIN_FILENO);
+	i = 0;
+	while (i <= 40 && user[(unsigned int) i] != 0)
+	{
+		ptr[140 + (unsigned int) i] = user[(unsigned int) i];
+		i++;
+	}
+	printf(">: Welcome, %s", ptr + 140);
+}
+
+static void	handle_msg(void)
+{
+	char	buff[190];		// %rbp - 0xc0
+
+	buff[52] = 0;
+	buff[60] = 0;
+	buff[68] = 0;
+	buff[76] = 0;
+	buff[84] = 0;
+	buff[180] = 140;
+	set_username(buff);
+	set_msg(buff);
+	puts(">: Msg sent!");
+}
+
+int			main(void)
+{
+	puts('-' <repeats 44 times>, "\n|   ~Welcome to l33t-m$n ~    v1337        |\n", '-' <repeats 44 times>);
+	handle_msg();
+	return 0;
+}

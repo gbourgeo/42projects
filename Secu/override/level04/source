@@ -1,0 +1,39 @@
+int				main()
+{
+	int			j;			// 0x1c(%ESP)
+	char		buff[];		// 0x20(%ESP)
+	int			i;			// 0xa8(%ESP)
+	pid_t		pid;		// 0xac(%ESP)
+
+	pid = fork();
+	memset(buff, 0, 0x20);
+	i = 0;
+	j = 0;	
+	if (pid != 0)
+	{
+		prctl(1, 1);
+		// int ptrace(int request, pid_t pid, caddr_t addr, int data);
+		ptrace(0, 0, 0, 0);
+		puts("Give me some shellcode, k");
+		// char *gets(char *str);
+		gets(buff);
+		return 0;
+	}
+	while (i != 0xb)
+	{
+		wait(&j);
+		0xa0(%ESP) = j;
+		0xa4(%ESP) = j;
+		if (0xa0(%ESP) & 0x7f == 0) {
+			puts("child is exiting...");
+			return 0;
+		}
+		else if (((0xa4(%ESP) & 0x7f) + 1) >> 1 > 0) //(sar %al, preserve the sign bit) {
+			puts("child is exiting...");
+			return 0;
+		}
+		i = ptrace(3, pid, 0x2c, 0);
+	}
+	puts("no exec() for you");
+	kill(pid, 9);
+}

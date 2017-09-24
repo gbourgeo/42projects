@@ -1,0 +1,68 @@
+
+static int		auth(char *buff, unsigned int code)
+{
+	int			len;			// %ebp - 0xc
+	int			store;			// %ebp - 0x10
+	int			count;				// %ebp - 0x14
+
+	*(buff + strcspn(buff, "\n")) = 0;
+
+	len = strnlen(buff, 0x20);
+
+	if (len <= 5)
+	    return 1;
+
+	if (ptrace(0, 0, 1, 0) == -1)
+	{
+		puts("\033[32m.", '-' <repeats 27 times>, ".");
+		puts("\033[31m| !! TAMPERING DETECTED !!  |");
+		puts("\033[32m'", '-' <repeats 27 times>, "'");
+		return 1;
+	}
+
+	store = *(buff + 0x3) ^ 0x1337) + 0x5eeded;
+	count = 0;
+	while (len >= count)
+	{
+		if (buff[count] <= 0x1f)	// < 32 (' ')
+		    return 1;
+		int	a = buff[count] ^ store;
+		int b = 0x88233b2b * a / 0x100000000;
+		store = a + (-1337) * ((a - b) / 2 + b) / 1024 + store;
+		count++;
+	}
+	if (store == code)
+   	    return 0;
+	return 1;
+}
+
+int				main()
+{
+	unsigned int	i;			// %esp + 0x28
+	char			buff[0x20];	// %esp + 0x2c
+	//CANARY					%esp + 0x4c
+
+	puts("***********************************");
+	puts("*\t\tlevel06\t\t  *");
+	puts("***********************************");
+	printf("-> Enter Login: ");
+
+	fgets(buff, 0x20, STDIN_FILENO);
+
+	puts("***********************************");
+	puts("***** NEW ACCOUNT DETECTED ********");
+	puts("***********************************");
+	printf("-> Enter Serial:");
+
+	scanf("%u", i);
+
+	if (auth(buff, i) == 0)
+	{
+		puts("Authenticated!");
+		system("/bin/sh");
+		//CANARY_CHECK
+		return 0;
+	}
+	//CANARY_CHECK
+	return 1;
+}

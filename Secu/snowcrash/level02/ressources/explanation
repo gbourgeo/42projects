@@ -1,0 +1,2 @@
+scp -P 4242 level02@10.12.1.121:level02.pcap tada #on a copie le fichier en ssh
+ouvert sur cloudshark. => filer by datas. et on a regarder les datas envoyees apres le password len(79)

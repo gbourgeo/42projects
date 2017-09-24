@@ -1,0 +1,19 @@
+
+int main(void)
+{
+	int			nb;		// -0x1c(%esp)
+
+	puts("*" x35);
+	puts("* \t     -Level00 -\t\t  *");
+	puts("*" x35);
+	printf("Password:");
+	scanf("%d", nb);
+	if (nb == 5276)		// 0x149c
+	{
+		puts("\nAuthenticated!");
+		system("/bin/sh");
+		return 0;
+	}
+	puts("\nAuthenticated!");
+	return 1;
+}

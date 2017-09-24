@@ -6,16 +6,22 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/09/11 06:17:19 by root             ###   ########.fr       //
+//   Updated: 2017/09/13 22:47:03 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include "Tintin.hpp"
+
 # define SERV_ADDR "localhost"
 # define SERV_PORT "4242"
-# define SERV_CLIENTS 3
+# define SERV_CLIENTS 1
+# define WORKING_DIR "/"
+# include <sys/select.h>
+
+int	mystrcmp(const char *s1, const char *s2);
 
 class		Server
 {
@@ -27,14 +33,17 @@ public:
 
 	Server & operator=(Server const & rhs);
 
-	int			getServfd(void) const;
-	const char	*getError(void) const;
-	
-	int			servfd;
-	const char	*err;
+	void		loopServ(Tintin_reporter *tintin);
 
 private:
-	int findSocket(struct addrinfo *p);
+	int			setupSelect(void);
+	int			findSocket(struct addrinfo *p);
+	void		acceptConnections(void);
+	void		clientRead(Tintin_reporter *tintin);
+	int			servfd;
+	fd_set		fdr;
+	int			cl[SERV_CLIENTS];
+	bool		loop;
 
 };
 

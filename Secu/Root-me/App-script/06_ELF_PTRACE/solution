@@ -1,0 +1,69 @@
+OK
+donc
+l'utilisation tranquile de gdb on oublie, va falloir twerker....
+donc
+
+$ chmod +x ch3.bin
+$ gdb ch3.bin
+(gdb) b main
+(gdb) r
+
+Si on continue maintenant ptrace mettra la valeur de $eax a -1
+du coup
+ptit break apres lappel et on set la valeur d'eax a 0. DTC PTRACE !
+...
+0x0804.. <+32> .. <ptrace>
+0x0804.. <+37> ..
+...
+(gdb) b *main+37
+(gdb) c
+(gdb) set $eax=0
+
+BOn
+Si oncontinue sans mettre de breakpoint ca nous sera pas utile on regarde le code et on met les breakpoint apres le fgets
+...
+0x0804.. <+150> .. <fgets>
+0x0804.. <+155> ..
+...
+(gdb) b *main+155
+(gdb) c
+
+OK tout est bon ..... hm wait....
+...
+lea 0x08048497,%eax
+inc %eax
+jmp *%eax
+...
+Du coup on jump plus a 08048497 mais a 08048498
+(gdb) b *0x08048498
+(gdb) c
+
+Maintenant
+(gdb) x/40i 0x08048498
+Un autre code apparait
+On decortique et on voit qu'il fait 4 comparaisons.
+En mettant tout simplement des breakpoint au niveau de ses comparaisons on voit que %AL correspond au bon code alors
+POURQUOI -> fgets nous a demander un password: 
+en ayant mis ABCD
+on s'apercoit que %DL contient la valeur de 'A' en DECIMAL (soit 66) donc %AL correspond au bon passwd.
+donc aux 4 breakpoint on fait affiche %AL et on met %dl a la meme valeur juska trouver le mot de passe final.!!
+
+(gdb) p $al
+$1 = 101				'e'
+(gdb) set %dl=101
+(gdb) c
+(gdb) p $al
+$1 = 97					'a'
+(gdb) set %dl=97
+(gdb) c
+(gdb) p $al
+$1 = 115				's'
+(gdb) set %dl=115
+(gdb) c
+(gdb) p $al
+$1 = 121				'y'
+(gdb) set %dl=121
+(gdb) c
+
+ Good Password !!!
+

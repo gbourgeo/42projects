@@ -1,0 +1,52 @@
+---> l'idee ici est de trouver la valeur qui nous lancera le system(/bin/sh) qui est comprise
+----> entre 322424845 et 322424824
+----> pour cela on se fait un petit script et on check quel valeur ne retourne
+----> pas invalid password:
+
+level03@OverRide:~$ cat /tmp/03.sh
+#!/bin/sh
+
+for numero in `seq 322424824 322424845`
+        do echo "$numero" && echo "$numero" | /home/users/level03/level03
+done
+
+level03@OverRide:~$ sh /tmp/03.sh
+
+.....
+
+322424826
+***********************************
+*		level03		**
+***********************************
+Password:
+Invalid Password
+322424827
+***********************************
+*		level03		**
+***********************************
+Password:322424828
+***********************************
+*		level03		**
+***********************************
+Password:
+Invalid Password
+
+.....
+
+level03@OverRide:~$ (echo 322424827 ; cat) | ./level03
+***********************************
+*		level03		**
+***********************************
+ls
+ls: cannot open directory .: Permission denied
+cd ../level04
+cat .pass
+kgv3tkEb9h2mLkRsPkXRfc2mHbjMxQzvb2FrgKkf
+
+
+
+
+
+
+
+over...

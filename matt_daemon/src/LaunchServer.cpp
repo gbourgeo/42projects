@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 06:24:16 by root              #+#    #+#             //
-//   Updated: 2017/09/11 18:33:25 by root             ###   ########.fr       //
+//   Updated: 2017/09/11 23:12:07 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,10 +18,10 @@
 #include <sys/socket.h>
 #include <string.h>
 
-static int	clientRead(Daemon &daemon, int *fd)
+static int		clientRead(Daemon &daemon, int *fd)
 {
-	int		ret;
-	char	buff[513];
+	int			ret;
+	std::string	buff[513];
 
 	ret = recv(*fd, buff, 512, 0);
 	if (ret <= 0)
@@ -66,7 +66,7 @@ static int	acceptConnections(Daemon &daemon, int *client)
 	return (1);
 }
 
-static void	loop(Daemon &daemon)
+static void	loop(Tintin_reporter *tintin, Server *server)
 {
 	fd_set	fd_read;
 	int		client[3];
@@ -80,8 +80,8 @@ static void	loop(Daemon &daemon)
 	while (run)
 	{
 		FD_ZERO(&fd_read);
-		FD_SET(daemon.getServfd(), &fd_read);
-		maxfd = daemon.getServfd();
+		FD_SET(server->getServfd(), &fd_read);
+		maxfd = server->getServfd();
 		i = 0;
 		while (i < 3)
 		{
@@ -97,7 +97,7 @@ static void	loop(Daemon &daemon)
 			daemon.log("ERROR", "Error select().");
 			break ;
 		}
-		if (FD_ISSET(daemon.getServfd(), &fd_read))
+		if (FD_ISSET(sever->getServfd(), &fd_read))
 			run = acceptConnections(daemon, client);
 		i = 0;
 		while (run && i < 3 && ret > 0)
@@ -120,36 +120,4 @@ static void	loop(Daemon &daemon)
 			close(client[i]);
 		i++;
 	}
-}
-
-void	LaunchServer(void)
-{
-	int fd;
-
-	fd = open("/dev/null", O_RDWR);
-	if (fd < 0)
-		return ;
-	dup2(fd, STDIN_FILENO);
-	dup2(fd, STDOUT_FILENO);
-	dup2(fd, STDERR_FILENO);
-	close(fd);
-	umask(0);
-	if (chdir("/") < 0)
-		return ;
-	
-	Daemon			daemon;
-	
-	if (!daemon.isLocked())
-	{
-		daemon.log("ERROR", "File locked.");
-		return ;
-	}
-	if (daemon.getServerError())
-	{
-		daemon.log("ERROR", daemon.getServerError());
-		return ;
-	}
-	daemon.log("INFO", "Server created.");
-	loop(daemon);
-	daemon.log("INFO", "Quitting");
 }

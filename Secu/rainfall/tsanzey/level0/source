@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int		main(int ac, char **av)
+{
+	if (atoi(av[1]) == 423)
+	{
+		int gid = getegid();
+		int uid = geteuid();
+		setresgid(gid, gid, gid);
+		setresuid(uid, uid, uid);
+		execve("/bin/sh", NULL);
+		return (0);
+	}
+	printf("No !\n");
+	return (0);
+}

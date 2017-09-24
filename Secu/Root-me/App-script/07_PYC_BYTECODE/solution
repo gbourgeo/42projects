@@ -1,0 +1,43 @@
+on telecharge le .pyc et impossible de lexecuter, le magic number est casse.
+Du coup on install uncompyle6 et on decompile le .pyc:
+
+$ uncompyle6 ./ch19.pyc
+if __name__ == '__main__':
+ print('Welcome to the RootMe python crackme')
+ PASS = input('Enter the Flag: ')
+ KEY = 'I know, you love decrypting Byte Code !'
+ I = 5
+ SOLUCE = [57, 73, 79, 16, 18, 26, 74, 50, 13, 38, 13, 79, 86, 86, 87]
+ KEYOUT = []
+ for X in PASS:
+ KEYOUT.append((ord(X) + I ^ ord(KEY[I])) % 255)
+ I = (I + 1) % len(KEY)
+ if SOLUCE == KEYOUT:
+   print('You Win')
+ else:
+   print('Try Again !')
+$ 
+
+Donc pour chaque caracteres entrer (for X in PASS), on concatene a KEYOUT (.append) la position dans la chaine de X (ord(X))
+on lui ajoute I, on le xor avec la valeur ascii du caractere de la chaine KEY a la position I (ord(KEY[i])). Tout ca modulo 255.
+Puis  i change (I = (I + 1) % len(KEY)) etc ... jusqu'a ce que le tout soit egal a SOLUCE !
+
+Du coup on a: 
+(X + 5) ^ ord('w') = 57		-> 73	<=> I
+(X + 6) ^ ord(',') = 73		-> 95 	<=> _
+(X + 7) ^ ord(' ') = 79		-> 104 	<=> h
+(X + 8) ^ ord('y') = 16		-> 97 	<=> a
+(X + 9) ^ ord('o') = 18		-> 116 	<=> t
+(X + 10) ^ ord('u') = 26	-> 101	<=> e
+(X + 11) ^ ord(' ') = 74	-> 95	<=> _
+(X + 12) ^ ord('l') = 50	-> 82	<=> R
+(X + 13) ^ ord('o') = 13	-> 85	<=> U
+(X + 14) ^ ord('v') = 38	-> 66	<=> B
+(X + 12) ^ ord('e') = 13	-> 89	<=> Y
+(X + 12) ^ ord(' ') = 79	-> 95	<=> _
+(X + 12) ^ ord('d') = 86	-> 33	<=> !
+(X + 12) ^ ord('e') = 86	-> 33	<=> !
+(X + 12) ^ ord('c') = 87	-> 33	<=> !
+
+PASS = I_hate_RUBY!!!
+

