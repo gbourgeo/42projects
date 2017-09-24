@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/04/14 21:36:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/10 18:51:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/24 17:04:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@
 # define SIZEOF		(sizeof(TYPE))
 # define TINY		1024
 # define SMALL		4096
+
+typedef struct		s_head
+{
+	struct s_head	*next;
+	int				length;
+}					t_head;
 
 typedef struct		s_zone
 {

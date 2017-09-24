@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/04/14 16:33:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/10 18:40:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/24 17:34:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static void			*ft_region(t_zone **region, size_t size)
 	size_t			i;
 
 	i = 0;
-	if (!*region)
+	if (!region || !*region)
 		return (NULL);
 	if ((*region)->data == NULL)
 		return (ft_init_data(region, size));
@@ -80,7 +80,7 @@ static void			*ft_region(t_zone **region, size_t size)
 		reg = (size < TINY) ? TINY : SMALL;
 		while (i < (*region)->size && *(TYPE*)((*region)->data + i) > 0)
 			i = i + reg + SIZEOF;
-		if (i < (*region)->size)
+		if (i + size + SIZEOF < (*region)->size)
 		{
 			*(TYPE*)((*region)->data + i) = size;
 			return ((*region)->data + i + SIZEOF);
@@ -95,7 +95,7 @@ static void			*ft_region(t_zone **region, size_t size)
 
 void				*malloc(size_t size)
 {
-	if (size <= 0)
+	if (size == 0)
 		return (NULL);
 	if (size < TINY)
 	{
