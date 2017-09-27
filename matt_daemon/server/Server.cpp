@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/09/27 05:28:23 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 16:21:39 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -65,15 +65,12 @@ Server::Server(Server const & src)
 
 Server::~Server(void)
 {
-	int	i;
-
 	if (this->servfd != -1)
-		close(this->servfd);
-	i = 0;
-	while (i < SERV_CLIENTS)
+		::close(this->servfd);
+	for (int i = 0; i < SERV_CLIENTS; i++)
 	{
 		if (this->client[i].fd != -1)
-			close(this->client[i].fd);
+			::close(this->client[i].fd);
 		i++;
 	}
 }
@@ -173,6 +170,7 @@ void		Server::clientRead(Tintin_reporter *tintin)
 			ret = recv(this->client[i].fd, buff, 512, 0);
 			if (ret <= 0)
 			{
+				tintin->log("INFO", this->client[i].addr, "disconnected.");
 				close(this->client[i].fd);
 				this->client[i].fd = -1;
 				return ;

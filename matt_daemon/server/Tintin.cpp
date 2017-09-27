@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/09/27 05:23:34 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 16:16:27 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -24,7 +24,7 @@ Tintin_reporter::Tintin_reporter()
 	mkdir(LOG_DIR, 0600);
 	this->_logfd.exceptions( std::ofstream::failbit | std::ofstream::badbit);
 	this->_logfd.open(LOG_FILE, std::ofstream::out | std::ofstream::app);
-	if (this->_logfd.is_open() < 0)
+	if (!this->_logfd.is_open())
 		throw DAEMONException("logfile");
 }
 
@@ -35,7 +35,7 @@ Tintin_reporter::Tintin_reporter(const Tintin_reporter & rhs)
 
 Tintin_reporter::~Tintin_reporter()
 {
-	Tintin_reporter::log("INFO", "Quitting.\n");
+	Tintin_reporter::log("QUIT", LOG_FILE, "closed");
 	if (this->_logfd.is_open())
 		this->_logfd.close();
 }

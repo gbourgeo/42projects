@@ -1,9 +1,5 @@
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <unistd.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -96,13 +92,13 @@ void MainWindow::sockError(QAbstractSocket::SocketError erreur)
     switch (erreur)
     {
         case QAbstractSocket::HostNotFoundError:
-            ui->textBrowser->append("<center>Can't establish connection to server.</center>");
+            ui->textBrowser->append("<center>Address not found.</center>");
             break ;
         case QAbstractSocket::ConnectionRefusedError:
-            ui->textBrowser->append("<center>Server refused the connection.</center>");
+            ui->textBrowser->append("<center>Connection refused.</center>");
             break ;
         case QAbstractSocket::RemoteHostClosedError:
-            ui->textBrowser->append("<center>Server closed the connection.</center>");
+            ui->textBrowser->append("<center>Connection closed.</center>");
             break ;
         default:
             ui->textBrowser->append(tr("<center>") + this->socket->errorString() + tr("</center>"));
@@ -114,17 +110,16 @@ void MainWindow::sockError(QAbstractSocket::SocketError erreur)
 
 void MainWindow::sendText()
 {
-    QByteArray  packet;
-    QDataStream out(&packet, QIODevice::WriteOnly);
-    QString     message = ui->sendField->toPlainText();
+    QByteArray      message;
 
-    if (!this->socket->isOpen() || message == NULL)
+    message.clear();
+    message = ui->sendField->toPlainText().toUtf8();
+
+    if (!this->socket->isOpen() || message.isEmpty() || message.isNull())
         return ;
-    out << (quint16) 0;
-    out << message;
-    out.device()->seek(0);
-    out << (quint16)(packet.size() - sizeof(quint16));
-    this->socket->write(packet);
+//    message.at(message.length()) = 0;
+    this->socket->write(message.data());
+    this->socket->waitForBytesWritten(1000);
     ui->textBrowser->append(message);
     ui->sendField->clear();
 }

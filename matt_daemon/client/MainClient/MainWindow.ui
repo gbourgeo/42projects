@@ -103,7 +103,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="addressField"/>
+       <widget class="QLineEdit" name="addressField">
+        <property name="text">
+         <string>localhost</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="ConnectButton">
@@ -124,7 +128,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="portField"/>
+       <widget class="QLineEdit" name="portField">
+        <property name="text">
+         <string>4242</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="QuitButton">

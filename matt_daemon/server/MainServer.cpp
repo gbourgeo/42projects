@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/25 07:33:40 by root              #+#    #+#             //
-//   Updated: 2017/09/25 07:34:50 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 16:17:42 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -87,8 +87,14 @@ int					main(void)
 
 		server->loopServ(tintin);
 		flock(lock, LOCK_UN);
-		remove(LOCK_FILE);
+		if (remove(LOCK_FILE))
+			tintin->log("ERROR", LOCK_FILE, "not removed.");
+		else
+			tintin->log("QUIT", LOCK_FILE, "removed.");
+			
+		tintin->log("QUIT", "Closing Server...");
 		delete server;
+		tintin->log("QUIT", "Server Closed.");
 		delete tintin;
 
 	}
