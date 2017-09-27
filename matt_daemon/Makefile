@@ -6,39 +6,54 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/24 10:09:54 by root             ###   ########.fr        #
+#    Updated: 2017/09/25 07:33:03 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
-NAME = Matt_daemon
+SERVER = Matt_daemon
 
-SRC_D = src/
+CLIENT = Ben_AFK
 
-SRC = Main.cpp Tintin.cpp Server.cpp Exceptions.cpp Daemonize.cpp
+SRC_SERVER = MainServer.cpp Tintin.cpp Server.cpp Exceptions.cpp Daemonize.cpp
+
+SRC_CLIENT = MainClient.cpp
+
+SERVER_D = server/
+
+CLIENT_D = client/
 
 OBJ_D = obj/
 
-OBJ = $(addprefix $(OBJ_D), $(SRC:.cpp=.o))
+OBJ_SERVER = $(addprefix $(OBJ_D), $(SRC_SERVER:.cpp=.o))
 
-HEADERS = includes
+OBJ_CLIENT = $(addprefix $(OBJ_D), $(SRC_CLIENT:.cpp=.o))
+
+HEADERS = ./includes/
 
 WWW = g++ -Wall -Werror -Wextra
 
-all: prep $(NAME)
+all: $(SERVER) $(CLIENT)
+
+$(SERVER): $(OBJ_SERVER)
+	$(WWW) -o $@ $^
+
+$(OBJ_D)%.o: $(SERVER_D)%.cpp | prep
+	$(WWW) -o $@ -c $< -I $(HEADERS)
+
+$(CLIENT): $(OBJ_CLIENT)
+	$(WWW) -o $@ $^
+
+$(OBJ_D)%.o: $(CLIENT_D)%.cpp | prep
+	$(WWW) -o $@ -c $< -I $(HEADERS)
 
 prep:
 	@mkdir -p $(OBJ_D)
-
-$(NAME): $(OBJ)
-	$(WWW) -o $@ $^
-
-$(OBJ_D)%.o: $(SRC_D)%.cpp
-	$(WWW) -o $@ -c $< -I $(HEADERS)
 
 clean:
 	/bin/rm -rf $(OBJ_D)
 
 fclean: clean
-	/bin/rm -rf $(NAME)
+	/bin/rm -rf $(SERVER)
+	/bin/rm -rf $(CLIENT)
 
 re: fclean all

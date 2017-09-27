@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/09/24 09:49:39 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 05:23:34 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -74,6 +74,22 @@ void Tintin_reporter::log(const char *title, const char *info, pid_t pid)
 	this->_logfd << "] [ " << title << " ] - Matt_daemon: " << info;
 	this->_logfd << pid << std::endl;
 }
+
+void Tintin_reporter::log(const char *title, const char *info, const char *ip, const char *host, const char *port)
+{
+	struct tm	*tm;
+	time_t		t;
+
+	t = time(NULL);
+	tm = localtime(&t);
+	if (!this->_logfd.is_open())
+		return ;
+	this->_logfd << "[" << tm->tm_mday << "/" << tm->tm_mon << "/" << 1900 + tm->tm_year;
+	this->_logfd << "-" << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec;
+	this->_logfd << "] [ " << title << " ] - Matt_daemon: " << info;
+	this->_logfd <<  host << "(" << ip << "): " << port << std::endl;
+}
+
 
 void Tintin_reporter::log(const char *title, const char *info, const char *buff)
 {

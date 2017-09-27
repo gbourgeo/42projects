@@ -1,17 +1,17 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Main.hpp                                           :+:      :+:    :+:   //
+//   MainServer.hpp                                     :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2017/09/23 04:40:11 by root              #+#    #+#             //
-//   Updated: 2017/09/24 10:12:07 by root             ###   ########.fr       //
+//   Created: 2017/09/25 07:35:36 by root              #+#    #+#             //
+//   Updated: 2017/09/25 07:35:56 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef MAIN_HPP
-# define MAIN_HPP
+#ifndef MAINSERVER_HPP
+# define MAINSERVER_HPP
 
 # include "Tintin.hpp"
 # include "Server.hpp"

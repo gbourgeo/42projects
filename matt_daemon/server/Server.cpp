@@ -6,17 +6,17 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/09/24 09:49:18 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 05:28:23 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Server.hpp"
 #include "Exceptions.hpp"
 #include <unistd.h>
+#include <signal.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
-#include <signal.h>
 
 Server::Server(void)
 {
@@ -49,7 +49,12 @@ Server::Server(void)
 	}
 	if (listen(this->servfd, SERV_CLIENTS) == -1)
 		throw DAEMONException("listen");
-	memset(this->cl, -1, SERV_CLIENTS * sizeof(int));
+	for (int i = 0; i < SERV_CLIENTS; i++) {
+		this->client[i].fd = -1;
+		memset(this->client[i].addr, 0, sizeof(this->client[i].addr));
+		memset(this->client[i].host, 0, sizeof(this->client[i].addr));
+		memset(this->client[i].port, 0, sizeof(this->client[i].addr));
+	}
 	this->loop = true;
 }
 
@@ -65,10 +70,10 @@ Server::~Server(void)
 	if (this->servfd != -1)
 		close(this->servfd);
 	i = 0;
-	while (i < 3)
+	while (i < SERV_CLIENTS)
 	{
-		if (this->cl[i] != -1)
-			close(this->cl[i]);
+		if (this->client[i].fd != -1)
+			close(this->client[i].fd);
 		i++;
 	}
 }
@@ -91,7 +96,7 @@ void		Server::loopServ(Tintin_reporter *tintin)
 		if (ret == -1)
 			throw DAEMONException("select");
 		if (FD_ISSET(this->servfd, &this->fdr))
-			acceptConnections();
+			acceptConnections(tintin);
 		else
 			clientRead(tintin);
 	}
@@ -113,16 +118,16 @@ int			Server::setupSelect(void)
 	i = 0;
 	while (i < SERV_CLIENTS)
 	{
-		if (this->cl[i] > max)
-			max = this->cl[i];
-		if (this->cl[i] != -1)
-			FD_SET(this->cl[i], &this->fdr);
+		if (this->client[i].fd > max)
+			max = this->client[i].fd;
+		if (this->client[i].fd != -1)
+			FD_SET(this->client[i].fd, &this->fdr);
 		i++;
 	}
 	return max;
 }
 
-void		Server::acceptConnections(void)
+void		Server::acceptConnections(Tintin_reporter *tintin)
 {
 	int				fd;
 	struct sockaddr	csin;
@@ -134,13 +139,24 @@ void		Server::acceptConnections(void)
 	if (fd < 0)
 		throw DAEMONException("accept");
 	i = 0;
-	while (i < 3 && this->cl[i] != -1)
+	while (i < SERV_CLIENTS && this->client[i].fd != -1)
 		i++;
-	if (i == 3)
+	if (i >= SERV_CLIENTS)
+	{
 		close(fd);
-	else
-		this->cl[i] = fd;
-	// Recuperer les infos du client et les mettre dans le fichier log ??
+		return ;
+	}
+	this->client[i].fd = fd;
+
+	struct sockaddr_in *cs = (struct sockaddr_in *)&csin;
+	
+	inet_ntop(AF_INET, &cs->sin_addr.s_addr, this->client[i].addr, 1024);
+	// getnameinfo(&csin, sizeof(csin), host, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
+	// strncpy(this->client[i].host, host, NI_MAXHOST);
+	// strncpy(this->client[i].port, port, NI_MAXSERV);
+	// tintin->log("INFO", "New connection from ", this->client[i].addr,
+				// this->client[i].host, this->client[i].port);
+	tintin->log("INFO", "New client from ", this->client[i].addr);
 }
 
 void		Server::clientRead(Tintin_reporter *tintin)
@@ -152,23 +168,28 @@ void		Server::clientRead(Tintin_reporter *tintin)
 	i = 0;
 	while (i < SERV_CLIENTS)
 	{
-		if (this->cl[i] >= 0 && FD_ISSET(this->cl[i], &this->fdr))
+		if (this->client[i].fd != -1 && FD_ISSET(this->client[i].fd, &this->fdr))
 		{
-			ret = recv(this->cl[i], buff, 512, 0);
+			ret = recv(this->client[i].fd, buff, 512, 0);
 			if (ret <= 0)
 			{
-				close(this->cl[i]);
-				this->cl[i] = -1;
+				close(this->client[i].fd);
+				this->client[i].fd = -1;
 				return ;
 			}
-			buff[ret - 1] = '\0';
+			if (buff[ret - 1] == '\n')
+				buff[ret - 1] = '\0';
 			if (Server::mystrcmp(buff, "quit") == 0)
 			{
-				tintin->log("INFO", "Request quit.");
+				tintin->log("INFO", "Request quit from ",
+							this->client[i].addr);
+							// this->client[i].addr,
+							// this->client[i].port);
 				this->loop = false;
 			}
 			else if (buff[0])
-				tintin->log("LOG", "User input", buff);
+//				tintin->log("LOG", "User input", buff);
+				tintin->log("LOG", "User input", this->client[i].addr, " ", buff);
 		}
 		i++;
 	}

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:47:05 by root              #+#    #+#             //
-//   Updated: 2017/09/24 08:59:41 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 03:58:23 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -30,6 +30,7 @@ public:
 
 	void	log(const char *title, const char *info);
 	void	log(const char *title, const char *info, pid_t pid);
+	void	log(const char *title, const char *info, const char *ip, const char *host, const char *port);
 	void	log(const char *title, const char *info, const char *buff);
 	void	log(const char *title, std::string info);
 

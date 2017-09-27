@@ -1,16 +1,16 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Main.cpp                                           :+:      :+:    :+:   //
+//   MainServer.cpp                                     :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
+//   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2017/09/07 22:26:13 by gbourgeo          #+#    #+#             //
-//   Updated: 2017/09/24 10:12:17 by root             ###   ########.fr       //
+//   Created: 2017/09/25 07:33:40 by root              #+#    #+#             //
+//   Updated: 2017/09/25 07:34:50 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#include "Main.hpp"
+#include "MainServer.hpp"
 #include <sys/time.h> //getrlimit
 #include <sys/resource.h>
 #include <unistd.h> //close
