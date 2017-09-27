@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/09/27 16:21:39 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 23:47:35 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -24,7 +24,7 @@ Server::Server(void)
 	struct addrinfo	*res;
 	struct addrinfo	*p;
 
-	memset(&hints, 0, sizeof(hints));
+	mymemset(&hints, 0, sizeof(hints));
 	hints.ai_flags = AI_PASSIVE | AI_CANONNAME;
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
@@ -51,9 +51,9 @@ Server::Server(void)
 		throw DAEMONException("listen");
 	for (int i = 0; i < SERV_CLIENTS; i++) {
 		this->client[i].fd = -1;
-		memset(this->client[i].addr, 0, sizeof(this->client[i].addr));
-		memset(this->client[i].host, 0, sizeof(this->client[i].addr));
-		memset(this->client[i].port, 0, sizeof(this->client[i].addr));
+		mymemset(this->client[i].addr, 0, 1024);
+		mymemset(this->client[i].host, 0, NI_MAXHOST);
+		mymemset(this->client[i].port, 0, NI_MAXSERV);
 	}
 	this->loop = true;
 }
@@ -66,13 +66,13 @@ Server::Server(Server const & src)
 Server::~Server(void)
 {
 	if (this->servfd != -1)
-		::close(this->servfd);
+		close(this->servfd);
 	for (int i = 0; i < SERV_CLIENTS; i++)
 	{
 		if (this->client[i].fd != -1)
-			::close(this->client[i].fd);
-		i++;
+			close(this->client[i].fd);
 	}
+	this->loop = false;
 }
 
 Server & Server::operator=(Server const & rhs)
@@ -167,6 +167,7 @@ void		Server::clientRead(Tintin_reporter *tintin)
 	{
 		if (this->client[i].fd != -1 && FD_ISSET(this->client[i].fd, &this->fdr))
 		{
+			mymemset(buff, 0, sizeof(buff));
 			ret = recv(this->client[i].fd, buff, 512, 0);
 			if (ret <= 0)
 			{
@@ -225,4 +226,15 @@ int			Server::mystrcmp(const char *s1, const char *s2)
 	while (s1[i] && s2[i] && s1[i] == s2[i])
 		i++;
 	return s1[i] - s2[i];
+}
+
+void*		Server::mymemset(void *s, int c, size_t n)
+{
+	u_char	*t;
+	size_t	i;
+
+	t = (u_char *)s;
+	for (i = 0; i < n; i++)
+		t[i] = c;
+	return s;
 }

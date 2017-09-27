@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/09/27 16:16:27 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 23:48:32 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -35,7 +35,6 @@ Tintin_reporter::Tintin_reporter(const Tintin_reporter & rhs)
 
 Tintin_reporter::~Tintin_reporter()
 {
-	Tintin_reporter::log("QUIT", LOG_FILE, "closed");
 	if (this->_logfd.is_open())
 		this->_logfd.close();
 }

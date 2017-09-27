@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/09/27 05:13:09 by root             ###   ########.fr       //
+//   Updated: 2017/09/27 23:47:38 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -17,9 +17,9 @@
 # include <sys/select.h>
 # include <netdb.h>
 
-# define SERV_ADDR "localhost"
-# define SERV_PORT "4242"
-# define SERV_CLIENTS 3
+# define SERV_ADDR		"localhost"
+# define SERV_PORT		"4242"
+# define SERV_CLIENTS	3
 
 typedef struct		s_client
 {
@@ -50,6 +50,7 @@ private:
 	void		acceptConnections(Tintin_reporter *tintin);
 	void		clientRead(Tintin_reporter *tintin);
 	int			mystrcmp(const char *s1, const char *s2);
+	void*		mymemset(void *s, int c, size_t n);
 
 	int			servfd;
 	fd_set		fdr;

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/25 07:33:40 by root              #+#    #+#             //
-//   Updated: 2017/09/27 16:17:42 by root             ###   ########.fr       //
+//   Updated: 2017/09/28 00:42:39 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -16,9 +16,7 @@
 #include <unistd.h> //close
 #include <sys/file.h> //flock
 #include <fcntl.h> //open
-
-Tintin_reporter	*tintin = NULL;
-Server			*server = NULL;
+#include <stdlib.h> //exit
 
 static void			closeFileDescriptors(void)
 {
@@ -40,25 +38,24 @@ static void			sanitizeEnvironnement(void)
 		memset(environ[i], 0, strlen(environ[i]));
 }
 
-static int			lockFile(void)
+static void			lockFile(void)
 {
 	int				lock;
 
 	lock = open(LOCK_FILE, O_RDWR | O_CREAT | O_EXCL, 0600);
 	if (lock < 0)
-		return -1;
+		throw DAEMONException(LOCK_FILE);
 	if (flock(lock, LOCK_EX | LOCK_NB))
 	{
 		close(lock);
-		return -1;
+		throw DAEMONException(LOCK_FILE);
 	}
-	return lock;
+	close(lock);
 }
 
 int					main(void)
 {
-	int				lock;
-	bool			first_daemon = false;
+	bool			first = false;
 
 	try
 	{
@@ -70,65 +67,50 @@ int					main(void)
 		tintin = new Tintin_reporter();
 		tintin->log("INFO", "Started.");
 
-		if ((lock = lockFile()) < 0)
-		{
-			errno = 0;
-			throw DAEMONException("Error file locked.");
-		}
-		first_daemon = true;
+		lockFile();
+		first = true;
 		
 		tintin->log("INFO", "Creating server.");
 		server = new Server();
 		tintin->log("INFO", "Server created.");
 		
 		tintin->log("INFO", "Entering Daemon mode...");
-		daemonize(lock);
+		daemonize();
 		tintin->log("INFO", "Done. PID: ", getpid());
 
 		server->loopServ(tintin);
-		flock(lock, LOCK_UN);
-		if (remove(LOCK_FILE))
-			tintin->log("ERROR", LOCK_FILE, "not removed.");
-		else
-			tintin->log("QUIT", LOCK_FILE, "removed.");
-			
-		tintin->log("QUIT", "Closing Server...");
+		
+		tintin->log("INFO", "Quitting...");
+		remove(LOCK_FILE);
 		delete server;
-		tintin->log("QUIT", "Server Closed.");
 		delete tintin;
-
 	}
 	catch (DAEMONException& e) {
 		std::cerr << "Matt_daemon: " << e.explain() << std::endl;
-		if (server)
-			delete server;
-		if (tintin)
-		{
-			tintin->log("ERROR", e.explain());
-			delete tintin;
-		}
-		if (first_daemon)
-		{
-			flock(lock, LOCK_UN);
-			remove(LOCK_FILE);
-		}
+		quitClearlyDaemon("ERROR", e.explain(), first);
 	}
 	catch (std::exception& e) {
 		std::cerr << "Matt_daemon: " << e.what() << std::endl;
-		if (server)
-			delete server;
-		if (tintin)
-		{
-			tintin->log("ERROR", e.what());
-			delete tintin;
-		}
-		if (first_daemon)
-		{
-			flock(lock, LOCK_UN);
-			remove(LOCK_FILE);
-		}
+		quitClearlyDaemon("ERROR", e.what(), first);
 	}
 	return 0;
+}
+
+void				quitClearlyDaemon(const char *info, std::string more, bool unlock)
+{
+	if (unlock)
+		remove(LOCK_FILE);
+	if (server)
+		delete server;
+	if (tintin)
+	{
+		if (info) {
+			tintin->log(info, more);
+			tintin->log("INFO", "Quitting...\n");
+		}
+		delete tintin;
+	}
+	exit(0);
 }
 
 void			daemonSigHandler(int sig)
@@ -143,14 +125,14 @@ void			daemonSigHandler(int sig)
 							  "SIGCHLD", "SIGTTIN", "SIGTTOU", "SIGIO",
 							  "SIGXCPU", "SIGXFSZ", "SIGVTALRM", "SIGPROF",
 							   "SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2",
-	"UNKNOWN SIGNAL"};
+							   "UNKNOWN SIGNAL"};
 
 	if (tintin->_logfd.is_open())
 	{
 		t = time(NULL);
 		tm = localtime(&t);
-		if (sig < 0 || sig > _NSIG)
-			sig = _NSIG + 1;
+		if (sig < 0 || sig > NSIG)
+			sig = NSIG + 1;
 		tintin->_logfd << "[" << tm->tm_mday << "/";
 		tintin->_logfd << tm->tm_mon << "/";
 		tintin->_logfd << 1900 + tm->tm_year;
