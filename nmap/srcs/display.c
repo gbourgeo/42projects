@@ -6,11 +6,12 @@
 /*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/19 07:01:52 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/09/20 05:10:18 by marvin           ###   ########.fr       */
+/*   Updated: 2017/09/25 21:12:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "all.h"
+#include <stdio.h>
 
 static void		print_char(int i, char c)
 {
@@ -109,27 +110,37 @@ static void		display_ports(t_queue *queues, char *text)
 			}
 			else if (!ft_strcmp(ptr->scan, "NULL")) {
 				scan_types |= 0x0002;
-				if (ptr->open)
+				if (ptr->filtered)
+					filtered |= 0x0002;
+				else if (ptr->open)
 					opcl |= 0x0002;
 			}
 			else if (!ft_strcmp(ptr->scan, "FIN")) {
 				scan_types |= 0x0004;
-				if (ptr->open)
+				if (ptr->filtered)
+					filtered |= 0x0004;
+				else if (ptr->open)
 					opcl |= 0x0004;
 			}
 			else if (!ft_strcmp(ptr->scan, "XMAS")) {
 				scan_types |= 0x0008;
-				if (ptr->open)
+				if (ptr->filtered)
+					filtered |= 0x0008;
+				else if (ptr->open)
 					opcl |= 0x0008;
 			}
 			else if (!ft_strcmp(ptr->scan, "ACK")) {
 				scan_types |= 0x0010;
-				if (ptr->open)
+				if (ptr->filtered)
+					filtered |= 0x0010;
+				else if (ptr->open)
 					opcl |= 0x0010;
 			}
 			else if (!ft_strcmp(ptr->scan, "UDP")) {
 				scan_types |= 0x0020;
-				if (ptr->open)
+				if (ptr->filtered)
+					filtered |= 0x0020;
+				else if (ptr->open)
 					opcl |= 0x0020;
 			}
 			ptr = ptr->next;
@@ -149,21 +160,21 @@ static void		display_ports(t_queue *queues, char *text)
 			asprintf(&tmp, ((i == 0) ? "%s" : " %s"), "NULL");
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 
-			asprintf(&tmp, "(%s)", ((opcl & 0x0002) ? "Open" : "Closed")); i++;
+			asprintf(&tmp, "(%s)", ((opcl & 0x0002) ? "Open" : (filtered & 0x0002 ? "Filtered" : "Closed"))); i++;
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 		}
 		if (scan_types & 0x0004) {
 			asprintf(&tmp, ((i == 0) ? "%s" : " %s"), "FIN");
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 
-			asprintf(&tmp, "(%s)", ((opcl & 0x0004) ? "Open" : "Closed")); i++;
+			asprintf(&tmp, "(%s)", ((opcl & 0x0004) ? "Open" : (filtered & 0x0004 ? "Filtered" : "Closed"))); i++;
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 		}
 		if (scan_types & 0x0008) {
 			asprintf(&tmp, ((i == 0) ? "%s" : " %s"), "XMAS");
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 
-			asprintf(&tmp, "(%s)", ((opcl & 0x0008) ? "Open" : "Closed")); i++;
+			asprintf(&tmp, "(%s)", ((opcl & 0x0008) ? "Open" : (filtered & 0x0008 ? "Filtered" : "Closed"))); i++;
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 		}
 		if (scan_types & 0x0010) {
@@ -176,7 +187,7 @@ static void		display_ports(t_queue *queues, char *text)
 			asprintf(&tmp, ((i == 0) ? "%s" : " %s"), "UDP");
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 
-			asprintf(&tmp, "(%s)", ((opcl & 0x0020) ? "Open|Filtered" : "Closed")); i++;
+			asprintf(&tmp, "(%s)", ((opcl & 0x0020) ? "Open" : (filtered & 0x0020 ? "Filtered" : "Closed"))); i++;
 			to_print = ft_dstrjoin(to_print, tmp, 2);
 		}
 

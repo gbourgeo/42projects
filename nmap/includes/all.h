@@ -6,7 +6,7 @@
 /*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 13:59:36 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/09/20 04:23:12 by marvin           ###   ########.fr       */
+/*   Updated: 2017/09/25 19:48:06 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,8 @@ typedef struct					s_global
 **	MAIN
 */
 void				print_start(t_nmap *nmap);
+bool				single_flag(char *flag, bool sub);
+void				init_os_scan(t_nmap *nmap);
 
 /*
 **	INITIALIZER

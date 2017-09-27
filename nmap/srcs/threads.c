@@ -6,7 +6,7 @@
 /*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/12 18:27:05 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/09/19 18:29:14 by marvin           ###   ########.fr       */
+/*   Updated: 2017/09/25 21:07:44 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void						instantiate_threads(t_nmap *nmap)
 		total += ports + ports_plus;
 		i++;
 	}
-	init_pcap(NULL, threads);
 	init_display(nmap);
+	init_pcap(NULL, threads);
 	while (true);
 }

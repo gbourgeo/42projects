@@ -1,4 +1,5 @@
 #include "get_next_line.h"
+#include <unistd.h>
 
 static void		*ft_realloc(void *ptr, size_t size)
 {

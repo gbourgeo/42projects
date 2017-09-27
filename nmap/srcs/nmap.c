@@ -6,7 +6,7 @@
 /*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 12:51:06 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/09/18 23:56:54 by root             ###   ########.fr       */
+/*   Updated: 2017/09/25 20:56:45 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static void		print_help()
 
 void		print_start(t_nmap *nmap)
 {
+	t_host		*hosts = nmap->hosts;
 	t_flag		*spoof = get_flag("spoof");
 	t_scan_type	*scans = nmap->scans;
 
@@ -49,15 +50,25 @@ void		print_start(t_nmap *nmap)
 	} else {
 		printf("\nStarting ft_nmap ( http://nmap.org )\n");
 	}
+	printf("-- Scan Configurations --\n");
+	printf("Target IP-Address   : ");
+	while (hosts)
+	{
+		printf("%s ", hosts->address);
+		hosts = hosts->next;
+	}
+	printf("\nNo of Ports to scan : %d\n", nmap->ports_index);
+	printf("Scan performed      : ");
 	if (!get_flag("osscan")) {
-		printf("Scan flags: ");
 		while (scans)
 		{
 			printf("%s ", scans->name);
 			scans = scans->next;
 		}
-		printf("\n");
 	}
+	else
+		printf(" --osscan");
+	printf("\nNo of threads       : %d\n\n", nmap->threads);
 }
 
 static void		check_help(char **argv)
