@@ -1,16 +1,16 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   MainServer.cpp                                     :+:      :+:    :+:   //
+//   main.cpp                                           :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2017/09/25 07:33:40 by root              #+#    #+#             //
-//   Updated: 2017/09/28 00:42:39 by root             ###   ########.fr       //
+//   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
+//   Updated: 2017/09/28 18:38:34 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#include "MainServer.hpp"
+#include "main.hpp"
 #include <sys/time.h> //getrlimit
 #include <sys/resource.h>
 #include <unistd.h> //close
@@ -38,7 +38,7 @@ static void			sanitizeEnvironnement(void)
 		memset(environ[i], 0, strlen(environ[i]));
 }
 
-static void			lockFile(void)
+static int			lockFile(void)
 {
 	int				lock;
 
@@ -46,16 +46,14 @@ static void			lockFile(void)
 	if (lock < 0)
 		throw DAEMONException(LOCK_FILE);
 	if (flock(lock, LOCK_EX | LOCK_NB))
-	{
-		close(lock);
 		throw DAEMONException(LOCK_FILE);
-	}
-	close(lock);
+	return lock;
 }
 
 int					main(void)
 {
 	bool			first = false;
+	int				lock = -1;
 
 	try
 	{
@@ -67,7 +65,7 @@ int					main(void)
 		tintin = new Tintin_reporter();
 		tintin->log("INFO", "Started.");
 
-		lockFile();
+		lock = lockFile();
 		first = true;
 		
 		tintin->log("INFO", "Creating server.");
@@ -75,31 +73,37 @@ int					main(void)
 		tintin->log("INFO", "Server created.");
 		
 		tintin->log("INFO", "Entering Daemon mode...");
-		daemonize();
+		daemonize(lock);
 		tintin->log("INFO", "Done. PID: ", getpid());
 
 		server->loopServ(tintin);
 		
 		tintin->log("INFO", "Quitting...");
+		flock(lock, LOCK_UN);
 		remove(LOCK_FILE);
+		close(lock);
 		delete server;
 		delete tintin;
 	}
 	catch (DAEMONException& e) {
 		std::cerr << "Matt_daemon: " << e.explain() << std::endl;
-		quitClearlyDaemon("ERROR", e.explain(), first);
+		quitClearlyDaemon("ERROR", e.explain(), lock, first);
 	}
 	catch (std::exception& e) {
 		std::cerr << "Matt_daemon: " << e.what() << std::endl;
-		quitClearlyDaemon("ERROR", e.what(), first);
+		quitClearlyDaemon("ERROR", e.what(), lock, first);
 	}
 	return 0;
 }
 
-void				quitClearlyDaemon(const char *info, std::string more, bool unlock)
+void				quitClearlyDaemon(const char *info, std::string more, int lock, bool first)
 {
-	if (unlock)
+	if (first) {
+		flock(lock, LOCK_UN);
 		remove(LOCK_FILE);
+	}
+	if (lock > -1)
+		close(lock);
 	if (server)
 		delete server;
 	if (tintin)

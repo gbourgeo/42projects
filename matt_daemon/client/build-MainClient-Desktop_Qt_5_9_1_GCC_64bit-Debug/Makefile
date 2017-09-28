@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../MainClient -I. -I/opt/Qt/5.9.1/gcc_64/include -I/opt/Qt/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt/5.9.1/gcc_64/include/QtGui -I/opt/Qt/5.9.1/gcc_64/include/QtNetwork -I/opt/Qt/5.9.1/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt/5.9.1/gcc_64/bin/qmake
 DEL_FILE      = rm -f
@@ -35,7 +35,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = MainClient1.0.0
-DISTDIR = /media/sf_42/matt_daemon/client/build-MainClient-Desktop_Qt_5_9_1_GCC_64bit-Debug/.tmp/MainClient1.0.0
+DISTDIR = /root/42/matt_daemon/client/build-MainClient-Desktop_Qt_5_9_1_GCC_64bit-Debug/.tmp/MainClient1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt/5.9.1/gcc_64/lib
 LIBS          = $(SUBLIBS) -L/opt/Qt/5.9.1/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5Network -lQt5Core -lGL -lpthread 
@@ -214,7 +214,6 @@ DIST          = /opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
-		../MainClient/.qmake.stash \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -406,7 +405,6 @@ Makefile: ../MainClient/MainClient.pro /opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qm
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -591,7 +589,6 @@ Makefile: ../MainClient/MainClient.pro /opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qm
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/qt_config.prf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/toolchain.prf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/default_pre.prf:
@@ -663,7 +660,7 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /opt/Qt/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp
-	g++ -pipe -g -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /opt/Qt/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp
+	g++ -pipe -g -Wall -W -dM -E -o moc_predefs.h /opt/Qt/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: moc_MainWindow.cpp
 compiler_moc_header_clean:
@@ -772,15 +769,15 @@ moc_MainWindow.cpp: /opt/Qt/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtGui/qicon.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtGui/QKeyEvent \
-		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/QLocalSocket \
-		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qlocalsocket.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/QTcpSocket \
+		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
 		../MainClient/MainWindow.hpp \
 		moc_predefs.h \
 		/opt/Qt/5.9.1/gcc_64/bin/moc
-	/opt/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/media/sf_42/matt_daemon/client/MainClient -I/opt/Qt/5.9.1/gcc_64/include -I/opt/Qt/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt/5.9.1/gcc_64/include/QtGui -I/opt/Qt/5.9.1/gcc_64/include/QtNetwork -I/opt/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/4.9 -I/usr/include/x86_64-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../MainClient/MainWindow.hpp -o moc_MainWindow.cpp
+	/opt/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/root/42/matt_daemon/client/MainClient -I/opt/Qt/5.9.1/gcc_64/include -I/opt/Qt/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt/5.9.1/gcc_64/include/QtGui -I/opt/Qt/5.9.1/gcc_64/include/QtNetwork -I/opt/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../MainClient/MainWindow.hpp -o moc_MainWindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -906,8 +903,8 @@ main.o: ../MainClient/main.cpp ../MainClient/MainWindow.hpp \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtGui/qicon.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtGui/QKeyEvent \
-		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/QLocalSocket \
-		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qlocalsocket.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/QTcpSocket \
+		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
@@ -1025,8 +1022,8 @@ MainWindow.o: ../MainClient/MainWindow.cpp ../MainClient/MainWindow.hpp \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtGui/qicon.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtGui/QKeyEvent \
-		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/QLocalSocket \
-		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qlocalsocket.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/QTcpSocket \
+		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
@@ -1080,6 +1077,9 @@ MainWindow.o: ../MainClient/MainWindow.cpp ../MainClient/MainWindow.hpp \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QPushButton \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QSpacerItem \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QSpinBox \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qspinbox.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QStatusBar \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qstatusbar.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QTextBrowser \

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/23 04:39:24 by root              #+#    #+#             //
-//   Updated: 2017/09/28 00:29:42 by root             ###   ########.fr       //
+//   Updated: 2017/09/28 17:35:56 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,10 +18,10 @@
 #include <fcntl.h> //open
 #include <signal.h>
 
-void		quitClearlyDaemon(const char *info, std::string more, bool unlock);
+void		quitClearlyDaemon(const char *info, std::string more, int lock, bool first);
 void		daemonSigHandler(int sig);
 
-void		daemonize(void)
+void		daemonize(int lock)
 {
 	int		fd;
 	pid_t	pid;
@@ -30,7 +30,7 @@ void		daemonize(void)
 	if (pid < 0)
 		throw DAEMONException("fork");
 	if (pid > 0)
-		quitClearlyDaemon(NULL, "", false);
+		quitClearlyDaemon(NULL, "", lock, false);
 
 	if (setsid() < 0)
 		throw DAEMONException("setsid");
@@ -38,7 +38,7 @@ void		daemonize(void)
 	if (pid < 0)
 		throw DAEMONException("fork");
 	if (pid > 0)
-		quitClearlyDaemon(NULL, "", false);
+		quitClearlyDaemon(NULL, "", lock, false);
 
 	fd = 0;
 	while (fd < NSIG)

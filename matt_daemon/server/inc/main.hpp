@@ -1,17 +1,17 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   MainServer.hpp                                     :+:      :+:    :+:   //
+//   main.hpp                                           :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/25 07:35:36 by root              #+#    #+#             //
-//   Updated: 2017/09/28 00:14:17 by root             ###   ########.fr       //
+//   Updated: 2017/09/28 18:39:12 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef MAINSERVER_HPP
-# define MAINSERVER_HPP
+#ifndef MAIN_HPP
+# define MAIN_HPP
 
 # include "Tintin.hpp"
 # include "Server.hpp"
@@ -23,8 +23,8 @@
 Tintin_reporter	*tintin = NULL;
 Server			*server = NULL;
 
-void			quitClearlyDaemon(const char *info, std::string more, bool unlock);
-void			daemonize(void);
+void			quitClearlyDaemon(const char *info, std::string more, int lock, bool first);
+void			daemonize(int lock);
 void			daemonSigHandler(int sig);
 
 #endif

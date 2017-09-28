@@ -6,45 +6,50 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/28 00:38:51 by root             ###   ########.fr        #
+#    Updated: 2017/09/28 18:46:20 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 SERVER = Matt_daemon
 
-CLIENT = Ben_AFK
-
-SRC_SERVER = MainServer.cpp Tintin.cpp Server.cpp Exceptions.cpp Daemonize.cpp
-
 SERVER_D = server/
+
+SERVER_S_D = $(SERVER_D)src/
+
+SERVER_S = main.cpp Tintin.cpp Server.cpp Exceptions.cpp Daemonize.cpp
+
+SERVER_H = -I $(SERVER_D)inc/
+
+SERVER_O_D = $(SERVER_D)obj/
+
+SERVER_O = $(addprefix $(SERVER_O_D), $(SERVER_S:.cpp=.o))
+
+
+CLIENT = Ben_AFK
 
 CLIENT_D = client/build-MainClient-Desktop_Qt_5_9_1_GCC_64bit-Debug/
 
-OBJ_D = obj/
+CXX = g++
 
-OBJ_SERVER = $(addprefix $(OBJ_D), $(SRC_SERVER:.cpp=.o))
-
-SERVER_H = -I ./includes/
-
-WWW = g++ -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra
 
 all: $(SERVER) $(CLIENT)
 
-$(SERVER): $(OBJ_SERVER)
-	$(WWW) -o $@ $^
+$(SERVER): $(SERVER_O)
+	$(CXX) $(FLAGS) -o $@ $^
 
-$(OBJ_D)%.o: $(SERVER_D)%.cpp | prep
-	$(WWW) -o $@ -c $< $(SERVER_H)
+$(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp | prep
+	$(CXX) $(FLAGS) -o $@ -c $< $(SERVER_H)
+
+prep:
+	@mkdir -p $(SERVER_O_D)
 
 $(CLIENT):
 	@make -C $(CLIENT_D)
-	@mv $(CLIENT_D)MainClient ./$(CLIENT)
-
-prep:
-	@mkdir -p $(OBJ_D)
+	@cp $(CLIENT_D)MainClient ./$(CLIENT)
 
 clean:
-	/bin/rm -rf $(OBJ_D)
+	/bin/rm -rf $(SERVER_O_D)
 	make -C $(CLIENT_D) clean
 
 fclean: clean
