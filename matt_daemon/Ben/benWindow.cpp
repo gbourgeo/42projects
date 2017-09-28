@@ -1,9 +1,9 @@
-#include "MainWindow.hpp"
-#include "ui_MainWindow.h"
+#include "benWindow.hpp"
+#include "ui_benWindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+BenWindow::BenWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::BenWindow)
 {
     ui->setupUi(this);
     ui->textBrowser->setStyleSheet("background-color: lightgray; border: none;");
@@ -28,22 +28,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sockError(QAbstractSocket::SocketError)));
 }
 
-MainWindow::~MainWindow()
+BenWindow::~BenWindow()
 {
     delete this->socket;
     delete ui;
 }
 
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+bool BenWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == ui->sendField || watched == ui->addressField || watched == ui->portField) {
         if (event->type() == QEvent::KeyPress) {
             QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
             if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
                 if (watched == ui->sendField)
-                    MainWindow::sendText();
+                    BenWindow::sendText();
                 else if (!this->socket->isOpen())
-                    MainWindow::connectClient();
+                    BenWindow::connectClient();
                 return (true);
             }
         }
@@ -52,7 +52,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QMainWindow::eventFilter(watched, event);
 }
 
-void MainWindow::connectClient()
+void BenWindow::connectClient()
 {
     QString         addr = ui->addressField->text();
     QString         port = ui->portField->text();
@@ -73,12 +73,12 @@ void MainWindow::connectClient()
     this->socket->connectToHost(addr, port.toUShort(NULL, 10));
 }
 
-void MainWindow::quitClient()
+void BenWindow::quitClient()
 {
     this->socket->disconnectFromHost();
 }
 
-void MainWindow::sockConnected()
+void BenWindow::sockConnected()
 {
     ui->textBrowser->setStyleSheet("background-color: none; border=1px");
     ui->textBrowser->setText(tr("--Connected to ") + ui->addressField->text() + tr(":") + ui->portField->text() + tr("--\n"));
@@ -86,7 +86,7 @@ void MainWindow::sockConnected()
     ui->SendButton->setEnabled(true);
 }
 
-void MainWindow::sockDisconnected()
+void BenWindow::sockDisconnected()
 {
     ui->textBrowser->setStyleSheet("background-color: lightgray; border= none");
     ui->textBrowser->append("<center>~ Disconnected ~</center>");
@@ -95,7 +95,7 @@ void MainWindow::sockDisconnected()
     ui->SendButton->setEnabled(false);
 }
 
-void MainWindow::sockError(QAbstractSocket::SocketError erreur)
+void BenWindow::sockError(QAbstractSocket::SocketError erreur)
 {
     switch (erreur)
     {
@@ -116,7 +116,7 @@ void MainWindow::sockError(QAbstractSocket::SocketError erreur)
     ui->SendButton->setEnabled(false);
 }
 
-void MainWindow::sendText()
+void BenWindow::sendText()
 {
     QByteArray      message = ui->sendField->toPlainText().toUtf8();
     int             len = ui->sendField->toPlainText().size();

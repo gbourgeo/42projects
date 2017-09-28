@@ -1,21 +1,21 @@
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#ifndef BENWINDOW_HPP
+#define BENWINDOW_HPP
 
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QTcpSocket>
 
 namespace Ui {
-class MainWindow;
+class BenWindow;
 }
 
-class MainWindow : public QMainWindow
+class BenWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit BenWindow(QWidget *parent = 0);
+    ~BenWindow();
 
 protected:
     bool    eventFilter(QObject *watched, QEvent *event);
@@ -29,8 +29,8 @@ private slots:
     void    sendText();
 
 private:
-    Ui::MainWindow  *ui;
+    Ui::BenWindow   *ui;
     QTcpSocket      *socket;
 };
 
-#endif // MAINWINDOW_HPP
+#endif // BENWINDOW_HPP

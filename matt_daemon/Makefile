@@ -6,13 +6,13 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/28 18:46:20 by root             ###   ########.fr        #
+#    Updated: 2017/09/28 19:43:43 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 SERVER = Matt_daemon
 
-SERVER_D = server/
+SERVER_D = Matt/
 
 SERVER_S_D = $(SERVER_D)src/
 
@@ -27,7 +27,7 @@ SERVER_O = $(addprefix $(SERVER_O_D), $(SERVER_S:.cpp=.o))
 
 CLIENT = Ben_AFK
 
-CLIENT_D = client/build-MainClient-Desktop_Qt_5_9_1_GCC_64bit-Debug/
+CLIENT_D = Ben/
 
 CXX = g++
 
@@ -46,7 +46,6 @@ prep:
 
 $(CLIENT):
 	@make -C $(CLIENT_D)
-	@cp $(CLIENT_D)MainClient ./$(CLIENT)
 
 clean:
 	/bin/rm -rf $(SERVER_O_D)
