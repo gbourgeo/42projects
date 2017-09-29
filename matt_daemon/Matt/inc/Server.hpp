@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/09/27 23:47:38 by root             ###   ########.fr       //
+//   Updated: 2017/09/29 04:36:10 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -34,13 +34,12 @@ class		Server
 	
 public:
 	Server(void);
-	Server( Server const & src);
-	~Server( void);
+	Server(Server const & src);
+	~Server(void);
 
 	Server & operator=(Server const & rhs);
 
 	void		loopServ(Tintin_reporter *tintin);
-	void		quit();
 
 private:
 	int			findSocket(struct addrinfo *p);
@@ -49,8 +48,7 @@ private:
 	int			setupSelect(void);
 	void		acceptConnections(Tintin_reporter *tintin);
 	void		clientRead(Tintin_reporter *tintin);
-	int			mystrcmp(const char *s1, const char *s2);
-	void*		mymemset(void *s, int c, size_t n);
+	void *		mymemset(void *s, int c, size_t n);
 
 	int			servfd;
 	fd_set		fdr;

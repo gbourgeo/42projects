@@ -6,7 +6,8 @@ BenWindow::BenWindow(QWidget *parent) :
     ui(new Ui::BenWindow)
 {
     ui->setupUi(this);
-    ui->textBrowser->setStyleSheet("background-color: lightgray; border: none;");
+    this->setWindowTitle("Ben_AFK");
+    ui->textBrowser->setStyleSheet("background-color:lightgray; border:none;");
 
     /* Connect the buttons to their appropriate fields */
     QObject::connect(ui->ConnectButton, SIGNAL(released()), this, SLOT(connectClient(void)));
@@ -26,6 +27,9 @@ BenWindow::BenWindow(QWidget *parent) :
     connect(socket, SIGNAL(connected()), this, SLOT(sockConnected()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(sockDisconnected()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sockError(QAbstractSocket::SocketError)));
+
+    /* Status Bar message */
+    ui->statusBar->showMessage("Hello friend !");
 }
 
 BenWindow::~BenWindow()
@@ -42,7 +46,7 @@ bool BenWindow::eventFilter(QObject *watched, QEvent *event)
             if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
                 if (watched == ui->sendField)
                     BenWindow::sendText();
-                else if (!this->socket->isOpen())
+                else if (this->socket->state() == QAbstractSocket::UnconnectedState)
                     BenWindow::connectClient();
                 return (true);
             }
@@ -58,16 +62,16 @@ void BenWindow::connectClient()
     QString         port = ui->portField->text();
 
     if (addr == NULL) {
-        ui->addressField->setStyleSheet("background-color: red;");
-        return ui->textBrowser->setText("<center>Address missing.</center>");
+        ui->addressField->setStyleSheet("background-color:red;");
+        return ui->statusBar->showMessage("ERROR: Address missing.");
     }
-    ui->addressField->setStyleSheet("background-color: white;");
+    ui->addressField->setStyleSheet("background-color:white;");
     if (port == NULL) {
-        ui->portField->setStyleSheet("background-color: red;");
-        return ui->textBrowser->setText("<center>Port missing.</center>");
+        ui->portField->setStyleSheet("background-color:red;");
+        return ui->statusBar->showMessage("ERROR: Port missing.");
     }
-    ui->portField->setStyleSheet("background-color: white;");
-    ui->textBrowser->setText("<center>Establishing connection...\n</center>");
+    ui->portField->setStyleSheet("background-color:white;");
+    ui->statusBar->showMessage("Establishing connection...");
     ui->ConnectButton->setEnabled(false);
     this->socket->abort();
     this->socket->connectToHost(addr, port.toUShort(NULL, 10));
@@ -80,16 +84,16 @@ void BenWindow::quitClient()
 
 void BenWindow::sockConnected()
 {
-    ui->textBrowser->setStyleSheet("background-color: none; border=1px");
-    ui->textBrowser->setText(tr("--Connected to ") + ui->addressField->text() + tr(":") + ui->portField->text() + tr("--\n"));
+    ui->textBrowser->setStyleSheet("background-color:none; border=5px");
+    ui->statusBar->showMessage(tr("-- Connected to ") + ui->addressField->text() + tr(":") + ui->portField->text());
     ui->QuitButton->setEnabled(true);
     ui->SendButton->setEnabled(true);
 }
 
 void BenWindow::sockDisconnected()
 {
-    ui->textBrowser->setStyleSheet("background-color: lightgray; border= none");
-    ui->textBrowser->append("<center>~ Disconnected ~</center>");
+    ui->textBrowser->setStyleSheet("background-color:lightgray; border=none");
+    ui->statusBar->showMessage("-- Disconnected from server --");
     ui->ConnectButton->setEnabled(true);
     ui->QuitButton->setEnabled(false);
     ui->SendButton->setEnabled(false);
@@ -100,16 +104,16 @@ void BenWindow::sockError(QAbstractSocket::SocketError erreur)
     switch (erreur)
     {
         case QAbstractSocket::HostNotFoundError:
-            ui->textBrowser->append("<center>~ Address not found ~</center>");
+            ui->statusBar->showMessage("ERROR: Address not found.");
             break ;
         case QAbstractSocket::ConnectionRefusedError:
-            ui->textBrowser->append("<center>~ Connection refused ~</center>");
+            ui->statusBar->showMessage("ERROR: Connection refused.");
             break ;
         case QAbstractSocket::RemoteHostClosedError:
-            ui->textBrowser->append("<center>~ Connection closed ~</center>");
+            ui->statusBar->showMessage("ERROR: Connection closed.");
             break ;
         default:
-            ui->textBrowser->append(tr("<center>") + this->socket->errorString() + tr("</center>"));
+            ui->statusBar->showMessage(tr("<center>") + this->socket->errorString() + tr("</center>"));
     }
     ui->ConnectButton->setEnabled(true);
     ui->QuitButton->setEnabled(false);
@@ -119,11 +123,9 @@ void BenWindow::sockError(QAbstractSocket::SocketError erreur)
 void BenWindow::sendText()
 {
     QByteArray      message = ui->sendField->toPlainText().toUtf8();
-    int             len = ui->sendField->toPlainText().size();
 
     if (!this->socket->isOpen() || message.isEmpty() || message.isNull())
         return ;
-    message.insert(len, '\0');
     this->socket->write(message.data());
     this->socket->waitForBytesWritten(1000);
     ui->textBrowser->append(message);

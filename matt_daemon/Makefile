@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/28 19:43:43 by root             ###   ########.fr        #
+#    Updated: 2017/09/29 04:25:27 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,9 +31,9 @@ CLIENT_D = Ben/
 
 CXX = g++
 
-FLAGS = -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra -std=c++11
 
-all: $(SERVER) $(CLIENT)
+all: $(SERVER) #$(CLIENT)
 
 $(SERVER): $(SERVER_O)
 	$(CXX) $(FLAGS) -o $@ $^
@@ -49,7 +49,7 @@ $(CLIENT):
 
 clean:
 	/bin/rm -rf $(SERVER_O_D)
-	make -C $(CLIENT_D) clean
+#	make -C $(CLIENT_D) clean
 
 fclean: clean
 	/bin/rm -rf $(SERVER)

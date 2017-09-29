@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/25 07:35:36 by root              #+#    #+#             //
-//   Updated: 2017/09/28 18:39:12 by root             ###   ########.fr       //
+//   Updated: 2017/09/29 04:07:17 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,11 +20,18 @@
 
 # define LOCK_FILE	"/var/lock/matt_daemon.lock"
 
-Tintin_reporter	*tintin = NULL;
-Server			*server = NULL;
+typedef struct		s_env
+{
+	Tintin_reporter	*tintin;
+	Server			*server;
+	int				lock;
+	bool			first;
+}					t_env;
 
-void			quitClearlyDaemon(const char *info, std::string more, int lock, bool first);
-void			daemonize(int lock);
-void			daemonSigHandler(int sig);
+struct s_env		e;
+
+void				quitClearlyDaemon(const char *info, std::string more);
+void				daemonize();
+void				daemonSigHandler(int sig);
 
 #endif

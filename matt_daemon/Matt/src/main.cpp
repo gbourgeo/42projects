@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
-//   Updated: 2017/09/28 18:38:34 by root             ###   ########.fr       //
+//   Updated: 2017/09/29 04:13:55 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -38,23 +38,12 @@ static void			sanitizeEnvironnement(void)
 		memset(environ[i], 0, strlen(environ[i]));
 }
 
-static int			lockFile(void)
-{
-	int				lock;
-
-	lock = open(LOCK_FILE, O_RDWR | O_CREAT | O_EXCL, 0600);
-	if (lock < 0)
-		throw DAEMONException(LOCK_FILE);
-	if (flock(lock, LOCK_EX | LOCK_NB))
-		throw DAEMONException(LOCK_FILE);
-	return lock;
-}
-
 int					main(void)
 {
-	bool			first = false;
-	int				lock = -1;
-
+	e.tintin = NULL;
+	e.server = NULL;
+	e.lock = -1;
+	e.first = false;
 	try
 	{
 		if (setuid(getuid()) == -1)
@@ -62,89 +51,76 @@ int					main(void)
 		closeFileDescriptors();
 		sanitizeEnvironnement();
 
-		tintin = new Tintin_reporter();
-		tintin->log("INFO", "Started.");
+		e.tintin = new Tintin_reporter();
+		e.tintin->log("INFO", "Started.");
 
-		lock = lockFile();
-		first = true;
+		e.lock = open(LOCK_FILE, O_RDWR | O_CREAT | O_EXCL, 0600);
+		if (e.lock < 0)
+			throw DAEMONException(LOCK_FILE);
+		if (flock(e.lock, LOCK_EX | LOCK_NB))
+			throw DAEMONException(LOCK_FILE);
+		e.first = true;
 		
-		tintin->log("INFO", "Creating server.");
-		server = new Server();
-		tintin->log("INFO", "Server created.");
+		e.tintin->log("INFO", "Creating server.");
+		e.server = new Server();
+		e.tintin->log("INFO", "Server created.");
 		
-		tintin->log("INFO", "Entering Daemon mode...");
-		daemonize(lock);
-		tintin->log("INFO", "Done. PID: ", getpid());
+		e.tintin->log("INFO", "Entering Daemon mode...");
+		daemonize();
+		e.tintin->log("INFO", "Done. PID: %d", getpid());
 
-		server->loopServ(tintin);
+		e.server->loopServ(e.tintin);
 		
-		tintin->log("INFO", "Quitting...");
-		flock(lock, LOCK_UN);
+		e.tintin->log("INFO", "Quitting...");
+		flock(e.lock, LOCK_UN);
 		remove(LOCK_FILE);
-		close(lock);
-		delete server;
-		delete tintin;
+		close(e.lock);
+		delete e.server;
+		delete e.tintin;
 	}
-	catch (DAEMONException& e) {
-		std::cerr << "Matt_daemon: " << e.explain() << std::endl;
-		quitClearlyDaemon("ERROR", e.explain(), lock, first);
+	catch (DAEMONException& err) {
+		std::cerr << "Matt_daemon: " << err.explain() << std::endl;
+		quitClearlyDaemon("ERROR", err.explain());
 	}
-	catch (std::exception& e) {
-		std::cerr << "Matt_daemon: " << e.what() << std::endl;
-		quitClearlyDaemon("ERROR", e.what(), lock, first);
+	catch (std::exception& err) {
+		std::cerr << "Matt_daemon: " << err.what() << std::endl;
+		quitClearlyDaemon("ERROR", err.what());
 	}
 	return 0;
 }
 
-void				quitClearlyDaemon(const char *info, std::string more, int lock, bool first)
+void				quitClearlyDaemon(const char *info, std::string more)
 {
-	if (first) {
-		flock(lock, LOCK_UN);
+	if (e.first) {
+		flock(e.lock, LOCK_UN);
 		remove(LOCK_FILE);
 	}
-	if (lock > -1)
-		close(lock);
-	if (server)
-		delete server;
-	if (tintin)
+	if (e.lock > -1)
+		close(e.lock);
+	if (e.server)
+		delete e.server;
+	if (e.tintin)
 	{
 		if (info) {
-			tintin->log(info, more);
-			tintin->log("INFO", "Quitting...\n");
+			e.tintin->log(info, more);
+			e.tintin->log("INFO", "Quitting...\n");
 		}
-		delete tintin;
+		delete e.tintin;
 	}
 	exit(0);
 }
 
 void			daemonSigHandler(int sig)
 {
-	struct tm	*tm;
-	time_t		t;
-	const char	*signals[] = { "0", "SIGUP", "SIGINT", "SIGQUIT", "SIGILL",
-							  "SIGTRAP", "SIGABRT", "SIGPOLL/SIGEMT",
-							  "SIGFPE", "SIGKILL", "SIGBUS", "SIGSEGV",
-							  "SIGSYS", "SIGPIPE", "SIGALRM", "SIGTERM",
-							  "SIGURG", "SIGSTOP", "SIGTSTP", "SIGCONT",
-							  "SIGCHLD", "SIGTTIN", "SIGTTOU", "SIGIO",
-							  "SIGXCPU", "SIGXFSZ", "SIGVTALRM", "SIGPROF",
-							   "SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2",
-							   "UNKNOWN SIGNAL"};
+	const std::string signals[] = { "0", "SIGUP", "SIGINT", "SIGQUIT", "SIGILL",
+									"SIGTRAP", "SIGABRT", "SIGPOLL/SIGEMT",
+									"SIGFPE", "SIGKILL", "SIGBUS", "SIGSEGV",
+									"SIGSYS", "SIGPIPE", "SIGALRM", "SIGTERM",
+									"SIGURG", "SIGSTOP", "SIGTSTP", "SIGCONT",
+									"SIGCHLD", "SIGTTIN", "SIGTTOU", "SIGIO",
+									"SIGXCPU", "SIGXFSZ", "SIGVTALRM", "SIGPROF",
+									"SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2",
+									"UNKNOWN SIGNAL"};
 
-	if (tintin->_logfd.is_open())
-	{
-		t = time(NULL);
-		tm = localtime(&t);
-		if (sig < 0 || sig > NSIG)
-			sig = NSIG + 1;
-		tintin->_logfd << "[" << tm->tm_mday << "/";
-		tintin->_logfd << tm->tm_mon << "/";
-		tintin->_logfd << 1900 + tm->tm_year;
-		tintin->_logfd << "-" << tm->tm_hour;
-		tintin->_logfd << ":" << tm->tm_min;
-		tintin->_logfd<< ":" << tm->tm_sec;
-		tintin->_logfd << "] [ ERROR ] - Matt_daemon: ";
-		tintin->_logfd << signals[sig] << " caught.\n";
-	}
-	server->quit();
+	quitClearlyDaemon("ERROR", signals[sig]);
 }

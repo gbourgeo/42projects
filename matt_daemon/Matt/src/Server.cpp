@@ -6,12 +6,13 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/09/27 23:47:35 by root             ###   ########.fr       //
+//   Updated: 2017/09/29 04:45:54 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Server.hpp"
 #include "Exceptions.hpp"
+#include <string>
 #include <unistd.h>
 #include <signal.h>
 #include <arpa/inet.h>
@@ -99,11 +100,6 @@ void		Server::loopServ(Tintin_reporter *tintin)
 	}
 }
 
-void		Server::quit(void)
-{
-	this->loop = false;
-}
-
 int			Server::setupSelect(void)
 {
 	int		i;
@@ -126,69 +122,65 @@ int			Server::setupSelect(void)
 
 void		Server::acceptConnections(Tintin_reporter *tintin)
 {
-	int				fd;
 	struct sockaddr	csin;
-	socklen_t		len;
-	int				i;
+	struct sockaddr_in *cs	= (struct sockaddr_in *)&csin;
+	socklen_t		len		= sizeof(csin);
+	int				i		= 0;
+	int				fd;
 
-	len = sizeof(csin);
 	fd = accept(this->servfd, &csin, &len);
 	if (fd < 0)
 		throw DAEMONException("accept");
+	
+	inet_ntop(AF_INET, &cs->sin_addr.s_addr, this->client[i].addr, 1024);
+	getnameinfo(&csin, sizeof(csin), this->client[i].host, NI_MAXHOST, this->client[i].port, NI_MAXSERV, NI_NUMERICSERV);
 	i = 0;
 	while (i < SERV_CLIENTS && this->client[i].fd != -1)
 		i++;
-	if (i >= SERV_CLIENTS)
-	{
-		close(fd);
-		return ;
+	if (i < SERV_CLIENTS) {
+		tintin->log("INFO", "New connection from %S(%S):%S accepted.",
+					this->client[i].host, this->client[i].host, this->client[i].port);
+		this->client[i].fd = fd;
 	}
-	this->client[i].fd = fd;
-
-	struct sockaddr_in *cs = (struct sockaddr_in *)&csin;
-	
-	inet_ntop(AF_INET, &cs->sin_addr.s_addr, this->client[i].addr, 1024);
-	// getnameinfo(&csin, sizeof(csin), host, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
-	// strncpy(this->client[i].host, host, NI_MAXHOST);
-	// strncpy(this->client[i].port, port, NI_MAXSERV);
-	// tintin->log("INFO", "New connection from ", this->client[i].addr,
-				// this->client[i].host, this->client[i].port);
-	tintin->log("INFO", "New client from ", this->client[i].addr);
+	else {
+		tintin->log("INFO", "New connection from %S(%S):%S rejected.",
+					this->client[i].host, this->client[i].host, this->client[i].port);
+		close(fd);
+	}
 }
 
 void		Server::clientRead(Tintin_reporter *tintin)
 {
-	int		i;
-	int		ret;
-	char	buff[513];
+	int			i;
+	int			ret;
+	char		buff[256];
 
 	i = 0;
 	while (i < SERV_CLIENTS)
 	{
-		if (this->client[i].fd != -1 && FD_ISSET(this->client[i].fd, &this->fdr))
+		if (this->client[i].fd > -1 && FD_ISSET(this->client[i].fd, &this->fdr))
 		{
-			mymemset(buff, 0, sizeof(buff));
-			ret = recv(this->client[i].fd, buff, 512, 0);
+			ret = recv(this->client[i].fd, buff, 255, 0);
 			if (ret <= 0)
 			{
-				tintin->log("INFO", this->client[i].addr, "disconnected.");
+				tintin->log("INFO", "%S(%S):%S has disconnected.", this->client[i].host,
+							this->client[i].addr, this->client[i].port);
 				close(this->client[i].fd);
 				this->client[i].fd = -1;
 				return ;
 			}
 			if (buff[ret - 1] == '\n')
 				buff[ret - 1] = '\0';
-			if (Server::mystrcmp(buff, "quit") == 0)
+			if (strcmp(buff, "quit") == 0)
 			{
-				tintin->log("INFO", "Request quit from ",
-							this->client[i].addr);
-							// this->client[i].addr,
-							// this->client[i].port);
+				tintin->log("INFO", "Request quit from %S(%S):%S.", this->client[i].host,
+							this->client[i].addr, this->client[i].port);
 				this->loop = false;
 			}
-			else if (buff[0])
-//				tintin->log("LOG", "User input", buff);
-				tintin->log("LOG", "User input", this->client[i].addr, " ", buff);
+			else {
+				tintin->log("LOG", "%S:%S : %S", this->client[i].host,
+							this->client[i].port, buff);
+			}
 		}
 		i++;
 	}
@@ -216,25 +208,11 @@ int			Server::findSocket(struct addrinfo *p)
 	return fd;
 }
 
-int			Server::mystrcmp(const char *s1, const char *s2)
+void *		Server::mymemset(void *s, int c, size_t n)
 {
-	int		i;
+	char	*t = (char *)s;
 
-	i = 0;
-	if (!s1 || !s2)
-		return 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
-		i++;
-	return s1[i] - s2[i];
-}
-
-void*		Server::mymemset(void *s, int c, size_t n)
-{
-	u_char	*t;
-	size_t	i;
-
-	t = (u_char *)s;
-	for (i = 0; i < n; i++)
-		t[i] = c;
+	while (n--)
+		*t++ = c;
 	return s;
 }
