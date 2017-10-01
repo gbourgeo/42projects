@@ -27,6 +27,9 @@ private slots:
     void    sockDisconnected();
     void    sockError(QAbstractSocket::SocketError erreur);
     void    sendText();
+    void    sockRead();
+    void    clearText();
+    void    clearLog();
 
 private:
     Ui::BenWindow   *ui;

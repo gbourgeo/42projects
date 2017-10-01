@@ -6,11 +6,13 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/29 04:25:27 by root             ###   ########.fr        #
+#    Updated: 2017/10/01 14:05:25 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
-SERVER = Matt_daemon
+SERVER = server
+
+NAME = Matt_daemon
 
 SERVER_D = Matt/
 
@@ -25,7 +27,9 @@ SERVER_O_D = $(SERVER_D)obj/
 SERVER_O = $(addprefix $(SERVER_O_D), $(SERVER_S:.cpp=.o))
 
 
-CLIENT = Ben_AFK
+CLIENT = client
+
+NAME_2 = Ben_AFK
 
 CLIENT_D = Ben/
 
@@ -35,7 +39,9 @@ FLAGS = -Wall -Werror -Wextra -std=c++11
 
 all: $(SERVER) #$(CLIENT)
 
-$(SERVER): $(SERVER_O)
+$(SERVER): $(NAME)
+
+$(NAME): $(SERVER_O)
 	$(CXX) $(FLAGS) -o $@ $^
 
 $(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp | prep
@@ -44,7 +50,9 @@ $(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp | prep
 prep:
 	@mkdir -p $(SERVER_O_D)
 
-$(CLIENT):
+$(CLIENT): $(NAME_2)
+
+$(NAME_2):
 	@make -C $(CLIENT_D)
 
 clean:
@@ -52,7 +60,7 @@ clean:
 #	make -C $(CLIENT_D) clean
 
 fclean: clean
-	/bin/rm -rf $(SERVER)
-	/bin/rm -rf $(CLIENT)
+	/bin/rm -rf $(NAME)
+	/bin/rm -rf $(NAME_2)
 
 re: fclean all

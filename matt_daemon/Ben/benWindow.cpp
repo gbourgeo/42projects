@@ -6,13 +6,24 @@ BenWindow::BenWindow(QWidget *parent) :
     ui(new Ui::BenWindow)
 {
     ui->setupUi(this);
+
+    /* Configure our Window */
     this->setWindowTitle("Ben_AFK");
+    ui->logBrowser->setStyleSheet("background-color:lightgray; border:none;");
     ui->textBrowser->setStyleSheet("background-color:lightgray; border:none;");
+
+    /* Configure the 'clear' Labels to be clickable */
+    ui->clearLogLabel->setText("<a href=\"clear logs\">clear</a>");
+    ui->clearLogLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    ui->clearTextLabel->setText("<a href=\"clear text\">clear</a>");
+    ui->clearTextLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
     /* Connect the buttons to their appropriate fields */
     QObject::connect(ui->ConnectButton, SIGNAL(released()), this, SLOT(connectClient(void)));
     QObject::connect(ui->QuitButton, SIGNAL(released()), this, SLOT(quitClient(void)));
     QObject::connect(ui->SendButton, SIGNAL(released()), this, SLOT(sendText(void)));
+    QObject::connect(ui->clearTextLabel, SIGNAL(linkActivated(QString)), this, SLOT(clearText()));
+    QObject::connect(ui->clearLogLabel, SIGNAL(linkActivated(QString)), this, SLOT(clearLog()));
 
     /* Event filter for Address, Port and Text field when the user press Enter */
     ui->sendField->installEventFilter(this);
@@ -22,10 +33,11 @@ BenWindow::BenWindow(QWidget *parent) :
     ui->QuitButton->setEnabled(false);
     ui->SendButton->setEnabled(false);
 
-    /* Configure the socket */
+    /* Create and Configure the socket */
     this->socket = new QTcpSocket(this);
     connect(socket, SIGNAL(connected()), this, SLOT(sockConnected()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(sockDisconnected()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(sockRead()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sockError(QAbstractSocket::SocketError)));
 
     /* Status Bar message */
@@ -44,10 +56,10 @@ bool BenWindow::eventFilter(QObject *watched, QEvent *event)
         if (event->type() == QEvent::KeyPress) {
             QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
             if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-                if (watched == ui->sendField)
-                    BenWindow::sendText();
-                else if (this->socket->state() == QAbstractSocket::UnconnectedState)
+                if (this->socket->state() == QAbstractSocket::UnconnectedState)
                     BenWindow::connectClient();
+                else if (watched == ui->sendField)
+                    BenWindow::sendText();
                 return (true);
             }
         }
@@ -75,6 +87,7 @@ void BenWindow::connectClient()
     ui->ConnectButton->setEnabled(false);
     this->socket->abort();
     this->socket->connectToHost(addr, port.toUShort(NULL, 10));
+    this->socket->waitForConnected(5000);
 }
 
 void BenWindow::quitClient()
@@ -84,8 +97,9 @@ void BenWindow::quitClient()
 
 void BenWindow::sockConnected()
 {
+    ui->logBrowser->setStyleSheet("background-color:none; border=5px");
     ui->textBrowser->setStyleSheet("background-color:none; border=5px");
-    ui->statusBar->showMessage(tr("-- Connected to ") + ui->addressField->text() + tr(":") + ui->portField->text());
+    ui->statusBar->showMessage(tr("-- Connected to ") + ui->addressField->text() + tr(":") + ui->portField->text() + tr(" --"));
     ui->QuitButton->setEnabled(true);
     ui->SendButton->setEnabled(true);
 }
@@ -93,10 +107,17 @@ void BenWindow::sockConnected()
 void BenWindow::sockDisconnected()
 {
     ui->textBrowser->setStyleSheet("background-color:lightgray; border=none");
-    ui->statusBar->showMessage("-- Disconnected from server --");
+    ui->logBrowser->setStyleSheet("background-color:lightgray; border=none");
+    ui->statusBar->showMessage("-- Disconnected from server. --");
     ui->ConnectButton->setEnabled(true);
     ui->QuitButton->setEnabled(false);
     ui->SendButton->setEnabled(false);
+}
+
+void BenWindow::sockRead()
+{
+    ui->logBrowser->clear();
+    ui->logBrowser->append(this->socket->readAll());
 }
 
 void BenWindow::sockError(QAbstractSocket::SocketError erreur)
@@ -104,16 +125,16 @@ void BenWindow::sockError(QAbstractSocket::SocketError erreur)
     switch (erreur)
     {
         case QAbstractSocket::HostNotFoundError:
-            ui->statusBar->showMessage("ERROR: Address not found.");
+            ui->statusBar->showMessage("--ERROR: Address not found. --");
             break ;
         case QAbstractSocket::ConnectionRefusedError:
-            ui->statusBar->showMessage("ERROR: Connection refused.");
+            ui->statusBar->showMessage("--ERROR: Connection refused. --");
             break ;
         case QAbstractSocket::RemoteHostClosedError:
-            ui->statusBar->showMessage("ERROR: Connection closed.");
+            ui->statusBar->showMessage("--ERROR: Connection closed. --");
             break ;
         default:
-            ui->statusBar->showMessage(tr("<center>") + this->socket->errorString() + tr("</center>"));
+            ui->statusBar->showMessage(tr("<center>-- ") + this->socket->errorString() + tr(" --</center>"));
     }
     ui->ConnectButton->setEnabled(true);
     ui->QuitButton->setEnabled(false);
@@ -122,12 +143,25 @@ void BenWindow::sockError(QAbstractSocket::SocketError erreur)
 
 void BenWindow::sendText()
 {
-    QByteArray      message = ui->sendField->toPlainText().toUtf8();
+    if (this->socket->state() == QAbstractSocket::ConnectedState) {
 
-    if (!this->socket->isOpen() || message.isEmpty() || message.isNull())
-        return ;
-    this->socket->write(message.data());
-    this->socket->waitForBytesWritten(1000);
-    ui->textBrowser->append(message);
-    ui->sendField->clear();
+        QByteArray      message = ui->sendField->toPlainText().toUtf8();
+
+        if (message.isEmpty() || message.isNull())
+            return ;
+        this->socket->write(message.data());
+        this->socket->waitForBytesWritten(1000);
+        ui->textBrowser->append(message);
+        ui->sendField->clear();
+    }
+}
+
+void BenWindow::clearText()
+{
+    ui->textBrowser->clear();
+}
+
+void BenWindow::clearLog()
+{
+    ui->logBrowser->clear();
 }

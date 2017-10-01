@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
-//   Updated: 2017/09/29 04:13:55 by root             ###   ########.fr       //
+//   Updated: 2017/10/01 18:46:18 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -59,17 +59,18 @@ int					main(void)
 			throw DAEMONException(LOCK_FILE);
 		if (flock(e.lock, LOCK_EX | LOCK_NB))
 			throw DAEMONException(LOCK_FILE);
-		e.first = true;
 		
 		e.tintin->log("INFO", "Creating server.");
 		e.server = new Server();
+		e.server->setReporter(e.tintin);
 		e.tintin->log("INFO", "Server created.");
 		
 		e.tintin->log("INFO", "Entering Daemon mode...");
 		daemonize();
+		e.first = true;
 		e.tintin->log("INFO", "Done. PID: %d", getpid());
 
-		e.server->loopServ(e.tintin);
+		e.server->loopServ();
 		
 		e.tintin->log("INFO", "Quitting...");
 		flock(e.lock, LOCK_UN);

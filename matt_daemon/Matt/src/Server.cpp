@@ -6,20 +6,26 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/09/29 04:45:54 by root             ###   ########.fr       //
+//   Updated: 2017/10/01 20:40:33 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Server.hpp"
 #include "Exceptions.hpp"
+#include <fstream>
 #include <string>
 #include <unistd.h>
 #include <signal.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <ifaddrs.h>
 
-Server::Server(void)
+Server::Server(void):
+	tintin(NULL),
+	nb_clients(0),
+	encrypt(SERV_ENCRYPT),
+	protect(SERV_PROTECT)
 {
 	struct addrinfo	hints;
 	struct addrinfo	*res;
@@ -50,13 +56,13 @@ Server::Server(void)
 	}
 	if (listen(this->servfd, SERV_CLIENTS) == -1)
 		throw DAEMONException("listen");
+	mymemset(&this->client[0], 0, sizeof(t_client) * SERV_CLIENTS);
 	for (int i = 0; i < SERV_CLIENTS; i++) {
 		this->client[i].fd = -1;
-		mymemset(this->client[i].addr, 0, 1024);
-		mymemset(this->client[i].host, 0, NI_MAXHOST);
-		mymemset(this->client[i].port, 0, NI_MAXSERV);
+		this->client[i].cmd = NULL;
 	}
 	this->loop = true;
+	this->start_time = time(NULL);
 }
 
 Server::Server(Server const & src)
@@ -66,7 +72,7 @@ Server::Server(Server const & src)
 
 Server::~Server(void)
 {
-	if (this->servfd != -1)
+	if (this->servfd > -1)
 		close(this->servfd);
 	for (int i = 0; i < SERV_CLIENTS; i++)
 	{
@@ -80,110 +86,6 @@ Server & Server::operator=(Server const & rhs)
 {
 	(void)rhs;
 	return *this;
-}
-
-void		Server::loopServ(Tintin_reporter *tintin)
-{
-	int		maxfd;
-	int		ret;
-
-	while (this->loop)
-	{
-		maxfd = Server::setupSelect();
-		ret = select(maxfd + 1, &this->fdr, NULL, NULL, NULL);
-		if (ret == -1)
-			throw DAEMONException("select");
-		if (FD_ISSET(this->servfd, &this->fdr))
-			acceptConnections(tintin);
-		else
-			clientRead(tintin);
-	}
-}
-
-int			Server::setupSelect(void)
-{
-	int		i;
-	int		max;
-
-	FD_ZERO(&this->fdr);
-	FD_SET(this->servfd, &this->fdr);
-	max = this->servfd;
-	i = 0;
-	while (i < SERV_CLIENTS)
-	{
-		if (this->client[i].fd > max)
-			max = this->client[i].fd;
-		if (this->client[i].fd != -1)
-			FD_SET(this->client[i].fd, &this->fdr);
-		i++;
-	}
-	return max;
-}
-
-void		Server::acceptConnections(Tintin_reporter *tintin)
-{
-	struct sockaddr	csin;
-	struct sockaddr_in *cs	= (struct sockaddr_in *)&csin;
-	socklen_t		len		= sizeof(csin);
-	int				i		= 0;
-	int				fd;
-
-	fd = accept(this->servfd, &csin, &len);
-	if (fd < 0)
-		throw DAEMONException("accept");
-	
-	inet_ntop(AF_INET, &cs->sin_addr.s_addr, this->client[i].addr, 1024);
-	getnameinfo(&csin, sizeof(csin), this->client[i].host, NI_MAXHOST, this->client[i].port, NI_MAXSERV, NI_NUMERICSERV);
-	i = 0;
-	while (i < SERV_CLIENTS && this->client[i].fd != -1)
-		i++;
-	if (i < SERV_CLIENTS) {
-		tintin->log("INFO", "New connection from %S(%S):%S accepted.",
-					this->client[i].host, this->client[i].host, this->client[i].port);
-		this->client[i].fd = fd;
-	}
-	else {
-		tintin->log("INFO", "New connection from %S(%S):%S rejected.",
-					this->client[i].host, this->client[i].host, this->client[i].port);
-		close(fd);
-	}
-}
-
-void		Server::clientRead(Tintin_reporter *tintin)
-{
-	int			i;
-	int			ret;
-	char		buff[256];
-
-	i = 0;
-	while (i < SERV_CLIENTS)
-	{
-		if (this->client[i].fd > -1 && FD_ISSET(this->client[i].fd, &this->fdr))
-		{
-			ret = recv(this->client[i].fd, buff, 255, 0);
-			if (ret <= 0)
-			{
-				tintin->log("INFO", "%S(%S):%S has disconnected.", this->client[i].host,
-							this->client[i].addr, this->client[i].port);
-				close(this->client[i].fd);
-				this->client[i].fd = -1;
-				return ;
-			}
-			if (buff[ret - 1] == '\n')
-				buff[ret - 1] = '\0';
-			if (strcmp(buff, "quit") == 0)
-			{
-				tintin->log("INFO", "Request quit from %S(%S):%S.", this->client[i].host,
-							this->client[i].addr, this->client[i].port);
-				this->loop = false;
-			}
-			else {
-				tintin->log("LOG", "%S:%S : %S", this->client[i].host,
-							this->client[i].port, buff);
-			}
-		}
-		i++;
-	}
 }
 
 int			Server::findSocket(struct addrinfo *p)
@@ -208,11 +110,315 @@ int			Server::findSocket(struct addrinfo *p)
 	return fd;
 }
 
-void *		Server::mymemset(void *s, int c, size_t n)
+void		Server::setReporter(Tintin_reporter *reporter)
+{
+	this->tintin = reporter;
+}
+
+void		Server::checkClientLogged(void)
+{
+	for (int i = 0; i < SERV_CLIENTS; i++) {
+		if (this->client[i].fd > -1 && !this->client[i].logged) {
+			time_t timer = time(NULL);
+			if (timer - this->client[i].log_time > SERV_LOG_TIME) {
+				write(this->client[i].fd, "Loggin' timeout.\n", 17);
+				close(this->client[i].fd);
+				mymemset(&this->client[i].fd, 0, sizeof(t_client));
+				this->client[i].fd = -1;
+			}
+		}
+	}
+}
+
+void		Server::loopServ(void)
+{
+	int		maxfd;
+	int		ret;
+	struct timeval timeout;
+
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+	while (this->loop)
+	{
+		if (this->protect)
+			Server::checkClientLogged();
+		maxfd = Server::setupSelect();
+		ret = select(maxfd + 1, &this->fdr, NULL, NULL, &timeout);
+		if (ret == -1)
+			throw DAEMONException("select");
+		else if (ret > 0)
+		{
+			if (FD_ISSET(this->servfd, &this->fdr))
+				acceptConnections();
+			for (int i = 0; i < SERV_CLIENTS; i++) {
+				if (this->client[i].fd > -1 &&
+					FD_ISSET(this->client[i].fd, &this->fdr))
+					clientRead(this->client[i]);
+			}
+		}
+	}
+}
+
+int			Server::setupSelect(void)
+{
+	int		i;
+	int		max;
+
+	FD_ZERO(&this->fdr);
+	FD_SET(this->servfd, &this->fdr);
+	max = this->servfd;
+	i = 0;
+	while (i < SERV_CLIENTS)
+	{
+		if (this->client[i].fd > max)
+			max = this->client[i].fd;
+		if (this->client[i].fd > -1)
+			FD_SET(this->client[i].fd, &this->fdr);
+		i++;
+	}
+	return max;
+}
+
+void		Server::acceptConnections(void)
+{
+	struct sockaddr	csin;
+	struct sockaddr_in *cs	= (struct sockaddr_in *)&csin;
+	socklen_t		len		= sizeof(csin);
+	int				i		= 0;
+	int				fd;
+
+	fd = accept(this->servfd, &csin, &len);
+	if (fd < 0)
+		throw DAEMONException("accept");
+	
+	inet_ntop(AF_INET, &cs->sin_addr.s_addr, this->client[i].addr, 1024);
+	getnameinfo(&csin, sizeof(csin), this->client[i].host, NI_MAXHOST, this->client[i].port, NI_MAXSERV, NI_NUMERICSERV);
+	i = 0;
+	while (i < SERV_CLIENTS && this->client[i].fd != -1)
+		i++;
+	if (i < SERV_CLIENTS) {
+		this->tintin->log("INFO", "New connection from %S(%S):%S accepted.",
+						  this->client[i].host,
+						  this->client[i].addr, this->client[i].port);
+		this->client[i].fd = fd;
+		this->client[i].log_time = time(NULL);
+		this->nb_clients++;
+		if (!this->protect)
+			Server::sendInfo(this->client[i]);
+	}
+	else {
+		this->tintin->log("INFO", "New connection from %S(%S):%S rejected.",
+						  this->client[i].host,
+						  this->client[i].addr, this->client[i].port);
+		write(fd, "Server full.\n", 13);
+		close(fd);
+	}
+}
+
+void		Server::clientRead(t_client & cl)
+{
+	static const char	*cmds[] = { SERV_CMDS, NULL };
+	static void	(Server::*funcs[])(t_client &) = { SERV_FUNCS };
+	int			ret;
+	char		buff[SERV_BUFF];
+
+	ret = recv(cl.fd, buff, SERV_BUFF - 1, 0);
+	if (ret <= 0)
+	{
+		this->tintin->log("INFO", "%S(%S):%S has disconnected.",
+							cl.host, cl.addr, cl.port);
+		close(cl.fd);
+		mymemset(&cl, 0, sizeof(t_client));
+		cl.fd = -1;
+		this->nb_clients--;
+		return ;
+	}
+	
+	this->tintin->log("LOG", "%S", buff);
+	buff[ret] = '\0';
+	cl.cmd = Server::mystrjoin(cl.cmd, buff);
+	this->tintin->log("LOG", "%S", cl.cmd);
+	
+	for (char *ptr = mystrchr(cl.cmd, '\n'); ptr != NULL;
+		ptr = mystrchr(cl.cmd, '\n')) {
+		*ptr = '\0';
+		if (this->protect && !cl.logged) {
+			;
+		} else {
+			int j;
+			for (j = 0; cmds[j]; j++) {
+				if (strcmp(cl.cmd, cmds[j]) == 0) {
+					this->tintin->log("INFO", "Request %S.", cmds[j]);
+					(this->*funcs[j])(cl);
+					break ;
+				}
+			}
+			if (!cmds[j])
+				this->tintin->log("LOG", "%S:%S : %S",
+									cl.host, cl.port, cl.cmd);
+		}
+		char *tmp = cl.cmd;
+		cl.cmd = mystrdup(ptr + 1);
+		free(tmp);
+	}
+}
+
+void *		Server::mymemset(void *s, int c, size_t n) const
 {
 	char	*t = (char *)s;
 
 	while (n--)
 		*t++ = c;
 	return s;
+}
+
+char *		Server::mystrchr(const char *s, int c) const
+{
+	while (s && *s) {
+		if (*s == c)
+			return (char *)s;
+		s++;
+	}
+	return NULL;
+}
+
+char *		Server::mystrjoin(const char *s1, const char *s2) const
+{
+	char	*ret;
+	size_t	i = 0;
+	size_t	j = 0;
+
+	while (s1 && s1[i])
+		i++;
+	while (s2 && s2[j])
+		j++;
+	if (i + j == 0)
+		return NULL;
+	if ((ret = (char *)malloc(i + j + 1)) == NULL)
+		return NULL;
+	i = 0;
+	while (s1 && s1[i])
+		ret[i] = s1[i];
+	j = 0;
+	while (s2 && s2[j])
+		ret[i + j] = s2[j];
+	ret[i + j] = '\0';
+	return ret;
+}
+
+char *		Server::mystrdup(const char *s) const
+{
+	char	*ret;
+	size_t	i = 0;
+
+	while (s && s[i])
+		i++;
+	if (i == 0)
+		return NULL;
+	if ((ret = (char *)malloc(sizeof(*ret) * (i + 1))) == NULL)
+		return NULL;
+	i = 0;
+	while (s[i]) {
+		ret[i] = s[i];
+		i++;
+	}
+	ret[i] = '\0';
+	return ret;
+}
+
+void		Server::sendLog(t_client &cl)
+{
+	std::ifstream	log(LOG_FILE, std::ifstream::binary);
+	int				len;
+	char			*buf;
+
+	if (log) {
+		log.seekg(0, log.end);
+		len = log.tellg();
+		log.seekg(0, log.beg);
+		buf = new char [len];
+		log.read(buf, len);
+		if (log)
+			write(cl.fd, buf, len);
+		else {
+			write(cl.fd, buf, len);
+			write(cl.fd, "\nERROR: only a part of the file could be read.", 47);
+		}
+		log.close();
+		delete buf;
+	}
+	else
+		write(cl.fd, "Couldn't open log file.", 23);
+}
+
+void		Server::sendInfo(t_client &cl)
+{
+	std::string		info;
+	struct ifaddrs	*ifstruct	= NULL;
+	struct ifaddrs	*ifs		= NULL;
+	void			*addr		= NULL;
+	const char		*cmds[]		= { SERV_CMDS, NULL };
+
+	getifaddrs(&ifstruct);
+	info = "Daemon written by GBOURGEO for 42.\n";
+	info += "Daemon started on ";
+	info += ctime(&this->start_time);
+	info += "\nIp version\tService\tAddress\t\tPort\n";
+	info += "---------------------------------------------";
+	info += "---------------------------------------------\n";
+	for (ifs = ifstruct; ifs != NULL; ifs = ifs->ifa_next) {
+		if (!ifs->ifa_addr)
+			continue ;
+		if (ifs->ifa_addr->sa_family == AF_INET) {
+			addr = &((struct sockaddr_in *)ifs->ifa_addr)->sin_addr;
+			char	buf[INET_ADDRSTRLEN];
+			inet_ntop(AF_INET, addr, buf, INET_ADDRSTRLEN);
+			info += "v4\t";
+			info += ifs->ifa_name;
+			info += '\t';
+			info += buf;
+			info += (strlen(buf) > 11) ? "\t" : "\t\t";
+			info += SERV_PORT;
+			info += '\n';
+		}
+		else if (ifs->ifa_addr->sa_family == AF_INET) {
+			addr = &((struct sockaddr_in6 *)ifs->ifa_addr)->sin6_addr;
+			char	buf[INET6_ADDRSTRLEN];
+			inet_ntop(AF_INET6, addr, buf, INET6_ADDRSTRLEN);
+			info += "v6\t";
+			info += ifs->ifa_name;
+			info += '\t';
+			info += buf;
+			info += (strlen(buf) > 11) ? "\t" : "\t\t";
+			info += SERV_PORT;
+			info += '\n';
+		}
+	}
+	if (ifstruct)
+		freeifaddrs(ifstruct);
+	info += "\nDaemon max. clients:  " + std::to_string(SERV_CLIENTS) + "\n";
+	info += "Daemon curr. clients:  " + std::to_string(this->nb_clients) + "\n";
+	info += "Daemon encrypted version : ";
+	info += (SERV_ENCRYPT) ? "Yes" : "No";
+	info += '\n';
+	info += "Daemon passwd protected : ";
+	info += (SERV_PROTECT) ? "Yes" : "No";
+	info += '\n';
+	info += "Daemon commands avail. :  ";
+	for (int i = 0; cmds[i]; i++) {
+		info += "\"";
+		info += cmds[i];
+		info += '"';
+		info += (cmds[i + 1]) ? ", " : ".";
+	}
+	info += '\n';
+	write(cl.fd, &info[0], info.size());
+}
+
+void		Server::quit(t_client &cl)
+{
+	(void)cl;
+	for (int i = 0; i < SERV_CLIENTS; i++)
+		write(this->client[i].fd, "Request quit received.\n", 23);
+	this->loop = false;
 }
