@@ -116,8 +116,10 @@ void BenWindow::sockDisconnected()
 
 void BenWindow::sockRead()
 {
+    QTextStream     data(this->socket);
+
     ui->logBrowser->clear();
-    ui->logBrowser->append(this->socket->readAll());
+    ui->logBrowser->append(data.readAll());
 }
 
 void BenWindow::sockError(QAbstractSocket::SocketError erreur)
@@ -150,6 +152,7 @@ void BenWindow::sendText()
         if (message.isEmpty() || message.isNull())
             return ;
         this->socket->write(message.data());
+        this->socket->write("\n");
         this->socket->waitForBytesWritten(1000);
         ui->textBrowser->append(message);
         ui->sendField->clear();

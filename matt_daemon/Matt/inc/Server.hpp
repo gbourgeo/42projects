@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/10/01 19:31:50 by root             ###   ########.fr       //
+//   Updated: 2017/10/02 22:58:19 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -36,7 +36,7 @@ typedef struct		s_client
 	char			port[NI_MAXSERV];
 	time_t			log_time;
 	bool			logged;
-	char			*cmd;
+	std::string		cmd;
 }					t_client;
 
 class		Server
@@ -61,9 +61,6 @@ private:
 	void		acceptConnections(void);
 	void		clientRead(t_client & clt);
 	void		*mymemset(void *s, int c, size_t n) const;
-	char		*mystrchr(const char *s, int c) const;
-	char		*mystrdup(const char *s) const;
-	char		*mystrjoin(const char *s1, const char *s2) const;
 	void		sendLog(t_client & cl);
 	void		sendInfo(t_client & cl);
 	void		quit(t_client & cl);

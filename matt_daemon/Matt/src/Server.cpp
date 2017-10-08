@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/10/01 20:40:33 by root             ###   ########.fr       //
+//   Updated: 2017/10/02 23:01:20 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -59,7 +59,7 @@ Server::Server(void):
 	mymemset(&this->client[0], 0, sizeof(t_client) * SERV_CLIENTS);
 	for (int i = 0; i < SERV_CLIENTS; i++) {
 		this->client[i].fd = -1;
-		this->client[i].cmd = NULL;
+//		this->client[i].cmd = NULL;
 	}
 	this->loop = true;
 	this->start_time = time(NULL);
@@ -203,8 +203,6 @@ void		Server::acceptConnections(void)
 		this->client[i].fd = fd;
 		this->client[i].log_time = time(NULL);
 		this->nb_clients++;
-		if (!this->protect)
-			Server::sendInfo(this->client[i]);
 	}
 	else {
 		this->tintin->log("INFO", "New connection from %S(%S):%S rejected.",
@@ -233,33 +231,28 @@ void		Server::clientRead(t_client & cl)
 		this->nb_clients--;
 		return ;
 	}
-	
-	this->tintin->log("LOG", "%S", buff);
 	buff[ret] = '\0';
-	cl.cmd = Server::mystrjoin(cl.cmd, buff);
-	this->tintin->log("LOG", "%S", cl.cmd);
-	
-	for (char *ptr = mystrchr(cl.cmd, '\n'); ptr != NULL;
-		ptr = mystrchr(cl.cmd, '\n')) {
-		*ptr = '\0';
+	cl.cmd += buff;
+	std::size_t found;
+	while ((found = cl.cmd.find_first_of('\n')) != std::string::npos)
+	{
+		cl.cmd.at(found) = 0;
 		if (this->protect && !cl.logged) {
 			;
 		} else {
 			int j;
 			for (j = 0; cmds[j]; j++) {
-				if (strcmp(cl.cmd, cmds[j]) == 0) {
+				if (cl.cmd.compare(cmds[j]) == 1) {
 					this->tintin->log("INFO", "Request %S.", cmds[j]);
 					(this->*funcs[j])(cl);
 					break ;
 				}
 			}
 			if (!cmds[j])
-				this->tintin->log("LOG", "%S:%S : %S",
+				this->tintin->log("LOG", "%S:%S : %s",
 									cl.host, cl.port, cl.cmd);
 		}
-		char *tmp = cl.cmd;
-		cl.cmd = mystrdup(ptr + 1);
-		free(tmp);
+		cl.cmd = cl.cmd.substr(found + 1);
 	}
 }
 
@@ -270,60 +263,6 @@ void *		Server::mymemset(void *s, int c, size_t n) const
 	while (n--)
 		*t++ = c;
 	return s;
-}
-
-char *		Server::mystrchr(const char *s, int c) const
-{
-	while (s && *s) {
-		if (*s == c)
-			return (char *)s;
-		s++;
-	}
-	return NULL;
-}
-
-char *		Server::mystrjoin(const char *s1, const char *s2) const
-{
-	char	*ret;
-	size_t	i = 0;
-	size_t	j = 0;
-
-	while (s1 && s1[i])
-		i++;
-	while (s2 && s2[j])
-		j++;
-	if (i + j == 0)
-		return NULL;
-	if ((ret = (char *)malloc(i + j + 1)) == NULL)
-		return NULL;
-	i = 0;
-	while (s1 && s1[i])
-		ret[i] = s1[i];
-	j = 0;
-	while (s2 && s2[j])
-		ret[i + j] = s2[j];
-	ret[i + j] = '\0';
-	return ret;
-}
-
-char *		Server::mystrdup(const char *s) const
-{
-	char	*ret;
-	size_t	i = 0;
-
-	while (s && s[i])
-		i++;
-	if (i == 0)
-		return NULL;
-	if ((ret = (char *)malloc(sizeof(*ret) * (i + 1))) == NULL)
-		return NULL;
-	i = 0;
-	while (s[i]) {
-		ret[i] = s[i];
-		i++;
-	}
-	ret[i] = '\0';
-	return ret;
 }
 
 void		Server::sendLog(t_client &cl)
