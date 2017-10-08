@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/10/01 14:05:25 by root             ###   ########.fr        #
+#    Updated: 2017/10/08 13:15:50 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -20,7 +20,7 @@ SERVER_S_D = $(SERVER_D)src/
 
 SERVER_S = main.cpp Tintin.cpp Server.cpp Exceptions.cpp Daemonize.cpp
 
-SERVER_H = -I $(SERVER_D)inc/
+SERVER_H_D = $(SERVER_D)inc/
 
 SERVER_O_D = $(SERVER_D)obj/
 
@@ -44,11 +44,9 @@ $(SERVER): $(NAME)
 $(NAME): $(SERVER_O)
 	$(CXX) $(FLAGS) -o $@ $^
 
-$(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp | prep
-	$(CXX) $(FLAGS) -o $@ -c $< $(SERVER_H)
-
-prep:
+$(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp $(SERVER_H_D)%.hpp
 	@mkdir -p $(SERVER_O_D)
+	$(CXX) $(FLAGS) -o $@ -c $< -I $(SERVER_H_D)
 
 $(CLIENT): $(NAME_2)
 

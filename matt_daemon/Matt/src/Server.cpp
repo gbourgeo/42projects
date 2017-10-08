@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/10/02 23:01:20 by root             ###   ########.fr       //
+//   Updated: 2017/10/08 12:50:06 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -59,7 +59,6 @@ Server::Server(void):
 	mymemset(&this->client[0], 0, sizeof(t_client) * SERV_CLIENTS);
 	for (int i = 0; i < SERV_CLIENTS; i++) {
 		this->client[i].fd = -1;
-//		this->client[i].cmd = NULL;
 	}
 	this->loop = true;
 	this->start_time = time(NULL);

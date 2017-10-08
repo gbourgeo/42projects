@@ -6,20 +6,11 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/23 04:39:24 by root              #+#    #+#             //
-//   Updated: 2017/09/29 04:06:39 by root             ###   ########.fr       //
+//   Updated: 2017/10/08 13:17:40 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#include "Exceptions.hpp"
-#include <stdlib.h> //close exit
-#include <unistd.h> //fork
-#include <sys/types.h> //umask
-#include <sys/stat.h>
-#include <fcntl.h> //open
-#include <signal.h>
-
-void		quitClearlyDaemon(const char *info, std::string more);
-void		daemonSigHandler(int sig);
+#include "Daemonize.hpp"
 
 void		daemonize()
 {

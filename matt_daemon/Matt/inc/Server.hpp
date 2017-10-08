@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/10/02 22:58:19 by root             ###   ########.fr       //
+//   Updated: 2017/10/08 13:03:08 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -24,7 +24,7 @@
 # define SERV_PROTECT	false
 # define SERV_LOG_TIME	2
 
-# define SERV_CMDS		"log", "info", "quit"
+# define SERV_CMDS		"servlog", "servinfo", "quit"
 # define SERV_FUNCS		&Server::sendLog, &Server::sendInfo, &Server::quit
 # define SERV_BUFF		256
 
