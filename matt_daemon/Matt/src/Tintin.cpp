@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/09/30 05:03:07 by root             ###   ########.fr       //
+//   Updated: 2017/10/11 20:55:11 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -87,4 +87,14 @@ void Tintin_reporter::log(const std::string & title, const std::string & info, .
 	va_end(ap);
 	this->_buff.append(&info[j], i - j);
 	this->_logfd << this->_buff << std::endl;
+}
+
+void		Tintin_reporter::clearLogs( void )
+{
+	if (!this->_logfd.is_open())
+		return ;
+	this->_logfd.close();
+	this->_logfd.open(LOG_FILE, std::ofstream::out | std::ofstream::trunc);
+	if (!this->_logfd.is_open())
+		throw DAEMONException("logfile");
 }

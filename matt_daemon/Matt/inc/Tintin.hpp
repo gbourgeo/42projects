@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:47:05 by root              #+#    #+#             //
-//   Updated: 2017/09/29 04:28:51 by root             ###   ########.fr       //
+//   Updated: 2017/10/11 20:43:16 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -30,6 +30,7 @@ public:
 	Tintin_reporter & operator=(Tintin_reporter const & rhs);
 	
 	void	log(const std::string & title, const std::string & info, ...);
+	void	clearLogs( void );
 
 private:
 	std::ofstream	_logfd;

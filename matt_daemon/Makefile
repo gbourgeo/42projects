@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/10/08 13:15:50 by root             ###   ########.fr        #
+#    Updated: 2017/10/15 19:05:03 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,7 +18,18 @@ SERVER_D = Matt/
 
 SERVER_S_D = $(SERVER_D)src/
 
-SERVER_S = main.cpp Tintin.cpp Server.cpp Exceptions.cpp Daemonize.cpp
+SERVER_S = 	Main.cpp \
+			Tintin.cpp \
+			Server.cpp \
+			daemonLogs.cpp \
+			daemonInfo.cpp \
+			machineInfo.cpp \
+			serviceInfo.cpp \
+			mail.cpp \
+			Exceptions.cpp \
+			Daemonize.cpp \
+			getSocket.cpp \
+			stdlib_func.cpp
 
 SERVER_H_D = $(SERVER_D)inc/
 
@@ -37,12 +48,14 @@ CXX = g++
 
 FLAGS = -Wall -Werror -Wextra -std=c++11
 
+SSL_LIBS = -L/usr/lib/x86_64-linux-gnu/ -lssl -lcrypto
+
 all: $(SERVER) #$(CLIENT)
 
 $(SERVER): $(NAME)
 
 $(NAME): $(SERVER_O)
-	$(CXX) $(FLAGS) -o $@ $^
+	$(CXX) $(FLAGS) $(SSL_LIBS) -o $@ $^
 
 $(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp $(SERVER_H_D)%.hpp
 	@mkdir -p $(SERVER_O_D)
