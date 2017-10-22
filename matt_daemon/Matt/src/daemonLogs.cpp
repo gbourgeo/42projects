@@ -6,31 +6,30 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:27:18 by root              #+#    #+#             //
-//   Updated: 2017/10/22 14:33:52 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 17:33:53 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Server.hpp"
 #include "daemonLogs.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 std::string			Server::getDaemonLogs( void )
 {
-	std::ifstream	log(LOG_FILE, std::ifstream::binary);
-	int				len;
-	char			*buf;
+	int				log;
+	char			buff[1024];
 	std::string		info;
 
-	if (log) {
-		log.seekg(0, log.end);
-		len = log.tellg();
-		log.seekg(0, log.beg);
-		buf = new char [len];
-		log.read(buf, len);
-		info = std::string(buf);
-		if (!log)
-			info += "\nERROR: only a part of the file could be read.";
-		log.close();
-		delete[] buf;
+	log = open(LOG_FILE, O_RDONLY);
+	if (log != -1)
+	{
+		int ret;
+		while ((ret = read(log, buff, 1024)) > 0) {
+			info += std::string(buff, ret);
+		}
+		close(log);
 	}
 	else
 		info = "Couldn't open log file.";

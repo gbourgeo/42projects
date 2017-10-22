@@ -6,17 +6,18 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:30:33 by root              #+#    #+#             //
-//   Updated: 2017/10/22 14:47:14 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 16:42:27 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Server.hpp"
 #include "daemonInfo.hpp"
+#include "stdlib_func.hpp"
 
 std::string				Server::getDaemonInfo( void )
 {
 	std::string			info;
-	static const char	*cmds[]	= SERV_CMDS;
+	static const char	*cmds[][100] = SERV_CMDS;
 
 	info = "Daemon written by GBOURGEO for 42.";
 	info += "\n";
@@ -30,12 +31,14 @@ std::string				Server::getDaemonInfo( void )
 	info += "Daemon passwd protected : ";
 	info += (SERV_PROTECT) ? "Yes" : "No";
 	info += "\n";
-	info += "Daemon commands avail. :  ";
-	for (int i = 0; cmds[i]; i++) {
-		info += "\"";
-		info += cmds[i];
-		info += '"';
-		info += (cmds[i + 1]) ? ", " : ".";
+	info += "Daemon commands available :";
+	for (int i = 0; cmds[i][0]; i++) {
+		info += "\n\t\"";
+		info += cmds[i][0];
+		info += "\"\t";
+		if (mystrlen(cmds[i][0]) < 8)
+			info += "\t";
+		info += cmds[i][1];
 	}
 	info += "\n";
 	return info;

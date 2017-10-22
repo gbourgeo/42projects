@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:42:22 by root              #+#    #+#             //
-//   Updated: 2017/10/22 14:59:14 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 16:34:05 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -14,7 +14,6 @@
 #include "mail.hpp"
 #include "stdlib_func.hpp"
 #include "getSocket.hpp"
-#include "base64.hpp"
 #include <unistd.h>
 
 static const std::string ssh_err[] = { "The TLS/SSL I/O operation completed.",

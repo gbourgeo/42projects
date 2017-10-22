@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:35:39 by root              #+#    #+#             //
-//   Updated: 2017/10/22 14:34:22 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 16:52:12 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -28,19 +28,21 @@ std::string		Server::getServiceInfo( void )
 	void				*addr		= NULL;
 	std::string			info;
 
-	info = "- INTERFACES INFORMATION -\n";	
+	info = "- INTERFACES INFORMATION -";
+	info += "\n";
 	if (getifaddrs(&ifstruct) < 0) {
 		info += "**ERROR*: Unable to get Interface Addresses : ";
 		info += strerror(errno);
 	} else {
 		info += "\n";
+		info += "Name\t Parameters\n";
 		info += "---------------------------------------------";
 		info += "---------------------------------------------";
-		info += "\n";
 		for (ifs = ifstruct; ifs != NULL; ifs = ifs->ifa_next) {
 			if (!ifs->ifa_addr)
 				continue ;
 			if (ifs->ifa_addr->sa_family == AF_INET) {
+				info += "\n";
 				info += ifs->ifa_name;
 				info += ":\t flags \t";
 				info += "<";
@@ -71,7 +73,8 @@ std::string		Server::getServiceInfo( void )
 						{
 							info += "\n";
 							info += "\t inet6 \t";
-							for (int i = 0, j = 0, c = 0; name[i] && name[i] != ' '; i++, j++) {
+							int i = 0;
+							for (int j = 0, c = 0; name[i] && name[i] != ' '; i++, j++) {
 								if (j == 4) {
 									i -= 4;
 									int k;
@@ -88,6 +91,7 @@ std::string		Server::getServiceInfo( void )
 									j = 0;
 								}
 							}
+							name.erase(i);
 							info += name;
 							break;
 						}
@@ -122,7 +126,6 @@ std::string		Server::getServiceInfo( void )
 					info += (char *)ifs->ifa_data;
 					info += "\n";
 				}
-				info += "\n";
 			}
 		}
 		freeifaddrs(ifstruct);

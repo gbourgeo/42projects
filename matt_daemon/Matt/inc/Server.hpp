@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/10/22 14:58:55 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 16:39:47 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -25,13 +25,14 @@
 # define SERV_CLIENTS		3
 # define SERV_LOGGIN_TIME	2
 # define SERV_BUFF			256
-# define SERV_CMDS			{ "daemonlogs",			\
-							  "daemoninfo",			\
-							  "machinfo",			\
-							  "servinfo",			\
-							  "clearlogs",			\
-							  "mail",				\
-							  "quit", NULL }
+# define SERV_CMDS			{ { "daemonlogs", "Print the Daemon log file." }, \
+							  { "daemoninfo", "Show informations about the Daemon itself." }, \
+							  { "machinfo", "Give informations about the machine the Daemon is running on." }, \
+							  { "servinfo", "Give informations about the services of the machine the Daemon is runing on." }, \
+							  { "clearlogs", "Clear the Daemon log file." }, \
+							  { "mail [...]", "Send an email with the informations to the parameters given (daemoninfo, etc...)."}, \
+							  { "quit", "Shutdown the Daemon." },		\
+							  { NULL, NULL }, }
 # define SERV_FUNCS			{ &Server::sendDaemonLogs,		\
 							  &Server::sendDaemonInfo,		\
 							  &Server::sendMachineInfo,		\

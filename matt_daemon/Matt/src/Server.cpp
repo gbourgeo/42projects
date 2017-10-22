@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/10/21 21:09:42 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 16:54:22 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -167,15 +167,13 @@ void		Server::acceptConnections(void)
 
 void		Server::clientCommands(t_client & cl)
 {
-	static const char	*name[] = SERV_CMDS;
+	static const char	*name[][100] = SERV_CMDS;
 	static void			(Server::*funcs[])(t_client &) = SERV_FUNCS;
-	int					j;
-	int					cmp;
 
-	for (j = 0; name[j]; j++) {
-		cmp = mystrcmp(&cl.cmd[0], name[j]);
+	for (int j = 0; name[j][0]; j++) {
+		int cmp = mystrcmp(&cl.cmd[0], name[j][0]);
 		if (cmp == 0 || cmp == ' ') {
-			this->tintin->log("INFO", "Request %S.", name[j]);
+			this->tintin->log("INFO", "Request %S.", name[j][0]);
 			(this->*funcs[j])(cl);
 			return ;
 		}
@@ -245,10 +243,10 @@ void		Server::loopServ(void)
 
 void		Server::clearDaemonLogs(t_client &cl)
 {
-	(void)cl;
 	this->tintin->clearLogs();
 	this->tintin->log("INFO", "Started on %S", ctime(&this->start_time));
 	this->tintin->log("INFO", "Request clearlogs.");
+	write(cl.fd, "Logs cleared !\n", 15);
 }
 
 void		Server::quit(t_client &cl)
