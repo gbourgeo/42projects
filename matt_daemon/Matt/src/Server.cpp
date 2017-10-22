@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/10/15 19:13:44 by root             ###   ########.fr       //
+//   Updated: 2017/10/21 21:09:42 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,26 +15,42 @@
 #include "getSocket.hpp"
 #include "stdlib_func.hpp"
 #include <fstream>
-#include <string>
 #include <unistd.h>
 #include <arpa/inet.h>
 
 Server::Server(void):
 	tintin(NULL),
 	servfd(getSocket(SERV_ADDR, SERV_PORT, &servSocket)),
-	mailfd(getSocket("smtp.gmail.com", "465", &mailSocket)),
+	mailfd(-1),
 	fdr({0}),
 	loop(true),
 	start_time(time(NULL)),
 	nb_clients(0),
 	encrypt(SERV_ENCRYPT),
 	protect(SERV_PROTECT),
-	client()
+	client(),
+	ssl(NULL)
 {
 	mymemset(&this->client[0], 0, sizeof(t_client) * SERV_CLIENTS);
 	for (int i = 0; i < SERV_CLIENTS; i++) {
 		this->client[i].fd = -1;
 	}
+
+	const SSL_METHOD	*method;
+
+	if (SSL_library_init() < 0)
+		throw DAEMONException("OpenSSL not initialized");
+	OpenSSL_add_ssl_algorithms();
+	OpenSSL_add_all_algorithms();
+	SSL_load_error_strings();
+	ERR_load_crypto_strings();
+	method = SSLv23_client_method();
+	if ((this->ctx = SSL_CTX_new(method)) == NULL) {
+		std::string err = std::string("OpenSSL context not initialized: ");
+		err += std::string(ERR_error_string(ERR_get_error(), NULL));
+		throw DAEMONException(&err[0]);
+	}
+	SSL_CTX_set_options(this->ctx, SSL_OP_NO_SSLv2);
 }
 
 Server::Server(Server const & src)
@@ -50,6 +66,21 @@ Server::~Server(void)
 	{
 		if (this->client[i].fd != -1)
 			close(this->client[i].fd);
+	}
+	ERR_free_strings();
+	if (this->mailfd)
+		close(this->mailfd);
+	if (this->ssl)
+	{
+		SSL_shutdown(this->ssl);
+		SSL_shutdown(this->ssl);
+		SSL_clear(this->ssl);
+		SSL_free(this->ssl);
+		this->ssl = NULL;
+	}
+	if (this->ctx) {
+		SSL_CTX_free(this->ctx);
+		this->ctx = NULL;
 	}
 	this->loop = false;
 }
@@ -139,9 +170,11 @@ void		Server::clientCommands(t_client & cl)
 	static const char	*name[] = SERV_CMDS;
 	static void			(Server::*funcs[])(t_client &) = SERV_FUNCS;
 	int					j;
+	int					cmp;
 
 	for (j = 0; name[j]; j++) {
-		if (cl.cmd.compare(name[j]) == 1) {
+		cmp = mystrcmp(&cl.cmd[0], name[j]);
+		if (cmp == 0 || cmp == ' ') {
 			this->tintin->log("INFO", "Request %S.", name[j]);
 			(this->*funcs[j])(cl);
 			return ;

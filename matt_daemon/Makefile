@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/10/15 19:05:03 by root             ###   ########.fr        #
+#    Updated: 2017/10/22 15:47:14 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -55,7 +55,7 @@ all: $(SERVER) #$(CLIENT)
 $(SERVER): $(NAME)
 
 $(NAME): $(SERVER_O)
-	$(CXX) $(FLAGS) $(SSL_LIBS) -o $@ $^
+	$(CXX) $(FLAGS) -o $@ $^ $(SSL_LIBS)
 
 $(SERVER_O_D)%.o: $(SERVER_S_D)%.cpp $(SERVER_H_D)%.hpp
 	@mkdir -p $(SERVER_O_D)

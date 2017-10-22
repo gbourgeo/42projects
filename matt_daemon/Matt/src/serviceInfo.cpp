@@ -6,14 +6,14 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:35:39 by root              #+#    #+#             //
-//   Updated: 2017/10/15 18:36:09 by root             ###   ########.fr       //
+//   Updated: 2017/10/22 14:34:22 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Server.hpp"
 #include "serviceInfo.hpp"
 
-void		Server::sendServiceInfo(t_client & cl)
+std::string		Server::getServiceInfo( void )
 {
 	std::string	attr[] = { "UP", "BROADCAST", "DEBUG", "LOOPBACK", "POINTOPOINT", \
 						   "RUNNING", "NOARP", "PROMISC", "NOTRAILERS", "ALLMULTI", \
@@ -33,8 +33,10 @@ void		Server::sendServiceInfo(t_client & cl)
 		info += "**ERROR*: Unable to get Interface Addresses : ";
 		info += strerror(errno);
 	} else {
-		info += "\n---------------------------------------------";
-		info += "---------------------------------------------\n";
+		info += "\n";
+		info += "---------------------------------------------";
+		info += "---------------------------------------------";
+		info += "\n";
 		for (ifs = ifstruct; ifs != NULL; ifs = ifs->ifa_next) {
 			if (!ifs->ifa_addr)
 				continue ;
@@ -52,7 +54,8 @@ void		Server::sendServiceInfo(t_client & cl)
 				}
 				info += ">";
 
-				info += "\n\t inet \t";
+				info += "\n";
+				info += "\t inet \t";
 				addr = &((struct sockaddr_in *)ifs->ifa_addr)->sin_addr;
 				char	buf4[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, addr, buf4, INET_ADDRSTRLEN);
@@ -66,7 +69,8 @@ void		Server::sendServiceInfo(t_client & cl)
 					{
 						if (name.find(ifs->ifa_name) != std::string::npos)
 						{
-							info += "\n\t inet6 \t";
+							info += "\n";
+							info += "\t inet6 \t";
 							for (int i = 0, j = 0, c = 0; name[i] && name[i] != ' '; i++, j++) {
 								if (j == 4) {
 									i -= 4;
@@ -91,7 +95,8 @@ void		Server::sendServiceInfo(t_client & cl)
 					inet6.close();
 				}
 
-				info += "\n\t netmask \t";
+				info += "\n";
+				info += "\t netmask \t";
 				addr = &((struct sockaddr_in *)ifs->ifa_netmask)->sin_addr;
 				inet_ntop(AF_INET, addr, buf4, INET_ADDRSTRLEN);
 				info += buf4;
@@ -122,5 +127,13 @@ void		Server::sendServiceInfo(t_client & cl)
 		}
 		freeifaddrs(ifstruct);
 	}
+	info += "\n";
+	return info;
+}
+
+void				Server::sendServiceInfo( t_client & cl )
+{
+	std::string		info = getServiceInfo();
+
 	write(cl.fd, &info[0], info.size());
 }

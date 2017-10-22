@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 15:55:19 by root              #+#    #+#             //
-//   Updated: 2017/10/15 23:45:23 by root             ###   ########.fr       //
+//   Updated: 2017/10/21 21:18:16 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -54,10 +54,12 @@ size_t			mystrlen(const char *s)
 	return i;
 }
 
-char *	mystrchr(const char *s, char c)
+char *			mystrchr(const char *s, char c)
 {
 	char		*p = (char *)s;
 
+	if (!p)
+		return (char *)0;
 	while (*p)
 	{
 		if (*p == c)
@@ -75,4 +77,15 @@ int				mystrcmp(const char *s1, const char *s2)
 		s2++;
 	}
 	return *s1 - *s2;
+}
+
+int				myisalnum(char c)
+{
+	if (c >= '0' && c <= '9')
+		return 1;
+	if (c >= 'A' && c <= 'Z')
+		return 1;
+	if (c >= 'a' && c <= 'z')
+		return 1;
+	return 0;
 }
