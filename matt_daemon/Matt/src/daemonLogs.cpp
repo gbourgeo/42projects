@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:27:18 by root              #+#    #+#             //
-//   Updated: 2017/10/22 17:33:53 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 14:31:38 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -41,5 +41,5 @@ void				Server::sendDaemonLogs(t_client &cl)
 {
 	std::string		logs = getDaemonLogs();
 
-	write(cl.fd, &logs[0], logs.size());
+	cl.wr += logs;
 }

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:30:33 by root              #+#    #+#             //
-//   Updated: 2017/10/22 16:42:27 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 15:59:02 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -23,14 +23,17 @@ std::string				Server::getDaemonInfo( void )
 	info += "\n";
 	info += "Daemon started on ";
 	info += ctime(&this->start_time);
-	info += "Daemon max. clients:  " + std::to_string(SERV_CLIENTS) + "\n";
+	info += "Daemon max. clients:  " + std::to_string(SERV_MAX_CLIENTS) + "\n";
 	info += "Daemon curr. clients:  " + std::to_string(this->nb_clients) + "\n";
 	info += "Daemon encrypted version : ";
-	info += (SERV_ENCRYPT) ? "Yes" : "No";
+	info += (this->encrypt) ? "Yes" : "No";
 	info += "\n";
 	info += "Daemon passwd protected : ";
-	info += (SERV_PROTECT) ? "Yes" : "No";
+	info += (this->protect) ? "Yes" : "No";
 	info += "\n";
+	info += "Daemon passwd:        \"";
+	info += this->passwd;
+	info += "\"\n";
 	info += "Daemon commands available :";
 	for (int i = 0; cmds[i][0]; i++) {
 		info += "\n\t\"";
@@ -48,5 +51,5 @@ void		Server::sendDaemonInfo(t_client &cl)
 {
 	std::string			info = getDaemonInfo();
 
-	write(cl.fd, &info[0], info.size());
+	cl.wr += info;
 }

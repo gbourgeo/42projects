@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:32:02 by root              #+#    #+#             //
-//   Updated: 2017/10/22 14:34:36 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 14:31:23 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -53,5 +53,5 @@ void				Server::sendMachineInfo(t_client & cl)
 {
 	std::string		info = getMachineInfo();
 
-	write(cl.fd, &info[0], info.size());
+	cl.wr += info;
 }

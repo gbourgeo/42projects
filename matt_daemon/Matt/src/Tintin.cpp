@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/10/11 20:55:11 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 16:45:18 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -41,6 +41,13 @@ Tintin_reporter & Tintin_reporter::operator=(Tintin_reporter const & rhs)
 	(void)rhs;
 	return *this;
 }
+
+/*
+** Conversion supported:
+**		%d: int
+**		%s: std::string *
+**		%S: char *
+*/
 
 void Tintin_reporter::log(const std::string & title, const std::string & info, ...)
 {

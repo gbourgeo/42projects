@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:42:22 by root              #+#    #+#             //
-//   Updated: 2017/10/22 16:34:05 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 14:30:40 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -30,7 +30,7 @@ static int		getWhatToSend(t_client & cl)
 {
 	int			tosend = 0;
 
-	for (const char *ptr = mystrchr(&cl.cmd[0], ' '); ptr != NULL; ptr = mystrchr(ptr, ' ')) {
+	for (const char *ptr = mystrchr(&cl.rd[0], ' '); ptr != NULL; ptr = mystrchr(ptr, ' ')) {
 		ptr++;
 		int ret;
 		if ((ret = mystrcmp(ptr, "daemoninfo")) == 0 || ret == ' ')
@@ -86,7 +86,7 @@ void			Server::sendMail(t_client &cl)
 	int			tosend = getWhatToSend(cl);
 
 	if (tosend == 0) {
-		write(cl.fd, "Nothing to send.\r\n", 18);
+		cl.wr += "Nothing to send.\r\n";
 		return ;
 	}
 	if (SSHConnection(cl) == false)
@@ -119,7 +119,7 @@ void			Server::sendMail(t_client &cl)
 		close(this->mailfd);
 		this->mailfd = -1;
 	}
-	write(cl.fd, "Mail sent.\r\n", 12);
+	cl.wr += "Mail sent.\r\n";
 }
 
 bool			Server::SSHConnection( t_client & cl )
@@ -209,8 +209,8 @@ bool			Server::readMail( const char *code, t_client & cl )
 bool		Server::mailError(const char *err, t_client & cl)
 {
 	this->tintin->log("ERROR", err);
-	write(cl.fd, err, mystrlen(err));
-	write(cl.fd, "\n", 1);
+	cl.wr += err;
+	cl.wr += "\n";
 	if (this->ssl) {
 		while (!SSL_shutdown(this->ssl))
 			;

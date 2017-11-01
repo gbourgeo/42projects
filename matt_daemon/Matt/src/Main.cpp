@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
-//   Updated: 2017/10/15 19:00:32 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 16:37:06 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -68,15 +68,16 @@ int					main(void)
 		e.tintin->log("INFO", "Entering Daemon mode...");
 		daemonize();
 		e.first = true;
-		e.tintin->log("INFO", "Done. PID: %d", getpid());
+		e.tintin->log("INFO", "Daemon child #%d survived...", getpid());
 
-		e.server->loopServ();
+		e.server->mailMeDaemonInfo();
+		e.server->launchServer();
 		
-		e.tintin->log("INFO", "Quitting...");
 		flock(e.lock, LOCK_UN);
 		remove(LOCK_FILE);
 		close(e.lock);
 		delete e.server;
+		e.tintin->log("INFO", "Quitting...");
 		delete e.tintin;
 	}
 	catch (DAEMONException& err) {
@@ -99,13 +100,13 @@ void				quitClearlyDaemon(const char *info, std::string more)
 	if (e.lock > -1)
 		close(e.lock);
 	if (e.server)
+	{
+		e.server->quitReason += more;
 		delete e.server;
+	}
 	if (e.tintin)
 	{
-		if (info) {
-			e.tintin->log(info, more);
-			e.tintin->log("INFO", "Quitting...\n");
-		}
+		e.tintin->log(info, more);
 		delete e.tintin;
 	}
 	exit(0);

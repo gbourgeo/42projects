@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 14:00:37 by root              #+#    #+#             //
-//   Updated: 2017/10/15 16:58:03 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 12:51:58 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -36,7 +36,7 @@ int			servSocket(struct addrinfo *p)
 		return -1;
 	if (!setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) &&
 		!bind(fd, p->ai_addr, p->ai_addrlen) &&
-		!listen(fd, SERV_CLIENTS))
+		!listen(fd, SERV_MAX_CLIENTS))
 		return fd;
 	close(fd);
 	return -1;

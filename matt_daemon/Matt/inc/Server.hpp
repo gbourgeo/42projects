@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/10/22 16:39:47 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 16:37:54 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,21 +20,24 @@
 
 # define SERV_ADDR			"localhost"
 # define SERV_PORT			"4242"
-# define SERV_ENCRYPT		false
-# define SERV_PROTECT		false
-# define SERV_CLIENTS		3
+# define SERV_MSG_ENCRYPTED	false
+# define SERV_PWD_PROTECTED	false
+# define SERV_PWD			""
+# define SERV_MAX_CLIENTS	3
 # define SERV_LOGGIN_TIME	2
 # define SERV_BUFF			256
-# define SERV_CMDS			{ { "daemonlogs", "Print the Daemon log file." }, \
-							  { "daemoninfo", "Show informations about the Daemon itself." }, \
-							  { "machinfo", "Give informations about the machine the Daemon is running on." }, \
-							  { "servinfo", "Give informations about the services of the machine the Daemon is runing on." }, \
-							  { "clearlogs", "Clear the Daemon log file." }, \
-							  { "mail [...]", "Send an email with the informations to the parameters given (daemoninfo, etc...)."}, \
+# define SERV_CMDS			{ { "daemonlogs", "Prints the Daemon log file." }, \
+							  { "daemoninfo", "Shows informations about the Daemon itself." }, \
+							  { "daemonpwd", "Changes the Daemon protection. TRUE with an argument (will be the new password) or FALSE with no argument." }, \
+							  { "machinfo", "Gives informations about the machine the Daemon is running on." }, \
+							  { "servinfo", "Gives informations about the services of the machine the Daemon is runing on." }, \
+							  { "clearlogs", "Clears the Daemon log file." }, \
+							  { "mail", "Sends an email with informations related to the parameters given (daemonlogs, machinfo, etc...)."}, \
 							  { "quit", "Shutdown the Daemon." },		\
 							  { NULL, NULL }, }
 # define SERV_FUNCS			{ &Server::sendDaemonLogs,		\
 							  &Server::sendDaemonInfo,		\
+							  &Server::setDaemonPwd,		\
 							  &Server::sendMachineInfo,		\
 							  &Server::sendServiceInfo,		\
 							  &Server::clearDaemonLogs,		\
@@ -49,7 +52,8 @@ typedef struct	s_client
 	char		port[NI_MAXSERV];
 	time_t		log_time;
 	bool		logged;
-	std::string	cmd;
+	std::string	rd;
+	std::string	wr;
 }				t_client;
 
 class			Server
@@ -62,19 +66,24 @@ public:
 
 	Server & operator=(Server const & rhs);
 
-	void		loopServ(void);
-	void		setReporter(Tintin_reporter *reporter);
+	void		mailMeDaemonInfo( void );
+	void		launchServer( void );
+	void		setReporter( Tintin_reporter *reporter );
+
+	std::string		quitReason;
 	
 private:
 	void		setupSignals( void );
 	void		sigHandler( int sig );
 	int			setupSelect( void );
-	void		checkClientLogged( void );
 	void		acceptConnections( void );
 	void		clientRead( t_client & cl );
+	void		clientWrite(t_client & cl);
+	void		clientQuit(const char * reason, t_client & cl);
 	void		clientCommands( t_client & cl );
 	void		sendDaemonLogs( t_client & cl );
 	void		sendDaemonInfo( t_client & cl );
+	void		setDaemonPwd( t_client & cl );
 	void		sendMachineInfo( t_client & cl );
 	void		sendServiceInfo( t_client & cl );
 	void		clearDaemonLogs( t_client & cl );
@@ -95,14 +104,16 @@ private:
 	int				servfd;
 	int				mailfd;
 	fd_set			fdr;
+	fd_set			fdw;
 	bool			loop;
 	time_t			start_time;
 	size_t			nb_clients;
-	bool			encrypt;
-	bool			protect;
-	t_client		client[SERV_CLIENTS];
+	t_client		client[SERV_MAX_CLIENTS];
 	SSL_CTX *		ctx;
 	SSL *			ssl;
+	bool			protect;
+	std::string		passwd;
+	bool			encrypt;
 };
 
 #endif
