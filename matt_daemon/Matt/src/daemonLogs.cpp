@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:27:18 by root              #+#    #+#             //
-//   Updated: 2017/11/01 14:31:38 by root             ###   ########.fr       //
+//   Updated: 2017/11/11 22:24:28 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -26,7 +26,7 @@ std::string			Server::getDaemonLogs( void )
 	if (log != -1)
 	{
 		int ret;
-		while ((ret = read(log, buff, 1024)) > 0) {
+		while ((ret = read(log, buff, 1023)) > 0) {
 			info += std::string(buff, ret);
 		}
 		close(log);

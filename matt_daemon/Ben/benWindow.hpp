@@ -37,6 +37,8 @@ private:
     Ui::BenWindow   *ui;
     QTcpSocket      *socket;
     t_hdr           hdr;
+
+    size_t mystrlen(char *buff);
 };
 
 #endif // BENWINDOW_HPP

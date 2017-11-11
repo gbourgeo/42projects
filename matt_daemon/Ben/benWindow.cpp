@@ -42,10 +42,6 @@ BenWindow::BenWindow(QWidget *parent) :
 
     /* Status Bar message */
     ui->statusBar->showMessage("Hello friend !");
-
-    /* Setting other variables */
-    this->hdr.magic = 0;
-    this->hdr.crypted = 0;
 }
 
 BenWindow::~BenWindow()
@@ -122,20 +118,24 @@ void BenWindow::sockRead()
 {
     QDataStream rcv(this->socket);
     int         ret;
+    QByteArray  data;
 
-    ret = rcv.readRawData((char *)&this->hdr, sizeof(this->hdr));
-    if (ret <= 0)
-        return ui->logBrowser->append("Server disconnected.");
-    if (this->hdr.magic != DAEMON_MAGIC)
-        return ui->logBrowser->append("Wrong Hdr received ignoring message");
-    this->hdr.data[ret] = '\0';
-    if (this->hdr.crypted) {
-        char        *decrypt = new char[Base64decode_len(this->hdr.data) + 1];
-        Base64decode(decrypt, this->hdr.data);
+    do {
+        ret = rcv.readRawData((char *)&this->hdr, sizeof(this->hdr));
+        if (ret <= 0)
+            return ui->logBrowser->append("Server disconnected.");
+        if (this->hdr.magic != DAEMON_MAGIC)
+            return ui->logBrowser->append("Wrong Header received.");
+        data += this->hdr.data;
+    } while (this->hdr.datalen > mystrlen(this->hdr.data));
+    if (!this->hdr.crypted) {
+        char     *decrypt = new char[Base64decode_len(data.data())];
+        Base64decode(decrypt, data.data());
         ui->logBrowser->append(decrypt);
         delete [] decrypt;
     }
-    qDebug() << this->hdr.magic << " " << this->hdr.crypted << " " << this->hdr.data;
+    else
+        ui->logBrowser->append(data);
 }
 
 void BenWindow::sockError(QAbstractSocket::SocketError erreur)
@@ -168,28 +168,26 @@ void BenWindow::sendText()
 
         if (message.isEmpty() || message.isNull())
             return ;
-        message.append("\n");
-        if (this->hdr.crypted) {
+        ui->textBrowser->append(message);
+        ui->sendField->clear();
+        message.append('\n');
+        if (!this->hdr.crypted) {
             int sendLen = Base64encode_len(message.length());
-            char *tosend = new char[sendLen + 1];
+            char *tosend = new char[sendLen];
             Base64encode(tosend, message.data(), message.length());
+            qDebug() << "send: " << tosend << sendLen << mystrlen(tosend);
             do {
+                this->hdr.datalen = mystrlen(&tosend[len]);
                 strncpy(this->hdr.data, &tosend[len], DAEMON_BUFF - 1);
                 this->socket->write((char *)&this->hdr, sizeof(this->hdr));
                 len += DAEMON_BUFF;
                 this->socket->waitForBytesWritten();
-            } while (len < sendLen);
+            } while (sendLen > len);
             delete [] tosend;
         } else {
-            const char *tosend = message.data();
-            do {
-                this->socket->write(&tosend[len], DAEMON_BUFF);
-                len += DAEMON_BUFF;
+                this->socket->write(message, message.length());
                 this->socket->waitForBytesWritten();
-            } while (len < message.length());
         }
-        ui->textBrowser->append(message);
-        ui->sendField->clear();
     }
 }
 
@@ -201,4 +199,15 @@ void BenWindow::clearText()
 void BenWindow::clearLog()
 {
     ui->logBrowser->clear();
+}
+
+size_t BenWindow::mystrlen(char *buff)
+{
+    char        *ptr = buff;
+
+    if (!ptr)
+        return 0;
+    while (*ptr)
+        ptr++;
+    return ptr - buff;
 }

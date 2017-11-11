@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/11/01 16:45:18 by root             ###   ########.fr       //
+//   Updated: 2017/11/11 22:26:53 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -45,8 +45,8 @@ Tintin_reporter & Tintin_reporter::operator=(Tintin_reporter const & rhs)
 /*
 ** Conversion supported:
 **		%d: int
-**		%s: std::string *
-**		%S: char *
+**		%s: char *
+**		%S: std::string * (use with caution, it can lead to random bugs)
 */
 
 void Tintin_reporter::log(const std::string & title, const std::string & info, ...)
@@ -78,15 +78,17 @@ void Tintin_reporter::log(const std::string & title, const std::string & info, .
 				this->_buff += std::to_string(ret);
 			}
 			else if (info[i] == 's') {
-				std::string *ret = va_arg(ap, std::string *);
-				if (ret)
-					this->_buff.append(*ret);
-			}
-			else if (info[i] == 'S') {
 				char *ret = va_arg(ap, char *);
 				if (ret)
 					this->_buff.append(ret);
 			}
+			// else if (info[i] == 'S') {
+			// 	std::string *ret = va_arg(ap, std::string *);
+			// 	if (ret)
+			// 		this->_buff.append(*ret);
+			// }
+			else
+				this->_buff.append("%");
 			j = i + 1;
 		}
 		i++;

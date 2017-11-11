@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 15:55:19 by root              #+#    #+#             //
-//   Updated: 2017/11/05 20:57:49 by root             ###   ########.fr       //
+//   Updated: 2017/11/11 22:37:06 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -41,7 +41,7 @@ const char *	mystrncpy(const char *dst, const char *src, int len)
 		*dst2++ = *src2++;
 	*dst2 = '\0';
 	while (len-- > 0)
-		*dst2 = '\0';
+		*dst2++ = '\0';
 	return dst;
 }
 

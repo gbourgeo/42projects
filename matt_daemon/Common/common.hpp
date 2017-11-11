@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/11/05 20:39:17 by root              #+#    #+#             //
-//   Updated: 2017/11/05 22:42:08 by root             ###   ########.fr       //
+//   Updated: 2017/11/11 17:53:05 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,6 +20,7 @@ typedef struct	s_hdr
 {
 	int			magic;
 	int			crypted;
+	size_t		datalen;
 	char		data[DAEMON_BUFF];
 }				t_hdr;
 

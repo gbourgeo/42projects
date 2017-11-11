@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/11/05 23:45:18 by root             ###   ########.fr       //
+//   Updated: 2017/11/11 22:28:13 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -21,7 +21,7 @@
 
 # define SERV_ADDR			"localhost"
 # define SERV_PORT			"4242"
-# define SERV_MSG_ENCRYPTED	true
+# define SERV_MSG_ENCRYPTED	false
 # define SERV_PWD_PROTECTED	false
 # define SERV_PWD			""
 # define SERV_MAX_CLIENTS	3

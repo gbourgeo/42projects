@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/07 22:31:28 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/11/05 21:33:13 by root             ###   ########.fr        #
+#    Updated: 2017/11/11 23:30:41 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -50,7 +50,7 @@ FLAGS = -Wall -Werror -Wextra -std=c++11
 SSL_LIBS = -L/usr/lib/x86_64-linux-gnu/ -lssl -lcrypto
 
 
-all: $(SERVER) #$(CLIENT)
+all: $(SERVER) $(CLIENT)
 
 $(SERVER): $(NAME)
 $(NAME): $(SERVER_OBJ) $(COMMON_OBJ)
@@ -67,10 +67,9 @@ $(NAME_2):
 $(COMMON_OBJ_DIR)%.o: $(COMMON_DIR)%.cpp
 	$(CXX) $(FLAGS) -o $@ -c $<
 
-
 clean:
 	/bin/rm -rf $(SERVER_OBJ_DIR)
-#	make -C $(CLIENT_DIR) clean
+	make -C $(CLIENT_DIR) clean
 
 fclean: clean
 	/bin/rm -rf $(NAME)
