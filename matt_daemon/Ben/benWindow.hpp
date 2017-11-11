@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QTcpSocket>
+#include <QDataStream>
+#include "../Common/common.hpp"
 
 namespace Ui {
 class BenWindow;
@@ -34,6 +36,7 @@ private slots:
 private:
     Ui::BenWindow   *ui;
     QTcpSocket      *socket;
+    t_hdr           hdr;
 };
 
 #endif // BENWINDOW_HPP

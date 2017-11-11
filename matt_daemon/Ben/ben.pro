@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        benWindow.cpp
+        benWindow.cpp \
+    ../Common/base64.cpp
 
 HEADERS += \
-        benWindow.hpp
+        benWindow.hpp \
+    ../Common/common.hpp
 
 FORMS += \
         benWindow.ui

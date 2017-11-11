@@ -51,9 +51,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../Ben/main.cpp \
-		../Ben/benWindow.cpp moc_benWindow.cpp
+		../Ben/benWindow.cpp \
+		../Common/base64.cpp moc_benWindow.cpp
 OBJECTS       = main.o \
 		benWindow.o \
+		base64.o \
 		moc_benWindow.o
 DIST          = /opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/common/unix.conf \
@@ -214,6 +216,7 @@ DIST          = /opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
+		../Ben/.qmake.stash \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -232,8 +235,10 @@ DIST          = /opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/exceptions.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/yacc.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/lex.prf \
-		../Ben/ben.pro ../Ben/benWindow.hpp ../Ben/main.cpp \
-		../Ben/benWindow.cpp
+		../Ben/ben.pro ../Ben/benWindow.hpp \
+		../Common/common.hpp ../Ben/main.cpp \
+		../Ben/benWindow.cpp \
+		../Common/base64.cpp
 QMAKE_TARGET  = Ben_AFK
 DESTDIR       = 
 TARGET        = Ben_AFK
@@ -404,6 +409,7 @@ Makefile: ../Ben/ben.pro /opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf /opt/
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -587,6 +593,7 @@ Makefile: ../Ben/ben.pro /opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf /opt/
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/qt_config.prf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/toolchain.prf:
 /opt/Qt/5.9.1/gcc_64/mkspecs/features/default_pre.prf:
@@ -625,8 +632,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Ben/benWindow.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Ben/main.cpp ../Ben/benWindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Ben/benWindow.hpp ../Common/common.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Ben/main.cpp ../Ben/benWindow.cpp ../Common/base64.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Ben/benWindow.ui $(DISTDIR)/
 
 
@@ -771,6 +778,8 @@ moc_benWindow.cpp: /opt/Qt/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/QDataStream \
+		../Common/common.hpp \
 		../Ben/benWindow.hpp \
 		moc_predefs.h \
 		/opt/Qt/5.9.1/gcc_64/bin/moc
@@ -905,6 +914,8 @@ main.o: ../Ben/main.cpp ../Ben/benWindow.hpp \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/QDataStream \
+		../Common/common.hpp \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QApplication \
 		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qapplication.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1024,8 +1035,76 @@ benWindow.o: ../Ben/benWindow.cpp ../Ben/benWindow.hpp \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
 		/opt/Qt/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
-		ui_benWindow.h
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/QDataStream \
+		../Common/common.hpp \
+		ui_benWindow.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/QVariant \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QAction \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qaction.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qactiongroup.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QButtonGroup \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qbuttongroup.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QHeaderView \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qheaderview.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qframe.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/qitemselectionmodel.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qstyleoption.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtCore/qregularexpression.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qslider.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractslider.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qstyle.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtabbar.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qlabel.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QLineEdit \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qlineedit.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qtextcursor.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qtextformat.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QMenuBar \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qmenubar.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qmenu.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QSpacerItem \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QSpinBox \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qspinbox.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QStatusBar \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qstatusbar.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QTextBrowser \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtextbrowser.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtextedit.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtGui/qtextdocument.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QTextEdit \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QToolBar \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/qtoolbar.h \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QVBoxLayout \
+		/opt/Qt/5.9.1/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o benWindow.o ../Ben/benWindow.cpp
+
+base64.o: ../Common/base64.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o base64.o ../Common/base64.cpp
 
 moc_benWindow.o: moc_benWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_benWindow.o moc_benWindow.cpp

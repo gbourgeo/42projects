@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
-//   Updated: 2017/11/01 16:37:06 by root             ###   ########.fr       //
+//   Updated: 2017/11/01 20:48:10 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -70,7 +70,7 @@ int					main(void)
 		e.first = true;
 		e.tintin->log("INFO", "Daemon child #%d survived...", getpid());
 
-		e.server->mailMeDaemonInfo();
+//		e.server->mailMeDaemonInfo();
 		e.server->launchServer();
 		
 		flock(e.lock, LOCK_UN);

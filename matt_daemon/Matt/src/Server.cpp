@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/11/01 16:42:53 by root             ###   ########.fr       //
+//   Updated: 2017/11/06 00:08:39 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -143,6 +143,7 @@ void		Server::acceptConnections(void)
 					  this->client[i].addr, this->client[i].port);
 	this->client[i].log_time = time(NULL);
 	this->client[i].logged = !this->protect;
+	this->client[i].wr = "Welcome stranger\n";
 	this->nb_clients++;
 }
 
@@ -162,59 +163,99 @@ void		Server::clientCommands(t_client & cl)
 	this->tintin->log("LOG", "%S:%S : %s", cl.host, cl.port, cl.rd);
 }
 
-void		Server::clientRead(t_client & cl)
+void		Server::clientRead( t_client & cl )
 {
 	int		ret;
-	char	buff[SERV_BUFF];
+	t_hdr	data;
 
-	ret = recv(cl.fd, buff, SERV_BUFF - 1, 0);
-	if (ret <= 0)
-		return clientQuit("Connection closed", cl);
-	buff[ret] = '\0';
 	if (this->encrypt) {
-		; //// Decrypt message
+		ret = recv(cl.fd, &data, sizeof(data), 0);
+		if (ret <= 0)
+			return clientQuit("Client closed connection", cl);
+		if (data.magic != DAEMON_MAGIC)
+			return this->tintin->log("INFO", "%S:%S : Wrong message header magic.",
+									 cl.host, cl.port);
+		if (!data.crypted)
+			return this->tintin->log("INFO", "%S:%S : Data not crypted.",
+									 cl.host, cl.port);
+		data.data[ret] = '\0';
+		char *msg = new char[Base64decode_len(data.data) + 1];
+		Base64decode(msg, data.data);
+		cl.rd += msg;
+		delete [] msg;
+	} else {
+		ret = recv(cl.fd, data.data, DAEMON_BUFF - 1, 0);
+		if (ret <= 0)
+			return clientQuit("Client closed connection", cl);
+		data.data[ret] = '\0';
+		cl.rd += data.data;
 	}
-	else
-		cl.rd += buff;
+	this->tintin->log("DEBUG", "%S, %s, %d", data.data, cl.rd, ret);
 
 	std::size_t found;
 	while ((found = cl.rd.find_first_of('\n')) != std::string::npos)
 	{
 		cl.rd.at(found) = 0;
-		if (!cl.logged)
-		{
+		if (!cl.logged) {
 			if (mystrcmp(cl.rd.c_str(), this->passwd.c_str()) != 0)
 				return Server::clientQuit("Wrong password", cl);
 			cl.logged = true;
 		}
-		else
+		else if (found)
 			Server::clientCommands(cl);
 		cl.rd = cl.rd.substr(found + 1);
 	}
 }
 
-void		Server::clientWrite(t_client &cl)
+void		Server::clientWrite( t_client &cl )
 {
-	int		ret;
+	int			ret;
+	t_hdr		msg;
 
+	if (this->encrypt && cl.wr.size() > 0)
+	{
+		char	*encode = new char[Base64encode_len(cl.wr.size()) + 1];
+		Base64encode(encode, cl.wr.c_str(), cl.wr.size());
+		cl.wr_encoded += encode;
+		delete [] encode;
+		cl.wr.clear();
+	}
 	if (cl.wr.size() > 0)
 	{
-		if (this->encrypt) {
-			; //// Crypt message
-		}
-		ret = write(cl.fd, cl.wr.c_str(), cl.wr.size());
-		if (ret < 0)
-			return Server::clientQuit("Connection closed", cl);
-		cl.wr = cl.wr.substr(ret);
+		msg.magic = DAEMON_MAGIC;
+		msg.crypted = (this->encrypt) ? 1 : 0;
+		mystrncpy(msg.data, cl.wr.c_str(), DAEMON_BUFF - 1);
+		msg.data[DAEMON_BUFF - 1] = '\0';
+		ret = send(cl.fd, &msg, sizeof(t_hdr), 0);
+		if (ret <= 0)
+			return Server::clientQuit("Client closed connection", cl);
+		if (cl.wr.size() > DAEMON_BUFF - 1)
+			cl.wr = cl.wr.substr(DAEMON_BUFF - 1);
+		else
+			cl.wr = cl.wr.substr(cl.wr.size());
+	}
+	if (cl.wr_encoded.size() > 0) {
+		msg.magic = DAEMON_MAGIC;
+		msg.crypted = (this->encrypt) ? 1 : 0;
+		mystrncpy(msg.data, cl.wr_encoded.c_str(), DAEMON_BUFF - 1);
+		msg.data[DAEMON_BUFF - 1] = '\0';
+		ret = send(cl.fd, &msg, sizeof(t_hdr), 0);
+		if (ret <= 0)
+			return Server::clientQuit("Client closed connection", cl);
+		this->tintin->log("DEBUG", "%s %S", cl.wr_encoded, msg.data);
+		if (cl.wr_encoded.size() > DAEMON_BUFF - 1)
+			cl.wr_encoded = cl.wr_encoded.substr(DAEMON_BUFF - 1);
+		else
+			cl.wr_encoded = cl.wr_encoded.substr(cl.wr_encoded.size());
 	}
 }
 
 void		Server::clientQuit(const char *reason, t_client &cl)
 {
-	std::string	info("Matt_daemon: \n");
+	std::string	info("Matt_daemon: ");
 
-	info.insert(info.size() - 1, reason);
-	cl.wr += info;
+	info.append(reason);
+	cl.wr = info + "\n";
 	Server::clientWrite(cl);
 	this->tintin->log("INFO", "%S(%S):%S disconnected (%S).",
 					  cl.host, cl.addr, cl.port, reason);

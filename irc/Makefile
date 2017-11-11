@@ -6,23 +6,18 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/04/11 08:38:58 by gbourgeo         ###   ########.fr        #
+#    Updated: 2017/11/05 21:23:32 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 CLIENT	= client
-
 CL_DIR	= src/client/
-
 CL_SRC	= cl_main.c cl_getaddrinfo.c cl_read_write.c cl_commands.c \
 		cl_commands_next.c cl_error.c cl_send.c
-
 CL_OBJ	= $(CL_SRC:.c=.o)
 
 SERVEUR	= serveur
-
 SV_DIR	= src/serveur/
-
 SV_SRC	= get_conf_file.c	\
 		is_chan_member.c	\
 		sv_accept.c 		\
@@ -72,28 +67,20 @@ SV_SRC	= get_conf_file.c	\
 		sv_welcome.c 		\
 		sv_who.c			\
 		sv_who_info.c
-
 SV_OBJ	= $(SV_SRC:.c=.o)
 
 COM_DIR	= src/common/
-
 COM_SRC	= ft_free.c ft_strtoupper.c ft_strtolower.c sv_strcmp.c sv_strncmp.c \
 		ft_strisalnum.c sv_strsplit.c
-
 COM_OBJ	= $(COM_SRC:.c=.o)
-
 COM_HDR = common.h err_list.h help.h commands.h flags.h
 
 OBJ_DIR	= obj/
-
 OBJ_CL	= $(addprefix $(OBJ_DIR), $(CL_OBJ))
-
 OBJ_SV	= $(addprefix $(OBJ_DIR), $(SV_OBJ))
-
 OBJ_COM	= $(addprefix $(OBJ_DIR), $(COM_OBJ))
 
 LIBFT	= libft/
-
 LIBFT_H	= $(LIBFT)includes/
 
 WWW		= gcc -Wall -Werror -Wextra

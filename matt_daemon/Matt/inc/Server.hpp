@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/11/01 16:37:54 by root             ###   ########.fr       //
+//   Updated: 2017/11/05 23:45:18 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,17 +15,18 @@
 
 # include "Tintin.hpp"
 # include "mail.hpp"
+# include "common.hpp"
 # include <sys/select.h>
 # include <netdb.h>
 
 # define SERV_ADDR			"localhost"
 # define SERV_PORT			"4242"
-# define SERV_MSG_ENCRYPTED	false
+# define SERV_MSG_ENCRYPTED	true
 # define SERV_PWD_PROTECTED	false
 # define SERV_PWD			""
 # define SERV_MAX_CLIENTS	3
 # define SERV_LOGGIN_TIME	2
-# define SERV_BUFF			256
+
 # define SERV_CMDS			{ { "daemonlogs", "Prints the Daemon log file." }, \
 							  { "daemoninfo", "Shows informations about the Daemon itself." }, \
 							  { "daemonpwd", "Changes the Daemon protection. TRUE with an argument (will be the new password) or FALSE with no argument." }, \
@@ -35,6 +36,7 @@
 							  { "mail", "Sends an email with informations related to the parameters given (daemonlogs, machinfo, etc...)."}, \
 							  { "quit", "Shutdown the Daemon." },		\
 							  { NULL, NULL }, }
+
 # define SERV_FUNCS			{ &Server::sendDaemonLogs,		\
 							  &Server::sendDaemonInfo,		\
 							  &Server::setDaemonPwd,		\
@@ -54,6 +56,7 @@ typedef struct	s_client
 	bool		logged;
 	std::string	rd;
 	std::string	wr;
+	std::string	wr_encoded;
 }				t_client;
 
 class			Server
