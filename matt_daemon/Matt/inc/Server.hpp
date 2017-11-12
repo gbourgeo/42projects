@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/11/12 16:29:02 by root             ###   ########.fr       //
+//   Updated: 2017/11/12 18:01:25 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,6 +18,7 @@
 # include "common.hpp"
 # include <sys/select.h>
 # include <netdb.h>
+# include <vector>
 
 # define SERV_ADDR			"localhost"
 # define SERV_PORT			"4242"
@@ -107,6 +108,8 @@ private:
 	std::string		getServiceInfo( void );
 	void			sendAllClients(std::string & msg);
 
+	const std::vector<std::string> split(const std::string &str, const char &c);
+	
 	Tintin_reporter *tintin;
 	int				servfd;
 	int				mailfd;

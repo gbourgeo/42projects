@@ -122,12 +122,27 @@ void BenWindow::sockRead()
 
     do {
         ret = rcv.readRawData((char *)&this->hdr, sizeof(this->hdr));
-        if (ret <= 0)
-            return ui->logBrowser->append("Server disconnected.");
-        if (this->hdr.magic != DAEMON_MAGIC)
-            return ui->logBrowser->append("Wrong Header received.");
+        if (ret <= 0) {
+            ui->logBrowser->append("Server disconnected.");
+            QString msg = "Read ret: " + QString::number(ret) + "\n";
+            msg += "Magic: " + QString::number(this->hdr.magic) + "\n";
+            msg += "Crypted: " + QString::number(this->hdr.crypted) + "\n";
+            msg += "Datalen: " + QString::number(this->hdr.datalen) + "\n";
+            msg += "Data: " + QString(this->hdr.data);
+            return ui->logBrowser->append(msg);
+        }
+        if (this->hdr.magic != DAEMON_MAGIC) {
+            ui->logBrowser->append("Wrong Header received.");
+            QString msg = "Read ret: " + QString::number(ret) + "\n";
+            msg += "Magic: " + QString::number(this->hdr.magic) + "\n";
+            msg += "Crypted: " + QString::number(this->hdr.crypted) + "\n";
+            msg += "Datalen: " + QString::number(this->hdr.datalen) + "\n";
+            msg += "Data: " + QString(this->hdr.data);
+            return ui->logBrowser->append(msg);
+        }
         data += this->hdr.data;
     } while (this->hdr.datalen > mystrlen(this->hdr.data));
+    ui->logBrowser->clear();
     if (!this->hdr.crypted) {
         char     *decrypt = new char[Base64decode_len(data.data())];
         Base64decode(decrypt, data.data());

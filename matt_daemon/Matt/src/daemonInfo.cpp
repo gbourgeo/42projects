@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:30:33 by root              #+#    #+#             //
-//   Updated: 2017/11/01 15:59:02 by root             ###   ########.fr       //
+//   Updated: 2017/11/12 18:15:43 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -32,7 +32,7 @@ std::string				Server::getDaemonInfo( void )
 	info += (this->protect) ? "Yes" : "No";
 	info += "\n";
 	info += "Daemon passwd:        \"";
-	info += this->passwd;
+	info += this->passwd.c_str();
 	info += "\"\n";
 	info += "Daemon commands available :";
 	for (int i = 0; cmds[i][0]; i++) {

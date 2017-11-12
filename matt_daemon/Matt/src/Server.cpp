@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/11/12 16:44:42 by root             ###   ########.fr       //
+//   Updated: 2017/11/12 18:16:45 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -152,12 +152,13 @@ void		Server::acceptConnections(void)
 
 void		Server::clientCommands(t_client & cl)
 {
-	static const char	*name[][100] = SERV_CMDS;
-	static void			(Server::*funcs[])(t_client &) = SERV_FUNCS;
+	static const char		*name[][100] = SERV_CMDS;
+	static void				(Server::*funcs[])(t_client &) = SERV_FUNCS;
+	std::vector<std::string> cmd = Server::split(cl.rd, ' ');
 
 	for (int j = 0; name[j][0]; j++) {
-		int cmp = mystrcmp(&cl.rd[0], name[j][0]);
-		if (cmp == 0 || cmp == ' ') {
+		int comp = mystrcmp(cmd.front().c_str(), name[j][0]);
+		if (comp == 0) {
 			this->tintin->log("INFO", "Request %s.", name[j][0]);
 			(this->*funcs[j])(cl);
 			return ;
@@ -221,7 +222,7 @@ void		Server::clientWrite( t_client &cl )
 
 	if (this->encrypt && cl.wr.size() > 0)
 	{
-		char	*encode = new char[Base64encode_len(cl.wr.size()) + 1];
+		char	*encode = new char[Base64encode_len(cl.wr.size())];
 		Base64encode(encode, cl.wr.c_str(), cl.wr.size());
 		cl.wr_encoded += encode;
 		delete [] encode;
@@ -235,7 +236,7 @@ void		Server::clientWrite( t_client &cl )
 		msg.crypted = !this->encrypt;
 		msg.datalen = data.size();
 		mystrncpy(msg.data, data.c_str(), DAEMON_BUFF - 1);
-		ret = send(cl.fd, &msg, sizeof(t_hdr), 0);
+		ret = send(cl.fd, &msg, sizeof(msg), 0);
 		if (ret <= 0)
 			return Server::clientQuit("Client closed connection", cl);
 		data = data.substr(mystrlen(msg.data));
@@ -306,31 +307,31 @@ void		Server::clearDaemonLogs(t_client &cl)
 void		Server::setDaemonPasswd(t_client & cl)
 {
 	std::string		msg("Daemon protection ");
-	size_t			found;
+	std::vector<std::string> cmd;
 
-	if ((found = cl.rd.find_first_of(' ')) == std::string::npos)
+	cmd = Server::split(cl.rd, ' ');
+	if (cmd.size() > 1)
 	{
-		if (this->protect == true) {
-			this->tintin->log("INFO", "Daemon protection disabled.");
-			msg += "disabled.";
-			this->protect = false;
-			this->passwd.clear();
+		if (this->protect == false) {
+			msg += "enabled.";
+			this->tintin->log("INFO", "%s", msg.c_str());
+			this->protect = true;
+			this->passwd = std::string(cmd.at(1));
 			msg += "\n";
 			Server::sendAllClients(msg);
 		}
 	}
 	else
 	{
-		if (this->protect == false) {
-			this->tintin->log("INFO", "Daemon protection enabled.");
-			msg += "enabled.";
-			this->protect = true;
-			this->passwd = cl.rd.substr(found + 1);
+		if (this->protect == true) {
+			msg += "disabled.";
+			this->tintin->log("INFO", "%s", msg.c_str());
+			this->protect = false;
+			this->passwd.clear();
 			msg += "\n";
 			Server::sendAllClients(msg);
 		}
 	}
-	(void)cl;
 }
 
 void		Server::setDaemonCrypted(t_client & cl)
@@ -359,4 +360,24 @@ void		Server::quit(t_client &cl)
 	(void)cl;
 	this->quitReason += "Request quit received";
 	this->loop = false;
+}
+
+const std::vector<std::string> Server::split(const std::string &str, const char &c)
+{
+	std::string		buff("");
+	std::vector<std::string>	ret;
+
+	for (auto n:str)
+	{
+		if (n == c && buff != "")
+		{
+			ret.push_back(buff);
+			buff = "";
+		}
+		else
+			buff += n;
+	}
+	if (buff != "")
+		ret.push_back(buff);
+	return ret;
 }
