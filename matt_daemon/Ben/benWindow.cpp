@@ -175,7 +175,6 @@ void BenWindow::sendText()
             int sendLen = Base64encode_len(message.length());
             char *tosend = new char[sendLen];
             Base64encode(tosend, message.data(), message.length());
-            qDebug() << "send: " << tosend << sendLen << mystrlen(tosend);
             do {
                 this->hdr.datalen = mystrlen(&tosend[len]);
                 strncpy(this->hdr.data, &tosend[len], DAEMON_BUFF - 1);

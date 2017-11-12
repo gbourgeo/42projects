@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/11/11 22:28:13 by root             ###   ########.fr       //
+//   Updated: 2017/11/12 16:29:02 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -22,14 +22,15 @@
 # define SERV_ADDR			"localhost"
 # define SERV_PORT			"4242"
 # define SERV_MSG_ENCRYPTED	false
-# define SERV_PWD_PROTECTED	false
-# define SERV_PWD			""
+# define SERV_PASS_PROTECTD	false
+# define SERV_PASSWD		""
 # define SERV_MAX_CLIENTS	3
 # define SERV_LOGGIN_TIME	2
 
 # define SERV_CMDS			{ { "daemonlogs", "Prints the Daemon log file." }, \
 							  { "daemoninfo", "Shows informations about the Daemon itself." }, \
-							  { "daemonpwd", "Changes the Daemon protection. TRUE with an argument (will be the new password) or FALSE with no argument." }, \
+							  { "daemonpass", "Changes the Daemon protection status. TRUE with an argument (will be the new password) or FALSE with no argument." }, \
+							  { "daemoncrypt", "Changes the Daemon messages status to crypted." },						\
 							  { "machinfo", "Gives informations about the machine the Daemon is running on." }, \
 							  { "servinfo", "Gives informations about the services of the machine the Daemon is runing on." }, \
 							  { "clearlogs", "Clears the Daemon log file." }, \
@@ -39,7 +40,8 @@
 
 # define SERV_FUNCS			{ &Server::sendDaemonLogs,		\
 							  &Server::sendDaemonInfo,		\
-							  &Server::setDaemonPwd,		\
+							  &Server::setDaemonPasswd,		\
+							  &Server::setDaemonCrypted,	\
 							  &Server::sendMachineInfo,		\
 							  &Server::sendServiceInfo,		\
 							  &Server::clearDaemonLogs,		\
@@ -86,7 +88,8 @@ private:
 	void		clientCommands( t_client & cl );
 	void		sendDaemonLogs( t_client & cl );
 	void		sendDaemonInfo( t_client & cl );
-	void		setDaemonPwd( t_client & cl );
+	void		setDaemonPasswd( t_client & cl );
+	void		setDaemonCrypted( t_client & cl);
 	void		sendMachineInfo( t_client & cl );
 	void		sendServiceInfo( t_client & cl );
 	void		clearDaemonLogs( t_client & cl );
@@ -102,6 +105,7 @@ private:
 	std::string		getDaemonInfo( void );
 	std::string		getMachineInfo( void );
 	std::string		getServiceInfo( void );
+	void			sendAllClients(std::string & msg);
 
 	Tintin_reporter *tintin;
 	int				servfd;

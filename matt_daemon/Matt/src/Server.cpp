@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/11/11 22:37:32 by root             ###   ########.fr       //
+//   Updated: 2017/11/12 16:44:42 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -28,8 +28,8 @@ Server::Server(void):
 	nb_clients(0),
 	client(),
 	ssl(NULL),
-	protect(SERV_PWD_PROTECTED),
-	passwd(SERV_PWD),
+	protect(SERV_PASS_PROTECTD),
+	passwd(SERV_PASSWD),
 	encrypt(SERV_MSG_ENCRYPTED)
 {
 	mymemset(&this->client[0], 0, sizeof(t_client) * SERV_MAX_CLIENTS);
@@ -143,7 +143,10 @@ void		Server::acceptConnections(void)
 					  this->client[i].addr, this->client[i].port);
 	this->client[i].log_time = time(NULL);
 	this->client[i].logged = !this->protect;
-	this->client[i].wr = "Welcome stranger\n";
+	if (this->protect)
+		this->client[i].wr = "Pass: ";
+	else
+		this->client[i].wr = "Welcome stranger.\n";
 	this->nb_clients++;
 }
 
@@ -202,6 +205,7 @@ void		Server::clientRead( t_client & cl )
 		if (!cl.logged) {
 			if (mystrcmp(cl.rd.c_str(), this->passwd.c_str()) != 0)
 				return Server::clientQuit("Wrong password", cl);
+			cl.wr += "Welcome stranger.\n";
 			cl.logged = true;
 		}
 		else if (found)
@@ -299,30 +303,57 @@ void		Server::clearDaemonLogs(t_client &cl)
 	cl.wr += "Logs cleared !\n";
 }
 
-void		Server::setDaemonPwd(t_client & cl)
+void		Server::setDaemonPasswd(t_client & cl)
 {
-	size_t	found;
+	std::string		msg("Daemon protection ");
+	size_t			found;
 
 	if ((found = cl.rd.find_first_of(' ')) == std::string::npos)
 	{
 		if (this->protect == true) {
 			this->tintin->log("INFO", "Daemon protection disabled.");
-			cl.wr += "Daemon protection disabled.\n";
+			msg += "disabled.";
 			this->protect = false;
 			this->passwd.clear();
+			msg += "\n";
+			Server::sendAllClients(msg);
 		}
 	}
 	else
 	{
 		if (this->protect == false) {
 			this->tintin->log("INFO", "Daemon protection enabled.");
-			cl.wr += "Daemon protection enabled.\n";
+			msg += "enabled.";
 			this->protect = true;
 			this->passwd = cl.rd.substr(found + 1);
+			msg += "\n";
+			Server::sendAllClients(msg);
+		}
+	}
+	(void)cl;
+}
+
+void		Server::setDaemonCrypted(t_client & cl)
+{
+	std::string		msg("Daemon encryption ");
+
+	this->encrypt = !this->encrypt;
+	msg += (this->encrypt) ? "enabled." : "disabled.";
+	msg += "\n";
+	this->tintin->log("INFO", "%s", msg.c_str());
+	Server::sendAllClients(msg);
+	(void)cl;
+}
+
+void		Server::sendAllClients(std::string & msg)
+{
+	for (int i = 0; i < SERV_MAX_CLIENTS; i++) {
+		if (this->client[i].fd > -1) {
+			this->client[i].wr += msg;
 		}
 	}
 }
-
+		
 void		Server::quit(t_client &cl)
 {
 	(void)cl;
