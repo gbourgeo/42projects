@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/11/12 18:16:45 by root             ###   ########.fr       //
+//   Updated: 2017/11/19 00:32:04 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -23,18 +23,19 @@ Server::Server(void):
 	servfd(getSocket(SERV_ADDR, SERV_PORT, &servSocket)),
 	mailfd(-1),
 	fdr({0}),
+	fdw({0}),
 	loop(true),
 	start_time(time(NULL)),
 	nb_clients(0),
 	client(),
+	ctx(),
 	ssl(NULL),
 	protect(SERV_PASS_PROTECTD),
 	passwd(SERV_PASSWD),
 	encrypt(SERV_MSG_ENCRYPTED)
 {
-	mymemset(&this->client[0], 0, sizeof(t_client) * SERV_MAX_CLIENTS);
-	for (int i = 0; i < SERV_MAX_CLIENTS; i++) {
-		this->client[i].fd = -1;
+	for (int i = 0; i < SERV_MAX_CLIENTS + 1; i++) {
+		Server::clearClient(this->client[i]);
 	}
 
 	const SSL_METHOD	*method;
@@ -61,16 +62,19 @@ Server::Server(Server const & src)
 
 Server::~Server(void)
 {
+	if (this->quitReason.size() > 0) {
+		Server::log("INFO", this->quitReason.c_str());
+		for (int i = 0; i < SERV_MAX_CLIENTS; i++)
+		{
+			if (this->client[i].fd > -1)
+				Server::clientQuit(this->quitReason.c_str(), this->client[i]);
+		}
+	}
 	if (this->servfd > -1)
 		close(this->servfd);
-	for (int i = 0; i < SERV_MAX_CLIENTS; i++)
-	{
-		if (this->client[i].fd > -1)
-			Server::clientQuit(this->quitReason.c_str(), this->client[i]);
-	}
-	ERR_free_strings();
 	if (this->mailfd > -1)
 		close(this->mailfd);
+	ERR_free_strings();
 	if (this->ssl)
 	{
 		SSL_shutdown(this->ssl);
@@ -83,7 +87,6 @@ Server::~Server(void)
 		SSL_CTX_free(this->ctx);
 		this->ctx = NULL;
 	}
-	this->loop = false;
 }
 
 Server & Server::operator=(Server const & rhs)
@@ -95,6 +98,30 @@ Server & Server::operator=(Server const & rhs)
 void		Server::setReporter(Tintin_reporter *reporter)
 {
 	this->tintin = reporter;
+}
+
+void		Server::clearClient( t_client & cl )
+{
+	cl.fd = -1;
+	mymemset(cl.addr, 0, sizeof(cl.addr));
+	mymemset(cl.host, 0, sizeof(cl.host));
+	mymemset(cl.port, 0, sizeof(cl.port));
+	cl.log_time = 0;
+	cl.logged = false;
+	cl.rd = "";
+	cl.wr = "";
+	cl.wr_encoded = "";
+}
+
+void		Server::log(const std::string & title, const std::string & info, ...)
+{
+	va_list		args;
+
+	if (!this->tintin)
+		return ;
+	va_start(args, info);
+	this->tintin->log(title, info, &args);
+	va_end(args);
 }
 
 int			Server::setupSelect(void)
@@ -125,29 +152,28 @@ void		Server::acceptConnections(void)
 	struct sockaddr	csin;
 	struct sockaddr_in *cs	= (struct sockaddr_in *)&csin;
 	socklen_t		len		= sizeof(csin);
-	int				i		= 0;
+	int				i;
 	int				fd;
 
 	fd = accept(this->servfd, &csin, &len);
 	if (fd < 0)
 		throw DAEMONException("accept");
-	
+
+	i = this->nb_clients++;
+	this->client[i].fd = fd;
 	inet_ntop(AF_INET, &cs->sin_addr.s_addr, this->client[i].addr, 1024);
 	getnameinfo(&csin, sizeof(csin), this->client[i].host, NI_MAXHOST, this->client[i].port, NI_MAXSERV, NI_NUMERICSERV);
-	i = 0;
-	this->client[i].fd = fd;
-	if (this->nb_clients >= SERV_MAX_CLIENTS)
+	if (this->nb_clients > SERV_MAX_CLIENTS)
 		return Server::clientQuit("Server Full", this->client[i]);
-	this->tintin->log("INFO", "New connection from %s(%s):%s accepted.",
-					  this->client[i].host,
-					  this->client[i].addr, this->client[i].port);
 	this->client[i].log_time = time(NULL);
 	this->client[i].logged = !this->protect;
 	if (this->protect)
 		this->client[i].wr = "Pass: ";
 	else
 		this->client[i].wr = "Welcome stranger.\n";
-	this->nb_clients++;
+	Server::log("INFO", "New connection from %s(%s):%s accepted.",
+					  this->client[i].host,
+					  this->client[i].addr, this->client[i].port);
 }
 
 void		Server::clientCommands(t_client & cl)
@@ -159,12 +185,12 @@ void		Server::clientCommands(t_client & cl)
 	for (int j = 0; name[j][0]; j++) {
 		int comp = mystrcmp(cmd.front().c_str(), name[j][0]);
 		if (comp == 0) {
-			this->tintin->log("INFO", "Request %s.", name[j][0]);
+			Server::log("INFO", "Request %s.", name[j][0]);
 			(this->*funcs[j])(cl);
 			return ;
 		}
 	}
-	this->tintin->log("LOG", "%s:%s : %s", cl.host, cl.port, cl.rd.c_str());
+	Server::log("LOG", "%s:%s : %s", cl.host, cl.port, cl.rd.c_str());
 }
 
 void		Server::clientRead( t_client & cl )
@@ -177,10 +203,10 @@ void		Server::clientRead( t_client & cl )
 		if (ret <= 0)
 			return clientQuit("Client closed connection", cl);
 		if (data.magic != DAEMON_MAGIC)
-			return this->tintin->log("INFO", "%s:%s : Wrong message header magic.",
+			return Server::log("INFO", "%s:%s : Wrong message header magic.",
 									 cl.host, cl.port);
 		if (data.crypted)
-			return this->tintin->log("INFO", "%s:%s : Data not crypted.",
+			return Server::log("INFO", "%s:%s : Data not crypted.",
 									 cl.host, cl.port);
 		cl.rd += std::string(data.data, ret - (sizeof(data) - sizeof(data.data)));
 		if (data.datalen > cl.rd.size())
@@ -247,14 +273,15 @@ void		Server::clientQuit(const char *reason, t_client &cl)
 {
 	std::string	info("Matt_daemon: ");
 
-	info.append(reason);
-	cl.wr = info + "\n";
-	Server::clientWrite(cl);
-	this->tintin->log("INFO", "%s(%s):%s disconnected (%s).",
-					  cl.host, cl.addr, cl.port, reason);
+	if (reason) {
+		info.append(reason);
+		cl.wr = info + "\n";
+		Server::clientWrite(cl);
+		Server::log("INFO", "%s(%s):%s disconnected (%s).",
+					cl.host, cl.addr, cl.port, reason);
+	}
 	close(cl.fd);
-	mymemset(&cl, 0, sizeof(t_client));
-	cl.fd = -1;
+	Server::clearClient(cl);
 	this->nb_clients--;
 }
 
@@ -299,8 +326,8 @@ void		Server::mailMeDaemonInfo( void )
 void		Server::clearDaemonLogs(t_client &cl)
 {
 	this->tintin->clearLogs();
-	this->tintin->log("INFO", "Started on %s", ctime(&this->start_time));
-	this->tintin->log("INFO", "Request clearlogs.");
+	Server::log("INFO", "Started on %s", ctime(&this->start_time));
+	Server::log("INFO", "Request clearlogs.");
 	cl.wr += "Logs cleared !\n";
 }
 
@@ -314,10 +341,9 @@ void		Server::setDaemonPasswd(t_client & cl)
 	{
 		if (this->protect == false) {
 			msg += "enabled.";
-			this->tintin->log("INFO", "%s", msg.c_str());
+			Server::log("INFO", "%s", msg.c_str());
 			this->protect = true;
 			this->passwd = std::string(cmd.at(1));
-			msg += "\n";
 			Server::sendAllClients(msg);
 		}
 	}
@@ -325,10 +351,9 @@ void		Server::setDaemonPasswd(t_client & cl)
 	{
 		if (this->protect == true) {
 			msg += "disabled.";
-			this->tintin->log("INFO", "%s", msg.c_str());
+			Server::log("INFO", "%s", msg.c_str());
 			this->protect = false;
 			this->passwd.clear();
-			msg += "\n";
 			Server::sendAllClients(msg);
 		}
 	}
@@ -340,14 +365,14 @@ void		Server::setDaemonCrypted(t_client & cl)
 
 	this->encrypt = !this->encrypt;
 	msg += (this->encrypt) ? "enabled." : "disabled.";
-	msg += "\n";
-	this->tintin->log("INFO", "%s", msg.c_str());
+	Server::log("INFO", "%s", msg.c_str());
 	Server::sendAllClients(msg);
 	(void)cl;
 }
 
 void		Server::sendAllClients(std::string & msg)
 {
+	msg += "\n";
 	for (int i = 0; i < SERV_MAX_CLIENTS; i++) {
 		if (this->client[i].fd > -1) {
 			this->client[i].wr += msg;
@@ -357,9 +382,16 @@ void		Server::sendAllClients(std::string & msg)
 		
 void		Server::quit(t_client &cl)
 {
-	(void)cl;
-	this->quitReason += "Request quit received";
+	std::string msg = "Matt_daemon: Request quit received.\n";
+
+	for (int i = 0; i < SERV_MAX_CLIENTS; i++) {
+		if (this->client[i].fd > -1) {
+			this->client[i].wr += msg;
+			Server::clientWrite(this->client[i]);
+		}
+	}	
 	this->loop = false;
+	(void)cl;
 }
 
 const std::vector<std::string> Server::split(const std::string &str, const char &c)

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:42:22 by root              #+#    #+#             //
-//   Updated: 2017/11/01 14:30:40 by root             ###   ########.fr       //
+//   Updated: 2017/11/18 22:35:04 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -208,7 +208,7 @@ bool			Server::readMail( const char *code, t_client & cl )
 
 bool		Server::mailError(const char *err, t_client & cl)
 {
-	this->tintin->log("ERROR", err);
+	Server::log("ERROR", err);
 	cl.wr += err;
 	cl.wr += "\n";
 	if (this->ssl) {

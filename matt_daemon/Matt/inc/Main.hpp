@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/25 07:35:36 by root              #+#    #+#             //
-//   Updated: 2017/11/01 12:46:17 by root             ###   ########.fr       //
+//   Updated: 2017/11/18 22:03:45 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -25,7 +25,7 @@ typedef struct		s_env
 	Tintin_reporter	*tintin;
 	Server			*server;
 	int				lock;
-	bool			first;
+	bool			child;
 }					t_env;
 
 struct s_env		e;

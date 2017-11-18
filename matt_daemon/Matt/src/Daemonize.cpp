@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/23 04:39:24 by root              #+#    #+#             //
-//   Updated: 2017/11/01 16:14:02 by root             ###   ########.fr       //
+//   Updated: 2017/11/18 22:08:40 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -19,7 +19,7 @@ void		daemonize()
 
 	pid = fork();
 	if (pid < 0)
-		throw DAEMONException("fork");
+		throw DAEMONException("Mothers' fork");
 	if (pid > 0)
 		quitClearlyDaemon("INFO", "Daemons' mother killed...");
 
@@ -27,7 +27,7 @@ void		daemonize()
 		throw DAEMONException("setsid");
 	pid = fork();
 	if (pid < 0)
-		throw DAEMONException("fork");
+		throw DAEMONException("Fathers' fork");
 	if (pid > 0)
 		quitClearlyDaemon("INFO", "Daemons' father killed...");
 
@@ -37,7 +37,7 @@ void		daemonize()
 
 	fd = open("/dev/null", O_RDWR);
 	if (fd < 0)
-		throw DAEMONException("/dev/null");
+		throw DAEMONException("open /dev/null");
 	dup2(fd, STDIN_FILENO);
 	dup2(fd, STDOUT_FILENO);
 	dup2(fd, STDERR_FILENO);

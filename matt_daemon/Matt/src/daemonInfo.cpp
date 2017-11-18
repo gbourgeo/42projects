@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:30:33 by root              #+#    #+#             //
-//   Updated: 2017/11/12 18:15:43 by root             ###   ########.fr       //
+//   Updated: 2017/11/19 00:09:21 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -36,10 +36,10 @@ std::string				Server::getDaemonInfo( void )
 	info += "\"\n";
 	info += "Daemon commands available :";
 	for (int i = 0; cmds[i][0]; i++) {
-		info += "\n\t\"";
+		info += "\n- \"";
 		info += cmds[i][0];
 		info += "\"\t";
-		if (mystrlen(cmds[i][0]) < 8)
+		if (mystrlen(cmds[i][0]) <= 9)
 			info += "\t";
 		info += cmds[i][1];
 	}

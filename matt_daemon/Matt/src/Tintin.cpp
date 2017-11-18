@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/11/11 22:26:53 by root             ###   ########.fr       //
+//   Updated: 2017/11/18 23:06:45 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -49,8 +49,9 @@ Tintin_reporter & Tintin_reporter::operator=(Tintin_reporter const & rhs)
 **		%S: std::string * (use with caution, it can lead to random bugs)
 */
 
-void Tintin_reporter::log(const std::string & title, const std::string & info, ...)
+void Tintin_reporter::log(const std::string & title, const std::string & info, const va_list *ap)
 {
+	size_t		i = 0, j = 0;
 	struct tm	*tm;
 	time_t		t;
 
@@ -62,10 +63,6 @@ void Tintin_reporter::log(const std::string & title, const std::string & info, .
 	this->_logfd << "-" << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec;
 	this->_logfd << "] [ " << title << " ] - Matt_daemon: ";
 
-	size_t		i = 0, j = 0;
-	va_list		ap;
-
-	va_start(ap, info);
 	this->_buff.clear();
 	while (info[i])
 	{
@@ -74,11 +71,11 @@ void Tintin_reporter::log(const std::string & title, const std::string & info, .
 			this->_buff.append(&info[j], i - j);
 			i++;
 			if (info[i] == 'd') {
-				int		ret = va_arg(ap, int);
+				int		ret = va_arg(*ap, int);
 				this->_buff += std::to_string(ret);
 			}
 			else if (info[i] == 's') {
-				char *ret = va_arg(ap, char *);
+				char *ret = va_arg(*ap, char *);
 				if (ret)
 					this->_buff.append(ret);
 			}
@@ -93,7 +90,6 @@ void Tintin_reporter::log(const std::string & title, const std::string & info, .
 		}
 		i++;
 	}
-	va_end(ap);
 	this->_buff.append(&info[j], i - j);
 	this->_logfd << this->_buff << std::endl;
 }

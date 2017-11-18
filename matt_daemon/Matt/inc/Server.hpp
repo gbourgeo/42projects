@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/11/12 18:01:25 by root             ###   ########.fr       //
+//   Updated: 2017/11/19 00:25:05 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -30,12 +30,17 @@
 
 # define SERV_CMDS			{ { "daemonlogs", "Prints the Daemon log file." }, \
 							  { "daemoninfo", "Shows informations about the Daemon itself." }, \
-							  { "daemonpass", "Changes the Daemon protection status. TRUE with an argument (will be the new password) or FALSE with no argument." }, \
-							  { "daemoncrypt", "Changes the Daemon messages status to crypted." },						\
-							  { "machinfo", "Gives informations about the machine the Daemon is running on." }, \
-							  { "servinfo", "Gives informations about the services of the machine the Daemon is runing on." }, \
+							  { "daemonpass", "Changes the Daemon protection status.\n\t\t"	\
+								"TRUE with an argument (will be the new password).\n\t\t" \
+								"FALSE with no argument." },			\
+							  { "daemoncrypt", "Changes the Daemon messages status." }, \
+							  { "machinfo", "Gives informations about the machine the Daemon\n\t\t"	\
+								"is running on." },						\
+							  { "servinfo", "Gives informations about the services of the\n\t\t" \
+								"machine the Daemon is runing on." },	\
 							  { "clearlogs", "Clears the Daemon log file." }, \
-							  { "mail", "Sends an email with informations related to the parameters given (daemonlogs, machinfo, etc...)."}, \
+							  { "mail", "Sends an email with informations related to the\n\t\t"	\
+								"parameters given (daemonlogs, machinfo, ..., all)."}, \
 							  { "quit", "Shutdown the Daemon." },		\
 							  { NULL, NULL }, }
 
@@ -79,6 +84,7 @@ public:
 	std::string		quitReason;
 	
 private:
+	void		log(const std::string & title, const std::string & info, ...);
 	void		setupSignals( void );
 	void		sigHandler( int sig );
 	int			setupSelect( void );
@@ -94,6 +100,7 @@ private:
 	void		sendMachineInfo( t_client & cl );
 	void		sendServiceInfo( t_client & cl );
 	void		clearDaemonLogs( t_client & cl );
+	void		clearClient( t_client & cl);
 	void		sendMail( t_client & cl );
 	void		sendMailCorpse( t_client & cl );
 	bool		SSHConnection( t_client & cl );
@@ -118,7 +125,7 @@ private:
 	bool			loop;
 	time_t			start_time;
 	size_t			nb_clients;
-	t_client		client[SERV_MAX_CLIENTS];
+	t_client		client[SERV_MAX_CLIENTS + 1];
 	SSL_CTX *		ctx;
 	SSL *			ssl;
 	bool			protect;

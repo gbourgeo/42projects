@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
-//   Updated: 2017/11/01 20:48:10 by root             ###   ########.fr       //
+//   Updated: 2017/11/18 23:08:05 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -43,7 +43,7 @@ int					main(void)
 	e.tintin = NULL;
 	e.server = NULL;
 	e.lock = -1;
-	e.first = false;
+	e.child = false;
 	try
 	{
 		if (setuid(getuid()) == -1)
@@ -52,7 +52,7 @@ int					main(void)
 		sanitizeEnvironnement();
 
 		e.tintin = new Tintin_reporter();
-		e.tintin->log("INFO", "Started.");
+		e.tintin->log("INFO", "Started.", NULL);
 
 		e.lock = open(LOCK_FILE, O_RDWR | O_CREAT | O_EXCL, 0600);
 		if (e.lock < 0)
@@ -60,16 +60,16 @@ int					main(void)
 		if (flock(e.lock, LOCK_EX | LOCK_NB))
 			throw DAEMONException(LOCK_FILE);
 		
-		e.tintin->log("INFO", "Creating server.");
-		e.server = new Server();
-		e.server->setReporter(e.tintin);
-		e.tintin->log("INFO", "Server created.");
-		
-		e.tintin->log("INFO", "Entering Daemon mode...");
+		e.tintin->log("INFO", "Entering Daemon mode...", NULL);
 		daemonize();
-		e.first = true;
-		e.tintin->log("INFO", "Daemon child #%d survived...", getpid());
+		e.child = true;
+		e.tintin->log("INFO", "Daemon child survived...", NULL);
 
+		e.tintin->log("INFO", "Creating server.", NULL);
+		e.server = new Server();
+		e.tintin->log("INFO", "Server created.", NULL);
+		e.server->setReporter(e.tintin);
+		
 //		e.server->mailMeDaemonInfo();
 		e.server->launchServer();
 		
@@ -77,7 +77,7 @@ int					main(void)
 		remove(LOCK_FILE);
 		close(e.lock);
 		delete e.server;
-		e.tintin->log("INFO", "Quitting...");
+		e.tintin->log("INFO", "Quitting...", NULL);
 		delete e.tintin;
 	}
 	catch (DAEMONException& err) {
@@ -93,7 +93,7 @@ int					main(void)
 
 void				quitClearlyDaemon(const char *info, std::string more)
 {
-	if (e.first) {
+	if (e.child) {
 		flock(e.lock, LOCK_UN);
 		remove(LOCK_FILE);
 	}
@@ -106,7 +106,7 @@ void				quitClearlyDaemon(const char *info, std::string more)
 	}
 	if (e.tintin)
 	{
-		e.tintin->log(info, more);
+		e.tintin->log(info, more, NULL);
 		delete e.tintin;
 	}
 	exit(0);
