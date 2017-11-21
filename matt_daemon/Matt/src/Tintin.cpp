@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/10 19:46:49 by root              #+#    #+#             //
-//   Updated: 2017/11/18 23:06:45 by root             ###   ########.fr       //
+//   Updated: 2017/11/21 23:47:23 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -49,7 +49,7 @@ Tintin_reporter & Tintin_reporter::operator=(Tintin_reporter const & rhs)
 **		%S: std::string * (use with caution, it can lead to random bugs)
 */
 
-void Tintin_reporter::log(const std::string & title, const std::string & info, const va_list *ap)
+void Tintin_reporter::log(const std::string & title, const std::string & info, va_list ap)
 {
 	size_t		i = 0, j = 0;
 	struct tm	*tm;
@@ -71,11 +71,11 @@ void Tintin_reporter::log(const std::string & title, const std::string & info, c
 			this->_buff.append(&info[j], i - j);
 			i++;
 			if (info[i] == 'd') {
-				int		ret = va_arg(*ap, int);
+				int		ret = va_arg(ap, int);
 				this->_buff += std::to_string(ret);
 			}
 			else if (info[i] == 's') {
-				char *ret = va_arg(*ap, char *);
+				char *ret = va_arg(ap, char *);
 				if (ret)
 					this->_buff.append(ret);
 			}

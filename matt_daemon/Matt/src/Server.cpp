@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:35 by root              #+#    #+#             //
-//   Updated: 2017/11/19 00:32:04 by root             ###   ########.fr       //
+//   Updated: 2017/11/21 23:44:27 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -120,7 +120,7 @@ void		Server::log(const std::string & title, const std::string & info, ...)
 	if (!this->tintin)
 		return ;
 	va_start(args, info);
-	this->tintin->log(title, info, &args);
+	this->tintin->log(title, info, args);
 	va_end(args);
 }
 
