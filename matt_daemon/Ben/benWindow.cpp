@@ -40,6 +40,26 @@ BenWindow::BenWindow(QWidget *parent) :
     connect(socket, SIGNAL(readyRead()), this, SLOT(sockRead()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sockError(QAbstractSocket::SocketError)));
 
+    /* Historic search config */
+    this->hist_size = 0;
+    this->hist = new t_hist;
+    this->hist->prev = NULL;
+    this->hist->data.clear();
+    this->hist->next = NULL;
+    this->head = this->hist;
+    this->tail = this->head;
+    this->hist_fd.setFileName("/tmp/.Matt_hist");
+    if (this->hist_fd.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        while (!this->hist_fd.atEnd() && this->hist_size < BEN_HIST_SIZE) {
+            this->hist->data = this->hist_fd.readLine();
+            this->hist = new t_hist;
+            this->hist->prev = NULL;
+            this->hist->data.clear();
+            this->hist->next = this->head;
+            this->head = this->hist;
+            this->hist_size++;
+        }
+    }
     /* Status Bar message */
     ui->statusBar->showMessage("Hello friend !");
 }
@@ -50,16 +70,42 @@ BenWindow::~BenWindow()
     delete ui;
 }
 
-bool BenWindow::eventFilter(QObject *watched, QEvent *event)
+bool    BenWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == ui->sendField || watched == ui->addressField || watched == ui->portField) {
+    if (watched == ui->addressField || watched == ui->portField) {
         if (event->type() == QEvent::KeyPress) {
             QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
             if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
                 if (this->socket->state() == QAbstractSocket::UnconnectedState)
                     BenWindow::connectClient();
-                else if (watched == ui->sendField)
-                    BenWindow::sendText();
+                return (true);
+            }
+        }
+        return (false);
+    }
+    if (watched == ui->sendField) {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+                BenWindow::sendText();
+                return (true);
+            }
+            if (keyEvent->key() == Qt::Key_Up) {
+                if (this->head->next == NULL)
+                    return (true);
+                this->head->data = ui->sendField->toPlainText().toUtf8();
+                this->head = this->head->next;
+                ui->sendField->clear();
+                ui->sendField->append(this->head->data);
+                return (true);
+            }
+            if (keyEvent->key() == Qt::Key_Down) {
+                if (this->head->prev == NULL)
+                    return (true);
+                this->head->data = ui->sendField->toPlainText().toUtf8();
+                this->head = this->head->prev;
+                ui->sendField->clear();
+                ui->sendField->append(this->head->data);
                 return (true);
             }
         }
@@ -68,7 +114,7 @@ bool BenWindow::eventFilter(QObject *watched, QEvent *event)
     return QMainWindow::eventFilter(watched, event);
 }
 
-void BenWindow::connectClient()
+void    BenWindow::connectClient()
 {
     QString         addr = ui->addressField->text();
     QString         port = ui->portField->text();
@@ -90,12 +136,12 @@ void BenWindow::connectClient()
     this->socket->waitForConnected(5000);
 }
 
-void BenWindow::quitClient()
+void    BenWindow::quitClient()
 {
     this->socket->disconnectFromHost();
 }
 
-void BenWindow::sockConnected()
+void    BenWindow::sockConnected()
 {
     ui->logBrowser->setStyleSheet("background-color:none; border=5px");
     ui->textBrowser->setStyleSheet("background-color:none; border=5px");
@@ -104,7 +150,7 @@ void BenWindow::sockConnected()
     ui->SendButton->setEnabled(true);
 }
 
-void BenWindow::sockDisconnected()
+void    BenWindow::sockDisconnected()
 {
     ui->textBrowser->setStyleSheet("background-color:lightgray; border=none");
     ui->logBrowser->setStyleSheet("background-color:lightgray; border=none");
@@ -114,7 +160,7 @@ void BenWindow::sockDisconnected()
     ui->SendButton->setEnabled(false);
 }
 
-void BenWindow::sockRead()
+void    BenWindow::sockRead()
 {
     QDataStream rcv(this->socket);
     int         ret;
@@ -153,7 +199,7 @@ void BenWindow::sockRead()
         ui->logBrowser->append(data);
 }
 
-void BenWindow::sockError(QAbstractSocket::SocketError erreur)
+void    BenWindow::sockError(QAbstractSocket::SocketError erreur)
 {
     switch (erreur)
     {
@@ -174,7 +220,7 @@ void BenWindow::sockError(QAbstractSocket::SocketError erreur)
     ui->SendButton->setEnabled(false);
 }
 
-void BenWindow::sendText()
+void    BenWindow::sendText()
 {
     if (this->socket->state() == QAbstractSocket::ConnectedState) {
 
@@ -183,6 +229,7 @@ void BenWindow::sendText()
 
         if (message.isEmpty() || message.isNull())
             return ;
+        BenWindow::AddToHist(message);
         ui->textBrowser->append(message);
         ui->sendField->clear();
         message.append('\n');
@@ -205,17 +252,39 @@ void BenWindow::sendText()
     }
 }
 
-void BenWindow::clearText()
+void    BenWindow::clearText()
 {
     ui->textBrowser->clear();
 }
 
-void BenWindow::clearLog()
+void    BenWindow::clearLog()
 {
     ui->logBrowser->clear();
 }
 
-size_t BenWindow::mystrlen(char *buff)
+void    BenWindow::AddToHist(QByteArray &message) {
+    this->head = this->hist;
+    if (this->hist->next && this->hist->next->data == message) {
+        this->hist->data.clear();
+        return ;
+    }
+    this->hist->data = message;
+    this->hist = new t_hist;
+    this->hist->prev = NULL;
+    this->hist->data.clear();
+    this->hist->next = this->head;
+    this->head->prev = this->hist;
+    this->head = this->hist;
+    if (this->hist_size >= BEN_HIST_SIZE) {
+        this->tail = this->tail->prev;
+        delete this->tail->next;
+        this->tail->next = NULL;
+        return ;
+    }
+    this->hist_size++;
+}
+
+size_t  BenWindow::mystrlen(char *buff)
 {
     char        *ptr = buff;
 

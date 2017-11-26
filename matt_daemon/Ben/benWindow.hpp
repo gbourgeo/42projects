@@ -7,9 +7,18 @@
 #include <QDataStream>
 #include "../Common/common.hpp"
 
+#define BEN_HIST_SIZE   50
+
 namespace Ui {
 class BenWindow;
 }
+
+typedef struct      s_hist
+{
+    struct s_hist   *prev;
+    QByteArray      data;
+    struct s_hist   *next;
+}                   t_hist;
 
 class BenWindow : public QMainWindow
 {
@@ -37,7 +46,13 @@ private:
     Ui::BenWindow   *ui;
     QTcpSocket      *socket;
     t_hdr           hdr;
+    QFile           hist_fd;
+    t_hist          *hist;
+    t_hist          *head;
+    t_hist          *tail;
+    size_t          hist_size;
 
+    void   AddToHist(QByteArray &message);
     size_t mystrlen(char *buff);
 };
 
