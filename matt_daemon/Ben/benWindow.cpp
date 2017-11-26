@@ -52,10 +52,14 @@ BenWindow::BenWindow(QWidget *parent) :
     if (this->hist_fd.open(QIODevice::ReadWrite | QIODevice::Text)) {
         while (!this->hist_fd.atEnd() && this->hist_size < BEN_HIST_SIZE) {
             this->hist->data = this->hist_fd.readLine();
+            if (this->hist->data.size() == 1)
+                continue ;
+            this->hist->data[this->hist->data.size() - 1] = '\0';
             this->hist = new t_hist;
             this->hist->prev = NULL;
             this->hist->data.clear();
             this->hist->next = this->head;
+            this->head->prev = this->hist;
             this->head = this->hist;
             this->hist_size++;
         }
@@ -66,6 +70,20 @@ BenWindow::BenWindow(QWidget *parent) :
 
 BenWindow::~BenWindow()
 {
+    t_hist      *tmp;
+    if (this->hist_fd.exists())
+        this->hist_fd.remove();
+    this->hist_fd.setFileName("/tmp/.Matt_hist");
+    if (this->hist_fd.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        QTextStream     histfile(&this->hist_fd);
+        while (this->tail) {
+            tmp = this->tail;
+            if (this->tail->data.size() > 0)
+                histfile << this->tail->data << "\n";
+            this->tail = this->tail->prev;
+            delete tmp;
+        }
+    }
     delete this->socket;
     delete ui;
 }
