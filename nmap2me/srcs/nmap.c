@@ -59,9 +59,14 @@ static void		init_globals(char *prog)
 	for (int i = 0; i < NM_OPTIONS_LEN; i++)
 		globals.flags[i] = NULL;
 	globals.ports_nb = 0;
-	ft_memset(globals.ports, 0, 1024);
+	ft_memset(globals.ports, 0, MAX_PORTS_SCAN);
+	globals.scans_nb = 0;
+	globals.scans_types = 0x0000;
+	globals.addresses_nb = 0;
 	globals.addresses = NULL;
-	gettimeofday(&globals.start_time, NULL);
+	globals.threads_nb = 0;
+	globals.threads = NULL;
+	ft_memset(&globals.start_time, 0, sizeof(globals.start_time));
 }
 
 int				main(int argc, char **argv)

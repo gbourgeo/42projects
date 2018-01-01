@@ -54,11 +54,11 @@ INCLUDES = -I includes/
 all: premade $(NAME)
 
 premade:
-	@echo Generating my libft...
+	@echo Generating libft...
 	@mkdir -p $(OBJ_DIR)
 
 $(NAME): $(OBJ_SRC) $(OBJ_PRINTF)
-	@ar rc $@ $^
+	ar rc $@ $^
 	@ranlib $@
 	@echo CREATED: $(NAME)
 

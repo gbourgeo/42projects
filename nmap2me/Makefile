@@ -12,11 +12,11 @@
 
 NAME			=   ft_nmap
 
-SRCDIR_NMAP		=	srcs/
-OBJDIR_NMAP		=	objs/
-INCDIR			=	includes/
+SRCDIR_NMAP		=	./srcs/
+OBJDIR_NMAP		=	./objs/
+INCDIR			=	./includes/
 
-LIBFT_DIR		=	libft/
+LIBFT_DIR		=	./libft/
 
 SRCBASE_NMAP	=	\
 					nmap.c 				\
@@ -30,7 +30,8 @@ HDRBASE_NMAP	= 	\
 OBJS_NMAP		=	$(addprefix $(OBJDIR_NMAP), $(SRCBASE_NMAP:.c=.o))
 
 CC				=	gcc
-FLAGS 			=	 -ggdb -lpthread -lpcap -L $(LIBFT_DIR) -lft
+FLAGS 			=	-ggdb -lpthread -lpcap -L $(LIBFT_DIR) -lft
+FLAGS_ERR		=	-Wall -Werror -Wextra
 
 all: $(OBJDIR_NMAP) $(NAME)
 
@@ -41,10 +42,10 @@ $(OBJDIR_NMAP):
 	make -C $(LIBFT_DIR)
 
 $(NAME): $(OBJS_NMAP)
-	$(CC) $(FLAGS) -o $@ $^ -L $(LIBFT_DIR) -lft
+	$(CC) -o $@ $^ $(FLAGS)
 
 $(OBJDIR_NMAP)%.o : $(SRCDIR_NMAP)%.c
-	$(CC) -Wall -Werror -Wextra -c $< -o $@ -I $(LIBFT_DIR)$(INCDIR) -I $(INCDIR)
+	$(CC) $(FLAGS_ERR) -c $< -o $@ -I $(LIBFT_DIR)$(INCDIR) -I $(INCDIR)
 
 clean:
 #	@make -C $(LIBFT_DIR) clean
@@ -55,3 +56,6 @@ fclean:		clean
 	rm -rf $(NAME)
 
 re: fclean all
+
+ff: fclean
+	make -C $(LIBFT_DIR) fclean

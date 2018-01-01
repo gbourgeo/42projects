@@ -42,5 +42,10 @@ void 			nmap_error(char *str, ...)
 			free(globals.addresses[i]);
 		free(globals.addresses);
 	}
+	if (globals.threads) {
+		for (int i = 0; globals.threads[i]; i++)
+			free(globals.threads[i]);
+		free(globals.threads);
+	}
 	exit(1);
 }

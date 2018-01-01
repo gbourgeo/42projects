@@ -131,11 +131,11 @@ void 			get_threads_parameters()
 
 void 			get_scans_parameters()
 {
-	globals.scan_nb = 0;
-	globals.scan_types = 0x0000;
+	globals.scans_nb = 0;
+	globals.scans_types = 0x0000;
 	if (!globals.flags[NM_SCANS]) {
-		globals.scan_nb = 6;
-		globals.scan_types = NM_SYN | NM_NULL | NM_FIN | NM_XMAS | NM_ACK | NM_UDP;
+		globals.scans_nb = 6;
+		globals.scans_types = NM_SYN | NM_NULL | NM_FIN | NM_XMAS | NM_ACK | NM_UDP;
 	} else {
 		char 	*scan[] = { "SYN",  "NULL",  "FIN",  "XMAS",  "ACK",  "UDP",  NULL };
 		int 	type[]  = { NM_SYN, NM_NULL, NM_FIN, NM_XMAS, NM_ACK, NM_UDP };
@@ -146,9 +146,9 @@ void 			get_scans_parameters()
 		for (int i = 0, j = 0; scans[i]; i++) {
 			for (j = 0; scan[j]; j++) {
 				if (!ft_strcmp(scans[i], scan[j])) {
-					if (!(globals.scan_types & type[j])) {
-						globals.scan_types |= type[j];
-						globals.scan_nb++;
+					if (!(globals.scans_types & type[j])) {
+						globals.scans_types |= type[j];
+						globals.scans_nb++;
 					}
 					break ;
 				}

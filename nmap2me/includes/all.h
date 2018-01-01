@@ -14,6 +14,7 @@
 # define ALL_H
 
 # include <sys/time.h>
+# include <pthread.h>
 
 # define bool 				int
 # define true 				1
@@ -76,17 +77,26 @@ struct pseudo_header
     u_int16_t length;
 };
 */
+
+typedef struct 			s_thread
+{
+	int 				nb;
+	pthread_t 			id;
+	void 				*global;
+}						t_thread;
+
 typedef struct			s_global
 {
 	char 				*progname;
 	char				**flags;
 	int 				ports_nb;
 	int 				ports[MAX_PORTS_SCAN];
-	int 				scan_nb;
-	int 				scan_types;
+	int 				scans_nb;
+	int 				scans_types;
 	int 				addresses_nb;
 	char 				**addresses;
 	int 				threads_nb;
+	t_thread			**threads;
 	struct timeval		start_time;
 }						t_global;
 
