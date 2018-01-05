@@ -75,41 +75,59 @@ void			get_ports_parameters()
 	}
 }
 
+static t_addr 	*new_t_addr(char *name)
+{
+	t_addr 		*addr = NULL;
+
+	if (name == NULL)
+		return NULL;
+	addr = malloc(sizeof(*addr));
+	if (addr == NULL)
+		return NULL;
+	addr->name = name;
+	ft_bzero(addr->hostaddr, 255);
+	addr->error = NULL;
+	addr->next = NULL;
+	return addr;
+}
+
+
 void 			get_ip_parameters()
 {
 	globals.addresses_nb = 0;
 	globals.addresses = NULL;
 	if (globals.flags[NM_IP]) {
-		globals.addresses_nb++;
-		globals.addresses = malloc(sizeof(*globals.addresses) * 2);
+		globals.addresses_nb = 1;
+		globals.addresses = new_t_addr(ft_strdup(globals.flags[NM_IP]));
 		if (globals.addresses == NULL)
 			nmap_error("%s: malloc failed.", globals.progname);
-		globals.addresses[0] = ft_strdup(globals.flags[NM_IP]);
-		if (globals.addresses[0] == NULL)
-			nmap_error("%s: malloc failed.", globals.progname);
-		globals.addresses[1] = NULL;
 	}
 	if (globals.flags[NM_FILE]) {
+
 		int 	fd = open(globals.flags[NM_FILE], O_RDONLY);
 		if (fd < 0)
 			nmap_error("%s: Can't open file: \"%s\"", globals.progname, globals.flags[NM_FILE]);
+
+		t_addr	*tmp = globals.addresses;
 		char 	*line = NULL;
 		int 	ret;
 		while ((ret = get_next_line(fd, &line)) > 0) {
-			globals.addresses_nb++;
 			if (line == NULL)
 				nmap_error("%s: A problem occured while getting \"%s\" lines.", globals.progname, globals.flags[NM_FILE]);
-			char	**tmp = globals.addresses;
-			globals.addresses = malloc(sizeof(*globals.addresses) * (ft_tablen(tmp) + 2));
-			if (globals.addresses == NULL)
-				nmap_error("%s: malloc failed.", globals.progname);
-			int i = 0;
-			for (; tmp && tmp[i]; i++) {
-				globals.addresses[i] = tmp[i];
+			if (*line) {
+				globals.addresses_nb++;
+				if (tmp == NULL) {
+					globals.addresses = new_t_addr(line);
+					tmp = globals.addresses;
+				} else {
+					tmp->next = new_t_addr(line);
+					tmp = tmp->next;
+				}
+				if (tmp == NULL)
+					nmap_error("%s: malloc failed.", globals.progname);
+			} else {
+				free(line);
 			}
-			globals.addresses[i] = line;
-			globals.addresses[i + 1] = NULL;
-			free(tmp);
 			line = NULL;
 		}
 		close(fd);
@@ -131,21 +149,24 @@ void 			get_threads_parameters()
 
 void 			get_scans_parameters()
 {
-	globals.scans_nb = 0;
-	globals.scans_types = 0x0000;
 	if (!globals.flags[NM_SCANS]) {
 		globals.scans_nb = 6;
 		globals.scans_types = NM_SYN | NM_NULL | NM_FIN | NM_XMAS | NM_ACK | NM_UDP;
+		globals.scans = ft_strsplit("SYN/NULL/FIN/XMAS/ACK/UDP", '/');
+		if (globals.scans == NULL)
+			nmap_error("%s: unable to parse: `%s'", globals.progname, "SYN/NULL/FIN/XMAS/ACK/UDP");
 	} else {
 		char 	*scan[] = { "SYN",  "NULL",  "FIN",  "XMAS",  "ACK",  "UDP",  NULL };
 		int 	type[]  = { NM_SYN, NM_NULL, NM_FIN, NM_XMAS, NM_ACK, NM_UDP };
-		char	**scans = ft_strsplit(globals.flags[NM_SCANS], '/');
 
-		if (scans == NULL)
+		globals.scans_nb = 0;
+		globals.scans_types = 0x0000;
+		globals.scans = ft_strsplit(globals.flags[NM_SCANS], '/');
+		if (globals.scans == NULL)
 			nmap_error("%s: unable to parse: `%s'", globals.progname, globals.flags[NM_SCANS]);
-		for (int i = 0, j = 0; scans[i]; i++) {
+		for (int i = 0, j = 0; globals.scans[i]; i++) {
 			for (j = 0; scan[j]; j++) {
-				if (!ft_strcmp(scans[i], scan[j])) {
+				if (!ft_strcmp(globals.scans[i], scan[j])) {
 					if (!(globals.scans_types & type[j])) {
 						globals.scans_types |= type[j];
 						globals.scans_nb++;
@@ -154,7 +175,7 @@ void 			get_scans_parameters()
 				}
 			}
 			if (!scan[j])
-				nmap_error("%s: Unrecognized scan type: `%s'", globals.progname, scans[i]);
+				nmap_error("%s: Unrecognized scan type: `%s'", globals.progname, globals.scans[i]);
 		}
 	}
 }

@@ -37,10 +37,12 @@ void 			nmap_error(char *str, ...)
 	va_end(ap);
 	if (globals.flags)
 		free(globals.flags);
-	if (globals.addresses) {
-		for (int i = 0; globals.addresses[i]; i++)
-			free(globals.addresses[i]);
+	while (globals.addresses) {
+		t_addr	*ptr = globals.addresses->next;
+		if (globals.addresses->name)
+			free(globals.addresses->name);
 		free(globals.addresses);
+		globals.addresses = ptr;
 	}
 	if (globals.threads) {
 		for (int i = 0; globals.threads[i]; i++)

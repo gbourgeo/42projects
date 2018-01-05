@@ -22,6 +22,9 @@ SRCBASE_NMAP	=	\
 					nmap.c 				\
 					get_parameters.c 	\
 					error.c 			\
+					interface.c 		\
+					ping_scan.c 		\
+					pcap.c 				\
 					start.c 			
 
 HDRBASE_NMAP	= 	\

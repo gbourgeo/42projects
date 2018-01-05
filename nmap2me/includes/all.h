@@ -15,6 +15,9 @@
 
 # include <sys/time.h>
 # include <pthread.h>
+# include <ifaddrs.h>
+# include <pcap/pcap.h>
+# include <netinet/in.h>
 
 # define bool 				int
 # define true 				1
@@ -24,6 +27,7 @@
 # define MAX_PORT_NUMBER	65535
 # define MAX_THREADS_NUMBER	250
 # define DEFAULT_TTL		64
+# define PACKET_SIZE 		1024
 
 # define AVAILABLE_OPTIONS  { "help",	"Print this help screen and return" },						\
 							{ "ports", 	"[1024 max] Ports to scan (eg: 1-10 or 1,2,3 or 1,5-15)" },	\
@@ -81,9 +85,31 @@ struct pseudo_header
 typedef struct 			s_thread
 {
 	int 				nb;
+	int 				ports_nb;
+	int 				index;
 	pthread_t 			id;
 	void 				*global;
 }						t_thread;
+
+typedef struct 			s_addr
+{
+	char 				*name;
+	char 				hostaddr[255];
+	const char 			buff[1024];
+	const char 			*error;
+	struct s_addr 		*next;
+}						t_addr;
+
+typedef struct 			s_pcap
+{
+	char 				*device;
+	pcap_t 				*handle;
+	bpf_u_int32 		net;
+	char 				netstr[INET_ADDRSTRLEN];
+	bpf_u_int32 		mask;
+	char 				maskstr[INET_ADDRSTRLEN];
+	struct bpf_program	fp;
+}						t_pcap;
 
 typedef struct			s_global
 {
@@ -93,11 +119,15 @@ typedef struct			s_global
 	int 				ports[MAX_PORTS_SCAN];
 	int 				scans_nb;
 	int 				scans_types;
+	char 				**scans; // need ?
 	int 				addresses_nb;
-	char 				**addresses;
+	t_addr 				*addresses;
 	int 				threads_nb;
 	t_thread			**threads;
-	struct timeval		start_time;
+	struct timeval		start;
+	struct ifaddrs		interface;
+	int 				fd;
+	t_pcap 				pcap;
 }						t_global;
 
 /*
@@ -121,7 +151,13 @@ void 					get_ip_parameters();
 /*
 **	OTHER
 */
+void 					get_hosts_addr();
+void 					get_interface();
+void 					ping_scan();
 void 					start_mapping();
+
+bool 					init_pcap(int packet_size, int promisc, int timeout, const char *filter);
+bool 					launch_pcap(void (*handler)());
 
 /*
 ** SYN = synchronization

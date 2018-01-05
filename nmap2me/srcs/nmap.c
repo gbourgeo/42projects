@@ -62,11 +62,12 @@ static void		init_globals(char *prog)
 	ft_memset(globals.ports, 0, MAX_PORTS_SCAN);
 	globals.scans_nb = 0;
 	globals.scans_types = 0x0000;
+	globals.scans = NULL;
 	globals.addresses_nb = 0;
 	globals.addresses = NULL;
 	globals.threads_nb = 0;
 	globals.threads = NULL;
-	ft_memset(&globals.start_time, 0, sizeof(globals.start_time));
+	ft_memset(&globals.start, 0, sizeof(globals.start));
 }
 
 int				main(int argc, char **argv)
