@@ -25,6 +25,7 @@ SRCBASE_NMAP	=	\
 					interface.c 		\
 					ping_scan.c 		\
 					pcap.c 				\
+					free.c 				\
 					start.c 			
 
 HDRBASE_NMAP	= 	\

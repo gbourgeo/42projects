@@ -18,6 +18,8 @@
 # include <ifaddrs.h>
 # include <pcap/pcap.h>
 # include <netinet/in.h>
+# include <linux/if_packet.h>
+
 
 # define bool 				int
 # define true 				1
@@ -95,7 +97,7 @@ typedef struct 			s_addr
 {
 	char 				*name;
 	char 				hostaddr[255];
-	const char 			buff[1024];
+	char				buff[PACKET_SIZE];
 	const char 			*error;
 	struct s_addr 		*next;
 }						t_addr;
@@ -109,6 +111,9 @@ typedef struct 			s_pcap
 	bpf_u_int32 		mask;
 	char 				maskstr[INET_ADDRSTRLEN];
 	struct bpf_program	fp;
+	struct sockaddr_ll 	mac;
+	struct sockaddr_in 	v4;
+	struct sockaddr_in6 v6;
 }						t_pcap;
 
 typedef struct			s_global
@@ -125,6 +130,7 @@ typedef struct			s_global
 	int 				threads_nb;
 	t_thread			**threads;
 	struct timeval		start;
+	struct timeval 		end;
 	struct ifaddrs		interface;
 	int 				fd;
 	t_pcap 				pcap;
@@ -158,6 +164,9 @@ void 					start_mapping();
 
 bool 					init_pcap(int packet_size, int promisc, int timeout, const char *filter);
 bool 					launch_pcap(void (*handler)());
+
+
+void					free_resources();
 
 /*
 ** SYN = synchronization
