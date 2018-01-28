@@ -114,6 +114,7 @@ typedef struct 			s_pcap
 	struct sockaddr_ll 	mac;
 	struct sockaddr_in 	v4;
 	struct sockaddr_in6 v6;
+	int 				timeout;
 }						t_pcap;
 
 typedef struct			s_global
