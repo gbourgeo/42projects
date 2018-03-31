@@ -87,6 +87,7 @@ int				main(int argc, char **argv)
 	get_threads_parameters();
 	get_scans_parameters();
 	start_mapping();
+	free_resources();
 	return (0);
 }
 

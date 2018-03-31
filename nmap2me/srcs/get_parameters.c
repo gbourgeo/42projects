@@ -86,6 +86,7 @@ static t_addr 	*new_t_addr(char *name)
 		return NULL;
 	addr->name = name;
 	ft_bzero(addr->hostaddr, 255);
+//	ft_bzero(addr->buff, PACKET_SIZE);
 	addr->error = NULL;
 	addr->next = NULL;
 	return addr;

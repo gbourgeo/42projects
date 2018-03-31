@@ -19,10 +19,13 @@ INCDIR			=	./includes/
 LIBFT_DIR		=	./libft/
 
 SRCBASE_NMAP	=	\
-					nmap.c 				\
-					get_parameters.c 	\
 					error.c 			\
+					free.c 				\
+					get_parameters.c 	\
 					interface.c 		\
+					nmap.c 				\
+					packets_read.c 		\
+					packets_make.c 		\
 					ping_scan.c 		\
 					pcap.c 				\
 					start.c 			

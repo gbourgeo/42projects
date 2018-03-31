@@ -3,7 +3,6 @@
 #include "libft.h"
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <net/if.h>
 #include <string.h>
 #include <errno.h>
@@ -32,6 +31,7 @@ void 				get_interface()
 {
 	struct ifaddrs 	*ifs, *ifa;
 
+	ifs = NULL;
 	if (getifaddrs(&ifs))
 		nmap_error("%s: Interfaces : %s", globals.progname, strerror(errno));
 	for (ifa = ifs; ifa != NULL; ifa = ifa->ifa_next) {
