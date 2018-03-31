@@ -97,7 +97,11 @@ typedef struct 			s_addr
 {
 	char 				*name;
 	char 				hostaddr[255];
+<<<<<<< HEAD
 //	char				buff[PACKET_SIZE];
+=======
+	char				buff[PACKET_SIZE];
+>>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 	const char 			*error;
 	struct s_addr 		*next;
 }						t_addr;
@@ -168,6 +172,9 @@ void 					start_mapping();
 */
 bool 					init_pcap(int packet_size, int promisc, int timeout, const char *filter);
 bool 					launch_pcap(void (*handler)());
+
+
+void					free_resources();
 
 /*
 **	PACKETS

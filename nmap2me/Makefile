@@ -28,6 +28,7 @@ SRCBASE_NMAP	=	\
 					packets_make.c 		\
 					ping_scan.c 		\
 					pcap.c 				\
+					free.c 				\
 					start.c 			
 
 HDRBASE_NMAP	= 	\

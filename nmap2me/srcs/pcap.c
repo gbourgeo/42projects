@@ -89,6 +89,7 @@
 }
 */
 
+<<<<<<< HEAD
 static void				pcap_free(t_pcap *p)
 {
 	if (p->device)
@@ -98,6 +99,8 @@ static void				pcap_free(t_pcap *p)
 	ft_memset(p, 0, sizeof(p));
 }
 
+=======
+>>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 static void				pcap_alarm_breakloop()
 {
 	pcap_breakloop(globals.pcap.handle);
@@ -108,6 +111,7 @@ void 					pcap_dump(u_char *user, const struct pcap_pkthdr *hdr, const u_char *d
 {
 	static int			count = 0;
 	struct ethhdr		*eth;
+<<<<<<< HEAD
 
 	(void)user;
 	ft_printf("Packet %d received.\n", count + 1);
@@ -127,6 +131,27 @@ void 					pcap_dump(u_char *user, const struct pcap_pkthdr *hdr, const u_char *d
 		struct sockaddr_in source;
 		struct sockaddr_in dest;
 
+=======
+
+	(void)user;
+	ft_printf("Packet %d received.\n", count + 1);
+	ft_printf("Packet Header\n");
+	ft_printf("\t|-Timevalue (seconds)  :%d\n", hdr->ts.tv_sec);
+	ft_printf("\t|-Timevalue (mseconds) :%d\n", hdr->ts.tv_usec);
+	ft_printf("\t|-Caplength            :%d\n", hdr->caplen);
+	ft_printf("\t|-Length               :%d\n", hdr->len);
+	eth = (struct ethhdr *)(data);
+	ft_printf("Ethernet Header\n");
+	ft_printf("\t|-Source          : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X\n", eth->h_source[0],eth->h_source[1],eth->h_source[2],eth->h_source[3],eth->h_source[4],eth->h_source[5]);
+	ft_printf("\t|-Destination     : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X\n", eth->h_dest[0],eth->h_dest[1],eth->h_dest[2],eth->h_dest[3],eth->h_dest[4],eth->h_dest[5]);
+	ft_printf("\t|-Protocol        : %d\n", eth->h_proto);
+
+	if (htons(eth->h_proto) == ETH_P_IP) {
+		struct iphdr		*ip;
+		struct sockaddr_in source;
+		struct sockaddr_in dest;
+
+>>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 		ip = (struct iphdr *)(data + sizeof(*eth));
 		ft_memset(&source, 0, sizeof(source));
 		source.sin_addr.s_addr = ip->saddr;
@@ -155,7 +180,13 @@ bool 					init_pcap(int packet_size, int promisc, int timeout, const char *filte
 	char 				err_buf[PCAP_ERRBUF_SIZE];
 	struct sigaction 	alarm_breakloop;
 
+<<<<<<< HEAD
 	pcap_free(p);
+=======
+	if (p->device)
+		free(p->device);
+	ft_memset(p, 0, sizeof(*p));
+>>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 	if (pcap_findalldevs(&alldevices, err_buf) == PCAP_ERROR) {
 		ft_printf("%s\n", err_buf);
 		return false;
@@ -218,6 +249,7 @@ bool 					init_pcap(int packet_size, int promisc, int timeout, const char *filte
 bool 					launch_pcap(void (*handler)(u_char *, const struct pcap_pkthdr *, const u_char *))
 {
 	t_pcap 				*p = &globals.pcap;
+<<<<<<< HEAD
 	int 				pcount = 0;
 
 	alarm(p->timeout);
@@ -229,5 +261,15 @@ bool 					launch_pcap(void (*handler)(u_char *, const struct pcap_pkthdr *, cons
 			ft_printf("Error reading packets from interface \"%s\": %s\n", p->device, pcap_geterr(p->handle));
 	}
 	pcap_free(p);
+=======
+	int 				pcount;
+
+	alarm(p->timeout);
+	pcount = pcap_dispatch(p->handle, -1, handler, NULL);
+	if (pcount == PCAP_ERROR)
+		ft_printf("Error reading packets from interface \"%s\": %s\n", p->device, pcap_geterr(p->handle));
+//	if (pcount == -2) pcap_breakloop was called and no packet were received.
+	pcap_close(p->handle);
+>>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 	return true;
 }
