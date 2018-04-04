@@ -6,7 +6,7 @@
 /*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 12:51:06 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/09/25 20:56:45 by marvin           ###   ########.fr       */
+/*   Updated: 2018/04/04 13:12:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,34 +90,3 @@ int				main(int argc, char **argv)
 	free_resources();
 	return (0);
 }
-
-/*	while (i < argc)
-	{
-		if ((option = ft_substr(argv[i], 0, 2)) != NULL) {
-			if (ft_strlen(argv[i]) > 2 && !ft_strcmp(option, FLAG_SEPARATOR)) {
-				if (value) {
-					return main_error("Syntax error !", option);
-				}
-				ft_strdel(&option);
-				if ((option = ft_substr(argv[i], 2, ft_strlen(argv[i]))) != NULL) {
-					if (!get_flag(option)) {
-						add_flag(option);
-						if (!single_flag(argv[i], true)) {
-							value = true;
-						}
-					}
-					else
-						return main_error("flag %s already set !", option);
-				}
-			} else {
-				if (!add_value(argv[i])) {
-					return main_error("Syntax error !", option);
-				}
-				value = false;
-			}
-			ft_strdel(&option);
-		}
-		i++;
-	}
-	initializer();
-*/

@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-#include <sys/types.h>	// *
-#include <sys/socket.h> // socket()
-#include <unistd.h>		// close()
-
-=======
 #include "all.h"
 #include "ft_printf.h"
 #include "libft.h"
 #include <sys/types.h>
 #include <sys/socket.h>
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <string.h>
@@ -18,22 +11,11 @@
 #include <net/if.h>
 #include <linux/if_arp.h>
 #include <linux/tcp.h>
-<<<<<<< HEAD
-
-#include <sys/ioctl.h>
-
-#include "ft_printf.h"
-#include "libft.h"
-#include "all.h"
-
-static bool				init_ping_scan(int *fds)
-=======
 #include <unistd.h>
 
 #include <sys/ioctl.h>
 
 static bool			init_scan(int *fds)
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 {	
 	// Sending socket.
 	fds[0] = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
@@ -49,13 +31,6 @@ static bool			init_scan(int *fds)
 		ft_printf("Failed to instantiate ping scan: `%s'\n", strerror(errno));
 		return false;
 	}
-<<<<<<< HEAD
-
-	return true;
-}
-
-static void				ping_scan_hosts(int *fds)
-=======
 
 	return true;
 }
@@ -262,7 +237,6 @@ static int 				read_packet(char *buff, int buff_len)
 }
 
 static void				scan_hosts(int *fds)
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 {
 	struct sockaddr_ll 	to;
 	static int 			port[] = { 0, 443, 80, 0 };
@@ -275,10 +249,7 @@ static void				scan_hosts(int *fds)
 	to.sll_ifindex = if_nametoindex(globals.pcap.device);
 	ft_memset(to.sll_addr, 0xff, ETH_ALEN);
 	to.sll_halen = ETH_ALEN;
-<<<<<<< HEAD
 	to.sll_protocol = htons(ETH_P_IP);
-=======
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 
 	packet = malloc(sizeof(struct ethhdr) + sizeof(struct iphdr) + sizeof(struct udphdr) + 22);
 	if (packet == NULL) {
@@ -288,7 +259,6 @@ static void				scan_hosts(int *fds)
 	for (int i = 0; i < port_len; i++) {
 		for (t_addr *address = globals.addresses; address != NULL; address = address->next) {
 			if (address->error)
-<<<<<<< HEAD
 				continue ;
 			packet_len = construct_packet(address, packet, port[i]);
 			int ret = sendto(fds[0], packet, packet_len, 0, (struct sockaddr *)&to, sizeof(to));
@@ -298,21 +268,8 @@ static void				scan_hosts(int *fds)
 			}
 		}
 	}
-/*
-=======
-				continue ;
-			packet_len = construct_packet(address, packet, port[i]);
-			int ret = sendto(fds[0], packet, packet_len, 0, (struct sockaddr *)&to, sizeof(to));
-			if (ret == -1) {
-				ft_printf("send: %s\n", strerror(errno));
-				continue ;
-			}
-		}
-	}
-
 	ft_printf("*************************UDP Packet*************************\n");
-return ;
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
+	return ;
 	for (int i = 0; i < port_len; i++) {
 		t_addr *address = globals.addresses;
 		while (address != NULL) {
@@ -326,10 +283,6 @@ return ;
 	 			address = address->next;
  		}
 	}
-<<<<<<< HEAD
-*/
-=======
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 	free(packet);
 }
 
@@ -345,32 +298,19 @@ void 				ping_scan()
 		hms = (hms + 86400 + 3600) % 86400;
 		ft_printf("\nInitiating Ping Scan at %d:%02d\n", hms / 3600, (hms % 3600) / 60);
 
-<<<<<<< HEAD
-		if (init_ping_scan(fds)) {
-=======
 		if (init_scan(fds)) {
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 
 			if (globals.addresses_nb == 1)
 				ft_printf("Scanning %s (%s) [4 ports]\n", globals.addresses[0].name, globals.addresses[0].hostaddr);
 			else if (globals.addresses_nb > 1)
 				ft_printf("Scanning %d hosts [4 ports/host]\n", globals.addresses_nb);
 
-<<<<<<< HEAD
-			ping_scan_hosts(fds);
-			if (init_pcap(PACKET_SIZE, 1, 2000, "udp")) {
-				launch_pcap(pcap_dump);
-			}
-			close(fds[0]);
-			close(fds[1]);
-=======
 			scan_hosts(fds);
 			close(fds[0]);
 			close(fds[1]);
 			if (init_pcap(PACKET_SIZE, 0, 4000, "")) {
 				launch_pcap(pcap_dump);
 			}
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 		}
 	}
 	else

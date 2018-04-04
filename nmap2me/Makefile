@@ -10,43 +10,43 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME			=   ft_nmap
+NAME		= ft_nmap
 
-SRCDIR_NMAP		=	./srcs/
-OBJDIR_NMAP		=	./objs/
-INCDIR			=	./includes/
+SRCDIR_NMAP	= srcs/
+OBJDIR_NMAP	= objs/
+INCDIR		= includes/
 
-LIBFT_DIR		=	./libft/
+LIBFT_DIR	= libft/
 
-SRCBASE_NMAP	=	\
-					error.c 			\
-					free.c 				\
-					get_parameters.c 	\
-					interface.c 		\
-					nmap.c 				\
-					packets_read.c 		\
-					packets_make.c 		\
-					ping_scan.c 		\
-					pcap.c 				\
-					free.c 				\
-					start.c 			
+SRCBASE_NMAP	= \
+		main.c 			\
+		error.c			\
+		free.c			\
+		get_parameters.c	\
+		interface.c		\
+		packets_read.c 		\
+		packets_make.c 		\
+		ping_scan.c 		\
+		pcap.c 			\
+		free.c 			\
+		start.c 			
 
-HDRBASE_NMAP	= 	\
-					all.h
+HDRBASE_NMAP	= \
+		all.h
 
-OBJS_NMAP		=	$(addprefix $(OBJDIR_NMAP), $(SRCBASE_NMAP:.c=.o))
+OBJS_NMAP	= $(addprefix $(OBJDIR_NMAP), $(SRCBASE_NMAP:.c=.o))
 
-CC				=	gcc
-FLAGS 			=	-ggdb -lpthread -lpcap -L $(LIBFT_DIR) -lft
-FLAGS_ERR		=	-Wall -Werror -Wextra
+CC		= gcc
+FLAGS 		= -ggdb -lpthread -lpcap -L $(LIBFT_DIR) -lft
+FLAGS_ERR	= -Wall -Werror -Wextra
 
 all: $(OBJDIR_NMAP) $(NAME)
 
 .PHONY: clean fclean re
 
 $(OBJDIR_NMAP):
-	mkdir -p $(OBJDIR_NMAP)
 	make -C $(LIBFT_DIR)
+	mkdir -p $(OBJDIR_NMAP)
 
 $(NAME): $(OBJS_NMAP)
 	$(CC) -o $@ $^ $(FLAGS)

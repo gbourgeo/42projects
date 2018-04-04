@@ -53,8 +53,10 @@ static void 	instantiate_threads()
 {
 	return;
 	t_thread	*ptr		= NULL;
-	int 		total		= globals.addresses_nb * globals.ports_nb * globals.scans_nb; // Total number of operation to be performed.
-	int 		ports_nb	= total / globals.threads_nb; // Number of operations per thread.
+	/* Total number of operation to be performed (scans per port per addresses). */
+	int 		total		= globals.addresses_nb * globals.ports_nb * globals.scans_nb;
+	/* Number of operations per thread. */
+	int 		ports_nb	= total / globals.threads_nb;
 	int 		index 		= 0;
 	int 		i 			= 0;
 
@@ -93,9 +95,10 @@ void 			start_mapping()
 	print_start();
 	get_interface();
 	get_hosts_addr();
+	ft_printf("%d\n", globals.addresses_nb);
 	if (globals.addresses_nb > 0) {
-		if (init_pcap(0, 0, 0, "")) {
-			ping_scan();
+		if (init_pcap(100, 0, 0, "")) {
+//			ping_scan();
 			instantiate_threads();
 		}
 	}

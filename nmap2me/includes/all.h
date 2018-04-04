@@ -97,11 +97,7 @@ typedef struct 			s_addr
 {
 	char 				*name;
 	char 				hostaddr[255];
-<<<<<<< HEAD
-//	char				buff[PACKET_SIZE];
-=======
 	char				buff[PACKET_SIZE];
->>>>>>> 7bcf3a51909b437bb51eb729992aa66cdfe26d4b
 	const char 			*error;
 	struct s_addr 		*next;
 }						t_addr;
@@ -179,8 +175,8 @@ void					free_resources();
 /*
 **	PACKETS
 */
-int 					read_packet(char *buff, int buff_len);
-int 					construct_packet(t_addr *address, char *packet, int port);
+//int 					read_packet(char *buff, int buff_len);
+//int 					construct_packet(t_addr *address, char *packet, int port);
 
 /*
 **	CLEAN
