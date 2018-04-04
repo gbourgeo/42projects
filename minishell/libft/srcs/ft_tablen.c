@@ -1,28 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*   ft_tablen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/21 19:16:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/08/11 02:13:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2015/03/28 00:19:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/09/21 00:57:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-
-char	*ft_strchr(const char *s, int c)
+int			ft_tablen(char **table)
 {
-	int	i;
+	int		i;
 
 	i = 0;
-	if (s && c)
-	{
-		while (s[i] && s[i] != c)
-			++i;
-		if (s[i] == c)
-			return (char*)(s + i);
-	}
-	return (NULL);
+	while (table && table[i])
+		i++;
+	return (i);
 }

@@ -1,25 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_puttab_fd.c                                     :+:      :+:    :+:   */
+/*   ft_strtoupper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/04/04 19:46:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:51:22 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/09 18:52:25 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/09 18:54:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void			ft_puttab_fd(char **tab, int fd)
+char		*ft_strtoupper(char *s)
 {
-	int			i;
+	char	*ptr;
 
-	i = 0;
-	while (tab && tab[i])
+	ptr = s;
+	if (!s)
+		return (s);
+	while (*ptr)
 	{
-		ft_putendl_fd(tab[i], fd);
-		i++;
+		if (*ptr >= 'a' && *ptr <= 'z')
+			*ptr -= 32;
+		ptr++;
 	}
+	return (s);
 }

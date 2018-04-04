@@ -1,25 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_puttab.c                                        :+:      :+:    :+:   */
+/*   pf_percent.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/04/04 19:44:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:51:02 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/15 23:29:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/16 04:57:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void			ft_puttab(char **tab)
+void			pf_percent(t_dt *data)
 {
-	int			i;
-
-	i = 0;
-	while (tab && tab[i])
+	if (!data->flag.minus)
 	{
-		ft_putendl(tab[i]);
-		i++;
+		while (data->flag.min_width > 1 && data->flag.min_width--)
+			write_char(data, (data->flag.zero) ? '0' : ' ');
+	}
+	write_char(data, '%');
+	if (data->flag.minus)
+	{
+		while (data->flag.min_width > 1 && data->flag.min_width--)
+			write_char(data, ' ');
 	}
 }

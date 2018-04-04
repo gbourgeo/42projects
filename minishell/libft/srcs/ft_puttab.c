@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strnew.c                                        :+:      :+:    :+:   */
+/*   ft_puttab.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/26 15:38:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/30 00:11:38 by gbourgeo         ###   ########.fr       */
+/*   Created: 2015/04/04 19:44:38 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/09/21 00:58:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#include "libft.h"
 
-char		*ft_strnew(size_t size)
+void			ft_puttab(char **table)
 {
-	char	*p;
-	size_t	i;
+	int			i;
 
 	i = 0;
-	p = NULL;
-	if ((p = (char*)malloc(sizeof(*p) * size)) == NULL)
-		return (NULL);
-	while (i < size)
-		p[i++] = '\0';
-	return (p);
+	while (table && table[i])
+	{
+		ft_putendl(table[i]);
+		i++;
+	}
 }

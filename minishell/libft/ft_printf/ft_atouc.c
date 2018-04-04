@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstdel.c                                        :+:      :+:    :+:   */
+/*   ft_atouc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/12 04:08:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/19 17:35:19 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/17 09:35:38 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/17 09:36:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void		ft_lstdel(t_list **alst, void (*del)(void *, size_t))
+unsigned char		ft_atouc(char *str)
 {
-	if (*alst)
+	int				i;
+	unsigned char	c;
+
+	i = 0;
+	c = 0;
+	while (i < 8)
 	{
-		del((*alst)->content, (*alst)->content_size);
-		while ((*alst)->next != NULL)
-			ft_lstdel(&(*alst)->next, &(*del));
-		*alst = NULL;
+		if (str[i] == '1')
+			c += ft_pow(2, 7 - i);
+		i++;
 	}
+	return (c);
 }

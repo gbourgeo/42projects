@@ -1,36 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strstr.c                                        :+:      :+:    :+:   */
+/*   ft_pow.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/22 15:55:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/01/27 18:19:25 by gbourgeo         ###   ########.fr       */
+/*   Created: 2015/02/19 09:37:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/30 23:03:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-char	*ft_strstr(const char *s1, const char *s2)
+int				ft_pow(int nb, int power)
 {
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	if (s1 == NULL || s2 == NULL)
-		return (char*)(s1);
-	while (s1[i])
-	{
-		while (s2[j] == s1[i + j] && (s2[j] || s1[i + j]))
-			++j;
-		if (s2[j] == '\0')
-			return (char*)(s1 + i);
-		j = 0;
-		++i;
-	}
-	if (s2[j] == '\0')
-		return (char*)(s1 + i);
-	return (NULL);
+	if (power <= 0)
+		return (1);
+	if (power == 1)
+		return (nb);
+	nb *= ft_pow(nb, power - 1);
+	return (nb);
 }

@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/01/07 18:43:15 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/04/04 15:32:28 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -17,10 +17,10 @@ SRC_D 	= src/
 HDR		= includes/
 
 SRC		= main.c			\
+			ft_fatal.c		\
 			ft_minishell.c	\
 			ft_echo.c		\
 			ft_env.c		\
-			ft_free.c		\
 			ft_fork.c		\
 			ft_envcpy.c		\
 			ft_env_options.c \

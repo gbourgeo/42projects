@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memmove.c                                       :+:      :+:    :+:   */
+/*   ft_freetab.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/23 21:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/01 20:56:50 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/03/30 22:46:31 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/30 22:48:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdlib.h>
 
-void			*ft_memmove(void *s1, const void *s2, size_t n)
+void			ft_freetab(char ***table)
 {
-	char		*tone;
-	const char	*ttwo;
+	char		**ptr;
 
-	tone = s1;
-	ttwo = ft_strdup(s2);
-	if (tone == ttwo)
-		return (s1);
-	tone = ft_strncpy(tone, ttwo, n);
-	return (s1);
+	if (table)
+	{
+		ptr = *table;
+		while (*ptr)
+		{
+			free(*ptr);
+			*ptr = NULL;
+			ptr++;
+		}
+		free(*table);
+		*table = NULL;
+	}
 }

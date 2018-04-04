@@ -1,34 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstnew.c                                        :+:      :+:    :+:   */
+/*   ft_strnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/11 20:26:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/13 23:52:47 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/26 15:38:01 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/05/15 00:33:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdlib.h>
 
-t_list		*ft_lstnew(void const *content, size_t content_size)
+char		*ft_strnew(size_t size)
 {
-	t_list	*new;
+	char	*p;
+	size_t	i;
 
-	if ((new = (t_list*)malloc(sizeof(t_list))) == NULL)
+	i = 0;
+	p = NULL;
+	if ((p = (char*)malloc(sizeof(*p) * (size + 1))) == NULL)
 		return (NULL);
-	if (content == NULL)
-	{
-		new->content = NULL;
-		new->content_size = 0;
-	}
-	else
-	{
-		new->content = ft_memalloc(content_size);
-		new->content = ft_memcpy(new->content, content, content_size);
-		new->content_size = content_size;
-	}
-	new->next = NULL;
-	return (new);
+	while (i <= size)
+		p[i++] = '\0';
+	return (p);
 }

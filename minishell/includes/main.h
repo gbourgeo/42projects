@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 16:29:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/04 15:34:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct	s_env
 	int			ret;
 }				t_env;
 
+void			ft_fatal(const char *error, t_env *e);
 char			**ft_envcpy(char **env);
 char			*ft_getenv(char *str, char **env);
 int				ft_tablen(char **tab);
