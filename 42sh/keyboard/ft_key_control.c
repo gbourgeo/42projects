@@ -6,11 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/13 15:58:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/13 18:14:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/06 18:38:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../ft_minishell.h"
+#include "ft_minishell.h"
 
 void		ft_control_c(t_env *e)
 {

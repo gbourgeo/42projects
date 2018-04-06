@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/04 15:33:32 by root             ###   ########.fr       */
+/*   Updated: 2018/04/05 14:22:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void		init_environment(char **environ, t_env *e)
 		ft_fatal("Can't split PATH.", e);
 	e->path = malloc(sizeof(*e->path) * (ft_tablen(path) + 1));
 	if (e->path == NULL)
-		ft_exit_all("Can't copy PATH.", e);
+		ft_fatal("Can't copy PATH.", e);
 	while (path[i])
 	{
 		e->path[i] = ft_strjoin(path[i], "/");
@@ -34,7 +34,7 @@ static void		init_environment(char **environ, t_env *e)
 	}
 	e->path[i] = NULL;
 	e->ret = 0;
-	ft_free(&path);
+	ft_freetab(&path);
 }
 
 int				main(int ac, char **av, char **environ)

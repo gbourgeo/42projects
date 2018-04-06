@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/02 19:03:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:09:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int			add_env(char **entry, char **new_env, t_env *e, int i)
 		else
 			e->env[i] = ft_strjoin(tmp, entry[2]);
 		e->env[i + 1] = 0;
-		free(tmp);
+		ft_freestr(&tmp);
 		return (0);
 	}
 	ft_putendl_fd("setenv: Memory space insufficiant.", 2);
@@ -44,12 +44,12 @@ static int			modify_env(char **entry, t_env *e, int i)
 {
 	char		*tmp;
 
-	free(e->env[i]);
+	ft_freestr(&e->env[i]);
 	tmp = ft_strjoin(entry[1], "=");
 	if (tmp)
 	{
 		e->env[i] = ft_strjoin(tmp, entry[2]);
-		free(tmp);
+		ft_freestr(&tmp);
 		if (e->env[i])
 			return (0);
 	}
@@ -74,7 +74,7 @@ static int			search_command(char **entry, t_env *e)
 	if (e->ret == -1)
 		e->env = new_env;
 	else
-		ft_free(&new_env);
+		ft_freetab(&new_env);
 	return (e->ret);
 }
 

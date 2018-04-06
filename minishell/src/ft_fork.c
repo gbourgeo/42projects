@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 16:48:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:07:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,11 @@ static char		*check_command(char **cmd, char **env)
 	while (cmd && cmd[i])
 	{
 		tmp = ft_strjoin(pwd, "/");
-		free(pwd);
+		ft_freestr(&pwd);
 		pwd = ft_strjoin(tmp, cmd[i]);
 		i++;
 	}
-	ft_free(&cmd);
+	ft_freetab(&cmd);
 	return (pwd);
 }
 
@@ -69,15 +69,15 @@ static char		*search_path(char *cmd, char **env)
 			ft_strjoin(paths[i], "/") : paths[i];
 		ret = ft_strjoin(tmp, cmd);
 		if (paths[i][ft_strlen(paths[i]) - 1] != '/')
-			free(tmp);
+			ft_freestr(&tmp);
 		if (check_path(ret))
 			break ;
-		free(ret);
+		ft_freestr(&ret);
 		ret = NULL;
 		i++;
 	}
 	if (paths && ft_getenv("PATH", env))
-		ft_free(&paths);
+		ft_freetab(&paths);
 	return (ret);
 }
 
@@ -112,7 +112,7 @@ int				fork_function(char **args, char **env)
 		}
 		else
 			ft_putendl_fd("minishell: Fork error.", 2);
-		free(path);
+		ft_freestr(&path);
 	}
 	else
 		ft_putendl_fd("minishell: command not found.", 2);

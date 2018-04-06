@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 16:28:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 16:44:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,11 @@ int				ft_env(char **command, t_env *e)
 		else
 			ft_puttab(opt.cpy);
 	}
-	ft_free(&opt.cpy);
-	if (opt.path)
-		free(opt.path);
-	if (opt.cmd)
-		free(opt.cmd);
-	ft_free(&opt.ptr);
-	ft_free(&opt.extra);
+	ft_freetab(&opt.cpy);
+	ft_freestr(&opt.path);
+	ft_freestr(&opt.cmd);
+	ft_freetab(&opt.ptr);
+	free(opt.extra);
 	return (e->ret);
 }
 
@@ -72,12 +70,10 @@ int				ft_enverror(char *err, char c, t_opt *opt)
 		write(2, "\n           [name=value ...] [utility [argument ...]]", 53);
 	}
 	ft_putchar_fd('\n', 2);
-	ft_free(&opt->cpy);
-	if (opt->path)
-		free(opt->path);
-	if (opt->cmd)
-		free(opt->cmd);
-	ft_free(&opt->ptr);
-	ft_free(&opt->extra);
+	ft_freetab(&opt->cpy);
+	ft_freestr(&opt->path);
+	ft_freestr(&opt->cmd);
+	ft_freetab(&opt->ptr);
+	ft_freetab(&opt->extra);
 	return (-1);
 }

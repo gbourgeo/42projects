@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/15 18:06:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/28 11:23:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:09:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void		ft_strerror(char *str)
 	if (str)
 	{
 		ft_putstr_fd(str, 2);
-		free(str);
+		ft_freestr(&str);
 	}
 	ft_putchar_fd('\n', 2);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/15 20:44:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/03/30 02:19:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:03:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void		ft_change_pwds(char *pwd, t_env *e)
 			tmp[1] = ft_strdup("OLDPWD");
 			tmp[2] = ft_getenv("PWD", e->env);
 			e->ret = ft_setenv(tmp, e);
-			free(tmp[1]);
+			ft_freestr(&tmp[1]);
 		}
 		if (ft_getenv("PWD", e->env))
 		{
@@ -33,6 +33,6 @@ void		ft_change_pwds(char *pwd, t_env *e)
 			tmp[2] = ft_strdup(pwd);
 			e->ret = ft_setenv(tmp, e);
 		}
-		ft_free(&tmp);
+		ft_freetab(&tmp);
 	}
 }

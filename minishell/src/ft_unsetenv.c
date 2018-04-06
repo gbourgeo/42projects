@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/02 23:32:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 14:31:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int		new_env(t_env *e, int i)
 			len++;
 		}
 		e->env[len - 1] = 0;
-		ft_free(&new);
+		ft_freetab(&new);
 		return (0);
 	}
 	e->env = new;

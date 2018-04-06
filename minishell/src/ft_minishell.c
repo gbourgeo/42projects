@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 19:37:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 16:44:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "get_next_line.h"
 #include "main.h"
 
 static void		prompt(char **env)
@@ -65,19 +66,17 @@ void			ft_shell(t_env *e)
 
 	e->command = NULL;
 	prompt(e->env);
-	while (get_next_line(0, &e->command) > 0)
+	while (get_next_line(STDIN_FILENO, &e->command) > 0)
 	{
 		if (*e->command)
 		{
 			arg = ft_split_whitespaces(e->command);
 			if (arg == NULL)
-				ft_putendl_fd("Memory space insufficiant.", 2);
-			else
-				e->ret = check_and_exec(arg, e->env, e);
-			ft_free(&arg);
+				ft_fatal("Memory space insufficiant.", e);
+			e->ret = check_and_exec(arg, e->env, e);
+			ft_freetab(&arg);
 		}
-		free(e->command);
-		e->command = NULL;
+		ft_freestr(&e->command);
 		prompt(e->env);
 	}
 }

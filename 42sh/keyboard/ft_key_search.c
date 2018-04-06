@@ -6,11 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/13 16:03:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/13 18:43:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/06 18:39:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../ft_minishell.h"
+#include "ft_minishell.h"
 
 void		ft_key_search(char *buf, t_env *e)
 {

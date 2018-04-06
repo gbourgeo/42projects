@@ -6,12 +6,13 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2014/03/29 20:00:40 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/04/06 19:02:35 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= 42sh
 
+SRC_DIR = srcs/
 SRC		= ft_minishell.c	\
 		check_and_exec.c	\
 		ft_commands.c		\
@@ -25,29 +26,70 @@ SRC		= ft_minishell.c	\
 		prompt.c			\
 		termios_functions.c	\
 
-KEYS	= keyboard/ft_key_control.c	\
-		keyboard/ft_key_search.c	\
-		keyboard/ft_key_suppr.c		\
-		keyboard/ft_normal_keys.c
+BUILTINS_DIR	= builtins/
+BUILTINS	= ft_cd.c			\
+			ft_cd_check.c		\
+			ft_change_pwds.c	\
+			ft_echo.c			\
+			ft_env.c			\
+			ft_exit.c			\
+			ft_getcwd.c			\
+			ft_getenv.c			\
+			ft_setenv.c			\
+			ft_unsetenv.c
 
-OBJ		= $(SRC:.c=.o)
-OBJ2	= $(KEYS:.c=.o)
+LIB2_DIR	= libft2/
+LIB2	= ft_close.c			\
+		ft_deletechar.c			\
+		ft_dup2.c				\
+		ft_open.c				\
+		ft_print_tables.c		\
+		ft_realloc.c			\
+		ft_split.c				\
+		ft_split_whitespaces.c	\
+		ft_strcdup.c			\
+		ft_strcharset.c			\
+		ft_stricpy.c			\
+		ft_strndup.c			\
+		ft_strerror.c			\
+		ft_strrcdup.c			\
+		ft_str2join.c
+
+REDIREC_DIR	= redirections/
+REDIREC	= ft_argsnew.c			\
+		ft_lexical_analysis.c	\
+		ft_parser.c				\
+		ft_pipes_errors.c		\
+		ft_separators_errors.c	\
+		ft_syntax_analysis.c
+
+PIPEX_DIR	= pipex/
+PIPEX	= ft_pipe_left.c	\
+		ft_pipe_pipe.c		\
+		ft_pipe_rights.c	\
+		ft_pipex_or_exec.c
+
+KEY_DIR = keyboard/
+KEYS	= ft_key_control.c	\
+		ft_key_search.c		\
+		ft_key_suppr.c		\
+		ft_normal_keys.c
+
+OBJ_DIR = obj/
+OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+OBJ_BUI = $(addprefix $(OBJ_DIR), $(BUILTINS:.c=.o))
+OBJ_LIB = $(addprefix $(OBJ_DIR), $(LIB2:.c=.o))
+OBJ_RED = $(addprefix $(OBJ_DIR), $(REDIREC:.c=.o))
+OBJ_PIP = $(addprefix $(OBJ_DIR), $(PIPEX:.c=.o))
+OBJ_KEY	= $(addprefix $(OBJ_DIR), $(KEYS:.c=.o))
 
 FLAGS	= -Wall -Werror -Wextra
 
-BUILTIN	= builtins/
-
-LIBFT2	= libft2/
-
-REDIREC	= redirections/
-
-PIPES	= pipex/
-
-KEYS_D	= keyboard/
-
 LIBFT	= libft/
 
-LIBFT_H	= libft/includes/
+INCLUDES = -I includes -I $(LIBFT)/includes -I /usr/include
+
+LIBRAIRIES = -L$(LIBFT) -lft -ltermcap -g3
 
 all: imsexyandiknowit $(NAME)
 
@@ -55,41 +97,43 @@ all: imsexyandiknowit $(NAME)
 
 imsexyandiknowit:
 	@make -C $(LIBFT)
-	@make -C $(LIBFT2)
-	@make -C $(BUILTIN)
-	@make -C $(REDIREC)
-	@make -C $(PIPES)
-	@make -C $(KEYS_D)
+	@mkdir -p obj
+	@echo -n - Compilation du Shell42
 
-$(NAME): message $(OBJ) 
-	@gcc -o $(NAME) $(OBJ) $(OBJ2) -L $(BUILTIN) -lbuiltins \
-	-L $(REDIREC) -lredirec -L $(LIBFT2) -lft2 -L $(LIBFT) -L $(PIPES) -lpipe \
-	-lft -ltermcap -g3
+$(NAME): $(OBJ) $(OBJ_BUI) $(OBJ_LIB) $(OBJ_RED) $(OBJ_PIP) $(OBJ_KEY)
+	@gcc -o $@ $^ $(LIBRAIRIES)
 	@echo "      Enjoy!"
 
-%.o: %.c
-	@gcc $(FLAGS) -c $^ -I/usr/include/
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@echo -n .
+	@gcc $(FLAGS) -o $@ -c $< $(INCLUDES)
+
+$(OBJ_DIR)%.o: $(BUILTINS_DIR)%.c
+	@echo -n .
+	@gcc $(FLAGS) -o $@ -c $< $(INCLUDES)
+
+$(OBJ_DIR)%.o: $(LIB2_DIR)%.c
+	@echo -n .
+	@gcc $(FLAGS) -o $@ -c $< $(INCLUDES)
+
+$(OBJ_DIR)%.o: $(REDIREC_DIR)%.c
+	@echo -n .
+	@gcc $(FLAGS) -o $@ -c $< $(INCLUDES)
+
+$(OBJ_DIR)%.o: $(PIPEX_DIR)%.c
+	@echo -n .
+	@gcc $(FLAGS) -o $@ -c $< $(INCLUDES)
+
+$(OBJ_DIR)%.o: $(KEY_DIR)%.c
+	@echo -n .
+	@gcc $(FLAGS) -o $@ -c $< $(INCLUDES)
 
 clean:
-	@make -C $(LIBFT) clean
-	@make -C $(LIBFT2) clean
-	@make -C $(BUILTIN) clean
-	@make -C $(REDIREC) clean
-	@make -C $(PIPES) clean
-	@make -C $(KEYS_D) clean
-	rm -f $(OBJ)
+	make -C $(LIBFT) clean
+	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@make -C $(LIBFT) fclean
-	@make -C $(LIBFT2) fclean
-	@make -C $(BUILTIN) fclean
-	@make -C $(REDIREC) fclean
-	@make -C $(PIPES) fclean
-	@make -C $(KEYS_D) fclean
-	rm -f $(NAME)
+	make -C $(LIBFT) fclean
+	rm -rf $(NAME)
 
 re: fclean all
-
-message:
-	@echo -n - Compilation du Shell42

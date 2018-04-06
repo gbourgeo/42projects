@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:25:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 16:49:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:49:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static char		**ft_env_opt_u(char **cmd, int *i, int j, t_opt *opt)
 		ft_strdup(cmd[++(*i)]) : ft_strdup(&cmd[*i][j]);
 	tab[k + 1] = NULL;
 	if (opt->ptr)
-		ft_free(&opt->ptr);
+		ft_freetab(&opt->ptr);
 	return (tab);
 }
 
@@ -46,7 +46,7 @@ static char		*ft_env_opt_p(char **cmd, int *i, int j, t_opt *opt)
 	ft_strcpy(ret, opt->path);
 	if (opt->path)
 	{
-		free(opt->path);
+		ft_freestr(&opt->path);
 		ft_strcat(ret, ":");
 	}
 	if (cmd[*i][j] == '\0')
@@ -111,21 +111,21 @@ int				ft_env_check_opt(char **cmd, t_opt *opt, int i, int j)
 int				ft_env_check_opt_plus(char **cmd, t_opt *opt, int i)
 {
 	char		**tab;
-	int			k;
+	int			j;
 
-	while (ft_strchr(cmd[i], '='))
+	while (ft_strchr(cmd[i], '=') != NULL)
 	{
 		if ((tab = (char **)malloc(ft_tablen(opt->extra) + 2)) == NULL)
 			return (ft_enverror("malloc failed", 0, opt));
-		k = 0;
-		while (opt->extra && opt->extra[k])
+		j = 0;
+		while (opt->extra && opt->extra[j])
 		{
-			tab[k] = opt->extra[k];
-			k++;
+			tab[j] = opt->extra[j];
+			j++;
 		}
-		tab[k] = cmd[i];
-		tab[k + 1] = NULL;
-		free(opt->extra);
+		tab[j] = cmd[i];
+		tab[j + 1] = NULL;
+		ft_freetab(&opt->extra);
 		opt->extra = tab;
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/21 00:00:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 16:25:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:03:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int		cd_error(char *pwd, char *entry)
 		else
 			ft_putstr("cd: permission denied: ");
 		ft_putendl(entry);
-		free(pwd);
+		ft_freestr(&pwd);
 	}
 	return (1);
 }
@@ -50,10 +50,10 @@ static int		cd_write_in_pwd(char **args, t_env *e, int i)
 			ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
 		{
 			pwd = ft_getcwd(tmp, e->env);
-			free(tmp);
+			ft_freestr(&tmp);
 		}
 		ft_change_pwds(pwd, e);
-		free(pwd);
+		ft_freestr(&pwd);
 		return (0);
 	}
 	return (cd_error(pwd, args[i]));
@@ -65,9 +65,9 @@ static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)
 
 	pwd = ft_strndup(pwd, ft_strlen(pwd) - ft_strlen(spot));
 	tmp1 = ft_strjoin(pwd, args[2]);
-	free(pwd);
+	ft_freestr(&pwd);
 	pwd = ft_strjoin(tmp1, spot + ft_strlen(args[1]));
-	free(tmp1);
+	ft_freestr(&tmp1);
 	return (pwd);
 }
 
@@ -88,7 +88,7 @@ static int		cd_search_in_pwd(char **args, t_env *e)
 	{
 		ft_change_pwds(pwd, e);
 		ft_putendl(pwd);
-		free(pwd);
+		ft_freestr(&pwd);
 		return (0);
 	}
 	return (cd_error(pwd, pwd));

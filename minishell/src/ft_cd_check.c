@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/26 09:56:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/01/05 16:40:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 14:31:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static char		*ft_get_path(char *path, char *pwd)
 	else
 		ft_putendl_fd("cd: memory insufficiant.", 2);
 	if (list)
-		ft_free(&list);
+		ft_freetab(&list);
 	return (new);
 }
 

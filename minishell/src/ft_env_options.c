@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/27 16:28:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/05 15:06:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static char		**ft_new_env(t_opt *opt, int k)
 		new[i - 1] = NULL;
 	else
 		new[i] = NULL;
-	ft_free(&opt->cpy);
+	ft_freetab(&opt->cpy);
 	return (new);
 }
 
@@ -68,7 +68,7 @@ int				ft_opt_i(t_opt *opt)
 {
 	if (opt->v)
 		ft_putendl("#env clearing environ");
-	ft_free(&opt->cpy);
+	ft_freetab(&opt->cpy);
 	return (0);
 }
 
@@ -88,11 +88,11 @@ static char		*ft_search_path(char *cmd, t_opt *opt)
 			ft_str2join(paths[i], "/", cmd) : ft_strjoin(paths[i], cmd);
 		if (stat(tmp, &buffer) != -1 && access(tmp, F_OK) == 0)
 			break ;
-		free(tmp);
+		ft_freestr(&tmp);
 		tmp = NULL;
 		i++;
 	}
-	ft_free(&paths);
+	ft_freetab(&paths);
 	return (tmp);
 }
 
@@ -105,7 +105,7 @@ int				ft_opt_p(t_opt *opt, char **cmd)
 		return (ft_enverror("option requires an argument", 'P', opt));
 	if ((opt->cmd = ft_search_path(cmd[0], opt)) == NULL)
 		return (ft_enverror("No such file or directory", 0, opt));
-	free(cmd[0]);
+	ft_freestr(&cmd[0]);
 	cmd[0] = opt->cmd;
 	opt->cmd = NULL;
 	if (opt->v)

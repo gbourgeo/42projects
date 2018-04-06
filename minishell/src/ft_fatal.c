@@ -6,11 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/04 15:28:45 by root              #+#    #+#             */
-/*   Updated: 2018/04/04 15:34:46 by root             ###   ########.fr       */
+/*   Updated: 2018/04/05 14:18:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "main.h"
 
 void			ft_fatal(const char *error, t_env *e)
 {
