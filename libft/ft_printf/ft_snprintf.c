@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   ft_snprintf.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 02:56:14 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 03:31:27 by root             ###   ########.fr       */
+/*   Created: 2018/04/11 04:00:58 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/04/11 04:01:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_snprintf.h"
 
-int			ft_snprintf(char *str, size_t size, const char *restrict format, ...)
+int			ft_snprintf(char *str, size_t size, const char *restrict format, \
+						...)
 {
 	t_dt	data;
 	int		ret;
