@@ -6,12 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/17 19:55:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/18 08:18:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/11 00:55:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
 #include "libft.h"
+#include "ft_printf.h"
 
 static void		fill_buff(char *ret, int *i, int size)
 {

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/18 08:16:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/11 02:23:29 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,9 @@ static int		*ft_wcharlen(const int *str, int *i)
 
 static void		find_precision(t_dt *data, const int *str, int *len)
 {
-	int			i;
 	int			w;
 	int			precision;
 
-	i = 0;
 	precision = 0;
 	if (!str)
 		return ;
