@@ -6,44 +6,46 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/12/29 12:41:06 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/04/10 23:31:20 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
-NAME = woody_woodpacker
+NAME 	= woody_woodpacker
 
-SRC = main.c
+SRC_DIR	= srcs/
+SRC		= main.c
 
-OBJ_DIR = obj/
+HDR_DIR	= includes/
 
-OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+OBJ_DIR	= obj/
+OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 
-LIBFT = libft
+LIB_DIR	= libft/
+LIB_HDR	= $(LIB_DIR)includes
 
-LIBFT_H = $(LIBFT)/includes
-
-WWW = gcc -Wall -Werror -Wextra
+WWW 	= gcc
+FLAGS	= -Wall -Werror -Wextra
 
 all: lib $(NAME)
 
 lib:
-	@make -C $(LIBFT)
+	@make -C $(LIB_DIR)
 	@mkdir -p $(OBJ_DIR)
 
 .PHONY: all lib clean fclean re
 
 $(NAME): $(OBJ)
-	$(WWW) -o $@ $^ -L $(LIBFT) -lft -I $(LIBFT_H)
+	$(WWW) -o $@ $^ -L$(LIB_DIR) -lft
 
-$(OBJ_DIR)%.o: %.c woody.h
-	$(WWW) -o $@ -c $< -I $(LIBFT_H)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	$(WWW) $(FLAGS) -o $@ -c $< -I$(HDR_DIR) -I$(LIB_HDR)
 
 clean:
-	@make -C $(LIBFT) clean
-	@if test -d $(OBJ_DIR) ; then /bin/rm -rf $(OBJ_DIR) ; echo rm -f $(OBJ) ; fi
+	@make -C $(LIB_DIR) clean
+	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@make -C $(LIBFT) fclean
-	@if test -f $(NAME) ; then /bin/rm -f $(NAME) ; echo rm -f $(NAME) ; fi
+	@make -C $(LIB_DIR) fclean
+	@/bin/rm -f $(NAME)
 
 re: fclean all
