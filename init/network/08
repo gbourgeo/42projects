@@ -1,0 +1,14 @@
+host -t NS slash16.org
+
+Retreive the host addresses for slash16.org
+
+slash16.org name server ns-1236.awsdns-26.org.
+slash16.org name server ns-144.awsdns-18.com.
+slash16.org name server ns-686.awsdns-21.net.
+slash16.org name server ns-1989.awsdns-56.co.uk.
+
+Pour avoir plus de precision sur ces noms, j'utilise whoishostingthis.com qui me dit:
+
+"slash16.org is hosted by Amazon.com"
+
+awsdns = Amazon Web Service DNS.

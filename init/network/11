@@ -1,0 +1,2 @@
+En utilisant traceroute les hops avec le ttl de 1 passent par 10.13.254.254 le routeur de 42.
+les hops avec un ttl de 2 passent par nat-1 (10.60.1.11) fait le lien entre le reseau local et l'exterieur.

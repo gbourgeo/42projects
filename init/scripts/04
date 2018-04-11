@@ -1,0 +1,14 @@
+echo 'FILE_NAME="/etc/crontab"
+CURRENT_UPDATE="09/04/2018 12:00"
+LAST_UPDATE=$(date -r ${FILE_NAME} "+%d/%m/%Y %H:%M")
+MAIL_ADMIN="root"
+
+if [ "${CURRENT_UPDATE}" != "${LAST_UPDATE}" ]; then
+   MAIL_MESSAGE="le fichier ${FILE_NAME} a ete modifie le ${LAST_UPDATE}\nDerniere modification: ${CURRENT_UPDATE}";
+   echo -e "To: ${MAIL_ADMIN}\nFrom: toto\nSubject: Alerte !\n\n${MAIL_MESSAGE}." | ssmtp ${MAIL_ADMIN};
+fi
+' > ~/.watchfile.sh
+
+chmod 777 ~/.watchfile.sh
+
+(crontab -l 2>/dev/null; echo "0 0 * * * ~/.watchfile.sh") | crontab -

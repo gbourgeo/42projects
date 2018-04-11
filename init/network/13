@@ -1,0 +1,7 @@
+nslookup 10.51.1.253
+Server:		10.51.1.42
+Address:	10.51.1.42#53
+
+253.1.51.10.in-addr.arpa	name = dhcp.42.fr.
+
+il s'agit donc d'un serveur DHCP de 42

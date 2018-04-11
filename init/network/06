@@ -1,0 +1,7 @@
+recherche google "find dns ip mac"
+1er lien:
+cat /etc/resolv.conf | grep nameserver
+
+Sortie:
+nameserver 10.51.1.42
+nameserver 10.51.1.43

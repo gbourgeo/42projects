@@ -1,0 +1,10 @@
+$> nslookup 10.51.1.81
+Server:		10.51.1.42
+Address:	10.51.1.42#53
+
+81.1.51.10.in-addr.arpa	name = ldap-proxy.42.fr.
+
+$> host 10.51.1.81
+81.1.51.10.in-addr.arpa domain name pointer ldap-proxy.42.fr.
+
+10.51.1.81 correspond au serveur ldap-proxy.42.fr

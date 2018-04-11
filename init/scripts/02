@@ -1,0 +1,4 @@
+echo "/usr/bin/apt-get update -y >> /var/log/update_script.log" > ~/.updatefile.sh
+echo "/usr/bin/apt-get upgrade -y >> /var/log/update_script.log" >> ~/.updatefile.sh
+chmod 777 ~/.updatefile.sh
+(crontab -l 2>/dev/null ; echo "0 4 * * * @weekly ~/.updatefile.sh") | crontab -
