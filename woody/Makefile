@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/10 23:31:20 by root             ###   ########.fr        #
+#    Updated: 2018/04/11 05:02:42 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -28,17 +28,17 @@ FLAGS	= -Wall -Werror -Wextra
 
 all: lib $(NAME)
 
-lib:
-	@make -C $(LIB_DIR)
-	@mkdir -p $(OBJ_DIR)
-
-.PHONY: all lib clean fclean re
-
 $(NAME): $(OBJ)
 	$(WWW) -o $@ $^ -L$(LIB_DIR) -lft
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< -I$(HDR_DIR) -I$(LIB_HDR)
+
+.PHONY: lib clean fclean re
+
+lib:
+	@make -C $(LIB_DIR)
+	@mkdir -p $(OBJ_DIR)
 
 clean:
 	@make -C $(LIB_DIR) clean
@@ -46,6 +46,6 @@ clean:
 
 fclean: clean
 	@make -C $(LIB_DIR) fclean
-	@/bin/rm -f $(NAME)
+	/bin/rm -f $(NAME)
 
 re: fclean all

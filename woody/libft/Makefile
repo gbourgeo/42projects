@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/20 18:41:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/11 03:14:13 by root             ###   ########.fr        #
+#    Updated: 2018/04/11 04:57:07 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -55,12 +55,10 @@ WWW	= gcc -Wall -Werror -Wextra
 
 INCLUDES = -I includes/
 
-.PHONY: all clean fclean re
-
 all: premade $(NAME)
 
 premade:
-	@if test -f $(NAME) ; then echo -n ""; else echo -n "Generating $(NAME) "; fi
+	@if !(test -f $(NAME)) ; then echo -n "Generating $(NAME) "; fi
 	@mkdir -p $(OBJ_DIR)
 
 $(NAME): $(OBJ_SRC) $(OBJ_PRINTF)
@@ -83,3 +81,5 @@ fclean: clean
 	@if test -f $(NAME) ; then rm -f $(NAME) ; echo libft $(NAME) erased. ; fi
 
 re: fclean all
+
+.PHONY: clean fclean re
