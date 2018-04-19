@@ -6,14 +6,14 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/11 05:02:42 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/04/19 17:06:09 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
-SRC		= main.c
+SRC		= main.c file_info.c
 
 HDR_DIR	= includes/
 
