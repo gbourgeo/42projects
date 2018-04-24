@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/19 17:06:09 by root             ###   ########.fr        #
+#    Updated: 2018/04/23 21:12:07 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,11 +14,13 @@ NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
 SRC		= main.c file_info.c
+SRC_A	= woody.s
 
 HDR_DIR	= includes/
 
 OBJ_DIR	= obj/
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+OBJ_A	= $(addprefix $(OBJ_DIR), $(SRC_A:.s=.o))
 
 LIB_DIR	= libft/
 LIB_HDR	= $(LIB_DIR)includes
@@ -26,13 +28,19 @@ LIB_HDR	= $(LIB_DIR)includes
 WWW 	= gcc
 FLAGS	= -Wall -Werror -Wextra
 
+ASM		= nasm
+AFLAGS	= -f elf64
+
 all: lib $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(OBJ_A)
 	$(WWW) -o $@ $^ -L$(LIB_DIR) -lft
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< -I$(HDR_DIR) -I$(LIB_HDR)
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.s
+	$(ASM) $(AFLAGS) -o $@ $<
 
 .PHONY: lib clean fclean re
 
@@ -41,11 +49,11 @@ lib:
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-	@make -C $(LIB_DIR) clean
+#	@make -C $(LIB_DIR) clean
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@make -C $(LIB_DIR) fclean
+#	@make -C $(LIB_DIR) fclean
 	/bin/rm -f $(NAME)
 
 re: fclean all

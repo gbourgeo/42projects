@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 17:03:42 by root              #+#    #+#             */
-/*   Updated: 2018/04/22 06:30:21 by root             ###   ########.fr       */
+/*   Updated: 2018/04/24 01:42:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void			file_info(t_env *e)
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
 	}
-	
+/*	
 	ft_printf(CO2);
 	ft_printf("\nsymbols table:\n");
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
@@ -255,6 +255,7 @@ void			file_info(t_env *e)
 			}
 		}
 	}
+*/
 	/* Prints ALL sections */
 /*
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
