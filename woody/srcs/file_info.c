@@ -6,13 +6,19 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 17:03:42 by root              #+#    #+#             */
-/*   Updated: 2018/04/24 01:42:23 by root             ###   ########.fr       */
+/*   Updated: 2018/04/27 13:11:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <elf.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
+
 #include "ft_printf.h"
 #include "libft.h"
-#include "main.h"
 
 #define DEF "\e[1;0m"
 #define CO1 "\e[1;31m"
@@ -26,17 +32,49 @@
 #define MY_BIG_ENDIAN		2
 
 void			print_hex(u_char *file, size_t size, size_t endian);
+void			file_info(void *file, int file_size);
 
-void			file_info(t_env *e)
+int main(int ac, char **av)
+{
+	int		fd;
+	int		file_size;
+	void	*file;
+
+	(void)ac;
+	if (!av[1]) {
+		ft_printf("arg missing\n");
+		return 1;
+	}
+	if ((fd = open(av[1], O_RDWR)) == -1) {
+		ft_printf("error open\n");
+		return 1;
+	}
+	if ((file_size = lseek(fd, 1, SEEK_END)) == -1) {
+		ft_printf("cant seek end of file\n");
+		return 1;
+	}
+	file = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (file == MAP_FAILED) {
+		ft_printf("cant map file\n");
+		return 1;
+	}
+	if (close(fd) == -1) {
+		perror("close()");
+	}
+	file_info(file, file_size);
+	return 0;
+}
+
+void			file_info(void *file, int file_size)
 {
 	Elf64_Ehdr	*file_header;
 	Elf64_Phdr	*program_header_table;
 	Elf64_Shdr	*section_header_table;
 	char		*string_table;
 
-	file_header = (Elf64_Ehdr *)e->file;
-	program_header_table = (Elf64_Phdr *)(e->file + file_header->e_phoff);
-	section_header_table = (Elf64_Shdr *)(e->file + file_header->e_shoff);
+	file_header = (Elf64_Ehdr *)file;
+	program_header_table = (Elf64_Phdr *)(file + file_header->e_phoff);
+	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
 	string_table = (file_header->e_shstrndx == SHN_UNDEF) ? NULL :
 		(char *)file_header + (section_header_table + file_header->e_shstrndx)->sh_offset;
 
@@ -45,7 +83,7 @@ void			file_info(t_env *e)
 	ft_printf(CO3);
 	ft_printf("addr\t\t size\t class\t encoding\t version OS/ABI\t\t ABIv\t padding\n");
 	ft_printf(DEF);
-	ft_printf("%p\t %#x\t %s\t %s\t %d\t %s\t %d\t %d\n", e->file, e->file_size,
+	ft_printf("%p\t %#x\t %s\t %s\t %d\t %s\t %d\t %d\n", file, file_size,
 			  (file_header->e_ident[EI_CLASS] == 1) ? "32-bit" : "64-bit",
 			  (file_header->e_ident[EI_DATA] == 1) ? "little-endian" : "big-endian",
 			  file_header->e_ident[EI_VERSION],
@@ -122,7 +160,10 @@ void			file_info(t_env *e)
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
+//		print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 2);
 	}
+	print_hex(file, file_size, 2);
+
 /*	
 	ft_printf(CO2);
 	ft_printf("\nsymbols table:\n");
@@ -277,8 +318,8 @@ void			print_hex(u_char *file, size_t size, size_t endian)
 	size_t i = 0;
 	size_t j = 0;
 	while (i < size) {
-		if (i % 16 == 0)
-			ft_printf("%p", file + i);
+		/* if (i % 16 == 0) */
+		/* 	ft_printf("%p", file + i); */
 		if (endian == MY_LITTLE_ENDIAN) {
 			for (size_t k = 0; k < 2; k++) {
 				for (size_t l = (i + 8 > size) ? size : i + 8; l > i; l--) {

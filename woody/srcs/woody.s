@@ -2,23 +2,20 @@
 
 	global woody_func:function
 	global woody_size:data
-	global woody_offset:data
 
-	section .data
-	msg db '....WOODY....', 10
-
-	section .text
-
+	segment .text
 	woody_size dd end - woody_func
-	woody_offset dd end - woody_func
 
 woody_func:
+
+	banner db "....WOODY....", 10
+
+	mov rdi, 0
 	mov rdi, 1
-	mov rsi, msg
+	lea rsi, [rel banner]
 	mov rdx, 14
 	mov rax, 1
-	syscall
-	mov rdi, 0
-	mov rax, 60
-	syscall
-end:	
+	syscall						; write(1, msg, 14);
+
+	jmp 0xFFFFFFFF
+end:
