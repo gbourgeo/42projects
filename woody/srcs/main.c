@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/27 13:14:29 by root             ###   ########.fr       */
+/*   Updated: 2018/04/28 17:07:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "main.h"
 
 extern uint32_t woody_size;
+extern uint32_t woody_offset;
 void			woody_func(void);
 
 void			write_to_file(t_env *e);
@@ -72,7 +73,7 @@ int				main(int ac, char **av)
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", &e);
 
-	write_woody(&e);
+	write_to_file(&e);
 	
 	if (munmap(e.file, e.file_size) == -1)
 		ft_fatal(NULL, &e);
@@ -99,9 +100,10 @@ void			write_woody(t_env *e)
 	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
 
 	pt_load = NULL;
-	for (size_t i = 0; i < elf_header->e_phnum && pt_load == NULL; i++) {
+	for (size_t i = 0; i < elf_header->e_phnum; i++) {
 		if (elf_program[i].p_type == PT_LOAD) {
 				pt_load = &elf_program[i];
+				break ;
 		}
 	}
 	align = pt_load->p_memsz - pt_load->p_filesz;
@@ -114,18 +116,17 @@ void			write_woody(t_env *e)
 			section = &elf_section[i];
 		}
 	}
-	vaddr = section->sh_addr + section->sh_size;
-
+	vaddr = section->sh_addr + section->sh_size + woody_offset;
 	old_entry = elf_header->e_entry;
 	elf_header->e_entry = vaddr;
+	(void)vaddr;
 
-	pt_load->p_filesz += woody_size + align;
-	pt_load->p_memsz += woody_size + align;
+	pt_load->p_filesz += (woody_size + align);
+	pt_load->p_memsz += (woody_size + align);
 
 	char	*ptr = (char *)e->file;
 	size_t	size = section->sh_offset + section->sh_size;
 	write(woody, ptr, size);
-
 	write(woody, &woody_func, woody_size - 4);
 	uint32_t jump = ((pt_load->p_vaddr + pt_load->p_filesz) - old_entry) * -1;
 	write(woody, &jump, 4);
@@ -140,20 +141,14 @@ void			write_woody(t_env *e)
 
 void			write_to_file(t_env *e)
 {
-	int			woody;
 	Elf64_Ehdr	*elf_header;
 	Elf64_Phdr	*elf_program;
 	Elf64_Shdr	*elf_section;
 	Elf64_Phdr	*pt_load;
-	Elf64_Xword	align;
 	Elf64_Shdr	*section;
 	Elf64_Addr	vaddr;
-	Elf64_Shdr	new_section;
 	Elf64_Addr	old_entry;
 
-	woody = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
-	if (woody == -1)
-		ft_fatal(NULL, e);
 	elf_header = (Elf64_Ehdr *)e->file;
 	elf_program = (Elf64_Phdr *)(e->file + elf_header->e_phoff);
 	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
@@ -167,9 +162,8 @@ void			write_to_file(t_env *e)
 			}
 		}
 	}
-	/* Compute alignment */
-	align = pt_load->p_memsz - pt_load->p_filesz;
-/* 2. Find the highest memory mapped section of the segment */
+
+/* 2. Find the last section of the segment */
 	section = NULL;
 	for (size_t i = 0; i < elf_header->e_shnum; i++) {
 		size_t section_addr = elf_section[i].sh_addr + elf_section[i].sh_size;
@@ -178,68 +172,57 @@ void			write_to_file(t_env *e)
 			section = &elf_section[i];
 		}
 	}
-/* 3. Compute the virtual address of our injection */
-	vaddr = section->sh_addr + section->sh_size;
-/* 4. Create a new section */
-	new_section.sh_name = 0;
-	new_section.sh_type = SHT_PROGBITS;
-	new_section.sh_flags = SHF_ALLOC | SHF_EXECINSTR;
-	new_section.sh_addr = vaddr;
-	new_section.sh_offset = section->sh_offset + section->sh_size;
-	new_section.sh_size = woody_size + align;
-	new_section.sh_link = SHN_UNDEF;
-	new_section.sh_info = 0;
-	new_section.sh_addralign = 0x10;
-	new_section.sh_entsize = 0;
-/* 5. Change the elf header */
+
+/* 3. Compute the virtual address of our code */
+	vaddr = pt_load->p_vaddr + pt_load->p_memsz;
+
+/* 4. Change the elf header */
 	old_entry = elf_header->e_entry;
 	elf_header->e_entry = vaddr;
-	elf_header->e_shoff += woody_size + align;
-//	elf_header->e_shnum += 1;
-//	elf_header->e_shstrndx += (section < &elf_section[elf_header->e_shstrndx]) ? 1 : 0;
-/* 6. Change the program header */
-	for (size_t i = 0; i < elf_header->e_phnum; i++) {
-		if (elf_program[i].p_type == PT_LOAD) {
-			elf_program[i].p_flags = PF_R | PF_W | PF_X;
-		}
-	}
-	pt_load->p_filesz += woody_size + align;
-	pt_load->p_memsz += woody_size + align;
-/* 7. Change the offset of sections following our code */
+	elf_header->e_shoff += woody_size;
+
+/* 5. Change the program header */
+	if ((pt_load->p_flags & PF_X) == 0)
+		pt_load->p_flags |= PF_X;
+	pt_load->p_memsz += woody_size;
+	pt_load->p_filesz = pt_load->p_memsz;
+
+/* Extra: Change the offset of sections higher than our code offset, for debug info only. */
 	for (size_t i = 0; i < elf_header->e_shnum; i++) {
 		if (elf_section[i].sh_offset >= section->sh_offset &&
 			&elf_section[i] != section) {
-			elf_section[i].sh_offset += new_section.sh_size;
+			elf_section[i].sh_offset += woody_size;
 			if (elf_section[i].sh_type == SHT_SYMTAB) {
 				elf_section[i].sh_link += 0;
 			}
 		}
 	}
 
-	char	*ptr = (char *)e->file;
-	size_t	size = section->sh_offset + section->sh_size;
+/* 6. Write our new file */
+	int			woody;
+	char		*ptr;
+	size_t		size;
+	uint32_t	jump_addr;
+
+	woody = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
+	if (woody == -1)
+		ft_fatal(NULL, e);
+	ptr = (char *)e->file;
+	size = section->sh_offset + section->sh_size;
 	write(woody, ptr, size);
 	ptr += size;
 
-	write(woody, &woody_func, woody_size - 4);
-	uint32_t jump = ((pt_load->p_vaddr + pt_load->p_filesz) - old_entry) * -1;
-	write(woody, &jump, 4);
-	for (size_t i = pt_load->p_memsz - pt_load->p_filesz; i > 0; i--) {
-		write(woody, "\0", 1);
-	}
-
-	write(woody, ptr, e->file_size - size - 1);
-//	write(woody, &new_section, elf_header->e_shentsize);
-	close(woody);
-	return ;
-
-
-	size = (size_t)section - (size_t)ptr + elf_header->e_shentsize;
-	write(woody, ptr, size);
-	ptr += size;
-
-	write(woody, &new_section, elf_header->e_shentsize);
+	write(woody, &woody_func, woody_size - sizeof(jump_addr));
+	jump_addr = ((pt_load->p_vaddr + pt_load->p_filesz) - old_entry) * -1;
+	write(woody, &jump_addr, sizeof(jump_addr));
 
 	write(woody, ptr, e->file_size - size);
 	close(woody);
 }
+
+/*
+  Ideas for compression:
+	- Check the size between each sections offset + section size, see if there is no extra unused bytes.
+	  ( > 4 bytes, for example).
+	- Check google which section(s) can be removed (debugging, info, etc.)
+*/
