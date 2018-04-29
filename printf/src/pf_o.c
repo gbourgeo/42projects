@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 11:07:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/29 05:04:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ static void	print_zero_space(t_dt *data, t_av *av)
 	int		len;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
-	if (!av->ui)
-		len = 0;
+/* 	if (!av->ui) */
+/* 		len = 0; */
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > len && data->flag.min_width--)
@@ -47,6 +47,16 @@ static void	print_zero_space(t_dt *data, t_av *av)
 	while (data->flag.precision > av->len && data->flag.precision--)
 		write_char(data, '0');
 	if (data->flag.hash && av->ui)
+		write_char(data, '0');
+	if (!av->ui &&
+		(((!(data->flag.len_modifier & ARG_Z) || data->flag.precision) &&
+		 (!(data->flag.len_modifier & ARG_J) || data->flag.precision) &&
+		 (!(data->flag.len_modifier & ARG_HH) || data->flag.precision) &&
+		 (!(data->flag.len_modifier & ARG_H) || data->flag.precision) &&
+		 (!(data->flag.len_modifier & ARG_LL) || data->flag.precision) &&
+		 (!(data->flag.len_modifier & ARG_L) || data->flag.precision) &&
+		 (!(data->flag.len_modifier & ARG_Z) || data->flag.precision)) ||
+		 !len))
 		write_char(data, '0');
 }
 

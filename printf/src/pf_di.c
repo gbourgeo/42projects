@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:22:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 03:23:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/29 04:24:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,21 @@ static ULL	get_modifier(t_dt *data)
 	return (va_arg(data->ap, int));
 }
 
-static void	pf_di_c(t_dt *data, t_av *av, char c)
+static void	pf_di_c(t_dt *data, t_av *av, char c, int min_width)
 {
 	int		len;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	len++;
-	if (!data->flag.minus && data->flag.zero)
+	if (!data->flag.minus && data->flag.zero && !data->flag.point)
 		write_char(data, c);
 	if (!data->flag.minus)
 	{
-		while (data->flag.min_width > len && data->flag.min_width--)
+		while (min_width > len && min_width--)
 			write_char(data,
 						(data->flag.zero && !data->flag.point) ? '0' : ' ');
 	}
-	if (data->flag.minus || !data->flag.zero)
+	if (data->flag.minus || !data->flag.zero || data->flag.point)
 		write_char(data, c);
 	while (len - 1 > av->len && len--)
 		write_char(data, '0');
@@ -55,7 +55,7 @@ static void	pf_di_c(t_dt *data, t_av *av, char c)
 	{
 		len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 		len++;
-		while (data->flag.min_width > len && data->flag.min_width--)
+		while (min_width > len && min_width--)
 			write_char(data, ' ');
 	}
 }
@@ -106,7 +106,7 @@ void		pf_di(t_dt *data)
 	else if (data->flag.space)
 		c = ' ';
 	if (c)
-		pf_di_c(data, &av, c);
+		pf_di_c(data, &av, c, data->flag.min_width);
 	else
 		pf_di_noc(data, &av);
 	if (av.s)
