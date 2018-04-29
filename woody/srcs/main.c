@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/28 17:07:03 by root             ###   ########.fr       */
+/*   Updated: 2018/04/29 00:42:16 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,15 +143,12 @@ void			write_to_file(t_env *e)
 {
 	Elf64_Ehdr	*elf_header;
 	Elf64_Phdr	*elf_program;
-	Elf64_Shdr	*elf_section;
 	Elf64_Phdr	*pt_load;
-	Elf64_Shdr	*section;
 	Elf64_Addr	vaddr;
 	Elf64_Addr	old_entry;
 
 	elf_header = (Elf64_Ehdr *)e->file;
 	elf_program = (Elf64_Phdr *)(e->file + elf_header->e_phoff);
-	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
 
 /* 1. Find the highest memory mapped PT_LOAD segment */
 	pt_load = NULL;
@@ -160,16 +157,6 @@ void			write_to_file(t_env *e)
 			if (!pt_load || elf_program[i].p_vaddr > pt_load->p_vaddr) {
 				pt_load = &elf_program[i];
 			}
-		}
-	}
-
-/* 2. Find the last section of the segment */
-	section = NULL;
-	for (size_t i = 0; i < elf_header->e_shnum; i++) {
-		size_t section_addr = elf_section[i].sh_addr + elf_section[i].sh_size;
-		size_t segment_addr = pt_load->p_vaddr + pt_load->p_memsz;
-		if (section_addr >= segment_addr) {
-			section = &elf_section[i];
 		}
 	}
 
@@ -188,13 +175,12 @@ void			write_to_file(t_env *e)
 	pt_load->p_filesz = pt_load->p_memsz;
 
 /* Extra: Change the offset of sections higher than our code offset, for debug info only. */
+	Elf64_Shdr	*elf_section;
+
+	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
 	for (size_t i = 0; i < elf_header->e_shnum; i++) {
-		if (elf_section[i].sh_offset >= section->sh_offset &&
-			&elf_section[i] != section) {
+		if (elf_section[i].sh_offset >= pt_load->p_offset + pt_load->p_memsz) {
 			elf_section[i].sh_offset += woody_size;
-			if (elf_section[i].sh_type == SHT_SYMTAB) {
-				elf_section[i].sh_link += 0;
-			}
 		}
 	}
 
@@ -208,7 +194,7 @@ void			write_to_file(t_env *e)
 	if (woody == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
-	size = section->sh_offset + section->sh_size;
+	size = pt_load->p_offset + pt_load->p_memsz - woody_size;
 	write(woody, ptr, size);
 	ptr += size;
 

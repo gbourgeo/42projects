@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/27 13:28:39 by root             ###   ########.fr        #
+#    Updated: 2018/04/29 05:07:06 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -60,5 +60,6 @@ fclean: clean
 #	@make -C $(LIB_DIR) fclean
 	/bin/rm -f woody
 	/bin/rm -f $(NAME)
+	/bin/rm -f hex
 
 re: fclean all

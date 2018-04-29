@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 17:03:42 by root              #+#    #+#             */
-/*   Updated: 2018/04/27 13:11:20 by root             ###   ########.fr       */
+/*   Updated: 2018/04/28 23:05:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void			file_info(void *file, int file_size)
 				  shdr->sh_addralign, shdr->sh_entsize);
 //		print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 2);
 	}
-	print_hex(file, file_size, 2);
+//	print_hex(file, file_size, 2);
 
 /*	
 	ft_printf(CO2);
