@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/18 08:16:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/30 02:19:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,9 @@ static void		pf_small_s(t_dt *data)
 {
 	t_av		av;
 
-	av.s = va_arg(data->ap, char *);
-	if (av.s == NULL)
-		av.s = "(null)";
+	av.str = va_arg(data->ap, char *);
+	if (av.str == NULL)
+		av.str = "(null)";
 	av.len = ft_strlen(av.s);
 	if (data->flag.point && data->flag.precision < av.len)
 		av.len = data->flag.precision;
@@ -109,7 +109,7 @@ static void		pf_small_s(t_dt *data)
 		while (data->flag.min_width > av.len && data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	write_str(data, av.s, av.len);
+	write_str(data, av.str, av.len);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > av.len && data->flag.min_width--)

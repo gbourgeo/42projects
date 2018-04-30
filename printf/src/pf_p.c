@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:33:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 12:33:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/30 02:17:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 static void	get_data(t_dt *data, t_av *av, int *len)
 {
 	av->ui = va_arg(data->ap, ULL);
-	av->s = ft_itoa_base(av->ui, 16);
+	ft_itoa_base2(av->ui, 16, av->s);
 	av->len = ft_strlen(av->s);
 	*len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 }
@@ -58,6 +58,4 @@ void		pf_p(t_dt *data)
 		while (data->flag.min_width > len + 2 && data->flag.min_width--)
 			write_char(data, ' ');
 	}
-	if (av.s)
-		free(av.s);
 }

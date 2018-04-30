@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:22:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/29 04:24:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/30 02:16:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,12 +92,8 @@ void		pf_di(t_dt *data)
 	char	c;
 
 	av.ui = get_modifier(data);
-	av.s = ft_itoa_base(((LL)av.ui < 0) ? av.ui * -1 : av.ui, 10);
-/* 	if (av.ui || data->flag.len_modifier || *data->tail == 'D' || */
-/* 		data->flag.minus || data->flag.plus) */
-		av.len = ft_strlen(av.s);
-/* 	else */
-/* 		av.len = 0; */
+	ft_itoa_base2(((LL)av.ui < 0) ? av.ui * -1 : av.ui, 10, av.s);
+	av.len = ft_strlen(av.s);
 	c = '\0';
 	if ((LL)av.ui < 0)
 		c = '-';
@@ -109,6 +105,4 @@ void		pf_di(t_dt *data)
 		pf_di_c(data, &av, c, data->flag.min_width);
 	else
 		pf_di_noc(data, &av);
-	if (av.s)
-		free(av.s);
 }

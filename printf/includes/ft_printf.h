@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/17 19:36:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/30 06:23:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stdarg.h>
 # include <stdlib.h>
+# include <wchar.h>
 
 # define PRINTF_BUFF	1028
 # define ULL			unsigned long long
@@ -32,7 +33,8 @@
 typedef struct		s_av
 {
 	ULL				ui;
-	char			*s;
+	char			s[28];
+	char			*str;
 	int				len;
 }					t_av;
 
@@ -64,6 +66,7 @@ typedef struct		s_dt
 int					ft_printf(const char *restrict format, ...);
 char				*ft_strtoupper(char *s);
 char				*ft_itoa_base(ULL nb, ULL base);
+char				*ft_itoa_base2(ULL nb, ULL base, char *str);
 unsigned char		ft_atouc(char *str);
 void				pf_s(t_dt *data);
 void				pf_p(t_dt *data);
