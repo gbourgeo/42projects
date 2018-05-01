@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 03:29:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/30 06:08:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/30 23:19:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdio.h>
@@ -84,11 +84,15 @@ int main()
 	printf("42%08.2zu42\n", 0);*/
 
 	printf("\n");
-	ft_printf("%lc\n", 128150);
-	printf("%lc\n", 128150);
-	ft_printf(">------------<%40lc>------------<\n", 248);
-	printf(">------------<%40lc>------------<\n", 248);
-	ft_printf(">------------<%40lc>------------<\n", 128150);
-	printf(">------------<%40lc>------------<\n", 128150);
+	int ret;
+
+	ret = ft_printf(">------------<%-42lc>------------<\n", 'P');
+	write(1, "ret=", 4);ft_putnbr(ret);ft_putchar('\n');
+	ret = printf(">------------<%-42lc>------------<\n", 'P');
+	write(1, "ret=", 4);ft_putnbr(ret);ft_putchar('\n');
+	ret = ft_printf("42%46lc42\n", 0);
+	write(1, "ret=", 4);ft_putnbr(ret);ft_putchar('\n');
+	ret = printf("42%46lc42\n", 0);
+	write(1, "ret=", 4);ft_putnbr(ret);ft_putchar('\n');
 	return 0;
 }
