@@ -1,28 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pf_percent.c                                       :+:      :+:    :+:   */
+/*   ft_itoa_base2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/15 23:29:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 04:57:34 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/04/30 02:04:55 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 06:00:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#define ULL unsigned long long
 
-void			pf_percent(t_dt *data)
+char			*ft_itoa_base2(ULL nb, ULL base, char *str)
 {
-	if (!data->flag.minus)
+	char		*b;
+	ULL			size;
+	ULL			i;
+
+	b = "0123456789abcdef";
+	size = (nb == 0) ? 1 : 0;
+	i = nb;
+	while (i)
 	{
-		while (data->flag.min_width > 1 && data->flag.min_width--)
-			write_char(data, (data->flag.zero) ? '0' : ' ');
+		size++;
+		i /= base;
 	}
-	write_char(data, '%');
-	if (data->flag.minus)
+	str[size] = '\0';
+	while (size-- > 0)
 	{
-		while (data->flag.min_width > 1 && data->flag.min_width--)
-			write_char(data, ' ');
+		str[size] = b[nb % base];
+		nb /= base;
 	}
+	return (str);
 }

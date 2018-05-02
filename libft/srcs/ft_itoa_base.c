@@ -6,14 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:06:38 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/15 22:36:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 05:33:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
 #include "libft.h"
 
-char			*ft_itoa_base(ULL nb, ULL base)
+char			*ft_itoa_base(unsigned long long nb, unsigned long long base)
 {
 	char		*b;
 	ULL			size;

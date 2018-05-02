@@ -1,28 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   pf_writes.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:30:13 by root             ###   ########.fr       */
+/*   Created: 2017/08/15 22:27:57 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 06:09:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "libft.h"
-#include "ft_printf.h"
+#include "ft_base_printf.h"
 
-int				ft_printf(const char *restrict format, ...)
+void			write_str(t_dt *data, const char *str, size_t len)
 {
-	t_dt		data;
-	int			ret;
+	size_t		j;
 
-	ft_memset(&data, 0, sizeof(data));
-	data.tail = (char *)format;
-	data.writeto = ft_printf_write;
-	va_start(data.ap, format);
-	ret = pf_routine(&data);
-	va_end(data.ap);
-	return (ret);
+	j = 0;
+	if (!str)
+		return ;
+	while (j < len)
+		write_char(data, str[j++]);
+}
+
+void			write_char(t_dt *data, unsigned char c)
+{
+	data->buff[data->pos++] = c;
+	if (data->pos >= PRINTF_BUFF)
+	{
+		data->ret += PRINTF_BUFF;
+		write(STDOUT_FILENO, data->buff, data->pos);
+		data->pos = 0;
+	}
 }

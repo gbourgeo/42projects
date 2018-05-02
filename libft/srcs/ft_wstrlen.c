@@ -1,29 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fprintf.c                                       :+:      :+:    :+:   */
+/*   ft_wstrlen.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:39:07 by root             ###   ########.fr       */
+/*   Created: 2018/05/02 01:52:39 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 05:59:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "ft_fprintf.h"
+#include <wchar.h>
 
-int			ft_fprintf(FILE *stream, const char *restrict format, ...)
+size_t		ft_wstrlen(const wchar_t *str)
 {
-	t_dt	data;
-	int		ret;
+	size_t	i;
+	size_t	len;
 
-	ft_memset(&data, 0, sizeof(data));
-	data.stream = stream;
-	data.tail = (char *)format;
-	data.writeto = ft_fprintf_write;
-	va_start(data.ap, format);
-	ret = pf_routine(&data);
-	va_end(data.ap);
-	return (ret);
+	i = 0;
+	len = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		if (str[i] <= 0x7F)
+			len += 1;
+		else if (str[i] <= 0x7FF)
+			len += 2;
+		else if (str[i] <= 0xFFFF)
+			len += 3;
+		else
+			len += 4;
+		i++;
+	}
+	return (len);
 }

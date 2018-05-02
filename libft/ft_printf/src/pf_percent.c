@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_sprintf.c                                       :+:      :+:    :+:   */
+/*   pf_percent.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 04:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 04:03:03 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/15 23:29:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 06:08:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "ft_sprintf.h"
+#include "ft_base_printf.h"
 
-int			ft_sprintf(char *str, const char *restrict format, ...)
+void			pf_percent(t_dt *data)
 {
-	t_dt	data;
-	int		ret;
-
-	ft_memset(&data, 0, sizeof(data));
-	*str = '\0';
-	data.str = str;
-	data.tail = (char *)format;
-	data.writeto = ft_sprintf_write;
-	va_start(data.ap, format);
-	ret = pf_routine(&data);
-	va_end(data.ap);
-	return (ret);
+	if (!data->flag.minus)
+	{
+		while (data->flag.min_width > 1 && data->flag.min_width--)
+			write_char(data, (data->flag.zero) ? '0' : ' ');
+	}
+	write_char(data, '%');
+	if (data->flag.minus)
+	{
+		while (data->flag.min_width > 1 && data->flag.min_width--)
+			write_char(data, ' ');
+	}
 }

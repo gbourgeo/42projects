@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:23:46 by root             ###   ########.fr       */
+/*   Updated: 2018/05/02 06:06:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
 #include "libft.h"
+#include "ft_base_printf.h"
 
-static ULL		get_modifier(t_dt *data, int *len)
+static ULL		get_modifier(t_dt *data, size_t *len)
 {
 	if (data->flag.len_modifier & ARG_Z && (*len = 16))
 		return (va_arg(data->ap, unsigned long long));
@@ -30,59 +30,60 @@ static ULL		get_modifier(t_dt *data, int *len)
 	return (va_arg(data->ap, int));
 }
 
-static void		get_data(t_dt *data, t_av *av, int *len)
+static void		get_data(t_dt *data, t_av *av, size_t *len, char **ptr)
 {
 	av->ui = get_modifier(data, len);
-	av->s = ft_itoa_base(av->ui, 16);
+	ft_itoa_base2(av->ui, 16, av->s);
 	av->len = ft_strlen(av->s);
+	*ptr = (av->len >= *len) ? &av->s[av->len - *len] : av->s;
+	av->len = ft_strlen(*ptr);
 	if (data->flag.point && av->ui == 0)
-		av->len = 0;
+		av->len = 1;
 	if (*data->tail == 'X')
-		ft_strtoupper(av->s);
-	if (data->flag.hash)
-		data->flag.hash = 2;
-	if (data->flag.hash && data->flag.zero && av->ui)
-		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
+		ft_strtoupper(*ptr);
 }
 
 static void		print_ox(t_dt *data, t_av *av)
 {
-	int			len;
+	size_t		len;
+	int			print;
+	size_t		precision;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
+	if (data->flag.hash && av->ui)
+		len += 2;
+	print = data->flag.zero && !data->flag.precision;
+	if (data->flag.hash && av->ui && data->flag.zero && print)
+		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
 	if (!data->flag.minus)
 	{
-		while (data->flag.min_width > len + data->flag.hash &&
-				data->flag.min_width--)
-			write_char(data, (data->flag.zero) ? '0' : ' ');
+		while (data->flag.min_width > len && data->flag.min_width--)
+			write_char(data, (print) ? '0' : ' ');
 	}
-	if (data->flag.hash && !data->flag.zero && av->ui)
+	if (data->flag.hash && av->ui && !print)
 		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
-	while (data->flag.precision > av->len &&
-			data->flag.precision--)
+	precision = data->flag.precision;
+	while (precision > av->len && precision--)
 		write_char(data, '0');
 }
 
 void			pf_x(t_dt *data)
 {
 	t_av		av;
-	int			len;
-	int			width;
+	char		*ptr;
+	size_t		len;
+	size_t		width;
 
 	width = 8;
-	get_data(data, &av, &width);
+	get_data(data, &av, &width, &ptr);
 	print_ox(data, &av);
-	len = ft_strlen((av.len >= width) ? &av.s[av.len - width] : av.s);
-	if (av.len >= width)
-		write_str(data, &av.s[av.len - width], len);
-	else if (!data->flag.point || av.ui)
-		write_str(data, av.s, len);
+	write_str(data, ptr, ft_strlen(ptr));
 	if (data->flag.minus)
 	{
-		while (data->flag.min_width > av.len + data->flag.hash &&
-				data->flag.min_width--)
+		len = (data->flag.precision > av.len) ? data->flag.precision : av.len;
+		if (data->flag.hash && av.ui)
+			len += 2;
+		while (data->flag.min_width > len && data->flag.min_width--)
 			write_char(data, (data->flag.zero && !data->flag.hash) ? '0' : ' ');
 	}
-	if (av.s)
-		free(av.s);
 }
