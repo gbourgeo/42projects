@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:22:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/30 02:16:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 01:12:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ static ULL	get_modifier(t_dt *data)
 	return (va_arg(data->ap, int));
 }
 
-static void	pf_di_c(t_dt *data, t_av *av, char c, int min_width)
+static void	pf_di_c(t_dt *data, t_av *av, char c, size_t min_width)
 {
-	int		len;
+	size_t	len;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	len++;
@@ -62,7 +62,7 @@ static void	pf_di_c(t_dt *data, t_av *av, char c, int min_width)
 
 static void	pf_di_noc(t_dt *data, t_av *av)
 {
-	int		len;
+	size_t	len;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	if (!data->flag.minus)

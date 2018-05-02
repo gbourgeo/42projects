@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/30 02:17:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 01:13:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static ULL	get_modifier(t_dt *data)
 void		pf_u(t_dt *data)
 {
 	t_av	av;
-	int		len;
+	size_t	len;
 
 	av.ui = get_modifier(data);
 	ft_itoa_base2(av.ui, 10, av.s);

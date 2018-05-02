@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/30 03:08:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 05:16:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 
-static ULL		get_modifier(t_dt *data, int *len)
+static ULL		get_modifier(t_dt *data, size_t *len)
 {
 	if (data->flag.len_modifier & ARG_Z && (*len = 16))
 		return (va_arg(data->ap, unsigned long long));
@@ -30,7 +30,7 @@ static ULL		get_modifier(t_dt *data, int *len)
 	return (va_arg(data->ap, int));
 }
 
-static void		get_data(t_dt *data, t_av *av, int *len, char **ptr)
+static void		get_data(t_dt *data, t_av *av, size_t *len, char **ptr)
 {
 	av->ui = get_modifier(data, len);
 	ft_itoa_base2(av->ui, 16, av->s);
@@ -45,9 +45,9 @@ static void		get_data(t_dt *data, t_av *av, int *len, char **ptr)
 
 static void		print_ox(t_dt *data, t_av *av)
 {
-	int			len;
+	size_t		len;
 	int			print;
-	int			precision;
+	size_t		precision;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	if (data->flag.hash && av->ui)
@@ -71,8 +71,8 @@ void			pf_x(t_dt *data)
 {
 	t_av		av;
 	char		*ptr;
-	int			len;
-	int			width;
+	size_t		len;
+	size_t		width;
 
 	width = 8;
 	get_data(data, &av, &width, &ptr);
@@ -80,7 +80,7 @@ void			pf_x(t_dt *data)
 	write_str(data, ptr, ft_strlen(ptr));
 	if (data->flag.minus)
 	{
-		len = (data->flag.precision > av.len ) ? data->flag.precision : av.len;
+		len = (data->flag.precision > av.len) ? data->flag.precision : av.len;
 		if (data->flag.hash && av.ui)
 			len += 2;
 		while (data->flag.min_width > len && data->flag.min_width--)

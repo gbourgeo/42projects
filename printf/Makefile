@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/30 02:05:55 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/02 01:55:03 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -19,6 +19,8 @@ SRC = ft_printf.c		\
 	ft_itoa_base.c		\
 	ft_itoa_base2.c		\
 	ft_atouc.c			\
+	ft_wcharlen.c		\
+	ft_wstrlen.c		\
 	pf_s.c				\
 	pf_p.c				\
 	pf_di.c				\

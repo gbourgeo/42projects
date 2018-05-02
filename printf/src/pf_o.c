@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/30 02:16:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 05:10:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,51 +32,52 @@ static ULL	get_modifier(t_dt *data)
 	return (va_arg(data->ap, unsigned int));
 }
 
-static void	print_zero_space(t_dt *data, t_av *av)
+static void	no_minus(t_dt *data, t_av *av)
 {
-	int		len;
-	int		print_zero;
-	int		precision;
+	size_t	width;
+	size_t	print_zero;
 
-	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
-	if (!data->flag.minus)
-	{
-		if (!av->ui && !data->flag.precision)
-			len -= data->flag.hash;
-		print_zero = data->flag.zero && !data->flag.precision;
-		while (data->flag.min_width > len && data->flag.min_width--)
-			write_char(data, (print_zero) ? '0' : ' ');
-		if (!av->ui && data->flag.precision)
-			write_char(data, '0');
-	}
-	precision = data->flag.precision;
-	while (precision > av->len && precision--)
-		write_char(data, '0');
+	width = av->len;
 	if (data->flag.hash && av->ui)
-		write_char(data, '0');
+		width += 1;
+	if (data->flag.precision > width)
+		width = data->flag.precision;
+	print_zero = data->flag.zero && !data->flag.precision;
+	while (data->flag.min_width > width && data->flag.min_width--)
+		write_char(data, (print_zero) ? '0' : ' ');
+}
+
+static void	minus(t_dt *data, t_av *av)
+{
+	size_t	width;
+
+	width = av->len;
+	if (data->flag.hash && av->ui)
+		width += 1;
+	if (data->flag.precision > width)
+		width = data->flag.precision;
+	while (data->flag.min_width > width && data->flag.min_width--)
+		write_char(data, ' ');
 }
 
 void		pf_o(t_dt *data)
 {
 	t_av	av;
-	int		len;
+	size_t	width;
+	size_t	precision;
 
 	av.ui = get_modifier(data);
 	ft_itoa_base2(av.ui, 8, av.s);
-	av.len = ft_strlen(av.s) + data->flag.hash;
-	len = (data->flag.precision > av.len) ? data->flag.precision : av.len;
-	print_zero_space(data, &av);
-	if (*data->tail == 'o' && (data->flag.hash || !data->flag.point || av.ui))
-		write_str(data, av.s, av.len - data->flag.hash);
-	if (*data->tail != 'o' &&
-		(!data->flag.point || *(data->flag.point + 1) != '0'))
-		write_str(data, av.s, av.len - data->flag.hash);
+	av.len = ft_strlen(av.s);
+	if (!data->flag.minus)
+		no_minus(data, &av);
+	if (data->flag.hash && av.ui)
+		write_char(data, '0');
+	precision = data->flag.precision;
+	width = (data->flag.hash && av.ui) ? av.len + 1 : av.len;
+	while (precision > width && precision--)
+		write_char(data, '0');
+	write_str(data, av.s, av.len);
 	if (data->flag.minus)
-	{
-		if (!av.ui && data->flag.precision == len)
-			write_char(data, '0');
-		len -= data->flag.hash;
-		while (data->flag.min_width > len && data->flag.min_width--)
-			write_char(data, ' ');
-	}
+		minus(data, &av);
 }

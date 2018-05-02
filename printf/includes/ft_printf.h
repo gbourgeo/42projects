@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/30 06:23:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 01:55:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef struct		s_av
 	ULL				ui;
 	char			s[28];
 	char			*str;
-	int				len;
+	size_t			len;
 }					t_av;
 
 typedef struct		s_args
@@ -45,9 +45,9 @@ typedef struct		s_args
 	char			plus;
 	char			space;
 	char			zero;
-	int				min_width;
+	size_t			min_width;
 	char			*point;
-	int				precision;
+	size_t			precision;
 	int				len_modifier;
 }					t_args;
 
@@ -68,6 +68,8 @@ char				*ft_strtoupper(char *s);
 char				*ft_itoa_base(ULL nb, ULL base);
 char				*ft_itoa_base2(ULL nb, ULL base, char *str);
 unsigned char		ft_atouc(char *str);
+int					ft_wcharlen(wchar_t w);
+size_t				ft_wstrlen(const wchar_t *str);
 void				pf_s(t_dt *data);
 void				pf_p(t_dt *data);
 void				pf_di(t_dt *data);
@@ -76,8 +78,9 @@ void				pf_u(t_dt *data);
 void				pf_x(t_dt *data);
 void				pf_c(t_dt *data);
 void				pf_percent(t_dt *data);
-void				write_str(t_dt *data, const char *str, int len);
+void				write_str(t_dt *data, const char *str, size_t len);
 void				write_char(t_dt *data, unsigned char c);
-void				write_wchar(t_dt *data, wchar_t *w, int *len);
+void				write_wchar(t_dt *data, wchar_t w);
+void				write_wstr(t_dt *data, wchar_t *s, size_t len);
 
 #endif

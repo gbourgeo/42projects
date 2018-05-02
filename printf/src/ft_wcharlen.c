@@ -1,36 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pf_writes.c                                        :+:      :+:    :+:   */
+/*   ft_wcharlen.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/15 22:27:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 01:22:53 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/05/02 01:49:11 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 05:14:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include "libft.h"
+#include "wchar.h"
 
-void			write_str(t_dt *data, const char *str, size_t len)
+int		ft_wcharlen(wchar_t w)
 {
-	size_t		j;
-
-	j = 0;
-	if (!str)
-		return ;
-	while (j < len)
-		write_char(data, str[j++]);
-}
-
-void			write_char(t_dt *data, unsigned char c)
-{
-	data->buff[data->pos++] = c;
-	if (data->pos >= PRINTF_BUFF)
-	{
-		data->ret += PRINTF_BUFF;
-		write(STDOUT_FILENO, data->buff, data->pos);
-		data->pos = 0;
-	}
+	if (w <= 0x7F)
+		return (1);
+	if (w <= 0x7FF)
+		return (2);
+	if (w <= 0xFFFF)
+		return (3);
+	return (4);
 }
