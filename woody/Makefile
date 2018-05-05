@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/29 05:07:06 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/05 10:45:30 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,7 +14,9 @@ NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
 SRC		= main.c
-SRC_A	= woody.s
+#encrypt.c decrypt.c
+SRC_A	= woody.s encrypt.s
+#decrypt.s
 
 HDR_DIR	= includes/
 
@@ -36,7 +38,7 @@ AFLAGS	= -f elf64
 all: lib $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_A)
-	$(WWW) -o $@ $^ $(LIBS)
+	$(WWW) -o $@ $^ $(LIBS) -fPIC
 	$(WWW) $(FLAGS) -o $(OBJ_DIR)file_info.o -c $(SRC_DIR)file_info.c $(INCLUDE)
 	$(WWW) -o hex $(OBJ_DIR)file_info.o $(LIBS) # !!!!
 

@@ -6,21 +6,25 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/29 00:42:16 by root             ###   ########.fr       */
+/*   Updated: 2018/05/05 14:55:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "ft_fprintf.h"
+#include "ft_printf.h"
 #include "libft.h"
 #include "main.h"
 
 extern uint32_t woody_size;
-extern uint32_t woody_offset;
+extern uint32_t woody_offs;
+extern uint32_t woody_keys[4];
 void			woody_func(void);
+void			woody_encrypt(u_char *data, size_t len, const uint32_t *key);
+void			woody_decrypt(u_char *data, size_t len, const uint32_t *key);
 
-void			write_to_file(t_env *e);
-void			write_woody(t_env *e);
+void			encrypt_text_section(t_env *e);
+void			change_file_headers(t_env *e);
+void			write_new_file(t_env *e);
 
 static int		ft_fatal(char *str, t_env *e)
 {
@@ -73,137 +77,146 @@ int				main(int ac, char **av)
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", &e);
 
-	write_to_file(&e);
+	encrypt_text_section(&e);
+	change_file_headers(&e);
+	write_new_file(&e);
 	
 	if (munmap(e.file, e.file_size) == -1)
 		ft_fatal(NULL, &e);
 	return (0);
 }
 
-void			write_woody(t_env *e)
+void			encrypt_text_section(t_env *e)
 {
-	int			woody;
+	Elf64_Ehdr	*elf_header;
+	Elf64_Phdr	*elf_program;
+	Elf64_Phdr	*text_program;
+	Elf64_Shdr	*elf_section;
+	Elf64_Shdr	*text_section;
+	char		*string_table;
+	char		*section_name;
+
+	elf_header = (Elf64_Ehdr *)e->file;
+	if (elf_header->e_shstrndx == SHN_UNDEF)
+		ft_fatal("String table not set. Section \".text\" unreachable.", e);
+
+	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
+	string_table = (char *)(e->file + elf_section[elf_header->e_shstrndx].sh_offset);
+	text_section = NULL;
+	for (size_t i = 0; i < elf_header->e_shnum; i++) {
+		section_name = string_table + elf_section[i].sh_name;
+		if (ft_strcmp(section_name, ".text") == 0) {
+			text_section = &elf_section[i];
+			break ;
+		}
+	}
+	if (!text_section)
+		ft_fatal("Section \".text\" not found.", e);
+
+	elf_program = (Elf64_Phdr *)(e->file + elf_header->e_phoff);
+	text_program = NULL;
+	for (size_t i = 0, vaddr = 0, vsize = 0; i < elf_header->e_phnum; i++) {
+		if (elf_program[i].p_type == PT_LOAD) {
+			vaddr = elf_program[i].p_vaddr;
+			vsize = elf_program[i].p_vaddr + elf_program[i].p_memsz;
+			if (text_section->sh_addr >= vaddr && text_section->sh_addr < vsize) {
+				text_program = &elf_program[i];
+				break ;
+			}
+		}
+	}
+	if (text_program == NULL)
+		ft_fatal("Program header containing section \".text\" not found.", e);
+
+	u_char		*section;
+	section = (u_char *)(e->file + text_section->sh_offset);
+	woody_encrypt(section, text_section->sh_size, woody_keys);
+	ft_printf("key_value: %lX%lX%lX%lX\n",
+			  woody_keys[0], woody_keys[1], woody_keys[2], woody_keys[3]);
+	e->text_program = text_program;
+	e->text_vaddr = text_program->p_vaddr + text_section->sh_offset;
+	e->text_crypted_size = text_section->sh_size - (text_section->sh_size % 8);
+
+	woody_decrypt(section, text_section->sh_size, woody_keys);
+	/* ft_printf(".text\n"); */
+	/* for (size_t i = 0; i < text_section->sh_size; i++) { */
+	/* 	if ((i + 1) % 16 == 0) */
+	/* 		ft_printf("\n"); */
+	/* 	else if ((i + 1) % 8 == 0) */
+	/* 		ft_printf(" "); */
+	/* 	ft_printf("%02x", section[i]); */
+	/* } */
+	/* ft_printf("\n"); */
+
+}
+
+void			change_file_headers(t_env *e)
+{
 	Elf64_Ehdr	*elf_header;
 	Elf64_Phdr	*elf_program;
 	Elf64_Shdr	*elf_section;
-	Elf64_Phdr	*pt_load;
-	Elf64_Xword	align;
-	Elf64_Shdr	*section;
 	Elf64_Addr	vaddr;
-	Elf64_Addr	old_entry;
 
-	woody = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
-	if (woody == -1)
-		ft_fatal(NULL, e);
 	elf_header = (Elf64_Ehdr *)e->file;
 	elf_program = (Elf64_Phdr *)(e->file + elf_header->e_phoff);
 	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
 
-	pt_load = NULL;
-	for (size_t i = 0; i < elf_header->e_phnum; i++) {
-		if (elf_program[i].p_type == PT_LOAD) {
-				pt_load = &elf_program[i];
-				break ;
-		}
-	}
-	align = pt_load->p_memsz - pt_load->p_filesz;
-
-	section = NULL;
-	for (size_t i = 0; i < elf_header->e_shnum; i++) {
-		size_t section_addr = elf_section[i].sh_addr + elf_section[i].sh_size;
-		size_t segment_addr = pt_load->p_vaddr + pt_load->p_memsz;
-		if (section_addr == segment_addr) {
-			section = &elf_section[i];
-		}
-	}
-	vaddr = section->sh_addr + section->sh_size + woody_offset;
-	old_entry = elf_header->e_entry;
-	elf_header->e_entry = vaddr;
-	(void)vaddr;
-
-	pt_load->p_filesz += (woody_size + align);
-	pt_load->p_memsz += (woody_size + align);
-
-	char	*ptr = (char *)e->file;
-	size_t	size = section->sh_offset + section->sh_size;
-	write(woody, ptr, size);
-	write(woody, &woody_func, woody_size - 4);
-	uint32_t jump = ((pt_load->p_vaddr + pt_load->p_filesz) - old_entry) * -1;
-	write(woody, &jump, 4);
-	for (size_t i = 0; i < align; i++) {
-		write(woody, "\0", 1);
-	}
-	size = size + woody_size + align;
-	ptr = ptr + size;
-	write(woody, ptr, e->file_size - size - 1);
-	close(woody);
-}
-
-void			write_to_file(t_env *e)
-{
-	Elf64_Ehdr	*elf_header;
-	Elf64_Phdr	*elf_program;
-	Elf64_Phdr	*pt_load;
-	Elf64_Addr	vaddr;
-	Elf64_Addr	old_entry;
-
-	elf_header = (Elf64_Ehdr *)e->file;
-	elf_program = (Elf64_Phdr *)(e->file + elf_header->e_phoff);
-
 /* 1. Find the highest memory mapped PT_LOAD segment */
-	pt_load = NULL;
+	e->woody_program = NULL;
 	for (size_t i = 0; i < elf_header->e_phnum; i++) {
 		if (elf_program[i].p_type == PT_LOAD) {
-			if (!pt_load || elf_program[i].p_vaddr > pt_load->p_vaddr) {
-				pt_load = &elf_program[i];
+			if (!e->woody_program ||
+				elf_program[i].p_vaddr > e->woody_program->p_vaddr) {
+				e->woody_program = &elf_program[i];
 			}
 		}
 	}
 
 /* 3. Compute the virtual address of our code */
-	vaddr = pt_load->p_vaddr + pt_load->p_memsz;
+	vaddr = e->woody_program->p_vaddr + e->woody_program->p_memsz + woody_offs;
 
-/* 4. Change the elf header */
-	old_entry = elf_header->e_entry;
-	elf_header->e_entry = vaddr;
-	elf_header->e_shoff += woody_size;
-
-/* 5. Change the program header */
-	if ((pt_load->p_flags & PF_X) == 0)
-		pt_load->p_flags |= PF_X;
-	pt_load->p_memsz += woody_size;
-	pt_load->p_filesz = pt_load->p_memsz;
-
-/* Extra: Change the offset of sections higher than our code offset, for debug info only. */
-	Elf64_Shdr	*elf_section;
-
-	elf_section = (Elf64_Shdr *)(e->file + elf_header->e_shoff);
+/* Extra: Change the offset of sections higher than our code offset, for debug. */
 	for (size_t i = 0; i < elf_header->e_shnum; i++) {
-		if (elf_section[i].sh_offset >= pt_load->p_offset + pt_load->p_memsz) {
+		if (elf_section[i].sh_offset >= e->woody_program->p_offset + e->woody_program->p_memsz) {
 			elf_section[i].sh_offset += woody_size;
 		}
 	}
 
-/* 6. Write our new file */
-	int			woody;
-	char		*ptr;
-	size_t		size;
-	uint32_t	jump_addr;
+/* 4. Change the elf header */
+	e->old_entry = elf_header->e_entry;
+	elf_header->e_entry = vaddr;
+	elf_header->e_shoff += woody_size;
 
-	woody = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
-	if (woody == -1)
+/* 5. Change the program header */
+	if ((e->woody_program->p_flags & PF_X) == 0)
+		e->woody_program->p_flags |= PF_X;
+	e->woody_program->p_memsz += woody_size;
+	e->woody_program->p_filesz = e->woody_program->p_memsz;
+	if ((e->text_program->p_flags & PF_W) == 0)
+		e->text_program->p_flags |= PF_W;
+}
+
+void			write_new_file(t_env *e)
+{
+	char		*ptr;
+	size_t		off;
+
+	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
+	if (e->fd == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
-	size = pt_load->p_offset + pt_load->p_memsz - woody_size;
-	write(woody, ptr, size);
-	ptr += size;
+	off = e->woody_program->p_offset + e->woody_program->p_memsz - woody_size;
 
-	write(woody, &woody_func, woody_size - sizeof(jump_addr));
-	jump_addr = ((pt_load->p_vaddr + pt_load->p_filesz) - old_entry) * -1;
-	write(woody, &jump_addr, sizeof(jump_addr));
-
-	write(woody, ptr, e->file_size - size);
-	close(woody);
+	write(e->fd, ptr, off);
+	write(e->fd, &woody_func, woody_size - 8);
+	/* write(e->fd, &e->text_vaddr, 4); */
+	/* write(e->fd, "\xc3", 1); */
+	uint32_t jump = ((e->woody_program->p_vaddr + e->woody_program->p_memsz) - e->old_entry) * -1;
+	write(e->fd, &jump, 4);
+	write(e->fd, &e->text_crypted_size, 4);
+	write(e->fd, ptr + off, e->file_size - off);
+	close(e->fd);
+	e->fd = 0;
 }
 
 /*

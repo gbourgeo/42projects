@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 17:03:42 by root              #+#    #+#             */
-/*   Updated: 2018/04/28 23:05:15 by root             ###   ########.fr       */
+/*   Updated: 2018/05/05 13:02:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,9 +160,15 @@ void			file_info(void *file, int file_size)
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
-//		print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 2);
+		if (ft_strcmp(name, ".text") == 0)
+			print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 2);
 	}
-//	print_hex(file, file_size, 2);
+	for (size_t i = 0; i < file_header->e_phnum; i++) {
+		Elf64_Phdr *p = program_header_table + i;
+		if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
+			print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
+		}
+	}
 
 /*	
 	ft_printf(CO2);
@@ -318,22 +324,22 @@ void			print_hex(u_char *file, size_t size, size_t endian)
 	size_t i = 0;
 	size_t j = 0;
 	while (i < size) {
-		/* if (i % 16 == 0) */
-		/* 	ft_printf("%p", file + i); */
+		if (i % 16 == 0)
+			ft_printf("%p", file + i);
 		if (endian == MY_LITTLE_ENDIAN) {
-			for (size_t k = 0; k < 2; k++) {
-				for (size_t l = (i + 8 > size) ? size : i + 8; l > i; l--) {
-					if (l == size || (l - i) % 8 == 0)
+			for (size_t k = 0; k < 4; k++) {
+				for (size_t l = (i + 4 > size) ? size : i + 4; l > i; l--) {
+					if (l == size || (l - i) % 4 == 0)
 						ft_printf(" ");
 					ft_printf("%02x", file[l - 1]);
 				}
-				i = (i + 8 > size) ? size : i + 8;
+				i = (i + 4 > size) ? size : i + 4;
 				if (i == size)
 					break;
 			}
 		} else {
 			for (size_t k = i + 16; i < size && i < k; i++) {
-				if (i % 8 == 0)
+				if (i % 4 == 0)
 					ft_printf(" ");
 				ft_printf("%02x", file[i]);
 			}
@@ -343,19 +349,19 @@ void			print_hex(u_char *file, size_t size, size_t endian)
 			if (i % 16) {
 				space += 32 - (i % 16) * 2;
 				if ((i % 16) <= 8)
-					space += 1;
+					space += 3;
 			}
 			write(1,"                                              ", space);
 
 			if (endian == MY_LITTLE_ENDIAN) {
-				for (size_t k = 0; k < 2; k++) {
-					for (size_t l = (j + 8 >= i) ? i : j + 8; l > j; l--) {
+				for (size_t k = 0; k < 4; k++) {
+					for (size_t l = (j + 4 >= i) ? i : j + 4; l > j; l--) {
 						if (ft_isprint(file[l - 1]))
 							ft_printf("%c", file[l - 1]);
 						else
 							ft_printf(".");
 					}
-					j += 8;
+					j += 4;
 					if (j > i)
 						break ;
 				}
