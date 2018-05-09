@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/09 16:10:47 by root             ###   ########.fr       */
+/*   Updated: 2018/05/09 17:46:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,14 @@
 #include "ft_printf.h"
 #include "libft.h"
 #include "main.h"
+#include <time.h>
 
 extern uint32_t woody_size;
 extern uint32_t woody_keys[4];
 void			woody_func(void);
 void			woody_encrypt(u_char *data, size_t len, const uint32_t *key);
 
+void			generate_new_key(t_env *e);
 void			encrypt_text_section(t_env *e);
 void			change_file_headers(t_env *e);
 void			write_new_file(t_env *e);
@@ -44,12 +46,18 @@ int				main(int ac, char **av)
 	Elf64_Ehdr	*file_header;
 
 	if (ac == 1) {
-		ft_fprintf(stderr, "usage: %s [program]\n", av[0]);
+		ft_fprintf(stderr, "usage: %s [program] <message>\n", av[0]);
 		return (1);
 	}
 	ft_memset(&e, 0, sizeof(e));
 	e.progname = ft_strrchr(av[0], '/');
 	e.progname = (e.progname == NULL) ? av[0] : e.progname + 1;
+	e.banner = (av[2]) ? av[2] : "....WOODY....";
+	e.woody_datalen = ft_strlen(e.banner) + 1
+		+ sizeof(size_t)
+		+ sizeof(e.key)
+		+ sizeof(e.old_entry)
+		+ sizeof(e.text_crypted_size);
 	if ((e.fd = open(av[1], O_RDWR)) == -1)
 		ft_fatal(NULL, &e);
 	if ((e.file_size = lseek(e.fd, 1, SEEK_END)) == -1)
@@ -75,6 +83,7 @@ int				main(int ac, char **av)
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", &e);
 
+	generate_new_key(&e);
 	encrypt_text_section(&e);
 	change_file_headers(&e);
 	write_new_file(&e);
@@ -83,6 +92,36 @@ int				main(int ac, char **av)
 		ft_fatal(NULL, &e);
 	return (0);
 }
+
+void			generate_new_key(t_env *e)
+{
+	u_char		*k;
+	size_t		klen;
+	size_t		i;
+
+	k = (u_char *)e->key;
+	klen = sizeof(e->key);
+	i = 0;
+	ft_memset(k, 0, klen);
+	srand(time(NULL));
+	while (i < klen)
+	{
+		k[i] = rand() % 255;
+		i++;
+	}
+	ft_printf("key_value: %lX%lX%lX%lX\n",
+			  e->key[0], e->key[1], e->key[2], e->key[3]);
+}
+
+/*
+** encrypt_text_section:
+**
+** Now that we have the entry point, we need to find his offset in the file:
+** 1. Find the section corresponding to the entry point.
+** 2. Find the segment that contain the address
+**    Now we have the section offset in the file.
+** 3. Crypt the section.
+*/
 
 void			encrypt_text_section(t_env *e)
 {
@@ -93,6 +132,7 @@ void			encrypt_text_section(t_env *e)
 	Elf64_Shdr	*text_section;
 	char		*string_table;
 	char		*section_name;
+	u_char		*text;
 
 	elf_header = (Elf64_Ehdr *)e->file;
 	if (elf_header->e_shstrndx == SHN_UNDEF)
@@ -110,6 +150,7 @@ void			encrypt_text_section(t_env *e)
 	}
 	if (!text_section)
 		ft_fatal("Section \".text\" not found.", e);
+	e->text_crypted_size = text_section->sh_size;
 
 	elf_program = (Elf64_Phdr *)(e->file + elf_header->e_phoff);
 	text_program = NULL;
@@ -125,27 +166,10 @@ void			encrypt_text_section(t_env *e)
 	}
 	if (text_program == NULL)
 		ft_fatal("Program header containing section \".text\" not found.", e);
-
-	u_char		*section;
-	section = (u_char *)(e->file + text_section->sh_offset);
-	woody_encrypt(section, text_section->sh_size, woody_keys);
-	(void)section;
-	ft_printf("key_value: %lX%lX%lX%lX\n",
-			  woody_keys[0], woody_keys[1], woody_keys[2], woody_keys[3]);
 	e->text_program = text_program;
-	e->text_crypted_size = text_section->sh_size - (text_section->sh_size % 8);
 
-//	woody_decrypt(section, text_section->sh_size, woody_keys);
-	/* ft_printf(".text\n"); */
-	/* for (size_t i = 0; i < text_section->sh_size; i++) { */
-	/* 	if ((i + 1) % 16 == 0) */
-	/* 		ft_printf("\n"); */
-	/* 	else if ((i + 1) % 8 == 0) */
-	/* 		ft_printf(" "); */
-	/* 	ft_printf("%02x", section[i]); */
-	/* } */
-	/* ft_printf("\n"); */
-
+	text = (u_char *)(e->file + text_section->sh_offset);
+	woody_encrypt(text, text_section->sh_size, e->key);
 }
 
 void			change_file_headers(t_env *e)
@@ -176,19 +200,19 @@ void			change_file_headers(t_env *e)
 /* Extra: Change the offset of sections higher than our code offset, for debug. */
 	for (size_t i = 0; i < elf_header->e_shnum; i++) {
 		if (elf_section[i].sh_offset >= e->woody_program->p_offset + e->woody_program->p_memsz) {
-			elf_section[i].sh_offset += woody_size;
+			elf_section[i].sh_offset += (woody_size + e->woody_datalen);
 		}
 	}
 
 /* 4. Change the elf header */
 	e->old_entry = elf_header->e_entry;
 	elf_header->e_entry = vaddr;
-	elf_header->e_shoff += woody_size;
+	elf_header->e_shoff += (woody_size + e->woody_datalen);
 
 /* 5. Change the program header */
 	if ((e->woody_program->p_flags & PF_X) == 0)
 		e->woody_program->p_flags |= PF_X;
-	e->woody_program->p_memsz += woody_size;
+	e->woody_program->p_memsz += (woody_size + e->woody_datalen);
 	e->woody_program->p_filesz = e->woody_program->p_memsz;
 	if ((e->text_program->p_flags & PF_W) == 0)
 		e->text_program->p_flags |= PF_W;
@@ -198,17 +222,23 @@ void			write_new_file(t_env *e)
 {
 	char		*ptr;
 	size_t		off;
+	size_t		banner_size;
 
 	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
-	off = e->woody_program->p_offset + e->woody_program->p_memsz - woody_size;
+	off = e->woody_program->p_offset + e->woody_program->p_memsz - woody_size - e->woody_datalen;
+	banner_size = ft_strlen(e->banner) + 1;
 
 	write(e->fd, ptr, off);
-	write(e->fd, &woody_func, woody_size - 16);
-	write(e->fd, &e->old_entry, 8);
-	write(e->fd, &e->text_crypted_size, 8);
+	write(e->fd, &woody_func, woody_size);
+	write(e->fd, e->key, sizeof(e->key));
+	write(e->fd, &e->old_entry, sizeof(e->old_entry));
+	write(e->fd, &e->text_crypted_size, sizeof(e->text_crypted_size));
+	write(e->fd, &banner_size, sizeof(banner_size));
+	write(e->fd, e->banner, banner_size - 1);
+	write(e->fd, "\n", 1);
 	write(e->fd, ptr + off, e->file_size - off);
 	close(e->fd);
 	e->fd = 0;

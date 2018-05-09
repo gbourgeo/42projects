@@ -9,15 +9,12 @@ généralement un programme au moment de son chargement en mémoire, avant qu’
 s’exécute. Ainsi, le chiffrement et la compression du packer permettent de contourner
 simplement ces mesures en obfusquant le contenu de l’exécutable jusqu’à son exécution.
 
-Le but du projet est de coder un programme qui aura pour tâche, dans un premier
-temps, de chiffrer un programme passé en paramètre. Seuls les ELF 64 bits seront traités
-ici.
-Un nouveau programme "woody" sera alors généré à la fin de l’exécution du pro-
-gramme. Lorsque ce nouveau programme (woody) sera exécuté, il devra se déchiffrer
-pour pouvoir se lancer. Son exécution sera identique en tout point avec le premier pro-
-gramme passé en paramétre à l’étape précédente.
-Bien que nous n’allons pas voir, dans ce projet, la capacité de compression directement,
-vous êtes fortement encouragés à explorer les méthodes possibles !
+• L’exécutable se nomme woody_woodpacker.
+• L’exécutable prend en paramètre un fichier binaire (ELF 64 bits uniquement).
+• L’exécutable créé un second exécutable, woody, à la fin de son exécution.
+• L’algorithme choisit: TEA (Tiny Encryption Algorythm).
+• La clé tient sur 128 bits et sera imprimé sur la sortie standard.
 
+BOnus:
 
-IN PROGRESS.......
+• Texte inséré paramétrable en second argument de l'éxecutable.

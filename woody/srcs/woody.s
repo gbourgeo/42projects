@@ -18,7 +18,7 @@ woody_func:
 	
 	mov rdi, 1
 	lea rsi, [rel banner]
-	mov rdx, 14
+	mov rdx, [rel banner_size]
 	mov rax, 1
 	syscall						; write(1, msg, 14);
 
@@ -155,7 +155,6 @@ woody_end:
 	mov rdi, QWORD [rel text_vaddr]
 	call woody_decrypt
 	
-eend:
 	;; restore registers
 	pop rbx
 	pop rax
@@ -165,9 +164,10 @@ eend:
 
 	push QWORD [rel text_vaddr]
 	ret
-
-	woody_keys dd 0x95a8882c, 0x9d2cc113, 0x815aa0cd, 0xa1c489f7
-	banner db "....WOODY....", 10
+end:	
+	woody_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0			; .text virtual address
 	text_size dq 0x0			; .text size
-end:
+	banner_size dq 0x0
+	banner db ""
+
