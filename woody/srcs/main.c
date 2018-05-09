@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/05 14:55:48 by root             ###   ########.fr       */
+/*   Updated: 2018/05/09 16:10:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,9 @@
 #include "main.h"
 
 extern uint32_t woody_size;
-extern uint32_t woody_offs;
 extern uint32_t woody_keys[4];
 void			woody_func(void);
 void			woody_encrypt(u_char *data, size_t len, const uint32_t *key);
-void			woody_decrypt(u_char *data, size_t len, const uint32_t *key);
 
 void			encrypt_text_section(t_env *e);
 void			change_file_headers(t_env *e);
@@ -131,13 +129,13 @@ void			encrypt_text_section(t_env *e)
 	u_char		*section;
 	section = (u_char *)(e->file + text_section->sh_offset);
 	woody_encrypt(section, text_section->sh_size, woody_keys);
+	(void)section;
 	ft_printf("key_value: %lX%lX%lX%lX\n",
 			  woody_keys[0], woody_keys[1], woody_keys[2], woody_keys[3]);
 	e->text_program = text_program;
-	e->text_vaddr = text_program->p_vaddr + text_section->sh_offset;
 	e->text_crypted_size = text_section->sh_size - (text_section->sh_size % 8);
 
-	woody_decrypt(section, text_section->sh_size, woody_keys);
+//	woody_decrypt(section, text_section->sh_size, woody_keys);
 	/* ft_printf(".text\n"); */
 	/* for (size_t i = 0; i < text_section->sh_size; i++) { */
 	/* 	if ((i + 1) % 16 == 0) */
@@ -173,7 +171,7 @@ void			change_file_headers(t_env *e)
 	}
 
 /* 3. Compute the virtual address of our code */
-	vaddr = e->woody_program->p_vaddr + e->woody_program->p_memsz + woody_offs;
+	vaddr = e->woody_program->p_vaddr + e->woody_program->p_memsz;
 
 /* Extra: Change the offset of sections higher than our code offset, for debug. */
 	for (size_t i = 0; i < elf_header->e_shnum; i++) {
@@ -208,12 +206,9 @@ void			write_new_file(t_env *e)
 	off = e->woody_program->p_offset + e->woody_program->p_memsz - woody_size;
 
 	write(e->fd, ptr, off);
-	write(e->fd, &woody_func, woody_size - 8);
-	/* write(e->fd, &e->text_vaddr, 4); */
-	/* write(e->fd, "\xc3", 1); */
-	uint32_t jump = ((e->woody_program->p_vaddr + e->woody_program->p_memsz) - e->old_entry) * -1;
-	write(e->fd, &jump, 4);
-	write(e->fd, &e->text_crypted_size, 4);
+	write(e->fd, &woody_func, woody_size - 16);
+	write(e->fd, &e->old_entry, 8);
+	write(e->fd, &e->text_crypted_size, 8);
 	write(e->fd, ptr + off, e->file_size - off);
 	close(e->fd);
 	e->fd = 0;

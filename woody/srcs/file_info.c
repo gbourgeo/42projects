@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/19 17:03:42 by root              #+#    #+#             */
-/*   Updated: 2018/05/05 13:02:42 by root             ###   ########.fr       */
+/*   Updated: 2018/05/09 10:34:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ void			file_info(void *file, int file_size)
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
 		if (ft_strcmp(name, ".text") == 0)
-			print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 2);
+			print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1);
 	}
 	for (size_t i = 0; i < file_header->e_phnum; i++) {
 		Elf64_Phdr *p = program_header_table + i;

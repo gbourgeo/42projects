@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/05 10:45:30 by root             ###   ########.fr        #
+#    Updated: 2018/05/09 16:09:42 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,9 +14,7 @@ NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
 SRC		= main.c
-#encrypt.c decrypt.c
 SRC_A	= woody.s encrypt.s
-#decrypt.s
 
 HDR_DIR	= includes/
 
@@ -55,11 +53,11 @@ lib:
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-#	@make -C $(LIB_DIR) clean
+	@make -C $(LIB_DIR) clean
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-#	@make -C $(LIB_DIR) fclean
+	@make -C $(LIB_DIR) fclean
 	/bin/rm -f woody
 	/bin/rm -f $(NAME)
 	/bin/rm -f hex

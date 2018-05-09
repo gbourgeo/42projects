@@ -2,94 +2,129 @@
 
 	section .text
 	global	woody_encrypt:function
-	
+
 woody_encrypt:
+	push	r15
+	push	r14
+	and	rsi, -8
 	push	r13
 	push	r12
-	mov	r12d, 8
-	sub	r12, rdi
-	cmp	rsi, 8
 	push	rbp
 	push	rbx
-	jbe	end
-	mov	rbp, rdi
-encrypt:
-	movzx	r8d, BYTE [rbp]
-	movzx	eax, BYTE [rbp+1]
-	xor	r9d, r9d
-	movzx	ecx, BYTE [rbp+4]
-	mov	ebx, DWORD [rdx]
-	mov	edi, DWORD [rdx+4]
-	mov	r11d, DWORD [rdx+8]
-	mov	r10d, DWORD [rdx+12]
+	mov	QWORD [rsp-8], rsi
+	je	end
+	mov	r12, rdi
+	xor	ebx, ebx
+	xor	ebp, ebp
+	mov	r15, rdx
+.L6:
+	lea	eax, [rbp+3]
+	add	rbx, r12
+	lea	r14d, [rbp+1]
+	movzx	esi, BYTE [rbx]
+	lea	r13d, [rbp+2]
+	mov	r11d, DWORD [r15]
+	add	rax, r12
+	add	r14, r12
+	mov	r10d, DWORD [r15+4]
+	mov	QWORD [rsp-48], rax
+	movzx	eax, BYTE [rax]
+	add	r13, r12
+	sal	esi, 24
+	or	esi, eax
+	movzx	eax, BYTE [r14]
 	sal	eax, 16
-	sal	r8d, 24
-	or	r8d, eax
-	movzx	eax, BYTE [rbp+3]
+	or	esi, eax
+	movzx	eax, BYTE [r13+0]
+	sal	eax, 8
+	or	esi, eax
+	lea	eax, [rbp+4]
+	add	rax, r12
+	mov	rdi, rax
+	mov	QWORD [rsp-40], rax
+	lea	eax, [rbp+5]
+	movzx	ecx, BYTE [rdi]
+	xor	edi, edi
+	add	rax, r12
+	mov	rdx, rax
+	mov	QWORD [rsp-32], rax
+	lea	eax, [rbp+6]
+	add	rax, r12
 	sal	ecx, 24
-	or	r8d, eax
-	movzx	eax, BYTE [rbp+2]
-	sal	eax, 8
-	or	r8d, eax
-	movzx	eax, BYTE [rbp+5]
+	mov	r8, rax
+	mov	QWORD [rsp-24], rax
+	lea	eax, [rbp+7]
+	add	rax, r12
+	mov	r9, rax
+	mov	QWORD [rsp-16], rax
+	movzx	eax, BYTE [rdx]
 	sal	eax, 16
 	or	ecx, eax
-	movzx	eax, BYTE [rbp+7]
+	movzx	eax, BYTE [r9]
+	mov	r9d, DWORD [r15+8]
 	or	ecx, eax
-	movzx	eax, BYTE [rbp+6]
+	movzx	eax, BYTE [r8]
+	mov	r8d, DWORD [r15+12]
 	sal	eax, 8
 	or	ecx, eax
-encrypt_loop:
+.L3:
 	mov	eax, ecx
-	mov	r13d, ecx
-	sub	r9d, 1640531527
+	mov	edx, ecx
+	sub	edi, 1640531527
 	sal	eax, 4
-	shr	r13d, 5
-	add	r13d, edi
-	add	eax, ebx
-	xor	eax, r13d
-	lea	r13d, [r9+rcx]
-	xor	eax, r13d
-	add	r8d, eax
-	mov	eax, r8d
-	mov	r13d, r8d
-	sal	eax, 4
-	shr	r13d, 5
-	add	r13d, r10d
+	shr	edx, 5
+	add	edx, r10d
 	add	eax, r11d
-	xor	eax, r13d
-	lea	r13d, [r9+r8]
-	xor	eax, r13d
+	xor	eax, edx
+	lea	edx, [rdi+rcx]
+	xor	eax, edx
+	add	esi, eax
+	mov	eax, esi
+	mov	edx, esi
+	sal	eax, 4
+	shr	edx, 5
+	add	edx, r8d
+	add	eax, r9d
+	xor	eax, edx
+	lea	edx, [rdi+rsi]
+	xor	eax, edx
 	add	ecx, eax
-	cmp	r9d, -957401312
-	jne	encrypt_loop
-	mov	eax, r8d
-	mov	BYTE [rbp+3], r8b
-	mov	BYTE [rbp+7], cl
+	cmp	edi, -957401312
+	jne	.L3
+	mov	eax, esi
 	shr	eax, 24
-	add	rbp, 8
-	mov	BYTE [rbp-8], al
-	mov	eax, r8d
+	mov	BYTE [rbx], al
+	mov	eax, esi
+	mov	rbx, QWORD [rsp-40]
 	shr	eax, 16
-	mov	BYTE [rbp-7], al
-	mov	eax, r8d
+	mov	BYTE [r14], al
+	mov	eax, esi
 	shr	eax, 8
-	mov	BYTE [rbp-6], al
+	mov	BYTE [r13+0], al
+	mov	rax, QWORD [rsp-48]
+	mov	BYTE [rax], sil
 	mov	eax, ecx
 	shr	eax, 24
-	mov	BYTE [rbp-4], al
+	mov	BYTE [rbx], al
+	mov	rbx, QWORD [rsp-32]
 	mov	eax, ecx
 	shr	eax, 16
-	mov	BYTE [rbp-3], al
+	mov	BYTE [rbx], al
+	mov	rbx, QWORD [rsp-24]
 	mov	eax, ecx
 	shr	eax, 8
-	mov	BYTE [rbp-2], al
-	lea	rax, [r12+rbp]
-	cmp	rsi, rax
-	ja	encrypt
+	mov	BYTE [rbx], al
+	lea	ebx, [rbp+8]
+	cmp	QWORD [rsp-8], rbx
+	mov	rax, QWORD [rsp-16]
+	mov	rbp, rbx
+	mov	BYTE [rax], cl
+	ja	.L6
 end:
 	pop	rbx
 	pop	rbp
 	pop	r12
 	pop	r13
+	pop	r14
+	pop	r15
 	ret
