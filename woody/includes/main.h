@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/09 17:20:17 by root             ###   ########.fr       */
+/*   Updated: 2018/05/11 12:19:32 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <sys/mman.h>
-# include <stdio.h>
 # include <sys/types.h>
 
 typedef struct	s_env
@@ -34,5 +33,8 @@ typedef struct	s_env
 	uint32_t	key[4];
 	size_t		woody_datalen;
 }				t_env;
+
+int				ft_fatal(char *str, t_env *e);
+void			generate_new_key(uint32_t key[4]);
 
 #endif

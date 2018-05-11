@@ -6,54 +6,36 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/09 17:46:01 by root             ###   ########.fr       */
+/*   Updated: 2018/05/11 12:18:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
 #include "ft_printf.h"
 #include "libft.h"
 #include "main.h"
-#include <time.h>
 
 extern uint32_t woody_size;
-extern uint32_t woody_keys[4];
 void			woody_func(void);
 void			woody_encrypt(u_char *data, size_t len, const uint32_t *key);
 
-void			generate_new_key(t_env *e);
 void			encrypt_text_section(t_env *e);
 void			change_file_headers(t_env *e);
 void			write_new_file(t_env *e);
-
-static int		ft_fatal(char *str, t_env *e)
-{
-	ft_fprintf(stderr, "%s: ", e->progname);
-	if (!str)
-		perror(str);
-	else
-		ft_fprintf(stderr, "%s\n", str);
-	if (e->fd > 0)
-		close(e->fd);
-	if (e->file != NULL)
-		munmap(e->file, e->file_size);
-	exit(1);
-}
 
 int				main(int ac, char **av)
 {
 	t_env		e;
 	Elf64_Ehdr	*file_header;
 
+	ft_memset(&e, 0, sizeof(e));
 	if (ac == 1) {
-		ft_fprintf(stderr, "usage: %s [program] <message>\n", av[0]);
+		ft_printf("usage: %s [program] <message>\n", av[0]);
 		return (1);
 	}
-	ft_memset(&e, 0, sizeof(e));
 	e.progname = ft_strrchr(av[0], '/');
 	e.progname = (e.progname == NULL) ? av[0] : e.progname + 1;
 	e.banner = (av[2]) ? av[2] : "....WOODY....";
-	e.woody_datalen = ft_strlen(e.banner) + 1
+	e.woody_datalen = ((e.banner && *e.banner) ? ft_strlen(e.banner) + 1 : 0)
 		+ sizeof(size_t)
 		+ sizeof(e.key)
 		+ sizeof(e.old_entry)
@@ -83,7 +65,7 @@ int				main(int ac, char **av)
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", &e);
 
-	generate_new_key(&e);
+	generate_new_key(e.key);
 	encrypt_text_section(&e);
 	change_file_headers(&e);
 	write_new_file(&e);
@@ -91,26 +73,6 @@ int				main(int ac, char **av)
 	if (munmap(e.file, e.file_size) == -1)
 		ft_fatal(NULL, &e);
 	return (0);
-}
-
-void			generate_new_key(t_env *e)
-{
-	u_char		*k;
-	size_t		klen;
-	size_t		i;
-
-	k = (u_char *)e->key;
-	klen = sizeof(e->key);
-	i = 0;
-	ft_memset(k, 0, klen);
-	srand(time(NULL));
-	while (i < klen)
-	{
-		k[i] = rand() % 255;
-		i++;
-	}
-	ft_printf("key_value: %lX%lX%lX%lX\n",
-			  e->key[0], e->key[1], e->key[2], e->key[3]);
 }
 
 /*
@@ -229,7 +191,7 @@ void			write_new_file(t_env *e)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
 	off = e->woody_program->p_offset + e->woody_program->p_memsz - woody_size - e->woody_datalen;
-	banner_size = ft_strlen(e->banner) + 1;
+	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 
 	write(e->fd, ptr, off);
 	write(e->fd, &woody_func, woody_size);
@@ -237,8 +199,11 @@ void			write_new_file(t_env *e)
 	write(e->fd, &e->old_entry, sizeof(e->old_entry));
 	write(e->fd, &e->text_crypted_size, sizeof(e->text_crypted_size));
 	write(e->fd, &banner_size, sizeof(banner_size));
-	write(e->fd, e->banner, banner_size - 1);
-	write(e->fd, "\n", 1);
+	if (e->banner && *e->banner)
+	{
+		write(e->fd, e->banner, banner_size - 1);
+		write(e->fd, "\n", 1);
+	}
 	write(e->fd, ptr + off, e->file_size - off);
 	close(e->fd);
 	e->fd = 0;

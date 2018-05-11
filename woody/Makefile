@@ -6,14 +6,14 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/09 16:09:42 by root             ###   ########.fr        #
+#    Updated: 2018/05/11 11:57:56 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
-SRC		= main.c
+SRC		= main.c fatal.c key_generator.c
 SRC_A	= woody.s encrypt.s
 
 HDR_DIR	= includes/
