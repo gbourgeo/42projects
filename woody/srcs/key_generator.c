@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 11:56:12 by root              #+#    #+#             */
-/*   Updated: 2018/05/11 12:00:31 by root             ###   ########.fr       */
+/*   Updated: 2018/05/11 22:29:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 #include "libft.h"
 #include <time.h>
 
-void			generate_new_key(uint32_t key[4])
+void				generate_new_key(uint32_t key[4])
 {
-	u_char		*k;
-	size_t		klen;
-	size_t		i;
+	unsigned char	*k;
+	size_t			klen;
+	size_t			i;
 
-	k = (u_char *)key;
+	k = (unsigned char *)key;
 	klen = sizeof(*key) * 4;
 	i = 0;
 	ft_memset(k, 0, klen);

@@ -6,41 +6,40 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/11 22:54:02 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/08 14:07:56 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
-SRC		= main.c fatal.c key_generator.c
+SRC		= main.c
+#decrypt.c
+#encrypt.c
+SRC_A	=
 
-ELF_DIR	= $(SRC_DIR)elf/
-MAC_DIR	= $(SRC_DIR)macho/
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Darwin)
+	SRC 	+= pack_macho.c
+	SRC_A	+= woody_mach.s woody_mach_encrypt.s
+	ASM		= ~/Downloads/nasm-2.11.02/nasm
+	AFLAGS 	= -f macho64
+endif
+ifeq ($(UNAME_S), Linux)
+	SRC 	+= pack_elf.c
+	UNAME_P := $(shell uname -p)
+	ifeq ($(UNAME_P), x86_64)
+		SRC_A	+= woody_elf.s woody_elf_encrypt.s
+		ASM		= nasm
+		AFLAGS 	= -f elf64
+	endif
+endif
 
 HDR_DIR	= includes/
 
 OBJ_DIR	= obj/
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
-OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC:.s=.o))
-
-UNAME_S	:= $(shell uname -s)
-UNAME_P := $(shell uname -p)
-	ifeq ($(UNAME_S), Linux)
-		SRC		+= get_elf_info.c pack_elf64.c woody64.s encrypt64.s pack_elf32.c
-		ASM		= nasm
-	ifeq ($(UNAME_P), x86_64)
-		AFLAGS	= -f elf64
-	endif
-	ifeq ($(UNAME_P), x86)
-		AFLAGS	= -f elf32
-	endif
-	endif
-	ifeq ($(UNAME_S), Darwin)
-		SRC		+= get_macho_info.c
-		ASM		= ~/Downloads/nasm-2.11.02/nasm
-		AFLAGS	= -f macho64
-	endif
+OBJ_A	= $(addprefix $(OBJ_DIR), $(SRC_A:.s=.o))
 
 LIB_DIR	= libft/
 LIB_HDR	= $(LIB_DIR)includes
@@ -52,20 +51,15 @@ LIBS	= -L$(LIB_DIR) -lft
 
 all: lib $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(OBJ_A)
 	$(WWW) -o $@ $^ $(LIBS) -fPIC
-#	$(WWW) -o hex $(ELF_DIR)elf_file_info.c $(LIBS) # !!!!
+#	$(WWW) $(FLAGS) -o $(OBJ_DIR)file_info.o -c $(SRC_DIR)file_info.c $(INCLUDE)
+#	$(WWW) -o hex $(OBJ_DIR)file_info.o $(LIBS) # !!!!
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
-$(OBJ_DIR)%.o: $(ELF_DIR)%.c
-	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
-
-$(OBJ_DIR)%.o: $(MAC_DIR)%.c
-	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
-
-$(OBJ_DIR)%.o: $(ELF_DIR)%.s
+$(OBJ_DIR)%.o: $(SRC_DIR)%.s
 	$(ASM) $(AFLAGS) -o $@ $<
 
 .PHONY: lib clean fclean re

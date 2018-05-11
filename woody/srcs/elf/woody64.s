@@ -1,14 +1,14 @@
 	[BITS 64]
 
-	global woody_func:function
-	global woody_decrypt:function
-	global woody_size:data
-	global woody_keys:data
+	global woody64_func:function
+	global woody64_decrypt:function
+	global woody64_size:data
+	global woody64_keys:data
 
 	segment .text
-	woody_size dd end - woody_func
+	woody_size dd end - woody64_func
 	
-woody_func:
+woody64_func:
 	;; save registers
 	push rdi
 	push rsi
@@ -22,9 +22,9 @@ woody_func:
 	mov rax, 1
 	syscall						; write(1, msg, 14);
 
-	jmp woody_end
+	jmp woody64_end
 
-woody_decrypt:
+woody64_decrypt:
 	push	r15
 	push	r14
 	and	rsi, -8
@@ -33,7 +33,7 @@ woody_decrypt:
 	push	rbp
 	push	rbx
 	mov	QWORD [rsp-8], rsi
-	je	decrypt_end
+	je	.L1
 	mov	r12, rdi
 	xor	ebx, ebx
 	xor	ebp, ebp
@@ -140,7 +140,7 @@ woody_decrypt:
 	mov	rbp, rbx
 	mov	BYTE [rax], cl
 	ja	.L6
-decrypt_end:	
+.L1:
 	pop	rbx
 	pop	rbp
 	pop	r12
@@ -149,11 +149,11 @@ decrypt_end:
 	pop	r15
 	ret
 	
-woody_end:
+woody64_end:
 	mov rsi, QWORD [rel text_size]
 	lea rdx, [rel woody_keys]
 	mov rdi, QWORD [rel text_vaddr]
-	call woody_decrypt
+	call woody64_decrypt
 	
 	;; restore registers
 	pop rbx
@@ -164,8 +164,8 @@ woody_end:
 
 	push QWORD [rel text_vaddr]
 	ret
-end:	
-	woody_keys dd 0x0, 0x0, 0x0, 0x0
+end:
+	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0			; .text virtual address
 	text_size dq 0x0			; .text size
 	banner_size dq 0x0

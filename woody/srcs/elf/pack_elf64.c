@@ -6,12 +6,16 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/05/11 17:12:27 by root             ###   ########.fr       */
+/*   Updated: 2018/05/11 22:04:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "main.h"
+
+extern uint32_t woody64_size;
+void			woody64_func(void);
+void			woody64_encrypt(u_char *data, size_t len, const uint32_t *key);
 
 static void		encrypt_text_section(t_env *e, t_elf64 *elf);
 static void		change_file_headers(t_env *e, t_elf64 *elf);
@@ -84,7 +88,7 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 		ft_fatal("Program header containing section \".text\" not found.", e);
 
 	text = (u_char *)(e->file + elf->text_section->sh_offset);
-	woody_encrypt(text, elf->text_section->sh_size, e->key);
+	woody64_encrypt(text, elf->text_section->sh_size, e->key);
 }
 
 static void		change_file_headers(t_env *e, t_elf64 *elf)
@@ -106,19 +110,19 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 /* Extra: Change the offset of sections higher than our code offset, for debug. */
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
 		if (elf->section[i].sh_offset >= elf->woody_program->p_offset + elf->woody_program->p_memsz) {
-			elf->section[i].sh_offset += (woody_size + e->woody_datalen);
+			elf->section[i].sh_offset += (woody64_size + e->woody_datalen);
 		}
 	}
 
 /* 4. Change the elf header */
 	elf->old_entry = elf->header->e_entry;
 	elf->header->e_entry = elf->vaddr;
-	elf->header->e_shoff += (woody_size + e->woody_datalen);
+	elf->header->e_shoff += (woody64_size + e->woody_datalen);
 
 /* 5. Change the program header */
 	if ((elf->woody_program->p_flags & PF_X) == 0)
 		elf->woody_program->p_flags |= PF_X;
-	elf->woody_program->p_memsz += (woody_size + e->woody_datalen);
+	elf->woody_program->p_memsz += (woody64_size + e->woody_datalen);
 	elf->woody_program->p_filesz = elf->woody_program->p_memsz;
 	if ((elf->text_program->p_flags & PF_W) == 0)
 		elf->text_program->p_flags |= PF_W;
@@ -134,11 +138,11 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
-	off = elf->woody_program->p_offset + elf->woody_program->p_memsz - woody_size - e->woody_datalen;
+	off = elf->woody_program->p_offset + elf->woody_program->p_memsz - woody64_size - e->woody_datalen;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 
 	write(e->fd, ptr, off);
-	write(e->fd, &woody_func, woody_size);
+	write(e->fd, &woody64_func, woody64_size);
 	write(e->fd, e->key, sizeof(e->key));
 	write(e->fd, &elf->old_entry, sizeof(elf->old_entry));
 	write(e->fd, &elf->text_crypted_size, sizeof(elf->text_crypted_size));

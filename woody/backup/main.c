@@ -6,26 +6,40 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/11 22:27:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/08 14:03:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_fprintf.h"
 #include "ft_printf.h"
 #include "libft.h"
 #include "main.h"
+
+int				ft_fatal(char *str, t_env *e)
+{
+	ft_fprintf(stderr, "%s: ", e->progname);
+	if (!str)
+		perror(str);
+	else
+		ft_fprintf(stderr, "%s\n", str);
+	if (e->fd > 0)
+		close(e->fd);
+	if (e->file != NULL)
+		munmap(e->file, e->file_size);
+	exit(1);
+}
 
 int				main(int ac, char **av)
 {
 	t_env		e;
 
-	ft_memset(&e, 0, sizeof(e));
 	if (ac == 1) {
-		ft_printf("usage: %s [program] <message>\n", av[0]);
+		ft_fprintf(stderr, "usage: %s [program]\n", av[0]);
 		return (1);
 	}
+	ft_memset(&e, 0, sizeof(e));
 	e.progname = ft_strrchr(av[0], '/');
 	e.progname = (e.progname == NULL) ? av[0] : e.progname + 1;
-	e.banner = (av[2]) ? av[2] : "....WOODY....";
 	if ((e.fd = open(av[1], O_RDWR)) == -1)
 		ft_fatal(NULL, &e);
 	if ((e.file_size = lseek(e.fd, 1, SEEK_END)) == -1)
@@ -37,12 +51,14 @@ int				main(int ac, char **av)
 		perror("close()");
 	e.fd = 0;
 
-#ifdef __linux__
-	get_elf_info(&e);
-#elif __APPLE__
-	get_macho_info(&e);
+#ifdef __APPLE__
+	pack_macho(&e);
+#elif defined _WIN32 || defined _WIN64
+	pack_pe(&e);
+#else
+	pack_elf(&e);
 #endif
-	
+
 	if (munmap(e.file, e.file_size) == -1)
 		ft_fatal(NULL, &e);
 	return (0);

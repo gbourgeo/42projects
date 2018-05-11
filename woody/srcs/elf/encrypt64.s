@@ -1,9 +1,9 @@
 	[BITS 64]
 
 	section .text
-	global	woody_encrypt:function
+	global	woody64_encrypt:function
 
-woody_encrypt:
+woody64_encrypt:
 	push	r15
 	push	r14
 	and	rsi, -8
