@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/11 11:57:56 by root             ###   ########.fr        #
+#    Updated: 2018/05/11 17:34:15 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,13 +14,16 @@ NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
 SRC		= main.c fatal.c key_generator.c
-SRC_A	= woody.s encrypt.s
+ELF_DIR	= $(SRC_DIR)elf/
+ELF_SRC	= pack_elf32.c pack_elf64.c
+ELF_A	= woody64.s encrypt64.s
 
 HDR_DIR	= includes/
 
 OBJ_DIR	= obj/
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
-OBJ_A	= $(addprefix $(OBJ_DIR), $(SRC_A:.s=.o))
+OBJ		+= $(addprefix $(OBJ_DIR), $(ELF_SRC:.c=.o))
+OBJ		+= $(addprefix $(OBJ_DIR), $(ELF_A:.s=.o))
 
 LIB_DIR	= libft/
 LIB_HDR	= $(LIB_DIR)includes
@@ -35,7 +38,7 @@ AFLAGS	= -f elf64
 
 all: lib $(NAME)
 
-$(NAME): $(OBJ) $(OBJ_A)
+$(NAME): $(OBJ)
 	$(WWW) -o $@ $^ $(LIBS) -fPIC
 	$(WWW) $(FLAGS) -o $(OBJ_DIR)file_info.o -c $(SRC_DIR)file_info.c $(INCLUDE)
 	$(WWW) -o hex $(OBJ_DIR)file_info.o $(LIBS) # !!!!
@@ -43,7 +46,10 @@ $(NAME): $(OBJ) $(OBJ_A)
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.s
+$(OBJ_DIR)%.o: $(ELF_DIR)%.c
+	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
+
+$(OBJ_DIR)%.o: $(ELF_DIR)%.s
 	$(ASM) $(AFLAGS) -o $@ $<
 
 .PHONY: lib clean fclean re
@@ -53,11 +59,11 @@ lib:
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-	@make -C $(LIB_DIR) clean
+#	@make -C $(LIB_DIR) clean
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@make -C $(LIB_DIR) fclean
+#	@make -C $(LIB_DIR) fclean
 	/bin/rm -f woody
 	/bin/rm -f $(NAME)
 	/bin/rm -f hex
