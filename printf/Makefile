@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/05 01:54:08 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/02 06:15:25 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/08 10:34:37 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -15,6 +15,12 @@ NAME = libftprintf.a
 SRC_DIR = src/
 
 SRC = ft_printf.c		\
+	ft_fprintf.c		\
+	ft_sprintf.c		\
+	ft_snprintf.c		\
+	ft_asprintf.c		\
+	ft_dprintf.c		\
+	ft_base.c			\
 	ft_strtoupper.c 	\
 	ft_itoa_base2.c		\
 	ft_wcharlen.c		\
@@ -36,7 +42,7 @@ OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 
 LIB_DIR = libft/
 
-LIB = ft_isdigit.c ft_memset.c ft_strchr.c ft_strlen.c
+LIB = ft_isdigit.c ft_memset.c ft_strchr.c ft_strlen.c ft_memcpy.c
 
 LIB_OBJ = $(addprefix $(OBJ_DIR), $(LIB:.c=.o))
 

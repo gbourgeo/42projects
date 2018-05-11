@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 01:55:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/08 09:57:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,26 @@ typedef struct		s_args
 typedef struct		s_dt
 {
 	va_list			ap;
+	char			*tail;
+	void			(*write_method)(struct s_dt *);
+	void			*stream;
+	size_t			stream_size;
 	int				ret;
 	unsigned int	less;
 	unsigned int	pos;
 	char			buff[PRINTF_BUFF];
-	char			*tail;
 	int				len;
 	t_args			flag;
 }					t_dt;
 
 int					ft_printf(const char *restrict format, ...);
+int					ft_fprintf(FILE *restrict stream, const char *restrict format, ...);
+int					ft_sprintf(char *restrict str, const char *restrict format, ...);
+int					ft_snprintf(char *restrict str, size_t size, const char *restrict format, ...);
+int					ft_asprintf(char **ret, const char *format, ...);
+int					ft_dprintf(int fd, const char *restrict format, ...);
+
+void				ft_base(t_dt *data);
 char				*ft_strtoupper(char *s);
 char				*ft_itoa_base(ULL nb, ULL base);
 char				*ft_itoa_base2(ULL nb, ULL base, char *str);
