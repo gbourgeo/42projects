@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:27:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/12 00:29:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/12 19:30:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "ft_printf.h"
@@ -26,6 +26,8 @@ void			pack_macho64(t_env *e)
 	offset = sizeof(*header);
 
 	struct load_command			*cmd;
+	char						maxprot[]  = "(   )";
+	char						initprot[] = "(   )";
 	ft_printf("\ncmd\t\t cmdsize\t segname\t vmaddr\t\t vmsize\t fileoff\t filesize\t maxprot\t initprot\t nsects\t flags\n");
 	for (size_t i = 0; i < header->ncmds; i++)
 	{
@@ -33,10 +35,16 @@ void			pack_macho64(t_env *e)
 		if (cmd->cmd == LC_SEGMENT_64)
 		{
 			struct segment_command_64 *segment = (struct segment_command_64 *)cmd;
-			ft_printf("%-11d\t %#.5x\t %-11s\t %-11p\t %#x\t %#-5x\t\t %#-5x\t\t %-11d\t %-11d\t %-5d\t %#x\n",
+			maxprot[1] = (segment->maxprot & 0x1) ? 'R' : ' ';
+			maxprot[2] = (segment->maxprot & 0x2) ? 'W' : ' ';
+			maxprot[3] = (segment->maxprot & 0x4) ? 'X' : ' ';
+			initprot[1] = (segment->initprot & 0x1) ? 'R' : ' ';
+			initprot[2] = (segment->initprot & 0x2) ? 'W' : ' ';
+			initprot[3] = (segment->initprot & 0x4) ? 'X' : ' ';
+			ft_printf("%-11d\t %#.5x\t %-11s\t %-11p\t %#x\t %#-5x\t\t %#-5x\t\t %d %s\t %d %s\t %-5d\t %#x\n",
 					  segment->cmd, segment->cmdsize, segment->segname, segment->vmaddr,
-					  segment->vmsize, segment->fileoff, segment->filesize, segment->maxprot,
-					  segment->initprot, segment->nsects, segment->flags);
+					  segment->vmsize, segment->fileoff, segment->filesize, segment->maxprot, maxprot,
+					  segment->initprot, initprot, segment->nsects, segment->flags);
 		}
 		else if (cmd->cmd == LC_SEGMENT)
 		{
@@ -46,7 +54,10 @@ void			pack_macho64(t_env *e)
 					  segment->vmsize, segment->fileoff, segment->filesize, segment->maxprot,
 					  segment->initprot, segment->nsects, segment->flags);
 		}
-
+		else
+		{
+			ft_printf("%-11d\t %d\n", cmd->cmd, cmd->cmdsize);
+		}
 		offset += cmd->cmdsize;
 	}
 }
