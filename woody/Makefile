@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/11 22:54:02 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/12 22:30:17 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -24,15 +24,14 @@ OBJ_DIR	= obj/
 OBJ	= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 
+ASM	= nasm
+AFLAGS	= -f elf64
+
 UNAME_S	:= $(shell uname -s)
 UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_S), Linux)
 		SRC	+= get_elf_info.c pack_elf64.c pack_elf32.c
 		SRC_S	= woody64.s encrypt64.s
-		ASM	= nasm
-#	ifeq ($(UNAME_P), x86_64)
-		AFLAGS	= -f elf64
-#	endif
 	ifeq ($(UNAME_P), x86)
 		AFLAGS	= -f elf32
 	endif
@@ -76,11 +75,11 @@ lib:
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-#	@make -C $(LIB_DIR) clean
+	@make -C $(LIB_DIR) clean
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-#	@make -C $(LIB_DIR) fclean
+	@make -C $(LIB_DIR) fclean
 	/bin/rm -f woody
 	/bin/rm -f $(NAME)
 	/bin/rm -f hex
