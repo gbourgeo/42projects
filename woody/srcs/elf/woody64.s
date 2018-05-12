@@ -6,10 +6,9 @@
 	global woody64_keys:data
 
 	segment .text
-	woody_size dd end - woody64_func
+	woody64_size dd end - woody64_func
 	
 woody64_func:
-	;; save registers
 	push rdi
 	push rsi
 	push rdx
@@ -20,7 +19,7 @@ woody64_func:
 	lea rsi, [rel banner]
 	mov rdx, [rel banner_size]
 	mov rax, 1
-	syscall						; write(1, msg, 14);
+	syscall
 
 	jmp woody64_end
 
@@ -151,11 +150,10 @@ woody64_decrypt:
 	
 woody64_end:
 	mov rsi, QWORD [rel text_size]
-	lea rdx, [rel woody_keys]
+	lea rdx, [rel woody64_keys]
 	mov rdi, QWORD [rel text_vaddr]
 	call woody64_decrypt
 	
-	;; restore registers
 	pop rbx
 	pop rax
 	pop rdx
@@ -166,8 +164,8 @@ woody64_end:
 	ret
 end:
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
-	text_vaddr dq 0x0			; .text virtual address
-	text_size dq 0x0			; .text size
+	text_vaddr dq 0x0
+	text_size dq 0x0
 	banner_size dq 0x0
 	banner db ""
 

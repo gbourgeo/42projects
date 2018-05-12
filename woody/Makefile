@@ -13,7 +13,7 @@
 NAME 	= woody_woodpacker
 
 SRC_DIR	= srcs/
-SRC		= main.c fatal.c key_generator.c
+SRC	= main.c fatal.c key_generator.c
 
 ELF_DIR	= $(SRC_DIR)elf/
 MAC_DIR	= $(SRC_DIR)macho/
@@ -21,17 +21,18 @@ MAC_DIR	= $(SRC_DIR)macho/
 HDR_DIR	= includes/
 
 OBJ_DIR	= obj/
-OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
-OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC:.s=.o))
+OBJ	= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 
 UNAME_S	:= $(shell uname -s)
 UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_S), Linux)
-		SRC		+= get_elf_info.c pack_elf64.c woody64.s encrypt64.s pack_elf32.c
-		ASM		= nasm
-	ifeq ($(UNAME_P), x86_64)
+		SRC	+= get_elf_info.c pack_elf64.c pack_elf32.c
+		SRC_S	= woody64.s encrypt64.s
+		ASM	= nasm
+#	ifeq ($(UNAME_P), x86_64)
 		AFLAGS	= -f elf64
-	endif
+#	endif
 	ifeq ($(UNAME_P), x86)
 		AFLAGS	= -f elf32
 	endif
@@ -52,7 +53,7 @@ LIBS	= -L$(LIB_DIR) -lft
 
 all: lib $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(OBJ_S)
 	$(WWW) -o $@ $^ $(LIBS) -fPIC
 #	$(WWW) -o hex $(ELF_DIR)elf_file_info.c $(LIBS) # !!!!
 
@@ -62,11 +63,11 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 $(OBJ_DIR)%.o: $(ELF_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
-$(OBJ_DIR)%.o: $(MAC_DIR)%.c
-	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
-
 $(OBJ_DIR)%.o: $(ELF_DIR)%.s
 	$(ASM) $(AFLAGS) -o $@ $<
+
+$(OBJ_DIR)%.o: $(MAC_DIR)%.c
+	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
 .PHONY: lib clean fclean re
 
