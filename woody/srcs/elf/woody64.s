@@ -8,7 +8,7 @@
 	segment .text
 	woody64_size dd end - woody64_func
 	
-woody64_func:
+woody64_func:					; ELF version
 	push rdi
 	push rsi
 	push rdx

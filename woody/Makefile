@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/12 22:30:17 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/14 08:32:17 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -34,10 +34,12 @@ UNAME_P := $(shell uname -p)
 		SRC_S	= woody64.s encrypt64.s
 	ifeq ($(UNAME_P), x86)
 		AFLAGS	= -f elf32
+		SRC_S	= woody32.s encrypt32.s
 	endif
 	endif
 	ifeq ($(UNAME_S), Darwin)
 		SRC		+= get_macho_info.c
+		SRC_S	= woody64.s encrypt64.s
 		ASM		= ~/Downloads/nasm-2.11.02/nasm
 		AFLAGS	= -f macho64
 	endif
@@ -53,21 +55,26 @@ LIBS	= -L$(LIB_DIR) -lft
 all: lib $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_S)
-	$(WWW) -o $@ $^ $(LIBS) -fPIC
+	$(WWW) -o $@ $^ $(LIBS) 
 #	$(WWW) -o hex $(ELF_DIR)elf_file_info.c $(LIBS) # !!!!
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
+ifeq ($(UNAME_S), Linux)
 $(OBJ_DIR)%.o: $(ELF_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
 $(OBJ_DIR)%.o: $(ELF_DIR)%.s
 	$(ASM) $(AFLAGS) -o $@ $<
-
+endif
+ifeq ($(UNAME_S), Darwin)
 $(OBJ_DIR)%.o: $(MAC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
+$(OBJ_DIR)%.o: $(MAC_DIR)%.s
+	$(ASM) $(AFLAGS) -o $@ $<
+endif
 .PHONY: lib clean fclean re
 
 lib:

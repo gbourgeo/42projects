@@ -6,11 +6,12 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/03 03:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/05/09 13:45:54 by root             ###   ########.fr       */
+/*   Updated: 2018/05/14 08:07:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <elf.h>
+//#include <elf.h>
+#include <mach-o/loader.h>
 #include <sys/types.h>
 #include <stdio.h>
 
@@ -55,11 +56,12 @@ void			encrypt(u_char *data, size_t len, const uint32_t *k)
 	}
 }
 
-/* int main() */
-/* { */
-/* 	u_char *data; */
+int main()
+{
+	u_char *data;
+	uint32_t k[] = {1, 2, 3, 4};
 
-/* 	encrypt(data, 123, (uint32_t[]){1, 2, 3, 4}); */
-/* 	printf("%s\n", data); */
-/* 	return 0; */
-/* } */
+	encrypt(data, 123, k);
+	printf("%s\n", data);
+	return 0;
+}
