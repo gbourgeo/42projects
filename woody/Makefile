@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/14 08:32:17 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/16 10:11:44 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -32,16 +32,18 @@ UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_S), Linux)
 		SRC	+= get_elf_info.c pack_elf64.c pack_elf32.c
 		SRC_S	= woody64.s encrypt64.s
+		PRINT_HEX = $(WWW) -o hex $(ELF_DIR)elf_file_info.c $(LIBS) # !!!!
 	ifeq ($(UNAME_P), x86)
 		AFLAGS	= -f elf32
 		SRC_S	= woody32.s encrypt32.s
 	endif
 	endif
 	ifeq ($(UNAME_S), Darwin)
-		SRC		+= get_macho_info.c
+		SRC		+= get_macho_info.c ft_swap_bytes.c
 		SRC_S	= woody64.s encrypt64.s
 		ASM		= ~/Downloads/nasm-2.11.02/nasm
 		AFLAGS	= -f macho64
+		PRINT_HEX = $(WWW) -o hex $(MAC_DIR)macho_file_info.c $(INCLUDE) $(LIBS) # !!!!
 	endif
 
 LIB_DIR	= libft/
@@ -55,8 +57,8 @@ LIBS	= -L$(LIB_DIR) -lft
 all: lib $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_S)
-	$(WWW) -o $@ $^ $(LIBS) 
-#	$(WWW) -o hex $(ELF_DIR)elf_file_info.c $(LIBS) # !!!!
+	$(WWW) -o $@ $^ $(LIBS)
+	$(PRINT_HEX)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)

@@ -3,9 +3,11 @@
 	global	_woody64_func
 	global	_woody64_decrypt
 	global	_woody64_size
+	global	_woody64_arg_size
 	
 	section	.text
 	_woody64_size dd end - _woody64_func
+	_woody64_arg_size dd end - arg
 
 _woody64_func:					; MACH-O version
 	push rdi
@@ -16,12 +18,10 @@ _woody64_func:					; MACH-O version
 	
 	mov rdi, 1
 	lea rsi, [rel banner]
-	mov rdx, [rel banner_size]
+	mov edx, [rel banner_size]
 	mov rax, 0x2000004
 	syscall
 
-	push QWORD [rel text_vaddr]	
-	ret
 	jmp woody64_end
 	
 _woody64_decrypt:
@@ -148,10 +148,10 @@ LBB0_5:
 	ret
 
 woody64_end:
-	;mov rsi, QWORD [rel text_size]
-	;lea rdx, [rel woody64_keys]
-	;mov rdi, QWORD [rel text_vaddr]
-	;call _woody64_decrypt
+	mov esi, DWORD [rel text_size]
+	lea rdx, [rel woody64_keys]
+	mov rdi, QWORD [rel text_vaddr]
+	call _woody64_decrypt
 	
 	pop rbx
 	pop rax
@@ -159,11 +159,12 @@ woody64_end:
 	pop rsi
 	pop rdi
 
-	push QWORD [rel text_vaddr]	
-	ret
+	jmp [rel text_vaddr]
+	nop
+arg:
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
-	text_vaddr dq 0x100000f50
-	text_size dq 0x0
-	banner_size dq 0xe
-	banner db "....WOODY....", 10
+	text_vaddr dq 0x0
+	text_size dd 0x0
+	banner_size dd 0x0
+	banner db ''
 end:

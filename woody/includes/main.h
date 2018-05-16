@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/11 22:27:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/16 09:32:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct	s_env
 {
 	const char	*progname;
 	char		*banner;
+	uint32_t	banner_len;
 	int			fd;
 	off_t		file_size;
 	void		*file;
@@ -61,6 +62,21 @@ typedef struct	s_elf64
 	Elf64_Addr	vaddr;
 	uint64_t	text_crypted_size;
 }				t_elf64;
+# elif __APPLE__
+typedef struct					s_macho64
+{
+	struct mach_header_64		*header;
+	struct entry_point_command	*entry;
+	struct segment_command_64	*segtext;
+	struct section_64			*sectext;
+	struct segment_command_64	*lastseg;
+	struct section_64			*lastsect;
+	struct segment_command_64	newseg;
+	struct section_64			newsect;
+	uint64_t					old_entryoff;
+	uint64_t					new_entryoff;
+	uint32_t					text_crypted_size;
+}								t_macho64;
 # endif
 
 int				ft_fatal(char *str, t_env *e);
@@ -69,5 +85,8 @@ void			get_elf_info(t_env *e);
 void			pack_elf32(t_env *e);
 void			pack_elf64(t_env *e);
 void			get_macho_info(t_env *e);
+void			pack_macho32(t_env *e);
+void			pack_macho64(t_env *e);
+uint32_t		ft_swap_bytes(uint32_t num);
 
 #endif

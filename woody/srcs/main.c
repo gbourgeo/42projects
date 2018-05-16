@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:51:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/11 22:27:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/16 04:48:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int				main(int ac, char **av)
 	e.progname = ft_strrchr(av[0], '/');
 	e.progname = (e.progname == NULL) ? av[0] : e.progname + 1;
 	e.banner = (av[2]) ? av[2] : "....WOODY....";
+	e.banner_len = ft_strlen(e.banner) + 1;
 	if ((e.fd = open(av[1], O_RDWR)) == -1)
 		ft_fatal(NULL, &e);
 	if ((e.file_size = lseek(e.fd, 1, SEEK_END)) == -1)
