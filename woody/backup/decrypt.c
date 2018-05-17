@@ -6,12 +6,12 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/04 03:24:33 by root              #+#    #+#             */
-/*   Updated: 2018/05/14 08:28:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/14 12:03:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include <elf.h>
-#include <mach-o/loader.h>
+#include <elf.h>
+//#include <mach-o/loader.h>
 #include <sys/types.h>
 #include <stdio.h>
 	uint64_t data = 0X400430;

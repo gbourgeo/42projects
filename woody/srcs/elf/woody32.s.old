@@ -1,0 +1,47 @@
+	[BITS 32]
+
+	global woody32_func:function
+	global woody32_decrypt:function
+	global woody32_size:data
+	global woody32_keys:data
+
+	section .data
+	
+	section .text
+	woody32_size dd end - woody32_func
+
+woody32_func:
+	push edi
+	push esi
+	push edx
+	push eax
+	push ebx
+
+	mov edi, 1
+	lea esi, [banner]
+	mov edx, [banner_size]
+	mov eax, 1
+	syscall
+
+	jmp woody_end
+
+woody32_encrypt:
+	ret
+woody_end:
+
+	call woody32_encrypt
+	
+	pop ebx
+	pop eax
+	pop edx
+	pop esi
+	pop edi
+
+	;push DWORD [rel text_vaddr]
+	ret
+end:
+	woody64_keys dd 0x0, 0x0, 0x0, 0x0
+	text_vaddr dd 0x0
+	text_size dd 0x0
+	banner_size dd 0x0
+	banner db ""

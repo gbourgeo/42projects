@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/05/14 08:50:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/14 11:21:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	write(e->fd, ptr + off, e->file_size - off);
 	close(e->fd);
 	e->fd = 0;
-
+}
 
 /*
   Ideas for compression:
