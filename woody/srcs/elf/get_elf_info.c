@@ -15,7 +15,6 @@
 
 void			get_elf_info(t_env *e)
 {
-	void		(*pack_elf[2])(t_env *) = { pack_elf32, pack_elf64 };
 	Elf64_Ehdr	*file_header;
 	
 	file_header = (Elf64_Ehdr *)e->file;
@@ -32,5 +31,5 @@ void			get_elf_info(t_env *e)
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", e);
 	generate_new_key(e->key);
-	pack_elf[file_header->e_ident[EI_CLASS] - 1](e);
+	pack_elf64(e);
 }
