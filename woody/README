@@ -18,3 +18,5 @@ simplement ces mesures en obfusquant le contenu de l’exécutable jusqu’à so
 BOnus:
 
 • Texte inséré paramétrable en second argument de l'éxecutable.
+• Support du format Mach-O (64 Bits).
+• Optimisation de l'algorithme utilisé via de l'assembleur.
