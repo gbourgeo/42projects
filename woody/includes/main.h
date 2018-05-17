@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/16 09:32:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/17 18:59:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ void			get_elf_info(t_env *e);
 void			pack_elf32(t_env *e);
 void			pack_elf64(t_env *e);
 void			get_macho_info(t_env *e);
-void			pack_macho32(t_env *e);
 void			pack_macho64(t_env *e);
 uint32_t		ft_swap_bytes(uint32_t num);
 

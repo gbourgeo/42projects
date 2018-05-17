@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/05/14 11:21:52 by root             ###   ########.fr       */
+/*   Updated: 2018/05/17 20:33:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,6 @@ void			pack_elf64(t_env *e)
 	write_new_file(e, &elf);
 }
 
-/*
-** encrypt_text_section:
-**
-** Now that we have the entry point, we need to find his offset in the file:
-** 1. Find the section corresponding to the entry point.
-** 2. Find the segment that contain the address
-**    Now we have the section offset in the file->
-** 3. Crypt the section.
-*/
-
 static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 {
 	char		*string_table;
@@ -57,7 +47,7 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 
 	if (elf->header->e_shstrndx == SHN_UNDEF)
 		ft_fatal("String table not set. Section \".text\" unreachable.", e);
-
+/* Find the .text section */
 	string_table = (char *)(e->file + elf->section[elf->header->e_shstrndx].sh_offset);
 	elf->text_section = NULL;
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
@@ -70,7 +60,7 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 	if (elf->text_section == NULL)
 		ft_fatal("Section \".text\" not found.", e);
 	elf->text_crypted_size = elf->text_section->sh_size;
-
+/* Find the .text segment */
 	elf->text_program = NULL;
 	elf->vaddr = 0;
 	for (size_t i = 0, vsize = 0; i < elf->header->e_phnum; i++) {
@@ -86,7 +76,7 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 	}
 	if (elf->text_program == NULL)
 		ft_fatal("Program header containing section \".text\" not found.", e);
-
+/* Encrypt the .text section */
 	text = (u_char *)(e->file + elf->text_section->sh_offset);
 	woody64_encrypt(text, elf->text_section->sh_size, e->key);
 }
@@ -103,23 +93,19 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 			}
 		}
 	}
-
-/* 3. Compute the virtual address of our code */
+/* 2. Compute the virtual address of our code */
 	elf->vaddr = elf->woody_program->p_vaddr + elf->woody_program->p_memsz;
-
 /* Extra: Change the offset of sections higher than our code offset, for debug. */
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
 		if (elf->section[i].sh_offset >= elf->woody_program->p_offset + elf->woody_program->p_memsz) {
 			elf->section[i].sh_offset += (woody64_size + e->woody_datalen);
 		}
 	}
-
-/* 4. Change the elf header */
+/* 3. Change the elf header */
 	elf->old_entry = elf->header->e_entry;
 	elf->header->e_entry = elf->vaddr;
 	elf->header->e_shoff += (woody64_size + e->woody_datalen);
-
-/* 5. Change the program header */
+/* 4. Change the program header */
 	if ((elf->woody_program->p_flags & PF_X) == 0)
 		elf->woody_program->p_flags |= PF_X;
 	elf->woody_program->p_memsz += (woody64_size + e->woody_datalen);
@@ -138,6 +124,7 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
+/* Get the offset in file to write our code */
 	off = elf->woody_program->p_offset + elf->woody_program->p_memsz - woody64_size - e->woody_datalen;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 

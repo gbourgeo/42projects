@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/15 22:57:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/16 08:03:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/17 18:38:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ void			file_info_64(void *file, int file_size)
 			ft_printf("%-11d\t %#.5x\n", cmd->cmd, cmd->cmdsize);
 		offset += cmd->cmdsize;
 	}
-	print_hex((u_char *)file, file_size);
+/* 	print_hex((u_char *)file, file_size); */
 /* 	struct section_64 *section = (struct section_64 *)(segtext + 1); */
 /* 	ft_printf("%s %#x\n", section->sectname, section->size); */
 /* 	print_hex((u_char *)section, sizeof(*section)); */

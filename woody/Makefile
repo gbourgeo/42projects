@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/17 11:41:06 by root             ###   ########.fr        #
+#    Updated: 2018/05/17 20:37:38 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -27,19 +27,18 @@ OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 UNAME_S	:= $(shell uname -s)
 UNAME_P := $(shell uname -p)
 ifeq ($(UNAME_S), Linux)
-SRC			+= get_elf_info.c pack_elf64.c pack_elf32.c
+SRC			+= get_elf_info.c pack_elf64.c
 SRC_S		= woody64.s encrypt64.s
-SRC_S		+= woody32.s encrypt32.s
 ASM			= nasm
 ASMFLAG		= -f elf64
-PRINT_HEX	= $(WWW) -o hex $(ELF_DIR)elf_file_info.c $(INCLUDE) $(LIBS) # !!!!
+PRINT_HEX	= $(WWW) -o hex $(ELF_DIR)elf_file_info.c $(INCLUDE) $(LIBS)
 endif
 ifeq ($(UNAME_S), Darwin)
-SRC			+= get_macho_info.c ft_swap_bytes.c
+SRC			+= get_macho_info.c pack_macho64.c ft_swap_bytes.c
 SRC_S		= woody64.s encrypt64.s
 ASM			= ~/Downloads/nasm-2.11.02/nasm
-ASMFLAG64	= -f macho64
-PRINT_HEX	= $(WWW) -o hex $(MAC_DIR)macho_file_info.c $(INCLUDE) $(LIBS) # !!!!
+ASMFLAG		= -f macho64
+PRINT_HEX	= $(WWW) -o hex $(MAC_DIR)macho_file_info.c $(INCLUDE) $(LIBS)
 endif
 
 LIB_DIR	= libft/
@@ -54,7 +53,7 @@ all: lib $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_S)
 	$(WWW) -o $@ $^ $(LIBS)
-	$(PRINT_HEX)
+#	$(PRINT_HEX)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
@@ -82,11 +81,11 @@ lib:
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-#	@make -C $(LIB_DIR) clean
+	@make -C $(LIB_DIR) clean
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-#	@make -C $(LIB_DIR) fclean
+	@make -C $(LIB_DIR) fclean
 	/bin/rm -f woody
 	/bin/rm -f $(NAME)
 	/bin/rm -f hex
