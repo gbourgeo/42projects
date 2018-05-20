@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/17 20:37:38 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/05/21 00:41:08 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -53,7 +53,7 @@ all: lib $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_S)
 	$(WWW) -o $@ $^ $(LIBS)
-#	$(PRINT_HEX)
+	$(PRINT_HEX)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/17 18:43:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/17 20:29:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/21 00:50:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ void				change_file_headers(t_env *e, t_macho64 *macho)
 {
 	uint32_t		filesz;
 
+	if (macho->lastseg->filesize + woody64_size + e->banner_len >= macho->lastseg->vmsize)
+		e->banner_len = macho->lastseg->vmsize - macho->lastseg->filesize - woody64_size;
 	filesz = (e->banner_len > 1) ? woody64_size + e->banner_len : woody64_size;
 /* Modify the program flags (disable ASLR) */
 	macho->header->flags &= ~MH_PIE;
