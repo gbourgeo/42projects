@@ -95,6 +95,14 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 	}
 /* 2. Compute the virtual address of our code */
 	elf->vaddr = elf->woody_program->p_vaddr + elf->woody_program->p_memsz;
+/* 3. Verify that our banner length fit in the segment size */
+	size_t		vsize;
+	size_t		nsize;
+	vsize = elf->woody_program->p_vaddr + elf->woody_program->p_memsz + woody64_size + e->woody_datalen;
+	nsize = elf->woody_program->p_align - elf->woody_program->p_memsz - woody64_size - 1;
+	if (vsize >= elf->woody_program->p_vaddr + elf->woody_program->p_align &&
+	    e->woody_datalen > nsize)
+	  e->woody_datalen = nsize;
 /* Extra: Change the offset of sections higher than our code offset, for debug. */
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
 		if (elf->section[i].sh_offset >= elf->woody_program->p_offset + elf->woody_program->p_memsz) {
