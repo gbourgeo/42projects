@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 06:09:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/11 02:23:22 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "libft.h"
-#include "ft_base_printf.h"
 
-static ULL	get_modifier(t_dt *data)
+static ULL		get_modifier(t_dt *data)
 {
 	if (*data->tail == 'U')
 		return (va_arg(data->ap, unsigned long));
@@ -32,29 +32,31 @@ static ULL	get_modifier(t_dt *data)
 	return (va_arg(data->ap, unsigned int));
 }
 
-void		pf_u(t_dt *data)
+void			pf_u(t_dt *data)
 {
-	t_av	av;
-	size_t	len;
+	t_av		av;
+	int			len;
 
 	av.ui = get_modifier(data);
-	ft_itoa_base2(av.ui, 10, av.s);
+	av.s = ft_itoa_base(av.ui, 10);
 	av.len = ft_strlen(av.s);
 	len = (data->flag.precision > av.len) ? data->flag.precision : av.len;
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > len && data->flag.min_width--)
-			write_char(data, (data->flag.zero && !data->flag.precision) ?
-						'0' : ' ');
+			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
 	if (data->flag.hash)
 		write_char(data, '0');
 	while (data->flag.precision > av.len && data->flag.precision--)
 		write_char(data, '0');
-	write_str(data, av.s, av.len);
+	if (!data->flag.point || av.ui)
+		write_str(data, av.s, av.len);
 	if (data->flag.minus && data->flag.min_width > data->flag.precision)
 	{
 		while (data->flag.min_width > len && data->flag.min_width--)
 			write_char(data, ' ');
 	}
+	if (av.s)
+		free(av.s);
 }

@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_wcharlen.c                                      :+:      :+:    :+:   */
+/*   pf_percent.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/05/02 01:49:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 05:14:34 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/15 23:29:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/16 04:57:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "wchar.h"
+#include "ft_printf.h"
 
-int		ft_wcharlen(wchar_t w)
+void			pf_percent(t_dt *data)
 {
-	if (w <= 0x7F)
-		return (1);
-	if (w <= 0x7FF)
-		return (2);
-	if (w <= 0xFFFF)
-		return (3);
-	return (4);
+	if (!data->flag.minus)
+	{
+		while (data->flag.min_width > 1 && data->flag.min_width--)
+			write_char(data, (data->flag.zero) ? '0' : ' ');
+	}
+	write_char(data, '%');
+	if (data->flag.minus)
+	{
+		while (data->flag.min_width > 1 && data->flag.min_width--)
+			write_char(data, ' ');
+	}
 }

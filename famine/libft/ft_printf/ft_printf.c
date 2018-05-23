@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pf_percent.c                                       :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/15 23:29:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 06:08:36 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/04/11 02:30:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_base_printf.h"
+#include "libft.h"
+#include "ft_printf.h"
 
-void			pf_percent(t_dt *data)
+int				ft_printf(const char *restrict format, ...)
 {
-	if (!data->flag.minus)
-	{
-		while (data->flag.min_width > 1 && data->flag.min_width--)
-			write_char(data, (data->flag.zero) ? '0' : ' ');
-	}
-	write_char(data, '%');
-	if (data->flag.minus)
-	{
-		while (data->flag.min_width > 1 && data->flag.min_width--)
-			write_char(data, ' ');
-	}
+	t_dt		data;
+	int			ret;
+
+	ft_memset(&data, 0, sizeof(data));
+	data.tail = (char *)format;
+	data.writeto = ft_printf_write;
+	va_start(data.ap, format);
+	ret = pf_routine(&data);
+	va_end(data.ap);
+	return (ret);
 }

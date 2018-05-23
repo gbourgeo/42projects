@@ -1,21 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dprintf.h                                       :+:      :+:    :+:   */
+/*   ft_printf_write.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 02:24:36 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 02:39:40 by root             ###   ########.fr       */
+/*   Created: 2018/04/11 00:42:31 by root              #+#    #+#             */
+/*   Updated: 2018/04/11 01:40:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_DPRINTF_H
-# define FT_DPRINTF_H
-
+#include <unistd.h>
 #include "ft_base_printf.h"
 
-int			ft_dprintf(int fd, const char *restrict format, ...);
-void		ft_dprintf_write(t_dt *data);
-
-#endif
+void		ft_printf_write(t_dt *data)
+{
+	data->ret += write(STDOUT_FILENO, data->buff, data->pos);
+}
