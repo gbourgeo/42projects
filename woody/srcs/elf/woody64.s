@@ -168,4 +168,3 @@ end:
 	text_size dq 0x0
 	banner_size dq 0x0
 	banner db ""
-
