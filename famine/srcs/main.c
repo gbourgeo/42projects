@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/20 20:13:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/22 21:37:46 by root             ###   ########.fr       */
+/*   Updated: 2018/05/23 05:28:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ int				main(void)
 	const char	*dir[] = { "/tmp/test/", "/tmp/test2/", NULL };
 	t_env		e;
 
-	famine64_func();
-	return 1;
+	/* famine64_func(); */
+	/* return 1; */
 	ft_memset(&e, 0, sizeof(e));
 	for (int i = 0; dir[i]; i++)
 	{
