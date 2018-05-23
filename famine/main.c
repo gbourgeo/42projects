@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/23 04:44:00 by root             ###   ########.fr       */
+/*   Updated: 2018/05/23 21:14:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include "ft_printf.h"
 
+#define open 2
 #define getdents64 78
 
 struct linux_dirent {
@@ -45,7 +46,6 @@ int main()
 	int		i;
 	int		fd;
 	char	buff[1024];
-	struct linux_dirent *dir;
 	int		ret;
 	int		off;
 
@@ -53,16 +53,14 @@ int main()
 	while (direct[i])
 	{
 		memset(buff, 0, 1024);
-		fd = open(direct[i], O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC);
+		fd = syscall(open, direct[i], 0, 0);
 		while ((ret = syscall(getdents64, fd, buff, 1024)) > 0)
 		{
-			dir = (struct linux_dirent *)buff;
 			off = 0;
 			while (off < ret)
 			{
-				ft_printf("%s\n", dir->d_name);
-				off += dir->d_reclen;
-				dir = (struct linux_dirent *)(buff + off);
+				ft_printf("%s\n", buff + off + sizeof(unsigned long) * 2 + sizeof(unsigned short));
+				off = off + (int)*(buff + off + sizeof(unsigned long) * 2);
 			}
 		}
 		close(fd);
