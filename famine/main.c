@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/23 21:14:06 by root             ###   ########.fr       */
+/*   Updated: 2018/05/24 03:58:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,14 @@
 #include "ft_printf.h"
 
 #define open 2
-#define getdents64 78
+#define getdents64 217
 
-struct linux_dirent {
-	unsigned long  d_ino;     /* Inode number */
-	unsigned long  d_off;     /* Offset to next linux_dirent */
-	unsigned short d_reclen;  /* Length of this linux_dirent */
-	char           d_name[];  /* Filename (null-terminated) */
-	/* length is actually (d_reclen - 2 -
-	   offsetof(struct linux_dirent, d_name)) */
-	/*
-               char           pad;       // Zero padding byte
-               char           d_type;    // File type (only since Linux
-                                         // 2.6.4); offset is (d_reclen - 1)
-										 */
+struct linux_dirent64 {
+	ino_t        d_ino;    /* 64-bit inode number */
+	off_t        d_off;    /* 64-bit offset to next structure */
+	unsigned short d_reclen; /* Size of this dirent */
+	unsigned char  d_type;   /* File type */
+	char           d_name[]; /* Filename (null-terminated) */
 };
 
 char		*direct[] = { "/tmp/test/", "/tmp/test2/", NULL };
@@ -59,8 +53,9 @@ int main()
 			off = 0;
 			while (off < ret)
 			{
-				ft_printf("%s\n", buff + off + sizeof(unsigned long) * 2 + sizeof(unsigned short));
-				off = off + (int)*(buff + off + sizeof(unsigned long) * 2);
+				if (*(buff + off + 8+8+2) == DT_REG)
+					ft_printf("%d %s\n", *(buff+off+8+8), buff + off + 8+8+2+1);
+				off = off + *(buff + off + 16);
 			}
 		}
 		close(fd);

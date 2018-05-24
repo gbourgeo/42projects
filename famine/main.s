@@ -31,7 +31,7 @@ main:
 	sub	rsp, 1040
 	mov	DWORD PTR -4[rbp], 0
 	jmp	.L2
-.L7:
+.L8:
 	lea	rax, -1040[rbp]
 	mov	edx, 1024
 	mov	esi, 0
@@ -50,19 +50,28 @@ main:
 	call	syscall@PLT
 	mov	DWORD PTR -12[rbp], eax
 	jmp	.L3
-.L6:
+.L7:
 	mov	DWORD PTR -8[rbp], 0
 	jmp	.L4
-.L5:
+.L6:
 	mov	eax, DWORD PTR -8[rbp]
 	cdqe
 	lea	rdx, 18[rax]
+	lea	rax, -1040[rbp]
+	add	rax, rdx
+	movzx	eax, BYTE PTR [rax]
+	cmp	al, 8
+	jne	.L5
+	mov	eax, DWORD PTR -8[rbp]
+	cdqe
+	lea	rdx, 19[rax]
 	lea	rax, -1040[rbp]
 	add	rax, rdx
 	mov	rsi, rax
 	lea	rdi, .LC2[rip]
 	mov	eax, 0
 	call	ft_printf@PLT
+.L5:
 	mov	eax, DWORD PTR -8[rbp]
 	cdqe
 	lea	rdx, 16[rax]
@@ -74,18 +83,18 @@ main:
 .L4:
 	mov	eax, DWORD PTR -8[rbp]
 	cmp	eax, DWORD PTR -16[rbp]
-	jl	.L5
+	jl	.L6
 .L3:
 	lea	rdx, -1040[rbp]
 	mov	eax, DWORD PTR -12[rbp]
 	mov	ecx, 1024
 	mov	esi, eax
-	mov	edi, 78
+	mov	edi, 217
 	mov	eax, 0
 	call	syscall@PLT
 	mov	DWORD PTR -16[rbp], eax
 	cmp	DWORD PTR -16[rbp], 0
-	jg	.L6
+	jg	.L7
 	mov	eax, DWORD PTR -12[rbp]
 	mov	edi, eax
 	call	close@PLT
@@ -97,7 +106,7 @@ main:
 	lea	rax, direct[rip]
 	mov	rax, QWORD PTR [rdx+rax]
 	test	rax, rax
-	jne	.L7
+	jne	.L8
 	mov	eax, 0
 	leave
 	.cfi_def_cfa 7, 8

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/22 21:20:52 by root             ###   ########.fr        #
+#    Updated: 2018/05/24 00:59:50 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -63,7 +63,7 @@ $(OBJ_DIR)%.o: $(ELF_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
 $(OBJ_DIR)%.o: $(ELF_DIR)%.s
-	$(ASM) $(ASMFLAG) -o $@ -g $<
+	$(ASM) $(ASMFLAG) -o $@ $<
 endif
 
 ifeq ($(UNAME_S), Darwin)
