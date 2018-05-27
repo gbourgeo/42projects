@@ -2,7 +2,53 @@
 	.intel_syntax noprefix
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"%s : %d\n"
+	.string	"%s %d %d\n"
+.LC1:
+	.string	"not en elf file"
+	.text
+	.p2align 4,,15
+	.globl	pack_dat_elf
+	.type	pack_dat_elf, @function
+pack_dat_elf:
+.LFB38:
+	.cfi_startproc
+	cmp	BYTE PTR [rdx], 127
+	mov	rax, rdx
+	je	.L4
+.L2:
+	lea	rdi, .LC1[rip]
+	jmp	puts@PLT
+	.p2align 4,,10
+	.p2align 3
+.L4:
+	cmp	BYTE PTR 1[rdx], 69
+	jne	.L2
+	cmp	BYTE PTR 2[rdx], 76
+	jne	.L2
+	cmp	BYTE PTR 3[rdx], 70
+	jne	.L2
+	cmp	BYTE PTR 4[rdx], 2
+	jne	.L2
+	cmp	BYTE PTR 5[rdx], 0
+	je	.L2
+	cmp	BYTE PTR 6[rdx], 1
+	jne	.L2
+	movzx	ecx, BYTE PTR 16[rdx]
+	lea	edx, -2[rcx]
+	cmp	dl, 1
+	ja	.L2
+	mov	edx, edi
+	lea	rdi, .LC0[rip]
+	mov	ecx, esi
+	mov	rsi, rax
+	xor	eax, eax
+	jmp	printf@PLT
+	.cfi_endproc
+.LFE38:
+	.size	pack_dat_elf, .-pack_dat_elf
+	.section	.rodata.str1.1
+.LC2:
+	.string	"%s "
 	.text
 	.p2align 4,,15
 	.globl	get_dat_elf
@@ -26,37 +72,37 @@ get_dat_elf:
 	.cfi_def_cfa_offset 1072
 	movzx	edx, BYTE PTR [rdi]
 	test	dl, dl
-	je	.L10
+	je	.L14
 	lea	r8, -1[rsp]
 	mov	eax, 1
 	.p2align 4,,10
 	.p2align 3
-.L3:
+.L7:
 	mov	BYTE PTR [r8+rax], dl
 	mov	ecx, eax
 	add	rax, 1
 	movzx	edx, BYTE PTR -1[rdi+rax]
 	test	dl, dl
-	jne	.L3
-.L2:
+	jne	.L7
+.L6:
 	movzx	edx, BYTE PTR [rsi]
 	test	dl, dl
-	je	.L19
+	je	.L22
 	movsx	rdi, ecx
 	mov	eax, 1
 	mov	rbx, rsp
 	add	rdi, rsp
 	.p2align 4,,10
 	.p2align 3
-.L5:
+.L9:
 	mov	BYTE PTR -1[rdi+rax], dl
 	mov	r8d, eax
 	add	rax, 1
 	movzx	edx, BYTE PTR -1[rsi+rax]
 	test	dl, dl
-	jne	.L5
+	jne	.L9
 	add	ecx, r8d
-.L4:
+.L8:
 	movsx	rcx, ecx
 	xor	edx, edx
 	xor	eax, eax
@@ -67,7 +113,7 @@ get_dat_elf:
 	call	syscall@PLT
 	cmp	eax, -1
 	mov	rbp, rax
-	je	.L1
+	je	.L5
 	mov	esi, eax
 	mov	ecx, 2
 	xor	eax, eax
@@ -76,7 +122,7 @@ get_dat_elf:
 	call	syscall@PLT
 	cmp	eax, -1
 	mov	r12, rax
-	je	.L17
+	je	.L21
 	sub	rsp, 8
 	.cfi_def_cfa_offset 1080
 	mov	edx, eax
@@ -95,12 +141,15 @@ get_dat_elf:
 	.cfi_def_cfa_offset 1080
 	pop	rdx
 	.cfi_def_cfa_offset 1072
-	je	.L17
-	lea	rdi, .LC0[rip]
-	mov	edx, ebp
+	je	.L21
+	lea	rdi, .LC2[rip]
 	mov	rsi, rbx
 	xor	eax, eax
 	call	printf@PLT
+	mov	rdx, r13
+	mov	esi, r12d
+	mov	edi, ebp
+	call	pack_dat_elf
 	mov	edi, ebp
 	call	close@PLT
 	mov	edx, r12d
@@ -108,7 +157,7 @@ get_dat_elf:
 	mov	edi, 11
 	xor	eax, eax
 	call	syscall@PLT
-.L1:
+.L5:
 	add	rsp, 1032
 	.cfi_remember_state
 	.cfi_def_cfa_offset 40
@@ -121,7 +170,7 @@ get_dat_elf:
 	pop	r13
 	.cfi_def_cfa_offset 8
 	ret
-.L17:
+.L21:
 	.cfi_restore_state
 	mov	edi, ebp
 	call	close@PLT
@@ -137,13 +186,13 @@ get_dat_elf:
 	pop	r13
 	.cfi_def_cfa_offset 8
 	ret
-.L19:
+.L22:
 	.cfi_restore_state
 	mov	rbx, rsp
-	jmp	.L4
-.L10:
+	jmp	.L8
+.L14:
 	xor	ecx, ecx
-	jmp	.L2
+	jmp	.L6
 	.cfi_endproc
 .LFE37:
 	.size	get_dat_elf, .-get_dat_elf
@@ -184,10 +233,10 @@ find_files:
 	mov	r14d, DWORD PTR 8[rsp]
 	lea	r12, 16[rsp]
 	cmp	r14d, -1
-	je	.L20
+	je	.L23
 	.p2align 4,,10
 	.p2align 3
-.L22:
+.L25:
 	xor	eax, eax
 	mov	ecx, 1024
 	mov	rdx, r12
@@ -196,28 +245,28 @@ find_files:
 	call	syscall@PLT
 	test	eax, eax
 	mov	r15d, eax
-	jle	.L29
+	jle	.L32
 	xor	ebx, ebx
-	jmp	.L24
+	jmp	.L27
 	.p2align 4,,10
 	.p2align 3
-.L23:
+.L26:
 	movsx	eax, BYTE PTR 32[rsp+rbp]
 	add	ebx, eax
 	cmp	r15d, ebx
-	jle	.L22
-.L24:
+	jle	.L25
+.L27:
 	movsx	rbp, ebx
 	cmp	BYTE PTR 34[rsp+rbp], 8
-	jne	.L23
+	jne	.L26
 	lea	rsi, 19[r12+rbp]
 	mov	rdi, r13
 	call	get_dat_elf
-	jmp	.L23
-.L29:
+	jmp	.L26
+.L32:
 	mov	edi, DWORD PTR 8[rsp]
 	call	close@PLT
-.L20:
+.L23:
 	add	rsp, 1048
 	.cfi_def_cfa_offset 56
 	pop	rbx
@@ -258,17 +307,17 @@ main:
 	.size	main, .-main
 	.globl	direct
 	.section	.rodata.str1.1
-.LC1:
+.LC3:
 	.string	"/tmp/test/"
-.LC2:
+.LC4:
 	.string	"/tmp/test2/"
 	.section	.data.rel.local,"aw",@progbits
 	.align 16
 	.type	direct, @object
 	.size	direct, 24
 direct:
-	.quad	.LC1
-	.quad	.LC2
+	.quad	.LC3
+	.quad	.LC4
 	.quad	0
 	.ident	"GCC: (Debian 6.3.0-18+deb9u1) 6.3.0 20170516"
 	.section	.note.GNU-stack,"",@progbits

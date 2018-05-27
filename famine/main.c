@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/26 11:09:15 by root             ###   ########.fr       */
+/*   Updated: 2018/05/27 01:59:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ char		*direct[] = { "/tmp/test/", "/tmp/test2/", NULL };
 
 void	find_files(char *dir);
 void	get_dat_elf(char *dir, char *file);
+void	pack_dat_elf(int fd, int size, char *data);
 
 int main(int ac, char **av)
 {
@@ -108,7 +109,20 @@ void	get_dat_elf(char *dir, char *file)
 		close(fd);
 		return ;
 	}
-	printf("%s : %d\n", path, fd);
+	printf("%s ", path);
+	pack_dat_elf(fd, size, data);
 	close(fd);
 	syscall(MUNMAP, data, size);
+}
+
+void		pack_dat_elf(int fd, int size, char *data)
+{
+	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F'	&&
+		data[4] == 2 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
+		// Ajouter le check de signature de binaire
+	{
+		printf("%s %d %d\n", data, fd, size);
+	}
+	else
+		printf("not en elf file\n");
 }

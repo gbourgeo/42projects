@@ -4,6 +4,8 @@
 	%define SYS_OPEN		2
 	%define SYS_CLOSE		3
 	%define SYS_LSEEK		8
+	%define SYS_MMAP		9
+	%define SYS_MUNMAP		11
 	%define SYS_EXIT		60
 	%define SYS_CHDIR		79
 	%define SYS_GETDENTS64	217
@@ -58,13 +60,13 @@ loop_file:
 	jle		loop_end
 	mov		DWORD [rsp + 12], eax 				; store return value of getdents64
 	xor		ebx, ebx							; initialize off to 0
-	jmp		check_file
+	jmp		check_file_type
 next_file:
 	movsx	eax, BYTE [rsp + rbp + 32] 			; 32 = rsp + 16 + 16 (offset of *dirp->d_reclen)
 	add		ebx, eax
 	cmp		DWORD [rsp + 12], ebx
 	jle		loop_file
-check_file:	
+check_file_type:	
 	movsx	rbp, ebx
 	cmp		BYTE [rsp + rbp + 34], 8 			; 34 = rsp + 16 + 18 (the offset of *dirp->d_type) + rbp (offset of each *dirp)
 	jne		next_file
@@ -86,6 +88,8 @@ find_files_end:
 get_dat_elf:
 	push	rbp
 	push	rbx
+	push	r15
+	push	r14
 	sub		rsp, 1024			; char[1024], int fd
 								; [rsp]     , [rsp + 8]
 
@@ -114,57 +118,82 @@ copy_file:
 open_file:
 	mov		BYTE [rsp + rax], 0
 	sub		rsp, rcx
-	;; int	sys_open(rdi, 0, 0) 			-> ret: [rsp + 1024] directory fd.
-	mov		rdx, 0
-	mov 	rsi, 0
-	lea		rdi, [rsp]
+	sub		rsp, 8				; to store the return value of mmap
+	;; int	sys_open(fd, 0, 0) 	-> ret: [rsp + 1024] directory fd.
+	xor		edx, edx
+	xor		esi, esi
+	lea		rdi, [rsp + 8]
 	mov 	rax, SYS_OPEN
 	syscall
 	cmp 	rax, 0
 	jl	 	get_dat_elf_end
-	mov		QWORD [rsp], rax
-	;; int	sys_leek(fd, 1, LSEEK_END)
-	mov		rdi, rax
-	mov		rsi, 1
-	mov		rcx, 2							; LSEEK_END
+	mov		r14, rax
+	;; int	sys_lseek(fd, 1, LSEEK_END)
+	mov		edi, eax
+	mov		esi, 1
+	mov		edx, 2				; LSEEK_END
 	mov		rax, SYS_LSEEK
 	syscall
 	cmp		rax, 0
 	jle		open_file_end
-	call ret_ok
+	mov		r15, rax
+	;; void	*mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)
+	xor		r9, r9				; 0
+	mov		r8, r14				; fd
+	mov		r10d, 2				; MAP_PRIVATE
+	mov		edx, 3				; PROT_READ | PROT_WRITE
+	mov		rsi, rax			; size
+	xor		edi, edi			; NULL
+	mov		rax, SYS_MMAP
+	syscall
+	cmp		rax, 0
+	jl		open_file_end
+	mov		QWORD [rsp], rax
 
+	mov		rdx, rax
+	mov		rsi, r15
+	mov		rdi, r14
+	call	check_file
+
+	mov		rsi, r15
+	mov		rdi, [rsp]
+	mov		rax, SYS_MUNMAP
+	syscall
 open_file_end:	
-	mov		rdi, QWORD [rsp + 1024]
+	mov		rdi, r14
 	mov		rax, SYS_CLOSE
 	syscall
 get_dat_elf_end:
+	add		rsp, 8
 	add		rsp, 1024
+	pop		r14
+	pop		r15
 	pop		rbx
 	pop		rbp
 	ret
 
-	;; // write(1, [rbp-1048] + [rbp-4], rax)
-	mov 	rdx, rcx
-	add		rdx, rax
-	mov		rsi, rsp
-	mov 	rdi, 1
-	mov 	rax, SYS_WRITE
-	syscall
-
-	;; int strlen(char *)
-strlen:
-	mov 	rax, 0
-	cmp 	rdi, byte 0
-	je 		strlen_ret
-	sub		rcx, rcx			; mise a 0 du compteur
-	sub		al, al				; mise a 0 du char de comparaison
-	not		rcx					; inverse le binaire (surement protect overflow)
-	cld							; auto increment le ptr rcx et rdi a chaque appel
-	repne	scasb				; repeat while [rdi] != al
-	not		rcx					; restaure le compteur
-	dec		rcx					; retire 1
-	mov		rax, rcx			; ret value
-strlen_ret:	
+;; void	check_file(int fd, int size, char *data)
+check_file:
+	cmp		BYTE [rdx], 0x7f
+	jne		wrong_file
+	cmp		BYTE [rdx + 1], 'E'
+	jne		wrong_file
+	cmp		BYTE [rdx + 2], 'L'
+	jne		wrong_file
+	cmp		BYTE [rdx + 3], 'F'
+	jne		wrong_file
+	cmp		BYTE [rdx + 4], 2				; ->e_ident[EI_CLASS] == ELFCLASS64
+	jne		wrong_file
+	cmp		BYTE [rdx + 5], 0				; ->e_ident[EI_DATA] != ELFDATANONE
+	je		wrong_file
+	cmp		BYTE [rdx + 6], 1				; ->e_ident[EI_VERSION] == EV_CURRENT
+	jne		wrong_file
+	movzx	ecx, BYTE [rdx + 16] 			; ->e_type == ET_EXEC || ->e_type == ET_DYN
+	lea		edx, [rcx - 2]
+	cmp		dl, 1
+	ja		wrong_file
+	call ret_ok
+wrong_file:
 	ret
 
 end:	
