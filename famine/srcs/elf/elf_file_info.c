@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/27 06:19:52 by root             ###   ########.fr       */
+/*   Updated: 2018/05/28 19:56:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,9 @@ void			file_info_64(void *file, int file_size)
 		ft_printf(DEF);
 	}
 
+	/* ft_printf("FILE\n"); */
+	/* print_hex((u_char *)file, file_size, 2); */
+	
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
 	ft_printf(CO3);
@@ -179,8 +182,9 @@ void			file_info_64(void *file, int file_size)
 			(shdr->sh_type == 0x70000000) ? "LOPROC" :
 			(shdr->sh_type == 0x7fffffff) ? "HIPROC" : NULL;
 
-		ft_printf("%-17s\n%-12s\t %#x\t %#.8x\t %#x\t %#x\t %d\t %#x\t %#x\t %#x\n",
-				  name, type,
+		ft_printf("%-17s\n", name);
+		ft_printf("%-12s\t %#x\t %#.8x\t %#x\t %#x\t %d\t %#x\t %#x\t %#x\n",
+				  type,
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
@@ -441,12 +445,12 @@ void			file_info_32(void *file, int file_size)
 		if (ft_strcmp(name, ".text") == 0)
 			print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1);
 	}
-	for (size_t i = 0; i < file_header->e_phnum; i++) {
-		Elf32_Phdr *p = program_header_table + i;
-		if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
-			print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
-		}
-	}
+	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
+	/* 	Elf32_Phdr *p = program_header_table + i; */
+	/* 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) { */
+	/* 		print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1); */
+	/* 	} */
+	/* } */
 
 /*	
 	ft_printf(CO2);
@@ -603,7 +607,7 @@ void			print_hex(u_char *file, size_t size, size_t endian)
 	size_t j = 0;
 	while (i < size) {
 		if (i % 16 == 0)
-			ft_printf("%p", file + i);
+			ft_printf("%#.12x", i);
 		if (endian == MY_LITTLE_ENDIAN) {
 			for (size_t k = 0; k < 4; k++) {
 				for (size_t l = (i + 4 > size) ? size : i + 4; l > i; l--) {

