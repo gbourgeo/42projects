@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/29 05:03:53 by root             ###   ########.fr       */
+/*   Updated: 2018/05/30 07:25:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,14 +96,7 @@ void			file_info_64(void *file, int file_size)
 	Elf64_Shdr	*section_header_table;
 	char		*string_table;
 
-	print_hex((u_char *)file, file_size, 2);
 	file_header = (Elf64_Ehdr *)file;
-	program_header_table = (Elf64_Phdr *)(file + file_header->e_phoff);
-	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
-	/* string_table = */
-	/* 	(file_header->e_shstrndx == SHN_UNDEF || file_header->e_shstrndx >= file_size) ? */
-	/* 	NULL : */
-	/* 	(char *)file_header + (section_header_table + file_header->e_shstrndx)->sh_offset; */
 	string_table =NULL;
 	ft_printf(CO2);
 	ft_printf("file info:\n");
@@ -128,6 +121,7 @@ void			file_info_64(void *file, int file_size)
 			  file_header->e_phnum, file_header->e_shentsize, file_header->e_shnum,
 			  file_header->e_shstrndx);
 
+	program_header_table = (Elf64_Phdr *)(file + file_header->e_phoff);
 	ft_printf(CO2);
 	ft_printf("\nprogram header: (%d entries)\n", file_header->e_phnum);
 	ft_printf(CO3);
@@ -165,7 +159,11 @@ void			file_info_64(void *file, int file_size)
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
+	print_hex((u_char *)file, file_size, 2);
 	
+	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
+	string_table = (file_header->e_shstrndx == SHN_UNDEF) ? NULL :
+		(char *)file_header + (section_header_table + file_header->e_shstrndx)->sh_offset;
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
 	ft_printf(CO3);
@@ -176,16 +174,12 @@ void			file_info_64(void *file, int file_size)
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
 		Elf64_Shdr	*shdr = section_header_table + i;
 		if (shdr == NULL) ft_printf("NULL\n");
-		ft_printf("%d\n", 1);
-		ft_printf("%d\n", shdr->sh_type);
-		ft_printf("%d\n", 2);
 		char		*name = (string_table) ? string_table + shdr->sh_name : NULL;
 		char		*type = (shdr->sh_type <= 11) ? section_types[shdr->sh_type] :
 			(shdr->sh_type == 0x60000000) ? "LOOS" :
 			(shdr->sh_type == 0x6fffffff) ? "HIOS" :
 			(shdr->sh_type == 0x70000000) ? "LOPROC" :
 			(shdr->sh_type == 0x7fffffff) ? "HIPROC" : NULL;
-		ft_printf("1\n");
 
 		ft_printf("%-17s\n", name);
 		ft_printf("%-12s\t %#x\t %#.8x\t %#x\t %#x\t %d\t %#x\t %#x\t %#x\n",
@@ -196,12 +190,12 @@ void			file_info_64(void *file, int file_size)
 		/* if (ft_strcmp(name, ".text") == 0) */
 		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
-	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
-	/* 	Elf64_Phdr *p = program_header_table + i; */
-	/* 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) { */
-	/* 		print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1); */
-	/* 	} */
-	/* } */
+	for (size_t i = 0; i < file_header->e_phnum; i++) {
+		Elf64_Phdr *p = program_header_table + i;
+		if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
+			print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
+		}
+	}
 
 /*	
 	ft_printf(CO2);

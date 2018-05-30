@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/24 00:59:50 by root             ###   ########.fr        #
+#    Updated: 2018/05/30 05:12:39 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -85,3 +85,16 @@ fclean: clean
 	@echo $(NAME) erased...
 
 re: fclean all
+
+test1: re
+	cp Ressources/elf64 /tmp/test
+	./$(NAME)
+	./hex /tmp/test/elf64
+
+test2: re
+	cp Ressources/elf64 /tmp/test/elf64
+	cp Ressources/elf64 /tmp/test/c
+	gcc -c main.c -I libft/includes
+	gcc obj/famine64.o main.o
+#	./a.out
+#	./hex /tmp/test/elf64
