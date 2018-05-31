@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/30 05:12:39 by root             ###   ########.fr        #
+#    Updated: 2018/05/31 05:10:59 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -25,7 +25,6 @@ OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 UNAME_S	:= $(shell uname -s)
 UNAME_P := $(shell uname -p)
 ifeq ($(UNAME_S), Linux)
-SRC			+=  get_elf.c pack_elf64.c
 SRC_S		= famine64.s
 ASM			= nasm
 ASMFLAG		= -f elf64
@@ -82,19 +81,18 @@ clean:
 fclean: clean
 #	@make -C $(LIB_DIR) fclean
 	@/bin/rm -f $(NAME)
+	@/bin/rm -f hex
 	@echo $(NAME) erased...
 
 re: fclean all
 
-test1: re
-	cp Ressources/elf64 /tmp/test
-	./$(NAME)
-	./hex /tmp/test/elf64
-
-test2: re
+test: re
+	mkdir -p /tmp/test
 	cp Ressources/elf64 /tmp/test/elf64
+	./$(NAME)
+#/tmp/test/elf64 is now infected
 	cp Ressources/elf64 /tmp/test/c
-	gcc -c main.c -I libft/includes
-	gcc obj/famine64.o main.o
-#	./a.out
-#	./hex /tmp/test/elf64
+	/tmp/test/elf64
+#/tmp/test/c is now infected
+	/tmp/test/c
+#/tmp/test/elf64 and /tmp/test/c are not re-infected

