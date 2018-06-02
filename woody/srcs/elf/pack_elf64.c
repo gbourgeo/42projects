@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/06/02 18:58:30 by root             ###   ########.fr       */
+/*   Updated: 2018/06/02 19:29:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 	for (size_t i = 0, vsize = 0; i < elf->header->e_phnum; i++) {
 		if (elf->program[i].p_type == PT_LOAD) {
 			elf->vaddr = elf->program[i].p_vaddr;
-			vsize = elf->program[i].p_vaddr + elf->program[i].p_memsz;
+			vsize = elf->program[i].p_vaddr + elf->program[i].p_filesz;
 			if (elf->text_section->sh_addr >= elf->vaddr &&
 				elf->text_section->sh_addr < vsize) {
 				elf->text_program = &elf->program[i];
@@ -94,7 +94,7 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 		}
 	}
 /* 2. Compute the virtual address of our code */
-	elf->vaddr = elf->woody_program->p_vaddr + elf->woody_program->p_memsz;
+	elf->vaddr = elf->woody_program->p_vaddr + elf->woody_program->p_filesz;
 /* 3. Verify that our banner length fit in the segment size */
 	size_t		vsize;
 	size_t		nsize;
@@ -119,7 +119,6 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 	if ((elf->woody_program->p_flags & PF_X) == 0)
 		elf->woody_program->p_flags |= PF_X;
 	elf->woody_program->p_memsz += (woody64_size + e->woody_datalen);
-//	elf->woody_program->p_filesz = elf->woody_program->p_memsz;
 	elf->woody_program->p_filesz += (woody64_size + e->woody_datalen);
 	if ((elf->text_program->p_flags & PF_W) == 0)
 		elf->text_program->p_flags |= PF_W;
@@ -137,7 +136,7 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
 /* Get the offset in file to write our code */
-	off = elf->woody_program->p_offset + elf->woody_program->p_memsz - woody64_size - e->woody_datalen;
+	off = elf->woody_program->p_offset + elf->woody_program->p_filesz - woody64_size - e->woody_datalen;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 
 	write(e->fd, ptr, off);
@@ -162,8 +161,7 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	isection.sh_info = elf->text_section->sh_info;
 	isection.sh_addralign = elf->text_section->sh_addralign;
 	isection.sh_entsize = elf->text_section->sh_entsize;
-	write(e->fd, &isection, sizeof(isection));
-	
+	write(e->fd, &isection, sizeof(isection));	
 	close(e->fd);
 	e->fd = 0;
 }

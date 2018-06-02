@@ -7,7 +7,6 @@
 
 	segment .text
 	woody64_size dd end - woody64_func
-	
 woody64_func:					; ELF version
 	push rdi
 	push rsi
@@ -22,7 +21,6 @@ woody64_func:					; ELF version
 	syscall
 
 	jmp woody64_end
-
 woody64_decrypt:
 	push	r15
 	push	r14
@@ -147,7 +145,6 @@ woody64_decrypt:
 	pop	r14
 	pop	r15
 	ret
-	
 woody64_end:
 	mov rsi, QWORD [rel text_size]
 	lea rdx, [rel woody64_keys]
@@ -171,7 +168,6 @@ woody64_end:
 	nop
 	nop
 	nop
-	
 end:
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0

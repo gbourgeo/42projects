@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:09:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/17 20:36:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/02 19:04:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void			get_elf_info(t_env *e)
 		ft_fatal("Unsupported ELF file byte order.", e);
 	if (file_header->e_ident[EI_VERSION] != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", e);
-	if (file_header->e_type != ET_EXEC)
+	if (file_header->e_type != ET_EXEC && file_header->e_type != ET_DYN)
 		ft_fatal("Unsupported ELF file type.", e);
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.", e);

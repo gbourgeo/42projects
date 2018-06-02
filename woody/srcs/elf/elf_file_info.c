@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/02 18:33:22 by root             ###   ########.fr       */
+/*   Updated: 2018/06/02 19:07:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int main(int ac, char **av)
 		ft_fatal("Unsupported ELF file byte order.");
 	if (file_header->e_ident[EI_VERSION] != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.");
-	if (file_header->e_type != ET_EXEC)
+	if (file_header->e_type != ET_EXEC && file_header->e_type != ET_DYN)
 		ft_fatal("Unsupported ELF file type.");
 	if (file_header->e_version != EV_CURRENT)
 		ft_fatal("Unsupported ELF file version.");
@@ -194,7 +194,7 @@ void			file_info_64(void *file, int file_size)
 	/* 	} */
 	/* } */
 
-	print_hex((u_char *)file, file_size, 2);
+//	print_hex((u_char *)file, file_size, 2);
 
 /*	
 	ft_printf(CO2);
