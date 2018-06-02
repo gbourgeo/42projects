@@ -162,6 +162,16 @@ woody64_end:
 
 	push QWORD [rel text_vaddr]
 	ret
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	
 end:
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0

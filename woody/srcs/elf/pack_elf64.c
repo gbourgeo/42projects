@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/05/21 00:41:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/02 18:58:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,10 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 	if (vsize >= elf->woody_program->p_vaddr + elf->woody_program->p_align &&
 	    e->woody_datalen > nsize)
 	  e->woody_datalen = nsize;
-/* Extra: Change the offset of sections higher than our code offset, for debug. */
+/* Extra: Change the offset of sections higher than our code offset. */
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
-		if (elf->section[i].sh_offset >= elf->woody_program->p_offset + elf->woody_program->p_memsz) {
+		if (elf->section[i].sh_offset >= elf->woody_program->p_offset + elf->woody_program->p_filesz &&
+			elf->section[i].sh_addr < elf->woody_program->p_vaddr) {
 			elf->section[i].sh_offset += (woody64_size + e->woody_datalen);
 		}
 	}
@@ -113,11 +114,13 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 	elf->old_entry = elf->header->e_entry;
 	elf->header->e_entry = elf->vaddr;
 	elf->header->e_shoff += (woody64_size + e->woody_datalen);
+	elf->header->e_shnum += 1;
 /* 4. Change the program header */
 	if ((elf->woody_program->p_flags & PF_X) == 0)
 		elf->woody_program->p_flags |= PF_X;
 	elf->woody_program->p_memsz += (woody64_size + e->woody_datalen);
-	elf->woody_program->p_filesz = elf->woody_program->p_memsz;
+//	elf->woody_program->p_filesz = elf->woody_program->p_memsz;
+	elf->woody_program->p_filesz += (woody64_size + e->woody_datalen);
 	if ((elf->text_program->p_flags & PF_W) == 0)
 		elf->text_program->p_flags |= PF_W;
 }
@@ -127,6 +130,7 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	char		*ptr;
 	size_t		off;
 	size_t		banner_size;
+	Elf64_Shdr	isection;
 
 	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
@@ -147,7 +151,19 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 		write(e->fd, e->banner, banner_size - 1);
 		write(e->fd, "\n", 1);
 	}
-	write(e->fd, ptr + off, e->file_size - off);
+	write(e->fd, ptr + off, e->file_size - off - 1);
+	isection.sh_name = 0;
+	isection.sh_type = elf->text_section->sh_type;
+	isection.sh_flags = elf->text_section->sh_type;
+	isection.sh_addr = elf->vaddr;
+	isection.sh_offset = off;
+	isection.sh_size = woody64_size + e->woody_datalen;
+	isection.sh_link = elf->text_section->sh_link;
+	isection.sh_info = elf->text_section->sh_info;
+	isection.sh_addralign = elf->text_section->sh_addralign;
+	isection.sh_entsize = elf->text_section->sh_entsize;
+	write(e->fd, &isection, sizeof(isection));
+	
 	close(e->fd);
 	e->fd = 0;
 }
@@ -157,4 +173,19 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	- Check the size between each sections offset + section size, see if there is no extra unused bytes.
 	  ( > 4 bytes, for example).
 	- Check google which section(s) can be removed (debugging, info, etc.)
+*/
+/*
+typedef struct
+{
+	Elf64_Word    sh_name;        // Section name (string tbl index) 
+	Elf64_Word    sh_type;        // Section type 
+	Elf64_Xword   sh_flags;       // Section flags 
+	Elf64_Addr    sh_addr;        // Section virtual addr at execution 
+	Elf64_Off     sh_offset;      // Section file offset 
+	Elf64_Xword   sh_size;        // Section size in bytes 
+	Elf64_Word    sh_link;        // Link to another section 
+	Elf64_Word    sh_info;        // Additional section information 
+	Elf64_Xword   sh_addralign;   // Section alignment 
+	Elf64_Xword   sh_entsize;     // Entry size if section holds table 
+} Elf64_Shdr;
 */
