@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/02 22:27:43 by root             ###   ########.fr        #
+#    Updated: 2018/06/02 21:43:07 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -81,11 +81,11 @@ lib:
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-	@make -C $(LIB_DIR) clean
+#	@make -C $(LIB_DIR) clean
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@make -C $(LIB_DIR) fclean
+#	@make -C $(LIB_DIR) fclean
 	/bin/rm -f woody
 	/bin/rm -f $(NAME)
 	/bin/rm -f hex

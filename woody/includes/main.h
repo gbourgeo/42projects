@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/17 18:59:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/03 10:46:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct	s_env
 	void		*file;
 	uint32_t	key[4];
 	size_t		woody_datalen;
+	size_t		off;
 }				t_env;
 
 # ifdef __linux__
@@ -58,7 +59,9 @@ typedef struct	s_elf64
 	Elf64_Phdr	*woody_program;
 	Elf64_Shdr	*section;
 	Elf64_Shdr	*text_section;
+	Elf64_Shdr	woody_section;
 	Elf64_Addr	old_entry;
+	Elf64_Addr	text_entry;
 	Elf64_Addr	vaddr;
 	uint64_t	text_crypted_size;
 }				t_elf64;
@@ -86,6 +89,6 @@ void			pack_elf32(t_env *e);
 void			pack_elf64(t_env *e);
 void			get_macho_info(t_env *e);
 void			pack_macho64(t_env *e);
-uint32_t		ft_swap_bytes(uint32_t num);
+uint32_t		byteswap_32(uint32_t x);
 
 #endif

@@ -6,10 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/06/02 19:29:54 by root             ###   ########.fr       */
+/*   Updated: 2018/06/03 11:06:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "libft.h"
 #include "main.h"
 
@@ -32,8 +33,9 @@ void			pack_elf64(t_env *e)
 	e->woody_datalen = ((e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0)
 		+ sizeof(size_t)
 		+ sizeof(e->key)
-		+ sizeof(elf.old_entry)
-		+ sizeof(elf.text_crypted_size);
+		+ sizeof(elf.text_entry)
+		+ sizeof(elf.text_crypted_size)
+		+ sizeof(elf.old_entry);
 	encrypt_text_section(e, &elf);
 	change_file_headers(e, &elf);
 	write_new_file(e, &elf);
@@ -83,39 +85,45 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 
 static void		change_file_headers(t_env *e, t_elf64 *elf)
 {
-/* 1. Find the highest memory mapped PT_LOAD segment */
+/* 1. Find the first memory mapped PT_LOAD segment */
 	elf->woody_program = NULL;
 	for (size_t i = 0; i < elf->header->e_phnum; i++) {
 		if (elf->program[i].p_type == PT_LOAD) {
-			if (!elf->woody_program ||
-				elf->program[i].p_vaddr > elf->woody_program->p_vaddr) {
-				elf->woody_program = &elf->program[i];
-			}
+			elf->woody_program = &elf->program[i];
+			break ;
 		}
 	}
-/* 2. Compute the virtual address of our code */
-	elf->vaddr = elf->woody_program->p_vaddr + elf->woody_program->p_filesz;
-/* 3. Verify that our banner length fit in the segment size */
+	if (elf->woody_program == NULL)
+		ft_fatal("No loadable segment found.", e);
+/* 2. Verify that our code length fit in the segment size */
 	size_t		vsize;
 	size_t		nsize;
-	vsize = elf->woody_program->p_vaddr + elf->woody_program->p_memsz + woody64_size + e->woody_datalen;
-	nsize = elf->woody_program->p_align - elf->woody_program->p_memsz - woody64_size - 1;
+	vsize = elf->woody_program->p_vaddr + elf->woody_program->p_filesz + woody64_size + e->woody_datalen;
+	nsize = elf->woody_program->p_align - elf->woody_program->p_filesz - woody64_size - 1;
 	if (vsize >= elf->woody_program->p_vaddr + elf->woody_program->p_align &&
 	    e->woody_datalen > nsize)
-	  e->woody_datalen = nsize;
-/* Extra: Change the offset of sections higher than our code offset. */
+		e->woody_datalen = nsize;
+/* 3. Find the last section of the segment */
+	Elf64_Shdr	*lastsec = &elf->section[0];
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
-		if (elf->section[i].sh_offset >= elf->woody_program->p_offset + elf->woody_program->p_filesz &&
-			elf->section[i].sh_addr < elf->woody_program->p_vaddr) {
-			elf->section[i].sh_offset += (woody64_size + e->woody_datalen);
+		if (elf->section[i].sh_addr > elf->woody_program->p_vaddr &&
+			elf->section[i].sh_addr < elf->woody_program->p_vaddr + elf->woody_program->p_filesz &&
+			elf->section[i].sh_offset > lastsec->sh_offset) {
+			lastsec = &elf->section[i];
 		}
 	}
-/* 3. Change the elf header */
-	elf->old_entry = elf->header->e_entry;
-	elf->header->e_entry = elf->vaddr;
-	elf->header->e_shoff += (woody64_size + e->woody_datalen);
+/* 4. Change file infos */
+	elf->vaddr = lastsec->sh_addr + lastsec->sh_size;
+	elf->woody_section.sh_addr = elf->vaddr;
+	elf->woody_section.sh_offset = lastsec->sh_offset + lastsec->sh_size;
+	e->off = lastsec->sh_offset + lastsec->sh_size;
+	
+/* Change the elf header */
 	elf->header->e_shnum += 1;
-/* 4. Change the program header */
+	elf->old_entry = (elf->vaddr - elf->header->e_entry) * (-1);
+	elf->text_entry = (elf->vaddr - elf->text_section->sh_addr) * (-1);
+	elf->header->e_entry = elf->vaddr;
+/* Change the program header */
 	if ((elf->woody_program->p_flags & PF_X) == 0)
 		elf->woody_program->p_flags |= PF_X;
 	elf->woody_program->p_memsz += (woody64_size + e->woody_datalen);
@@ -127,41 +135,40 @@ static void		change_file_headers(t_env *e, t_elf64 *elf)
 static void		write_new_file(t_env *e, t_elf64 *elf)
 {
 	char		*ptr;
-	size_t		off;
 	size_t		banner_size;
-	Elf64_Shdr	isection;
 
 	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
 /* Get the offset in file to write our code */
-	off = elf->woody_program->p_offset + elf->woody_program->p_filesz - woody64_size - e->woody_datalen;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 
-	write(e->fd, ptr, off);
+	write(e->fd, ptr, e->off);
 	write(e->fd, &woody64_func, woody64_size);
 	write(e->fd, e->key, sizeof(e->key));
-	write(e->fd, &elf->old_entry, sizeof(elf->old_entry));
+	write(e->fd, &elf->text_entry, sizeof(elf->text_entry));
 	write(e->fd, &elf->text_crypted_size, sizeof(elf->text_crypted_size));
+	write(e->fd, &elf->old_entry, sizeof(elf->old_entry));
 	write(e->fd, &banner_size, sizeof(banner_size));
 	if (e->banner && *e->banner)
 	{
 		write(e->fd, e->banner, banner_size - 1);
 		write(e->fd, "\n", 1);
 	}
-	write(e->fd, ptr + off, e->file_size - off - 1);
-	isection.sh_name = 0;
-	isection.sh_type = elf->text_section->sh_type;
-	isection.sh_flags = elf->text_section->sh_type;
-	isection.sh_addr = elf->vaddr;
-	isection.sh_offset = off;
-	isection.sh_size = woody64_size + e->woody_datalen;
-	isection.sh_link = elf->text_section->sh_link;
-	isection.sh_info = elf->text_section->sh_info;
-	isection.sh_addralign = elf->text_section->sh_addralign;
-	isection.sh_entsize = elf->text_section->sh_entsize;
-	write(e->fd, &isection, sizeof(isection));	
+	e->off += (woody64_size + e->woody_datalen);
+	write(e->fd, ptr + e->off, e->file_size - e->off - 1);
+	elf->woody_section.sh_name = 0;
+	elf->woody_section.sh_type = elf->text_section->sh_type;
+	elf->woody_section.sh_flags = elf->text_section->sh_flags;
+//	elf->woody_section.sh_addr = elf->vaddr;
+//	elf->woody_section.sh_offset = e->off;
+	elf->woody_section.sh_size = woody64_size + e->woody_datalen;
+	elf->woody_section.sh_link = elf->text_section->sh_link;
+	elf->woody_section.sh_info = elf->text_section->sh_info;
+	elf->woody_section.sh_addralign = elf->text_section->sh_addralign;
+	elf->woody_section.sh_entsize = elf->text_section->sh_entsize;
+	write(e->fd, &elf->woody_section, sizeof(elf->woody_section));	
 	close(e->fd);
 	e->fd = 0;
 }

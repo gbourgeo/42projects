@@ -6,14 +6,36 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/12 02:33:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/16 09:06:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/01 17:18:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-uint32_t				ft_swap_bytes(uint32_t num)
+uint8_t			byteswap_8(uint8_t x)
 {
-	return (((num & 0xff000000) >> 24) | ((num & 0x00ff0000) >> 8) |
-			((num & 0x0000ff00) << 8) | ((num & 0x000000ff) << 24));
+	return (x);
+}
+
+uint16_t		byteswap_16(uint16_t x)
+{
+	return (((x >> 8) & 0xffu) | ((x & 0xffu) << 8));
+}
+
+uint32_t		byteswap_32(uint32_t x)
+{
+	return (((x & 0xff000000u) >> 24) | ((x & 0x00ff0000u) >> 8)
+			| ((x & 0x0000ff00u) << 8) | ((x & 0x000000ffu) << 24));
+}
+
+uint64_t		byteswap_64(uint64_t x)
+{
+	return (((x & 0xff00000000000000ull) >> 56)
+			| ((x & 0x00ff000000000000ull) >> 40)
+			| ((x & 0x0000ff0000000000ull) >> 24)
+			| ((x & 0x000000ff00000000ull) >> 8)
+			| ((x & 0x00000000ff000000ull) << 8)
+			| ((x & 0x0000000000ff0000ull) << 24)
+			| ((x & 0x000000000000ff00ull) << 40)
+			| ((x & 0x00000000000000ffull) << 56));
 }

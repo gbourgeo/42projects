@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/02 19:07:13 by root             ###   ########.fr       */
+/*   Updated: 2018/06/03 04:13:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,9 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO2);
 	ft_printf("file info:\n");
 	ft_printf(CO3);
-	ft_printf("addr\t\t size\t class\t encoding\t version OS/ABI\t\t ABIv\t padding\n");
+	ft_printf("addr\t\t size\t\t class\t encoding\t version OS/ABI\t\t ABIv\t padding\n");
 	ft_printf(DEF);
-	ft_printf("%p\t %#x\t %s\t %s\t %d\t %s\t %d\t %d\n", file, file_size,
+	ft_printf("%p\t %.5p\t %s\t %s\t %d\t %s\t %d\t %d\n", file, file_size,
 			  (file_header->e_ident[EI_CLASS] == 1) ? "32-bit" : "64-bit",
 			  (file_header->e_ident[EI_DATA] == 1) ? "little-endian" : "big-endian",
 			  file_header->e_ident[EI_VERSION],
@@ -119,7 +119,7 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO3);
 	ft_printf("entry\t\t phoff\t shoff\t ehsize\t phentsize\t phnum\t shentsize\t shnum\t shstrndx\n");
 	ft_printf(DEF);
-	ft_printf("%p\t %#x\t %#x\t %#x\t %#x\t\t %#d\t %#x\t\t %#d\t %#x\n",
+	ft_printf("%.12p\t %#x\t %#x\t %#x\t %#x\t\t %#d\t %#x\t\t %#d\t %#x\n",
 			  file_header->e_entry, file_header->e_phoff,
 			  file_header->e_shoff, file_header->e_ehsize, file_header->e_phentsize,
 			  file_header->e_phnum, file_header->e_shentsize, file_header->e_shnum,
@@ -128,7 +128,7 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO2);
 	ft_printf("\nprogram header: (%d entries)\n", file_header->e_phnum);
 	ft_printf(CO3);
-	ft_printf("type\t\t flags\t offset\t vaddr\t\t paddr\t\t filesz\t memsz\t align\n");
+	ft_printf("type\t\t flags\t offset\t\t vaddr\t\t paddr\t\t filesz\t\t memsz\t\t align\n");
 	ft_printf(DEF);
 	char			*program_types[] = { "NULL", "LOAD", "DYNAMIC", "INTERP", "NOTE",
 										 "SHLIB", "PHDR", "TLS", "NUM", "LOOS", "GNU_EH_FRAME",
@@ -157,16 +157,18 @@ void			file_info_64(void *file, int file_size)
 		flags[3] = (phdr->p_flags & PF_MASKOS) ? 'O' : ' ';
 		flags[4] = (phdr->p_flags & PF_MASKPROC) ? 'P' : ' ';
 
-		ft_printf("%-15s\t %#-5s\t %#x\t %.7p\t %.7p\t %#x\t %#x\t %#x\n",
+		ft_printf("%-15s\t %#-5s\t %.5p\t %.7p\t %.7p\t %.5p\t %.5p\t %.6p\n",
 				  type, flags, phdr->p_offset, phdr->p_vaddr,
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
 
+	print_hex((u_char *)file, file_size, 2);
+
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
 	ft_printf(CO3);
-	ft_printf("name\ntype\t\t flags\t addr\t\t offset\t size\t link\t info\t align\t entsize\n");
+	ft_printf("name\ntype\t\t flags\t addr\t\t offset\t\t size\t\t link\t info\t align\t entsize\n");
 	ft_printf(DEF);
 	char			*section_types[] = { "UNUSED", "PROGBITS", "SYMTAB", "STRTAB", "RELA", "HASH",
 								 "DYNAMIC", "NOTE", "NOBITS", "REL", "SHLIB", "DYNSYM"};
@@ -179,7 +181,7 @@ void			file_info_64(void *file, int file_size)
 			(shdr->sh_type == 0x70000000) ? "LOPROC" :
 			(shdr->sh_type == 0x7fffffff) ? "HIPROC" : NULL;
 
-		ft_printf("%-17s\n%-12s\t %#x\t %#.8x\t %#x\t %#x\t %d\t %#x\t %#x\t %#x\n",
+		ft_printf("%-17s\n%-12s\t %.1p\t %.8p\t %.5p\t %.5p\t %d\t %#x\t %.1p\t %.2p\n",
 				  name, type,
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
@@ -194,7 +196,6 @@ void			file_info_64(void *file, int file_size)
 	/* 	} */
 	/* } */
 
-//	print_hex((u_char *)file, file_size, 2);
 
 /*	
 	ft_printf(CO2);
