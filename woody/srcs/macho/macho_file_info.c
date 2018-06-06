@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/15 22:57:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/17 18:38:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/06 03:56:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,14 @@ void			file_info_64(void *file, int file_size)
 			  header->sizeofcmds, header->flags);
 	ft_printf("\n");
 
+
+
+	ft_printf(CO3);
+	ft_printf("cmd\t\t cmdsize\t segname\t vmaddr\t\t vmsize\t fileoff\t filesize\t maxprot\t initprot\t nsects\t flags\n");
+	ft_printf(DEF);
 	for (size_t i = 0, j = 0; i < header->ncmds; i++)
 	{
+		ft_printf("%d ", i);
 		cmd = (struct load_command *)(file + offset);
 		if (cmd->cmd == LC_SEGMENT_64)
 		{
@@ -136,10 +142,6 @@ void			file_info_64(void *file, int file_size)
 			initprot[1] = (segment->initprot & 0x1) ? 'R' : ' ';
 			initprot[2] = (segment->initprot & 0x2) ? 'W' : ' ';
 			initprot[3] = (segment->initprot & 0x4) ? 'X' : ' ';
-
-			ft_printf(CO3);
-			ft_printf("cmd\t\t cmdsize\t segname\t vmaddr\t\t vmsize\t fileoff\t filesize\t maxprot\t initprot\t nsects\t flags\n");
-			ft_printf(DEF);
 			ft_printf("%-11s\t %#.5x\t %-11s\t %-11p\t %#x\t %#-5x\t\t %#-5x\t\t %d %s\t %d %s\t %-5d\t %#x\n",
 					  "LC_SEGMENT_64", segment->cmdsize, segment->segname, segment->vmaddr,
 					  segment->vmsize, segment->fileoff, segment->filesize, segment->maxprot, maxprot,
@@ -164,18 +166,74 @@ void			file_info_64(void *file, int file_size)
 		else if (cmd->cmd == LC_MAIN)
 		{
 			struct entry_point_command *entry = (struct entry_point_command *)cmd;
-
+			ft_printf("%-11s\t %#.5x\t %#-11p\t %#x\n",
+					  "LC_MAIN", entry->cmdsize, entry->entryoff, entry->stacksize);
 			ft_printf(CO3);
 			ft_printf("cmd\t\t cmdsize\t entryoff\t stacksize\n");
 			ft_printf(DEF);
-			ft_printf("%-11s\t %#.5x\t %#-11p\t %#x\n",
-					  "LC_MAIN", entry->cmdsize, entry->entryoff, entry->stacksize);
+		}
+		else if (cmd->cmd == LC_SYMTAB)
+		{
+			struct symtab_command *sym = (struct symtab_command *)cmd;
+			ft_printf("%-11s\t %#.5x\t %#.5x\t %#.5x\t %#.5x\t %#.5x\n",
+					  "LC_SYMTAB", sym->cmdsize, sym->symoff, sym->nsyms, sym->stroff, sym->strsize);
+			ft_printf(CO3);
+			ft_printf("cmd\t\t cmdsize\t symoff\t\t nsyms\t\t stroff\t\t strsize\n");
+			ft_printf(DEF);
+		}
+		else if (cmd->cmd == LC_DYSYMTAB)
+		{
+			struct dysymtab_command *dsym = (struct dysymtab_command *)cmd;
+			ft_printf("%-11s\t %#.5x %#.7p %#.7p %#.8p %#.8p "
+					  "%#.7x %#.7x %#.4x %#.4x %#.7x %#.7x "
+					  "%#.10x %#.11x\n",
+					  "LC_DYSYMTAB", dsym->cmdsize, dsym->ilocalsym, dsym->nlocalsym, dsym->iextdefsym, dsym->nextdefsym,
+					  dsym->iundefsym, dsym->nundefsym, dsym->tocoff, dsym->ntoc, dsym->modtaboff, dsym->nmodtab,
+					  dsym->extrefsymoff, dsym->nextrefsyms);
+			ft_printf(CO3);
+			ft_printf("cmd\t\t cmdsize ilocalsym nlocalsym iextdefsym nextdefsym iundefsym nundefsym tocoff ntoc modtaboff nmodtab "
+					  "extrefsymoff nextrefsyms\n");
+			ft_printf(DEF);
+			ft_printf("\t\t %#.12x %#.11x %#.9x %#.7x %#.9x %#.7x\n",
+					  dsym->indirectsymoff, dsym->nindirectsyms, dsym->extreloff, dsym->nextrel, dsym->locreloff, dsym->nlocrel);
+			ft_printf(CO3);
+			ft_printf("\t\t indirectsymoff nindirectsyms extreloff nextrel locreloff nlocrel\n");
+			ft_printf(DEF);
 		}
 		else
-			ft_printf("%-11d\t %#.5x\n", cmd->cmd, cmd->cmdsize);
+		{
+			char *name[] = { "", "LC_SEGMENT", "LC_SYMTAB", "LC_SYMSEG", "LC_THREAD", "LC_UNIXTHREAD", "LC_LOADFVMLIB",
+							 "LC_ICFVMLIB", "LC_IDENT", "LC_FVMFILE", "LC_PREPAGE", "LC_DYSYMTAB", "LC_LOAD_DYLIB",
+							 "LC_ID_DYLIB", "LC_LOAD_DYLINKER", "LC_ID_DYLINKER", "LC_PREBOUND_DYLIB", "LC_ROUTINES",
+							 "LC_SUB_FRAMEWORK", "LC_SUB_UMBRELLA", "LC_CLIENT", "LC_LIBRARY", "LC_TWOLEVEL_HINTS", 
+							 "LC_PREBIND_CKSUM", "???"/*LC_LOAD_WEAK_DYLIB*/, "LC_SEGMENT_64", "LC_ROUTINES_64", "LC_UUID",
+							 "???"/*LC_RPATH*/, "LC_CODE_SIGNATURE", "LC_SEGMENT_SPLIT_INFO", "???"/*LC_REEXPORT_DYLIB*/, "LC_LAZY_LOAD_DYLIB",
+							 "LC_ENCRYPTION_INFO", "LC_DYLD_INFO", "???"/*LC_DYLD_INFO_ONLY, LC_LOAD_UPWARD_DYLIB*/, 
+							 "LC_VERSION_MIN_MACOSX", "LC_VERSION_MIN_IPHONEOS", "LC_FUNCTION_STARTS", "LC_DYLD_ENVIRONMENT",
+							 "LC_MAIN", "LC_DATA_IN_CODE", "LC_SOURCE_VERSION", "LC_DYLIB_CODE_SIGN_DRS", "LC_ENCRYPTION_INFO_64",
+							 "LC_LINKER_OPTION", "LC_LINKER_OPTIMIZATION_HINT", "LC_VERSION_MIN_TVOS", "LC_VERSION_MIN_WATCHOS" };
+
+			if (cmd->cmd <= 0x30)
+				ft_printf("%-11s\t %#.5x\n", name[cmd->cmd], cmd->cmdsize);
+			else if (cmd->cmd == LC_LOAD_WEAK_DYLIB)
+				ft_printf("%-11s\t %#.5x\n", name[0x18], cmd->cmdsize);
+			else if (cmd->cmd == LC_RPATH)
+				ft_printf("%-11s\t %#.5x\n", name[0x1c], cmd->cmdsize);
+			else if (cmd->cmd == LC_DYLD_INFO_ONLY)
+				ft_printf("%-11s\t %#.5x\n", name[0x22], cmd->cmdsize);
+			else if (cmd->cmd == LC_LOAD_UPWARD_DYLIB)
+				ft_printf("%-11s\t %#.5x\n", name[0x23], cmd->cmdsize);
+			else if (cmd->cmd == LC_LOAD_UPWARD_DYLIB)
+				ft_printf("%-11s\t %#.5x\n", name[0x23], cmd->cmdsize);
+			else
+				ft_printf("%-11d\t %#.5x\n", cmd->cmd, cmd->cmdsize);
+
+		}
 		offset += cmd->cmdsize;
 	}
-/* 	print_hex((u_char *)file, file_size); */
+
+	print_hex((u_char *)file, file_size);
+
 /* 	struct section_64 *section = (struct section_64 *)(segtext + 1); */
 /* 	ft_printf("%s %#x\n", section->sectname, section->size); */
 /* 	print_hex((u_char *)section, sizeof(*section)); */
@@ -187,7 +245,7 @@ void			print_hex(u_char *file, size_t size)
 	for (uint32_t i = 0; i < size; i++)
 	{
 		if (i % 16 == 0)
-			ft_printf("\n%p", &file[i]);
+			ft_printf("\n%.12p", i);
 		if (i % 4 == 0)
 			ft_printf(" ");
 		ft_printf("%02x", file[i]);

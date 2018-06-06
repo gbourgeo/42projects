@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/03 10:46:49 by root             ###   ########.fr       */
+/*   Updated: 2018/06/06 02:34:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@
 typedef struct	s_env
 {
 	const char	*progname;
-	char		*banner;
-	uint32_t	banner_len;
+	char		banner[256];
+	uint64_t	banner_len;
 	int			fd;
 	off_t		file_size;
 	void		*file;
@@ -65,20 +65,24 @@ typedef struct	s_elf64
 	Elf64_Addr	vaddr;
 	uint64_t	text_crypted_size;
 }				t_elf64;
+
 # elif __APPLE__
 typedef struct					s_macho64
 {
 	struct mach_header_64		*header;
+	struct segment_command_64	*segment;
+	struct section_64			*section;
 	struct entry_point_command	*entry;
 	struct segment_command_64	*segtext;
 	struct section_64			*sectext;
-	struct segment_command_64	*lastseg;
-	struct section_64			*lastsect;
-	struct segment_command_64	newseg;
-	struct section_64			newsect;
 	uint64_t					old_entryoff;
 	uint64_t					new_entryoff;
-	uint32_t					text_crypted_size;
+	uint64_t					text_size;
+	uint64_t					text_entryoff;
+	uint64_t					text_filesize;
+	uint64_t					lastsect_off;
+	uint64_t					filesz;
+	uint64_t					sectsize;
 }								t_macho64;
 # endif
 

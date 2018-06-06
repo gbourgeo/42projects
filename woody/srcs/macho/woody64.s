@@ -1,13 +1,10 @@
 	[BITS 64]
 	
 	global	_woody64_func
-	global	_woody64_decrypt
 	global	_woody64_size
-	global	_woody64_arg_size
 	
 	section	.text
-	_woody64_size dd end - _woody64_func
-	_woody64_arg_size dd end - arg
+	_woody64_size dd _end - _woody64_func
 
 _woody64_func:					; MACH-O version
 	push rdi
@@ -24,7 +21,8 @@ _woody64_func:					; MACH-O version
 
 	jmp woody64_end
 	
-_woody64_decrypt:
+;; void woody_decrypt(void *text_section, uint32_t text_size, int *key)
+woody64_decrypt:
 	push	rbp
 	mov	rbp, rsp
 
@@ -148,23 +146,40 @@ LBB0_5:
 	ret
 
 woody64_end:
-	mov esi, DWORD [rel text_size]
-	lea rdx, [rel woody64_keys]
-	mov rdi, QWORD [rel text_vaddr]
-	call _woody64_decrypt
-	
+	;lea rdx, [rel woody64_keys]
+	;mov rsi, QWORD [rel text_size]
+	;lea rdi, [rel _woody64_func]
+	;sub	rdi, QWORD [rel text_vaddr]
+	;call woody64_decrypt
+
+	lea rax, [rel _woody64_func]
+	sub rax, QWORD [rel jump_vaddr]
+	mov [rel jump_vaddr], rax
+
 	pop rbx
 	pop rax
 	pop rdx
 	pop rsi
 	pop rdi
 
-	jmp [rel text_vaddr]
+	push QWORD [rel jump_vaddr]
+	ret
 	nop
-arg:
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	
+_end:	
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0
-	text_size dd 0x0
-	banner_size dd 0x0
+	text_size dq 0x0
+	jump_vaddr dq 0x0
+	banner_size dq 0x0
 	banner db ''
-end:
