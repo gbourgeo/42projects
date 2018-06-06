@@ -146,40 +146,28 @@ LBB0_5:
 	ret
 
 woody64_end:
-	;lea rdx, [rel woody64_keys]
-	;mov rsi, QWORD [rel text_size]
-	;lea rdi, [rel _woody64_func]
-	;sub	rdi, QWORD [rel text_vaddr]
-	;call woody64_decrypt
+	lea rdx, [rel woody64_keys]
+	mov rsi, QWORD [rel text_size]
+	lea rdi, [rel _woody64_func]
+	add	rdi, QWORD [rel text_vaddr]
+	call woody64_decrypt
 
 	lea rax, [rel _woody64_func]
-	sub rax, QWORD [rel jump_vaddr]
-	mov [rel jump_vaddr], rax
-
+	add rax, QWORD [rel jump_offset]
+	mov QWORD [rel jump_offset], rax
+	
 	pop rbx
 	pop rax
 	pop rdx
 	pop rsi
 	pop rdi
 
-	push QWORD [rel jump_vaddr]
-	ret
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
+	jmp QWORD [rel jump_offset]
 	
 _end:	
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0
 	text_size dq 0x0
-	jump_vaddr dq 0x0
+	jump_offset dq 0x0
 	banner_size dq 0x0
 	banner db ''

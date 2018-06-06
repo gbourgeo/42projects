@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/06 02:34:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/06 17:20:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,12 @@ typedef struct					s_macho64
 	struct entry_point_command	*entry;
 	struct segment_command_64	*segtext;
 	struct section_64			*sectext;
+	struct segment_command_64	*lastseg;
 	uint64_t					old_entryoff;
 	uint64_t					new_entryoff;
-	uint64_t					text_size;
+	uint64_t					sectext_size;
 	uint64_t					text_entryoff;
-	uint64_t					text_filesize;
+	uint64_t					segtext_size;
 	uint64_t					lastsect_off;
 	uint64_t					filesz;
 	uint64_t					sectsize;

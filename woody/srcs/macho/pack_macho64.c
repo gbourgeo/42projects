@@ -6,10 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/17 18:43:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/06 03:49:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/07 01:47:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdio.h>
+#include <unistd.h>
 #include "libft.h"
 #include "main.h"
 
@@ -49,7 +50,8 @@ void						pack_macho64(t_env *e)
 		}
 		offset += cmd->cmdsize;
 	}
-//	woody64_encrypt((u_char *)(e->file + macho.sectext->offset), macho.sectext->size, e->key);
+	macho.lastseg = macho.segment;
+	woody64_encrypt((u_char *)(e->file + macho.sectext->offset), macho.sectext->size, e->key);
 	change_file_headers(e, &macho);
 	write_new_file(e, &macho);
 }
@@ -59,84 +61,26 @@ void				change_file_headers(t_env *e, t_macho64 *macho)
 	e->woody_datalen = 0
 		+ sizeof(e->key)
 		+ sizeof(macho->text_entryoff)
-		+ sizeof(macho->text_size)
+		+ sizeof(macho->sectext_size)
 		+ sizeof(macho->old_entryoff)
 		+ sizeof(e->banner_len)
 		+ ((e->banner_len > 1) ? e->banner_len : 0);
 /* First we store the data we will use later */
-	macho->old_entryoff = macho->entry->entryoff;
-	macho->text_entryoff = macho->sectext->offset;
-	macho->text_size = macho->sectext->size;
-	macho->new_entryoff  = macho->section->offset + macho->section->size;
-	macho->text_filesize = macho->segtext->filesize;
+	macho->sectext_size = macho->sectext->size;
+	macho->new_entryoff = macho->lastseg->fileoff + macho->lastseg->vmsize;
+	macho->text_entryoff = macho->sectext->offset - macho->new_entryoff;
+	macho->old_entryoff = macho->entry->entryoff - macho->new_entryoff;
+	macho->segtext_size = macho->segtext->filesize;
 /* Modify the executable flags (disable ASLR) */
 	macho->header->flags &= ~MH_PIE;
 /* Modify the entry point */
 	macho->entry->entryoff = macho->new_entryoff;
-/* Modify the __TEXT segment permissions (make it writable) */
+/* Modify the __TEXT segment permissions (make it writable for decryption) */
 	if (!(macho->segtext->initprot & 0x2))
 		macho->segtext->initprot |= 0x2;
-/* Modify the __text size */
-	macho->sectext->size += (woody64_size + e->woody_datalen);
-
-/* Since its a fuckin NIGHTMARE to add code in the text section, modifying ALL the fuckin offset from TEXT to SYMBOLS etc. (i stopped here),
-   we WILL add our code at the end of the file */
-	size_t offset = sizeof(struct mach_header_64);
-	size_t addrsize = 0;
-
-	macho->section = (struct section_64 *)(macho->segtext + 1);
-	while (macho->section[macho->segtext->nsects - 1].addr - macho->segtext->vmaddr + macho->section[macho->segtext->nsects - 1].size +woody64_size + e->woody_datalen > macho->segtext->vmsize + addrsize)
-		addrsize += 0x1000;
-	for (size_t i = 0; i < macho->header->ncmds; i++)
-	{
-		struct load_command *cmd = (struct load_command *)(e->file + offset);
-		if (cmd->cmd == LC_SEGMENT_64)
-		{
-			struct segment_command_64 *seg = (struct segment_command_64 *)cmd;
-			if (seg == macho->segtext)
-			{
-				seg->vmsize += addrsize;
-				seg->filesize += addrsize;
-				struct section_64 *sec = (struct section_64 *)(seg + 1);
-				for (size_t j = 0; j < macho->segtext->nsects; j++)
-				{
-					if (&sec[j] > macho->sectext)
-					{
-						sec[j].addr += (woody64_size + e->woody_datalen);
-						sec[j].offset += (woody64_size + e->woody_datalen);
-					}
-				}
-				macho->lastsect_off = sec[seg->nsects - 1].addr - seg->vmaddr + sec[seg->nsects - 1].size;
-			}
-			else if (seg > macho->segtext)
-			{
-				seg->vmaddr += addrsize;
-				seg->fileoff += addrsize;
-				struct section_64 *sec = (struct section_64 *)(seg + 1);
-				for (size_t j = 0; j < seg->nsects; j++)
-				{
-					sec[j].addr += addrsize;
-					if (sec[j].offset)
-						sec[j].offset += addrsize;
-				}
-			}
-		}
-		else if (cmd->cmd == LC_SYMTAB)
-		{
-			struct symtab_command *sym = (struct symtab_command *)cmd;
-			sym->symoff += addrsize;
-			sym->stroff += addrsize;
-		}
-		else if (cmd->cmd == LC_DYSYMTAB)
-		{
-			struct dysymtab_command *dsym = (struct dysymtab_command *)cmd;
-			dsym->tocoff += dsym->tocoff ? addrsize : 0;
-			dsym->modtaboff += dsym->modtaboff ? addrsize : 0;
-			dsym->extrefsymoff += dsym->extrefsymoff ? addrsize : 0;
-			dsym->indirectsymoff += dsym->indirectsymoff ? addrsize : 0;
-		}
-		offset += cmd->cmdsize;
-	}
+/* Modify the Mach-o Header */
+	macho->header->ncmds += 1;
+	macho->header->sizeofcmds += (sizeof(struct segment_command_64) + sizeof(struct section_64));
 }
 
 void				write_new_file(t_env *e, t_macho64 *macho)
@@ -144,18 +88,55 @@ void				write_new_file(t_env *e, t_macho64 *macho)
 	char				*ptr;
 	size_t				off;
 	size_t				off2;
+	struct segment_command_64 newseg;
+	struct section_64	newsect;
 
 	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 	ptr = (char *)e->file;
-	off = macho->text_entryoff + macho->text_size + 1;
+	off = ((size_t)macho->lastseg + sizeof(struct segment_command_64) + sizeof(struct section_64) * macho->lastseg->nsects) - (size_t)e->file;
 	write(e->fd, e->file, off);
+
+	newseg.cmd = LC_SEGMENT_64;
+	newseg.cmdsize = sizeof(struct segment_command_64) + sizeof(struct section_64);
+	ft_strncpy(newseg.segname, "__GBO", sizeof(newseg.segname));
+	newseg.vmaddr = macho->lastseg->vmaddr + macho->lastseg->vmsize;
+	newseg.vmsize = 0;
+	while (newseg.vmsize < woody64_size + e->woody_datalen)
+		newseg.vmsize += getpagesize();
+	newseg.fileoff = macho->lastseg->fileoff + macho->lastseg->vmsize;
+	newseg.filesize = woody64_size + e->woody_datalen;
+	newseg.maxprot = (0x1 | 0x2 | 0x4);
+	newseg.initprot = (0x1 | 0x2 | 0x4);
+	newseg.nsects = 1;
+	newseg.flags = 0;
+	write(e->fd, &newseg, sizeof(newseg));
+	ft_strncpy(newsect.sectname, "__gbo", sizeof(newsect.sectname));
+	ft_strncpy(newsect.segname, "__GBO", sizeof(newsect.segname));
+	newsect.addr = newseg.vmaddr;
+	newsect.size = woody64_size + e->woody_datalen;
+	newsect.offset = newseg.fileoff;
+	newsect.align = macho->sectext->align;
+	newsect.reloff = 0;
+	newsect.nreloc = 0;
+	newsect.flags = macho->sectext->flags;
+	newsect.reserved1 = 0;
+	newsect.reserved2 = 0;
+	newsect.reserved3 = 0;
+	write(e->fd, &newsect, sizeof(newsect));
+
+	off2 = macho->sectext->offset - newseg.cmdsize;
+	write(e->fd, e->file + off, off2 - off);
+	off = macho->sectext->offset;
+	write(e->fd, e->file + off, e->file_size - off - 1);
+	for (uint32_t i = macho->lastseg->vmsize - macho->lastseg->filesize; i > 0; i--)
+		write(e->fd, "\0", 1);
 
 	write(e->fd, &woody64_func, woody64_size);
 	write(e->fd, e->key, sizeof(e->key));
 	write(e->fd, &macho->text_entryoff, sizeof(macho->text_entryoff));
-	write(e->fd, &macho->text_size, sizeof(macho->text_size));
+	write(e->fd, &macho->sectext_size, sizeof(macho->sectext_size));
 	write(e->fd, &macho->old_entryoff, sizeof(macho->old_entryoff));
 	write(e->fd, &e->banner_len, sizeof(e->banner_len));
 	if (e->banner_len > 1)
@@ -163,12 +144,6 @@ void				write_new_file(t_env *e, t_macho64 *macho)
 		write(e->fd, e->banner, e->banner_len - 1);
 		write(e->fd, "\n", 1);
 	}
-	off2 = macho->text_filesize - off;
-	write(e->fd, e->file + off, off2);
-	for (uint32_t i = macho->segtext->filesize - macho->lastsect_off + woody64_size + e->woody_datalen - 4; i > 0; i--)
-		write(e->fd, "\0", 1);
-	off = macho->text_filesize;
-	write(e->fd, e->file + off, e->file_size - off - 1);
 	close(e->fd);
 	e->fd = 0;
 }
