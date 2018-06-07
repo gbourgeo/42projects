@@ -21,6 +21,7 @@ famine64_func:
 	push 	rbx
 	sub 	rsp, 8
 
+	jmp 	famine64_end		;delete this
 	lea 	rdi, [rel dir_one]
 	call 	find_files
 	lea 	rdi, [rel dir_two]

@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/01 11:35:53 by root             ###   ########.fr        #
+#    Updated: 2018/06/07 17:58:19 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -90,7 +90,10 @@ test: re
 	mkdir -p /tmp/test
 	cp Ressources/elf64 /tmp/test/elf64
 	cp /bin/ls /tmp/test/ls
-	./$(NAME)
+	gcc -c main.c -I libft/includes
+	gcc main.o obj/famine64.o -L libft -lft
+	./a.out
+#	./$(NAME)
 #/tmp/test/elf64 is now infected
 	/tmp/test/elf64
 #/tmp/test/elf64 and /tmp/test/ls are not re-infected
