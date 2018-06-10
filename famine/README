@@ -12,6 +12,3 @@ temporaire spécifique.
 • L’exécutable agit sur les dossiers /tmp/test et /tmp/test2.
 • Une seule infection sur les binaires est possible.
 • Les infections se font sur des binaires 64 bits.
-
-gcc main.c -I libft/includes/ -L libft/ -lft && ./a.out
-gcc -m64 -masm=intel -O2 -S main.c -I libft/includes/
