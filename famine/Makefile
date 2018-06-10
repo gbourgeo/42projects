@@ -6,43 +6,29 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/07 17:58:19 by root             ###   ########.fr        #
+#    Updated: 2018/06/10 04:16:42 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= Famine
 
-SRC_DIR	= srcs/
+SRC_DIR	= srcs
 SRC		= main.c
 
-ELF_DIR	= $(SRC_DIR)elf/
-MAC_DIR	= $(SRC_DIR)macho/
+ELF_DIR	= $(SRC_DIR)/elf
+SRC_S	= famine64.s
 
 OBJ_DIR	=	obj/
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
-
-UNAME_S	:= $(shell uname -s)
-UNAME_P := $(shell uname -p)
-ifeq ($(UNAME_S), Linux)
-SRC_S		= famine64.s
-ASM			= nasm
-ASMFLAG		= -f elf64
-PRINT_HEX	= $(WWW) -o hex $(ELF_DIR)elf_file_info.c $(INCLUDE) $(LIBS)
-endif
-ifeq ($(UNAME_S), Darwin)
-SRC			+= get_macho.c pack_macho64.c ft_swap_bytes.c
-SRC_S		= famine64.s
-ASM			= ~/Downloads/nasm-2.11.02/nasm
-ASMFLAG		= -f macho64
-PRINT_HEX	= $(WWW) -o hex $(MAC_DIR)macho_file_info.c $(INCLUDE) $(LIBS)
-endif
 
 WWW		= gcc
 FLAGS	= -Wall -Werror -Wextra
 LIBS	= -L $(LIB_DIR) -lft
 LIB_DIR	= libft/
 INCLUDE	= -I includes -I $(LIB_DIR)/includes
+ASM		= nasm
+ASMFLAG	= -f elf64
 
 all: $(OBJ_DIR) $(NAME)
 
@@ -54,34 +40,20 @@ $(NAME): $(OBJ) $(OBJ_S)
 	$(WWW) -o $@ $^ $(LIBS)
 	$(PRINT_HEX)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+$(OBJ_DIR)%.o: $(SRC_DIR)/%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
-ifeq ($(UNAME_S), Linux)
-$(OBJ_DIR)%.o: $(ELF_DIR)%.c
-	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
-
-$(OBJ_DIR)%.o: $(ELF_DIR)%.s
+$(OBJ_DIR)%.o: $(ELF_DIR)/%.s
 	$(ASM) $(ASMFLAG) -o $@ $<
-endif
-
-ifeq ($(UNAME_S), Darwin)
-$(OBJ_DIR)%.o: $(MAC_DIR)%.c
-	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
-
-$(OBJ_DIR)%.o: $(MAC_DIR)%.s
-	$(ASM) $(ASMFLAG) -o $@ $<
-endif
 
 clean:
-#	@make -C $(LIB_DIR) clean
+	@make -C $(LIB_DIR) clean
 	@/bin/rm -rf $(OBJ_DIR)
 	@echo $(NAME) objects cleaned...
 
 fclean: clean
-#	@make -C $(LIB_DIR) fclean
+	@make -C $(LIB_DIR) fclean
 	@/bin/rm -f $(NAME)
-	@/bin/rm -f hex
 	@echo $(NAME) erased...
 
 re: fclean all
@@ -89,11 +61,9 @@ re: fclean all
 test: re
 	mkdir -p /tmp/test
 	cp Ressources/elf64 /tmp/test/elf64
-	cp /bin/ls /tmp/test/ls
-	gcc -c main.c -I libft/includes
-	gcc main.o obj/famine64.o -L libft -lft
-	./a.out
-#	./$(NAME)
+	./$(NAME)
 #/tmp/test/elf64 is now infected
+	cp /bin/ls /tmp/test/ls
 	/tmp/test/elf64
+	/tmp/test/ls
 #/tmp/test/elf64 and /tmp/test/ls are not re-infected
