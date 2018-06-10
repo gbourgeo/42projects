@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/20 20:13:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/31 04:18:14 by root             ###   ########.fr       */
+/*   Updated: 2018/06/10 04:19:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-void famine64_func();
+void	famine64_func();
 
-int				main(void)
+int		main(void)
 {
 	famine64_func();
 	return (0);
