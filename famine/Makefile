@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/10 09:51:27 by root             ###   ########.fr        #
+#    Updated: 2018/06/10 17:07:17 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -26,7 +26,7 @@ WWW		= gcc
 FLAGS	= -Wall -Werror -Wextra
 LIBS	= -L $(LIB_DIR) -lft
 LIB_DIR	= libft/
-INCLUDE	= -I includes -I $(LIB_DIR)/includes
+INCLUDE	= -I $(LIB_DIR)/includes
 ASM		= nasm
 ASMFLAG	= -f elf64
 
@@ -38,7 +38,6 @@ $(OBJ_DIR):
 
 $(NAME): $(OBJ) $(OBJ_S)
 	$(WWW) -o $@ $^ $(LIBS)
-	$(PRINT_HEX)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)/%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
@@ -57,6 +56,22 @@ fclean: clean
 	@echo $(NAME) erased...
 
 re: fclean all
+
+hex: re
+	make -C $(LIB_DIR)
+	gcc -o hex srcs/elf/elf_file_info.c $(INCLUDE) $(LIBS)
+
+test1: hex
+	gcc main.c obj/famine64.o $(INCLUDE)
+	rm -rf /tmp/test/ /tmp/test2/
+	mkdir -p /tmp/test/
+	gcc -o Ressources/elf64 -m64 Ressources/sample.c
+	cp Ressources/elf64 /tmp/test/elf64
+	./a.out
+	/tmp/test/elf64
+	cp /bin/ls /tmp/test/ls
+	./a.out
+	/tmp/test/ls
 
 test: re
 	@rm -rf /tmp/test /tmp/test2

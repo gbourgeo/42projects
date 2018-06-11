@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/09 23:54:18 by root             ###   ########.fr       */
+/*   Updated: 2018/06/11 16:07:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ void			file_info_64(void *file, int file_size)
 			(shdr->sh_type == 0x70000000) ? "LOPROC" :
 			(shdr->sh_type == 0x7fffffff) ? "HIPROC" : NULL;
 
-		ft_printf("%-17s\n", name);
+		ft_printf("%d %-17s\n", i, name);
 		ft_printf("%-12s\t %#x\t %#.8x\t %.5p %.5p %d\t %#x\t %#x\t %#x\n",
 				  type,
 				  shdr->sh_flags, shdr->sh_addr,
