@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/12 11:02:31 by root             ###   ########.fr        #
+#    Updated: 2018/06/13 05:59:16 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -74,7 +74,7 @@ test1: hex
 	cp /bin/cat /tmp/test/.
 	cp /bin/echo /tmp/test/.
 	./a.out
-	/tmp/test/cat main.c
+	/tmp/test/echo toto
 
 test: test1
 	@rm -rf /tmp/test /tmp/test2
