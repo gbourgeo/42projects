@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/12 09:04:24 by root             ###   ########.fr       */
+/*   Updated: 2018/06/17 22:15:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,8 @@ void			file_info_64(void *file, int file_size)
 		ft_printf(DEF);
 	}
 	
+//	print_hex((u_char *)file, file_size, 2);
+
 	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
 	string_table = (file_header->e_shstrndx == SHN_UNDEF) ? NULL :
 		(char *)file_header + (section_header_table + file_header->e_shstrndx)->sh_offset;
@@ -190,7 +192,6 @@ void			file_info_64(void *file, int file_size)
 		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
 //
-//	print_hex((u_char *)file, file_size, 2);
 
 	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
 	/* 	Elf64_Phdr *p = program_header_table + i; */

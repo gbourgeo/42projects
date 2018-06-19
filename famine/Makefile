@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/13 05:59:16 by root             ###   ########.fr        #
+#    Updated: 2018/06/18 22:49:34 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,12 +23,12 @@ OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 
 WWW		= gcc
-FLAGS	= -Wall -Werror -Wextra
+FLAGS	= -Wall -Werror -Wextra -O2
 LIBS	= -L $(LIB_DIR) -lft
 LIB_DIR	= libft/
 INCLUDE	= -I $(LIB_DIR)/includes
 ASM		= nasm
-ASMFLAG	= -f elf64
+ASMFLAG	= -f elf64 -O2
 
 all: $(OBJ_DIR) $(NAME)
 
@@ -76,7 +76,7 @@ test1: hex
 	./a.out
 	/tmp/test/echo toto
 
-test: test1
+test: hex
 	@rm -rf /tmp/test /tmp/test2
 	@mkdir -p /tmp/test /tmp/test2
 	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
@@ -91,6 +91,7 @@ else
 	@echo "Expected : "11$(shell Ressources/elf64)$(shell Ressources/elf64)
 	@exit 1
 endif
+	@sleep 0.5
 
 	@echo -n "TEST 2: No Re-Infection ..."
 	@./$(NAME)
@@ -102,6 +103,7 @@ else
 	@echo "Expected : "11$(shell Ressources/elf64)$(shell Ressources/elf64)
 	@exit 1
 endif
+	@sleep 0.5
 
 	@echo -n "TEST 3: The In-fect-ception ..."
 	@cp /bin/ls /tmp/test/ls
@@ -115,6 +117,7 @@ else
 	@echo "Expected : "22$(shell /bin/ls /tmp/test)$(shell /bin/ls /tmp/test2)
 	@exit 1
 endif
+	@sleep 0.5
 
 	@echo -n "TEST 4: The In-fect-ception 2 ..."
 	@cp /bin/echo /tmp/test/echo

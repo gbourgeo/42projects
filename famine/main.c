@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/06/13 06:00:20 by root             ###   ########.fr       */
+/*   Updated: 2018/06/17 20:02:19 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int main(int ac, char **av)
 {
 	char	*direct[] = { "/tmp/test/", "/tmp/test2/" };
 
+	printf("%ld %ld %ld %ld\n", sizeof(ino_t), sizeof(off_t), sizeof(unsigned short), sizeof(unsigned char));
 	find_files(direct[0]);
 	find_files(direct[1]);
 	return 0;
@@ -143,9 +144,11 @@ void		pack_dat_elf(char *path, int size, char *data)
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
 		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
 		Elf64_Shdr *isection = section;
+		int			isectionnb = 0;
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
 			if (section[i].sh_addr > isection->sh_addr) {
 				isection = &section[i];
+				isectionnb = i;
 			}
 		}
 		if (isection == NULL) /* Weird if its NULL */
@@ -172,6 +175,8 @@ void		pack_dat_elf(char *path, int size, char *data)
 			if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_filesz &&
 				&section[i] != isection) {
 				section[i].sh_offset += isection->sh_size + famine64_size;
+				if (section[i].sh_link > isectionnb)
+					section[i].sh_link += 1;
 			}
 		}
 
