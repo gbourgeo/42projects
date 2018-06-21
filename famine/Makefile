@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/18 22:49:34 by root             ###   ########.fr        #
+#    Updated: 2018/06/21 00:34:49 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -81,52 +81,159 @@ test: hex
 	@mkdir -p /tmp/test /tmp/test2
 	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
 	$(WWW) -o /tmp/test2/elf64 -m64 Ressources/sample.c
+
+	@./$(NAME)
 	@echo -n "TEST 1: The Infection ..."
-	@./$(NAME)
-ifeq ($(shell strings /tmp/test/elf64 | grep Famine | wc -l)$(shell strings /tmp/test2/elf64 | grep Famine | wc -l)$(shell /tmp/test/elf64)$(shell /tmp/test2/elf64), 11$(shell Ressources/elf64)$(shell Ressources/elf64))
-	@echo " Passed !"
-else
+ifneq ($(shell sleep 0.3 && strings /tmp/test/elf64 | grep Famine | wc -l), 1)
 	@echo " Failed !"
-	@echo "Got      : "$(shell strings /tmp/test/elf64 | grep Famine | wc -l)$(shell strings /tmp/test2/elf64 | grep Famine | wc -l)$(shell /tmp/test/elf64)$(shell /tmp/test2/elf64)
-	@echo "Expected : "11$(shell Ressources/elf64)$(shell Ressources/elf64)
+	@echo "strings /tmp/test/elf64 | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test/elf64 | grep Famine | wc -l)
 	@exit 1
+else ifneq ($(shell sleep 0.3 && strings /tmp/test2/elf64 | grep Famine | wc -l), 1)
+	@echo " Failed !"
+	@echo "strings /tmp/test2/elf64 | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test2/elf64 | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test/elf64), $(shell Ressources/elf64))
+	@echo " Failed !"
+	@echo "/tmp/test/elf64"
+	@echo "Expected : "$(shell Ressources/elf64)
+	@echo "Got      : "$(shell /tmp/test/elf64)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test2/elf64), $(shell Ressources/elf64))
+	@echo " Failed !"
+	@echo "/tmp/test2/elf64"
+	@echo "Expected : "$(shell Ressources/elf64)
+	@echo "Got      : "$(shell /tmp/test2/elf64)
+	@exit 1
+else
+	@echo " Passed !"
 endif
-	@sleep 0.5
 
+	@./$(NAME)
 	@echo -n "TEST 2: No Re-Infection ..."
-	@./$(NAME)
-ifeq ($(shell strings /tmp/test/elf64 | grep Famine | wc -l)$(shell strings /tmp/test2/elf64 | grep Famine | wc -l)$(shell /tmp/test/elf64)$(shell /tmp/test2/elf64), 11$(shell Ressources/elf64)$(shell Ressources/elf64))
-	@echo " Passed !"
-else
+ifneq ($(shell sleep 0.3 && strings /tmp/test/elf64 | grep Famine | wc -l), 1)
 	@echo " Failed !"
-	@echo "Got      : "$(shell strings /tmp/test/elf64 | grep Famine | wc -l)$(shell strings /tmp/test2/elf64 | grep Famine | wc -l)$(shell /tmp/test/elf64)$(shell /tmp/test2/elf64)
-	@echo "Expected : "11$(shell Ressources/elf64)$(shell Ressources/elf64)
+	@echo "strings /tmp/test/elf64 | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test/elf64 | grep Famine | wc -l)
 	@exit 1
+else ifneq ($(shell sleep 0.3 && strings /tmp/test2/elf64 | grep Famine | wc -l), 1)
+	@echo " Failed !"
+	@echo "strings /tmp/test2/elf64 | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test2/elf64 | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test/elf64), $(shell Ressources/elf64))
+	@echo " Failed !"
+	@echo "/tmp/test/elf64"
+	@echo "Expected : "$(shell Ressources/elf64)
+	@echo "Got      : "$(shell /tmp/test/elf64)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test2/elf64), $(shell Ressources/elf64))
+	@echo " Failed !"
+	@echo "/tmp/test2/elf64"
+	@echo "Expected : "$(shell Ressources/elf64)
+	@echo "Got      : "$(shell /tmp/test2/elf64)
+	@exit 1
+else
+	@echo " Passed !"
 endif
-	@sleep 0.5
 
-	@echo -n "TEST 3: The In-fect-ception ..."
 	@cp /bin/ls /tmp/test/ls
 	@cp /bin/ls /tmp/test2/ls
 	@/tmp/test/elf64 1>/dev/null
-ifeq ($(shell strings /tmp/test/* | grep Famine | wc -l)$(shell strings /tmp/test2/* | grep Famine | wc -l)$(shell /tmp/test/ls)$(shell /tmp/test2/ls srcs), 22$(shell /bin/ls)$(shell /bin/ls srcs))
-	@echo " Passed !"
-else
+	@echo -n "TEST 3: The In-fect-ception ..."
+ifneq ($(shell sleep 0.3 && strings /tmp/test/ls | grep Famine | wc -l), 1)
 	@echo " Failed !"
-	@echo "Got      : "$(strings /tmp/test/* | grep Famine | wc -l)$(shell strings /tmp/test2/* | grep Famine | wc -l)$(shell /tmp/test/ls /tmp/test)$(shell /tmp/test2/ls /tmp/test2)
-	@echo "Expected : "22$(shell /bin/ls /tmp/test)$(shell /bin/ls /tmp/test2)
+	@echo "strings /tmp/test/ls | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test/ls | grep Famine | wc -l)
 	@exit 1
+else ifneq ($(shell sleep 0.3 && strings /tmp/test2/ls | grep Famine | wc -l), 1)
+	@echo " Failed !"
+	@echo "strings /tmp/test2/ls | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test2/ls | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test/ls), $(shell /bin/ls))
+	@echo " Failed !"
+	@echo "/tmp/test/ls"
+	@echo "Expected : "$(shell /bin/ls)
+	@echo "Got      : "$(shell /tmp/test/ls)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test2/ls -l srcs), $(shell /bin/ls -l srcs))
+	@echo " Failed !"
+	@echo "/tmp/test2/ls -l srcs"
+	@echo "Expected : "$(shell /bin/ls -l srcs)
+	@echo "Got      : "$(shell /tmp/test2/ls -l srcs)
+	@exit 1
+else
+	@echo " Passed !"
 endif
-	@sleep 0.5
 
-	@echo -n "TEST 4: The In-fect-ception 2 ..."
 	@cp /bin/echo /tmp/test/echo
 	@cp /bin/echo /tmp/test2/echo
 	@/tmp/test2/ls 1>/dev/null
-ifeq ($(shell strings /tmp/test/* | grep Famine | wc -l)$(shell strings /tmp/test2/* | grep Famine | wc -l)$(shell /tmp/test/echo tutu)$(shell /tmp/test2/echo toto), 33$(shell /bin/echo tutu)$(shell /bin/echo toto))
-	@echo " Passed !"
-else
+	@echo -n "TEST 4: The In-fect-ception 2 ..."
+ifneq ($(shell sleep 0.3 && strings /tmp/test/echo | grep Famine | wc -l), 1)
 	@echo " Failed !"
-	@echo "Got      : "$(shell strings /tmp/test/* | grep Famine | wc -l)$(shell strings /tmp/test2/* | grep Famine | wc -l)$(shell /tmp/test/echo tutu)$(shell /tmp/test2/echo toto)
-	@echo "Expected : "33$(shell /bin/echo tutu)$(shell /bin/echo toto)
+	@echo "strings /tmp/test/echo | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test/echo | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && strings /tmp/test2/echo | grep Famine | wc -l), 1)
+	@echo " Failed !"
+	@echo "strings /tmp/test2/echo | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test2/echo | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test/echo toto), $(shell /bin/echo toto))
+	@echo " Failed !"
+	@echo "/tmp/test/echo toto"
+	@echo "Expected : "$(shell /bin/echo toto)
+	@echo "Got      : "$(shell /tmp/test/echo toto)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test2/echo -n tutu), $(shell /bin/echo -n tutu))
+	@echo " Failed !"
+	@echo "/tmp/test2/echo -n tutu"
+	@echo "Expected : "$(shell /bin/echo -n tutu)
+	@echo "Got      : "$(shell /tmp/test2/echo -n tutu)
+	@exit 1
+else
+	@echo " Passed !"
+endif
+
+	@cp /bin/bash /tmp/test/bash
+	@cp /bin/bash /tmp/test2/bash
+	@./$(NAME)
+	@echo -n "TEST 5: The Bash Test ..."
+ifneq ($(shell sleep 0.3 && strings /tmp/test/bash | grep Famine | wc -l), 1)
+	@echo " Failed !"
+	@echo "strings /tmp/test/bash | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test/bash | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && strings /tmp/test2/bash | grep Famine | wc -l), 1)
+	@echo " Failed !"
+	@echo "strings /tmp/test2/bash | grep Famine | wc -l"
+	@echo "Expected : "1
+	@echo "Got      : "$(shell strings /tmp/test2/bash | grep Famine | wc -l)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test/bash -c ls), $(shell /bin/bash -c ls))
+	@echo " Failed !"
+	@echo "/tmp/test/bash -c ls"
+	@echo "Expected : "$(shell /bin/bash -c ls)
+	@echo "Got      : "$(shell /tmp/test/bash -c ls)
+	@exit 1
+else ifneq ($(shell sleep 0.3 && /tmp/test2/bash -c date), $(shell /bin/bash -c date))
+	@echo " Failed !"
+	@echo "/tmp/test2/bash -c date"
+	@echo "Expected : "$(shell /bin/bash -c date)
+	@echo "Got      : "$(shell /tmp/test2/bash -c date)
+	@exit 1
+else
+	@echo " Passed !"
 endif
