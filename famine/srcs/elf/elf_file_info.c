@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/17 22:15:06 by root             ###   ########.fr       */
+/*   Updated: 2018/06/21 18:07:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ void			file_info_64(void *file, int file_size)
 	/* 	} */
 	/* } */
 
-/*	
+	
 	ft_printf(CO2);
 	ft_printf("\nsymbols table:\n");
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
@@ -332,7 +332,7 @@ void			file_info_64(void *file, int file_size)
 			}
 		}
 	}
-*/
+
 	/* Prints ALL sections */
 /*
 	for (size_t i = 0; i < file_header->e_shnum; i++) {

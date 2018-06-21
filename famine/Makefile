@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/18 22:49:34 by root             ###   ########.fr        #
+#    Updated: 2018/06/21 18:19:54 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -60,21 +60,6 @@ re: fclean all
 hex: re
 	make -C $(LIB_DIR)
 	$(WWW) -o hex srcs/elf/elf_file_info.c $(INCLUDE) $(LIBS)
-
-test1: hex
-	$(WWW) main.c obj/famine64.o $(INCLUDE)
-	rm -rf /tmp/test/ /tmp/test2/
-	mkdir -p /tmp/test/
-	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
-	./a.out
-	/tmp/test/elf64
-	cp /bin/ls /tmp/test/.
-	./a.out
-	/tmp/test/ls
-	cp /bin/cat /tmp/test/.
-	cp /bin/echo /tmp/test/.
-	./a.out
-	/tmp/test/echo toto
 
 test: hex
 	@rm -rf /tmp/test /tmp/test2
@@ -130,3 +115,34 @@ else
 	@echo "Got      : "$(shell strings /tmp/test/* | grep Famine | wc -l)$(shell strings /tmp/test2/* | grep Famine | wc -l)$(shell /tmp/test/echo tutu)$(shell /tmp/test2/echo toto)
 	@echo "Expected : "33$(shell /bin/echo tutu)$(shell /bin/echo toto)
 endif
+
+test1: hex
+	$(WWW) main.c obj/famine64.o $(INCLUDE)
+	rm -rf /tmp/test/ /tmp/test2/
+	mkdir -p /tmp/test/
+	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
+	./a.out
+	/tmp/test/elf64
+	cp /bin/ls /tmp/test/.
+	./a.out
+	/tmp/test/ls
+	cp /bin/cat /tmp/test/.
+	cp /bin/echo /tmp/test/.
+	./a.out
+	/tmp/test/echo toto
+
+test2: hex
+	$(WWW) main2.c obj/famine64.o $(INCLUDE)
+	rm -rf /tmp/test/ /tmp/test2/
+	mkdir -p /tmp/test/
+	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
+	cp /tmp/test/elf64 Ressources/elf64
+	./a.out
+	/tmp/test/elf64
+	cp /bin/ls /tmp/test/.
+	./a.out
+	/tmp/test/ls
+	cp /bin/cat /tmp/test/.
+	cp /bin/echo /tmp/test/.
+	./a.out
+	/tmp/test/echo toto
