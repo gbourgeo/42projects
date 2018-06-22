@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/21 18:07:33 by root             ###   ########.fr       */
+/*   Updated: 2018/06/22 17:34:16 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,14 +191,6 @@ void			file_info_64(void *file, int file_size)
 		/* if (ft_strcmp(name, ".text") == 0) */
 		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
-//
-
-	/* for (size_t i = 0; i < file_header->e_phnum; i++) { */
-	/* 	Elf64_Phdr *p = program_header_table + i; */
-	/* 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) { */
-	/* 		print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1); */
-	/* 	} */
-	/* } */
 
 	
 	ft_printf(CO2);
@@ -333,6 +325,34 @@ void			file_info_64(void *file, int file_size)
 		}
 	}
 
+	ft_printf(CO2);
+	ft_printf("relocation section:\n");
+	Elf64_Shdr *section = section_header_table;
+	for (size_t i = 0; i < file_header->e_shnum; i++) {
+		if (section[i].sh_type == SHT_RELA) {
+			char		*name = string_table + section[i].sh_name;
+			ft_printf(CO4);
+			ft_printf("%s : (%d entries of %#x length)\n",
+					  name,
+					  section[i].sh_size / section[i].sh_entsize,
+					  section[i].sh_entsize);
+
+			Elf64_Rela	*rela = (Elf64_Rela *)(file + section[i].sh_offset);
+			ft_printf(CO3);
+			ft_printf("offset\t\t sym | type | info\t addend\n");
+			ft_printf(DEF);
+			for (size_t j = 0; j < section[i].sh_size / section[i].sh_entsize; j++) {
+				ft_printf("0x%-6llx\t %d | %d | %d\t\t 0x%x\n",
+						  rela->r_offset,
+						  ELF64_R_SYM(rela->r_info),
+						  ELF64_R_TYPE(rela->r_info),
+						  ELF64_R_INFO(ELF64_R_SYM(rela->r_info), ELF64_R_TYPE(rela->r_info)),
+						  rela->r_addend);
+				rela++;
+			}
+		}
+	}
+
 	/* Prints ALL sections */
 /*
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
@@ -347,6 +367,25 @@ void			file_info_64(void *file, int file_size)
 //		}
 	}
 */
+
+	/* search for ... */
+	/* Get section entry point */
+	/* Elf64_Shdr *entrysect = NULL; */
+	/* for (size_t i = 0; i < file_header->e_shnum; i++) { */
+	/* 	if (file_header->e_entry >= (section_header_table + i)->sh_offset && */
+	/* 		file_header->e_entry < (section_header_table + i)->sh_offset + (section_header_table + i)->sh_size) { */
+	/* 		entrysect = section_header_table + i; */
+	/* 		break ; */
+	/* 	} */
+	/* } */
+	/* u_char *text = (u_char *)(file + entrysect->sh_offset); */
+	/* for (size_t i = 0; i < entrysect->sh_size; i++) { */
+	/* 	if (*(u_char *)(text + i) == 0x00 && i - 4 > 0 && *(uint32_t *)(text + i - 4) > 0) { */
+	/* 		ft_printf("%#-5x %p\n", entrysect->sh_offset + i, */
+	/* 				  *(uint32_t *)(text + i - 3)); */
+	/* 	} */
+	/* } */
+
 }
 
 void			file_info_32(void *file, int file_size)
