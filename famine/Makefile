@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/21 18:19:54 by root             ###   ########.fr        #
+#    Updated: 2018/06/24 00:35:51 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -46,12 +46,12 @@ $(OBJ_DIR)%.o: $(ELF_DIR)/%.s
 	$(ASM) $(ASMFLAG) -o $@ $<
 
 clean:
-#	@make -C $(LIB_DIR) clean
+	@make -C $(LIB_DIR) clean
 	@/bin/rm -rf $(OBJ_DIR)
 	@echo $(NAME) objects cleaned...
 
 fclean: clean
-#	@make -C $(LIB_DIR) fclean
+	@make -C $(LIB_DIR) fclean
 	@/bin/rm -f $(NAME)
 	@echo $(NAME) erased...
 
@@ -121,22 +121,6 @@ test1: hex
 	rm -rf /tmp/test/ /tmp/test2/
 	mkdir -p /tmp/test/
 	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
-	./a.out
-	/tmp/test/elf64
-	cp /bin/ls /tmp/test/.
-	./a.out
-	/tmp/test/ls
-	cp /bin/cat /tmp/test/.
-	cp /bin/echo /tmp/test/.
-	./a.out
-	/tmp/test/echo toto
-
-test2: hex
-	$(WWW) main2.c obj/famine64.o $(INCLUDE)
-	rm -rf /tmp/test/ /tmp/test2/
-	mkdir -p /tmp/test/
-	$(WWW) -o /tmp/test/elf64 -m64 Ressources/sample.c
-	cp /tmp/test/elf64 Ressources/elf64
 	./a.out
 	/tmp/test/elf64
 	cp /bin/ls /tmp/test/.
