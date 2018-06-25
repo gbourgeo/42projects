@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/24 00:41:04 by root              #+#    #+#              #
-#    Updated: 2018/06/25 07:47:12 by root             ###   ########.fr        #
+#    Updated: 2018/06/25 17:31:24 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -52,7 +52,7 @@ fclean: clean
 
 re: fclean del all
 
-del:
+del: fclean
 	rm -rf Grace_kid.s
 	rm -rf Sully_*
 
@@ -60,7 +60,10 @@ test: re
 	./$(NAME) > out
 	/bin/cat Colleen.s > in
 	diff in out
-	/bin/rm in out
+	@/bin/rm in out
 
 	./$(NAME2)
 	diff Grace.s Grace_kid.s
+
+	mkdir -p sully ; cd sully; ../$(NAME3); ls -la | wc -l; diff ../Sully.s Sully_0.s; diff Sully_3.s Sully_2.s; cd ..
+	@/bin/rm -rf sully
