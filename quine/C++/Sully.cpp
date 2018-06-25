@@ -33,10 +33,9 @@ int create(int i) {
 int main(){
 	int i = )";
 	std::string d = R"(;
-	if (i < 0)
+	if (i <= 0)
 		return 0;
-	create(i);
-	if (i > 0 && !create(i - 1)) {
+	if (!create(i - 1)) {
 		std::string cmd = "g++ -Wall -Werror -Wextra -std=c++11 -o Sully_" + std::to_string(i - 1) +
 			" Sully_" + std::to_string(i - 1) + ".cpp && ./Sully_" + std::to_string(i - 1);
 		std::system(cmd.c_str());
@@ -55,10 +54,9 @@ int main(){
 }
 int main(){
 	int i = 5;
-	if (i < 0)
+	if (i <= 0)
 		return 0;
-	create(i);
-	if (i > 0 && !create(i - 1)) {
+	if (!create(i - 1)) {
 		std::string cmd = "g++ -Wall -Werror -Wextra -std=c++11 -o Sully_" + std::to_string(i - 1) +
 			" Sully_" + std::to_string(i - 1) + ".cpp && ./Sully_" + std::to_string(i - 1);
 		std::system(cmd.c_str());
