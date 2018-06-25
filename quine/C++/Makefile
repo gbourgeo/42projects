@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/12/16 18:53:45 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/12/17 20:11:21 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/06/25 13:05:15 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -51,5 +51,5 @@ fclean: clean
 re: fclean all
 
 del: fclean
-	rm -rf Grace_kid.c
+	rm -rf Grace_kid.cpp
 	rm -rf Sully_*
