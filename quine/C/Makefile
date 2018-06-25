@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/12/16 18:53:45 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/24 10:28:18 by root             ###   ########.fr        #
+#    Updated: 2018/06/25 16:47:56 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -50,11 +50,15 @@ fclean: clean
 
 re: fclean del all
 
-del:
+del: fclean
 	rm -rf Grace_kid.c
 	rm -rf Sully_*
 
 test: re
-	./Colleen > out
-	/bin/cat Colleen.c > in
-	diff in out
+	./Colleen > out ; /bin/cat Colleen.c > in ; diff in out
+	@/bin/rm in out
+
+	./Grace ; diff Grace.c Grace_kid.c
+
+	mkdir -p sully ; cd sully ; ../Sully; ls -la | wc -l; diff ../Sully.c Sully_0.c; diff Sully_3.c Sully_2.c; cd ..
+	@/bin/rm -rf sully
