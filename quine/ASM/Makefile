@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/24 00:41:04 by root              #+#    #+#              #
-#    Updated: 2018/06/24 02:22:53 by root             ###   ########.fr        #
+#    Updated: 2018/06/25 07:47:12 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,8 +23,9 @@ OBJS2 = $(addprefix $(OBJS_DIR), $(SRCS2:.s=.o))
 OBJS3 = $(addprefix $(OBJS_DIR), $(SRCS3:.s=.o))
 OBJS_DIR = obj/
 
-WWW = nasm
-FLAGS = -f elf64
+ASM = nasm
+ARCH = -f elf64
+FLAGS = -Wall -Werror -Wextra
 
 all: $(OBJS_DIR) $(NAME) $(NAME2) $(NAME3) 
 
@@ -32,16 +33,16 @@ $(OBJS_DIR):
 	@mkdir -p $@
 
 $(NAME): $(OBJS)
-	gcc -o $@ $^
+	gcc $(FLAGS) -o $@ $^
 
 $(NAME2): $(OBJS2)
-	gcc -o $@ $^
+	gcc $(FLAGS) -o $@ $^
 
 $(NAME3): $(OBJS3)
-	gcc -o $@ $^
+	gcc $(FLAGS) -o $@ $^
 
 $(OBJS_DIR)%.o: %.s
-	$(WWW) $(FLAGS) -o $@ $<
+	$(ASM) $(ARCH) -o $@ $<
 
 clean:
 	rm -rf $(OBJS_DIR)
@@ -52,5 +53,14 @@ fclean: clean
 re: fclean del all
 
 del:
-	rm -rf Grace_kid.c
+	rm -rf Grace_kid.s
 	rm -rf Sully_*
+
+test: re
+	./$(NAME) > out
+	/bin/cat Colleen.s > in
+	diff in out
+	/bin/rm in out
+
+	./$(NAME2)
+	diff Grace.s Grace_kid.s
