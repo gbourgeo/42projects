@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/24 00:41:04 by root              #+#    #+#              #
-#    Updated: 2018/06/25 17:31:24 by root             ###   ########.fr        #
+#    Updated: 2018/06/27 01:11:36 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,8 +23,8 @@ OBJS2 = $(addprefix $(OBJS_DIR), $(SRCS2:.s=.o))
 OBJS3 = $(addprefix $(OBJS_DIR), $(SRCS3:.s=.o))
 OBJS_DIR = obj/
 
-ASM = nasm
-ARCH = -f elf64
+ASM = ~/Downloads/nasm-2.11.02/nasm
+ARCH = -f macho64
 FLAGS = -Wall -Werror -Wextra
 
 all: $(OBJS_DIR) $(NAME) $(NAME2) $(NAME3) 
@@ -64,6 +64,7 @@ test: re
 
 	./$(NAME2)
 	diff Grace.s Grace_kid.s
+	@/bin/rm Grace_kid.s
 
-	mkdir -p sully ; cd sully; ../$(NAME3); ls -la | wc -l; diff ../Sully.s Sully_0.s; diff Sully_3.s Sully_2.s; cd ..
-	@/bin/rm -rf sully
+	mkdir -p sullly ; cd sullly; ../$(NAME3); ls -la | wc -l; diff ../Sully.s Sully_0.s; diff Sully_3.s Sully_2.s; cd ..
+	@/bin/rm -rf sullly
