@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/12/16 18:53:45 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/25 16:47:56 by root             ###   ########.fr        #
+#    Updated: 2018/06/25 22:27:41 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -60,5 +60,5 @@ test: re
 
 	./Grace ; diff Grace.c Grace_kid.c
 
-	mkdir -p sully ; cd sully ; ../Sully; ls -la | wc -l; diff ../Sully.c Sully_0.c; diff Sully_3.c Sully_2.c; cd ..
-	@/bin/rm -rf sully
+	mkdir -p sullly ; cd sullly ; ../Sully; ls -la | wc -l; diff ../Sully.c Sully_0.c; diff Sully_3.c Sully_2.c; cd ..
+	@/bin/rm -rf sullly
