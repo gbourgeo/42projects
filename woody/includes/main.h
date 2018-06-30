@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/30 21:21:59 by root             ###   ########.fr       */
+/*   Updated: 2018/06/30 22:32:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct	s_elf32
 	Elf32_Shdr	*section;
 	Elf32_Shdr	*text_section;
 	Elf32_Addr	old_entry;
+	Elf32_Addr	text_entry;
 	uint32_t	text_crypted_size;
 	u_char		padding[8];
 }				t_elf32;
