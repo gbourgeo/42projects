@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/11 04:59:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/06 17:20:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/06/30 21:21:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,9 @@ typedef struct	s_elf32
 	Elf32_Ehdr	*header;
 	Elf32_Phdr	*program;
 	Elf32_Phdr	*text_program;
-	Elf32_Phdr	*woody_program;
 	Elf32_Shdr	*section;
 	Elf32_Shdr	*text_section;
 	Elf32_Addr	old_entry;
-	Elf32_Addr	vaddr;
 	uint32_t	text_crypted_size;
 	u_char		padding[8];
 }				t_elf32;
@@ -56,13 +54,10 @@ typedef struct	s_elf64
 	Elf64_Ehdr	*header;
 	Elf64_Phdr	*program;
 	Elf64_Phdr	*text_program;
-	Elf64_Phdr	*woody_program;
 	Elf64_Shdr	*section;
 	Elf64_Shdr	*text_section;
-	Elf64_Shdr	woody_section;
 	Elf64_Addr	old_entry;
 	Elf64_Addr	text_entry;
-	Elf64_Addr	vaddr;
 	uint64_t	text_crypted_size;
 }				t_elf64;
 

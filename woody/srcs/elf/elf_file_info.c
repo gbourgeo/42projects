@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/03 04:13:06 by root             ###   ########.fr       */
+/*   Updated: 2018/06/30 20:06:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void			file_info_64(void *file, int file_size)
 		ft_printf(DEF);
 	}
 
-	print_hex((u_char *)file, file_size, 2);
+//	print_hex((u_char *)file, file_size, 2);
 
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
