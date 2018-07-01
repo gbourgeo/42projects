@@ -23,131 +23,123 @@ woody64_func:					; ELF version
 
 	jmp 	woody64_end
 woody64_decrypt:
-	push	r15
-	push	r14
-	and		rsi, -8
-	push	r13
-	push	r12
-	push	rbp
-	push	rbx
-	mov 	QWORD [rsp-8], rsi
-	je  	.L1
-	mov 	r12, rdi
-	xor		ebx, ebx
-	xor		ebp, ebp
-	mov 	r15, rdx
-.L6:
-	lea		eax, [rbp+3]
-	add		rbx, r12
-	lea		r14d, [rbp+1]
-	movzx	esi, BYTE [rbx]
-	lea		r13d, [rbp+2]
-	mov		r11d, DWORD [r15+8]
-	add		rax, r12
-	add		r14, r12
-	mov		r10d, DWORD [r15+12]
-	mov		QWORD [rsp-48], rax
-	movzx	eax, BYTE [rax]
-	add		r13, r12
-	sal		esi, 24
-	or  	esi, eax
-	movzx	eax, BYTE [r14]
-	sal 	eax, 16
-	or		esi, eax
-	movzx		eax, BYTE [r13+0]
-	sal		eax, 8
-	or		esi, eax
-	lea		eax, [rbp+4]
-	add		rax, r12
-	mov		rdi, rax
-	mov		QWORD [rsp-40], rax
-	lea		eax, [rbp+5]
-	movzx	ecx, BYTE [rdi]
-	mov		edi, -957401312
-	add		rax, r12
-	mov		rdx, rax
-	mov		QWORD [rsp-32], rax
-	lea		eax, [rbp+6]
-	add		rax, r12
-	sal		ecx, 24
-	mov		r8, rax
-	mov		QWORD [rsp-24], rax
-	lea		eax, [rbp+7]
-	add		rax, r12
-	mov		r9, rax
-	mov		QWORD [rsp-16], rax
-	movzx	eax, BYTE [rdx]
-	sal		eax, 16
-	or		ecx, eax
-	movzx	eax, BYTE [r9]
-	mov		r9d, DWORD [r15]
-	or		ecx, eax
-	movzx	eax, BYTE [r8]
-	mov		r8d, DWORD [r15+4]
-	sal		eax, 8
-	or		ecx, eax
-.L3:
-	mov		eax, esi
-	mov		edx, esi
-	sal		eax, 4
-	shr		edx, 5
-	add		edx, r10d
-	add		eax, r11d
-	xor		eax, edx
-	lea		edx, [rsi+rdi]
-	xor		eax, edx
-	sub		ecx, eax
-	mov		eax, ecx
-	mov		edx, ecx
-	sal		eax, 4
-	shr		edx, 5
-	add		edx, r8d
-	add		eax, r9d
-	xor		eax, edx
-	lea		edx, [rcx+rdi]
-	xor		eax, edx
-	sub		esi, eax
-	add		edi, 1640531527
-	jne		.L3
-	mov		eax, esi
-	shr		eax, 24
-	mov		BYTE [rbx], al
-	mov		eax, esi
-	mov		rbx, QWORD [rsp-40]
-	shr		eax, 16
-	mov		BYTE [r14], al
-	mov		eax, esi
-	shr		eax, 8
-	mov		BYTE [r13+0], al
-	mov		rax, QWORD [rsp-48]
-	mov		BYTE [rax], sil
-	mov		eax, ecx
-	shr		eax, 24
-	mov		BYTE [rbx], al
-	mov		rbx, QWORD [rsp-32]
-	mov		eax, ecx
-	shr		eax, 16
-	mov		BYTE [rbx], al
-	mov		rbx, QWORD [rsp-24]
-	mov		eax, ecx
-	shr		eax, 8
-	mov 	BYTE [rbx], al
-	lea 	ebx, [rbp+8]
-	cmp 	QWORD [rsp-8], rbx
-	mov 	rax, QWORD [rsp-16]
-	mov 	rbp, rbx
-	mov 	BYTE [rax], cl
-	ja  	.L6
-.L1:
-	pop 	rbx
-	pop 	rbp
-	pop 	r12
-	pop 	r13
-	pop 	r14
-	pop 	r15
+	push r15
+	push r14
+	push r13
+	push r12
+	push rbp
+	push rbx
+	and esi, -8
+	mov DWORD [rsp-4], esi
+	je .L8
+	mov r11, rdi
+	mov r14d, 0
+	mov r13, rdx
+.L11:
+	mov r12d, r14d
+	add r12, r11
+	lea ebp, [r14+1]
+	add rbp, r11
+	lea ebx, [r14+2]
+	add rbx, r11
+	lea eax, [r14+3]
+	add rax, r11
+	mov QWORD [rsp-48], rax
+	movzx ecx, BYTE [r12]
+	sal ecx, 24
+	movzx eax, BYTE [rax]
+	or ecx, eax
+	movzx eax, BYTE [rbp+0]
+	sal eax, 16
+	or ecx, eax
+	movzx eax, BYTE [rbx]
+	sal eax, 8
+	or ecx, eax
+	lea eax, [r14+4]
+	lea rdi, [r11+rax]
+	mov QWORD [rsp-40], rdi
+	lea eax, [r14+5]
+	lea rsi, [r11+rax]
+	mov QWORD [rsp-32], rsi
+	lea eax, [r14+6]
+	lea r8, [r11+rax]
+	mov QWORD [rsp-24], r8
+	lea eax, [r14+7]
+	lea r9, [r11+rax]
+	mov QWORD [rsp-16], r9
+	movzx edx, BYTE [rdi]
+	sal edx, 24
+	movzx eax, BYTE [rsi]
+	sal eax, 16
+	or edx, eax
+	movzx eax, BYTE [r9]
+	or edx, eax
+	movzx eax, BYTE [r8]
+	sal eax, 8
+	or edx, eax
+	mov r10d, DWORD [r13+0]
+	mov r9d, DWORD [r13+4]
+	mov r8d, DWORD [r13+8]
+	mov edi, DWORD [r13+12]
+	mov esi, -957401312
+.L10:
+	mov eax, ecx
+	sal eax, 4
+	add eax, r8d
+	mov r15d, ecx
+	shr r15d, 5
+	add r15d, edi
+	xor eax, r15d
+	lea r15d, [rcx+rsi]
+	xor eax, r15d
+	sub edx, eax
+	mov eax, edx
+	sal eax, 4
+	add eax, r10d
+	mov r15d, edx
+	shr r15d, 5
+	add r15d, r9d
+	xor eax, r15d
+	lea r15d, [rdx+rsi]
+	xor eax, r15d
+	sub ecx, eax
+	add esi, 1640531527
+	jne .L10
+	mov eax, ecx
+	shr eax, 24
+	mov BYTE [r12], al
+	mov eax, ecx
+	shr eax, 16
+	mov BYTE [rbp+0], al
+	movzx eax, ch
+	mov BYTE [rbx], al
+	mov rax, QWORD [rsp-48]
+	mov BYTE [rax], cl
+	mov eax, edx
+	shr eax, 24
+	mov rbx, QWORD [rsp-40]
+	mov BYTE [rbx], al
+	mov eax, edx
+	shr eax, 16
+	mov rbx, QWORD [rsp-32]
+	mov BYTE [rbx], al
+	mov rbx, QWORD [rsp-24]
+	movzx eax, dh
+	mov BYTE [rbx], al
+	mov rax, QWORD [rsp-16]
+	mov BYTE [rax], dl
+	add r14d, 8
+	cmp DWORD [rsp-4], r14d
+	ja .L11
+.L8:
+	pop rbx
+	pop rbp
+	pop r12
+	pop r13
+	pop r14
+	pop r15
 	ret
 woody64_end:
-	
 	mov 	rsi, QWORD [rel text_size]
 	lea 	rdx, [rel woody64_keys]
 	lea 	rdi, [rel woody64_func]
@@ -160,24 +152,14 @@ woody64_end:
 	lea 	rax, [rel woody64_func]
 	add 	rax, [rel jump_vaddr]
 	mov 	[rel jump_vaddr], rax
-	
+
 	pop 	rbx
 	pop 	rax
 	pop 	rdx
 	pop 	rsi
 	pop 	rdi
-
 	push	QWORD [rel jump_vaddr]
 	ret
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
 end:
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0
