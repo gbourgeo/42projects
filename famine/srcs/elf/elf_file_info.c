@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/23 23:12:36 by root             ###   ########.fr       */
+/*   Updated: 2018/07/02 22:01:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,7 @@ void			file_info_64(void *file, int file_size)
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
+//	print_hex((u_char *)file, file_size, 2);
 	
 	section_header_table = (Elf64_Shdr *)(file + file_header->e_shoff);
 	string_table = (file_header->e_shstrndx == SHN_UNDEF) ? NULL :
@@ -189,7 +190,8 @@ void			file_info_64(void *file, int file_size)
 		/* if (ft_strcmp(name, ".text") == 0) */
 		/* 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1); */
 	}
-	
+
+/*	
 	ft_printf(CO2);
 	ft_printf("\nsymbols table:\n");
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
@@ -349,7 +351,7 @@ void			file_info_64(void *file, int file_size)
 			}
 		}
 	}
-	print_hex((u_char *)file, file_size, 2);
+*/
 
 	/* Prints ALL sections */
 /*
