@@ -6,7 +6,7 @@
 //   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2018/07/04 22:00:22 by gbourgeo          #+#    #+#             //
-//   Updated: 2018/07/04 22:33:09 by gbourgeo         ###   ########.fr       //
+//   Updated: 2018/07/05 10:20:52 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -37,12 +37,18 @@ Squad::~Squad()
 
 void Squad::deleteUnits(t_units *unit)
 {
-	if (unit)
-		Squad::deleteUnits(unit->next);
+	if (unit == 0)
+		return;
 	delete unit->marine;
+	Squad::deleteUnits(unit->next);
 	unit->marine = 0;
 	unit->next = 0;
 	delete unit;
+}
+
+t_units * Squad::getUnits() const
+{
+	return this->_units;
 }
 
 int Squad::getCount() const
