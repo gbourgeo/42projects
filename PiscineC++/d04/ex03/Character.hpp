@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2018/07/05 11:20:59 by root              #+#    #+#             //
-//   Updated: 2018/07/05 16:12:20 by root             ###   ########.fr       //
+//   Updated: 2018/07/05 22:32:13 by gbourgeo         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -29,14 +29,12 @@ public:
 	virtual void				unequip(int idx);
 	virtual void				use(int idx, ICharacter & target);
 	
-	int							getCount() const;
 	AMateria *					getMateria(int) const;
 
 private:
 	Character();
 
 	std::string		_name;
-	int				_count;
 	AMateria *		_materia[MATERIA_NB];
 };
 

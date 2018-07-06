@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2018/07/05 10:36:12 by root              #+#    #+#             //
-//   Updated: 2018/07/05 17:30:09 by root             ###   ########.fr       //
+//   Updated: 2018/07/05 22:40:17 by gbourgeo         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -49,9 +49,6 @@ int main()
 	std::cout << std::endl;
 	zaz->unequip(-1);
 	zaz->unequip(0);
-	zaz->unequip(0);
-	zaz->unequip(0);
-	zaz->unequip(0);
 	zaz->unequip(1);
 	zaz->unequip(2);
 	zaz->unequip(3);
@@ -65,6 +62,14 @@ int main()
 	zaz->equip(tmp);
 	tmp = src->createMateria("ice");
 	zaz->equip(tmp);
+	tmp = src->createMateria("ice");
+	zaz->equip(tmp);
+	tmp = src->createMateria("ice");
+	zaz->equip(tmp);
+	tmp = src->createMateria("ice");
+	zaz->equip(tmp);
+	tmp = src->createMateria("ice");
+	zaz->equip(tmp);
 
 	zaz->use(-1, *bob);
 	zaz->use(0, *bob);
@@ -75,7 +80,6 @@ int main()
 	zaz->use(42, *bob);
 
 	delete bob;
-	std::cout << zaz->getName() << std::cout;
 	delete zaz;
 	delete src;
 	return 0;
