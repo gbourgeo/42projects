@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2018/07/06 21:08:27 by root              #+#    #+#             //
-//   Updated: 2018/07/06 21:39:04 by root             ###   ########.fr       //
+//   Updated: 2018/07/08 06:11:26 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -37,7 +37,22 @@ void OfficeBlock::setExecutingBureaucrat(Bureaucrat *x)
 	this->_xBureaucrat = x;
 }
 
-Form * OfficeBlock::doBureaucracy(std::string const & formname, std::string const & target)
+Intern * OfficeBlock::getIntern() const
+{
+	return this->_intern;
+}
+
+Bureaucrat * OfficeBlock::getSigningBureaucrat() const
+{
+	return this->_sBureaucrat;
+}
+
+Bureaucrat * OfficeBlock::getExecutingBureaucrat() const
+{
+	return this->_xBureaucrat;
+}
+
+void OfficeBlock::doBureaucracy(std::string const & formname, std::string const & target)
 {
 	Form		*form = 0;
 
@@ -49,9 +64,13 @@ Form * OfficeBlock::doBureaucracy(std::string const & formname, std::string cons
 		throw OfficeBlock::NoExecutingBureaucratException();
 	if (!(form = this->_intern->makeForm(formname, target)))
 		throw OfficeBlock::NoFormCreatedException();
-	if (!this->_sBureaucrat->signForm(*form))
+	if (!this->_sBureaucrat->signForm(*form)) {
+		delete form;
 		throw OfficeBlock::NoFormSignedException();
-	if (!(this->_xBureaucrat->executeForm(*form)))
+	}
+	if (!(this->_xBureaucrat->executeForm(*form))) {
+		delete form;
 		throw OfficeBlock::NoFormExecutedException();
-	return form;
+	}
+	delete form;
 }

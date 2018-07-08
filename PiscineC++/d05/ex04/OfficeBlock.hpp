@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2018/07/06 21:05:27 by root              #+#    #+#             //
-//   Updated: 2018/07/06 21:39:15 by root             ###   ########.fr       //
+//   Updated: 2018/07/08 03:08:07 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -27,7 +27,7 @@ public:
 	void			setSigningBureaucrat(Bureaucrat *);
 	void			setExecutingBureaucrat(Bureaucrat *);
 	Form *			doBureaucracy(std::string const &, std::string const &);
-
+	
 	class NoInternAssignedException: public std::exception
 	{
 	public:

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2018/07/06 12:25:06 by root              #+#    #+#             //
-//   Updated: 2018/07/06 21:52:05 by root             ###   ########.fr       //
+//   Updated: 2018/07/08 03:11:08 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -28,6 +28,8 @@ int main()
 	A.setIntern(new Intern());
 	try {
 		A.doBureaucracy("salut", "toi");
+	} catch (OfficeBlock::NoInternAssignedException & e) {
+		std::cout << e.what() << std::endl;
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -35,6 +37,8 @@ int main()
 	A.setSigningBureaucrat(new Bureaucrat("Roger", 25));
 	try {
 		A.doBureaucracy("salut", "toi");
+	} catch (OfficeBlock::NoSigningBureaucratException & e) {
+		std::cout << e.what() << std::endl;
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
 	}
