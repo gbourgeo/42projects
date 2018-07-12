@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/30 22:21:02 by root              #+#    #+#             */
-/*   Updated: 2018/06/30 23:29:43 by root             ###   ########.fr       */
+/*   Updated: 2018/07/12 07:47:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,28 +70,6 @@ void dechiffrer (unsigned char* data, uint32_t size, uint32_t* k) {
 		data[j+7] = (char) ((datablock[1]) & 0xFF);
 	}
 }
-
-/* void crypt(char *data, uint32_t size, uint32_t *k) */
-/* { */
-/* 	uint32_t i = 0; */
-
-/* 	size -= (size % 8); */
-/* 	while (i < size) { */
-/* 		chiffrer((uint32_t *)&data[i], k); */
-/* 		i += 8; */
-/* 	} */
-/* } */
-
-/* void decrypt(char *data, uint32_t size, uint32_t *k) */
-/* { */
-/* 	uint32_t i = 0; */
-
-/* 	size -= (size % 8); */
-/* 	while (i < size) { */
-/* 		dechiffrer((uint32_t *)&data[i], k); */
-/* 		i += 8; */
-/* 	} */
-/* } */
 
 int main()
 {

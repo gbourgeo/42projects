@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/07/12 05:35:34 by root             ###   ########.fr        #
+#    Updated: 2018/07/12 07:50:36 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,14 +31,12 @@ SRC			+= get_elf_info.c pack_elf64.c pack_elf32.c
 SRC_S		= woody64.s encrypt64.s woody32.s encrypt32.s
 ASM			= nasm
 ASMFLAG		= -f elf64
-PRINT_HEX	= $(WWW) -o hex $(ELF_DIR)elf_file_info.c $(INCLUDE) $(LIBS)
 endif
 ifeq ($(UNAME_S), Darwin)
 SRC			+= get_macho_info.c pack_macho64.c ft_swap_bytes.c
 SRC_S		= woody64.s encrypt64.s
 ASM			= ~/Downloads/nasm-2.11.02/nasm
 ASMFLAG		= -f macho64
-PRINT_HEX	= $(WWW) -o hex $(MAC_DIR)macho_file_info.c $(INCLUDE) $(LIBS)
 endif
 
 LIB_DIR	= libft/
@@ -92,4 +90,8 @@ fclean: clean
 re: fclean all
 
 hex: lib
-	$(PRINT_HEX)
+ifeq ($(UNAME_S), Linux)
+	$(WWW) -o hex Ressources/elf_file_info.c $(INCLUDE) $(LIBS)
+else ifeq ($(UNAME_S), Darwin)
+	$(WWW) -o hex Ressources/macho_file_info.c $(INCLUDE) $(LIBS)
+endif

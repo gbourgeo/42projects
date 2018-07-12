@@ -143,7 +143,7 @@ woody32_end:
 	pop 	edx
 	pop 	esi
 	pop 	edi
-	push	DWORD [rel jump_vaddr]
+	;push	DWORD [rel jump_vaddr]
 	ret
 end:
 	woody32_keys dd 0x0, 0x0, 0x0, 0x0
