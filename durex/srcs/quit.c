@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   durex.h                                            :+:      :+:    :+:   */
+/*   quit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/07/13 00:15:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/07/12 23:53:42 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/07/13 00:15:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DUREX_H
-# define DUREX_H
+#include "durex.h"
 
-# define DUREX_LOCK_FILE "/var/lock/durex.lock"
-
-typedef struct	s_env
+void			quitClearlyDaemon()
 {
-	int			lock;
-	char		child;
-}				t_env;
+	if (e.child)
+	{
+		flock(e.lock, LOCK_UN);
+		remove(DUREX_LOCK_FILE);
+	}
+	close(e.lock);
+	exit(0);
+}
 
-t_env			e;
-
-int				durex();
-void			quitClearlyDaemon();
-
-#endif /* DUREX_H */
+void			daemonSigHandler(int sig)
+{
+	quitClearlyDaemon();
+}
