@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/20 19:57:53 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/07/02 23:42:51 by root             ###   ########.fr        #
+#    Updated: 2018/07/12 07:44:25 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,8 +23,8 @@ OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 
 WWW		= gcc
-FLAGS	= -Wall -Werror -Wextra -O2
-INCLUDE	= -I $(LIB_DIR)/includes
+FLAGS	= -Wall -Werror -Wextra
+
 ASM		= nasm
 ASMFLAG	= -f elf64
 
@@ -34,10 +34,10 @@ $(OBJ_DIR):
 	@mkdir -p $@
 
 $(NAME): $(OBJ) $(OBJ_S)
-	$(WWW) -o $@ $^ $(LIBS)
+	$(WWW) -o $@ $^
 
 $(OBJ_DIR)%.o: $(SRC_DIR)/%.c
-	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
+	$(WWW) $(FLAGS) -o $@ -c $<
 
 $(OBJ_DIR)%.o: $(ELF_DIR)/%.s
 	$(ASM) $(ASMFLAG) -o $@ $<
