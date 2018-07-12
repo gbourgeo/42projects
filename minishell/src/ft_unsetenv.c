@@ -6,61 +6,58 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 14:31:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/07/12 09:15:17 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static int		new_env(t_env *e, int i)
+static char		**copy_env(char *unset, char **env)
 {
 	char		**new;
-	int			len;
+	int			i;
 
-	new = e->env;
-	e->env = malloc(sizeof(*new) * ft_tablen(new));
-	if (e->env)
+	i = 0;
+	if ((new = malloc(sizeof(*env) * ft_tablen(env))) == NULL)
 	{
-		len = 0;
-		while (new[len] != 0)
-		{
-			if (len < i)
-				e->env[len] = ft_strdup(new[len]);
-			else if (len > i)
-				e->env[len - 1] = ft_strdup(new[len]);
-			len++;
-		}
-		e->env[len - 1] = 0;
-		ft_freetab(&new);
-		return (0);
+		ft_putendl_fd("unsetenv: Memory space insufficiant.", 2);
+		return (env);
 	}
-	e->env = new;
-	ft_putendl_fd("unsetenv: Memory space insufficiant.", 2);
-	return (1);
+	while (env[i])
+	{
+		if (env[i] == unset)
+		{
+			free(unset);
+			unset = NULL;
+		}
+		else if (unset)
+			new[i] = env[i];
+		else
+			new[i - 1] = env[i];
+		i++;
+	}
+	new[i - 1] = NULL;
+	free(env);
+	return (new);
 }
 
 int				ft_unsetenv(char **entry, t_env *e)
 {
 	int			i;
-	int			j;
+	char		*unset;
 
 	i = 1;
 	e->ret = 1;
 	if (!entry[1])
+	{
 		ft_putendl_fd("unsetenv: Too few arguments.", 2);
+		return (1);
+	}
 	while (entry[i] && e->env)
 	{
-		j = 0;
-		while (e->env[j])
-		{
-			if (ft_strcmp(e->env[j], entry[i]) == '=')
-			{
-				e->ret += new_env(e, j);
-				break ;
-			}
-			j++;
-		}
+		if ((unset = ft_getenv(entry[i], e->env)))
+			e->env = copy_env(unset - ft_strlen(entry[i]) - 1, e->env);
 		i++;
 	}
-	return (e->ret);
+	return (0);
 }

@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/04 15:32:28 by root             ###   ########.fr        #
+#    Updated: 2018/07/12 13:49:40 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -17,26 +17,28 @@ SRC_D 	= src/
 HDR		= includes/
 
 SRC		= main.c			\
-			ft_fatal.c		\
-			ft_minishell.c	\
-			ft_echo.c		\
-			ft_env.c		\
-			ft_fork.c		\
-			ft_envcpy.c		\
-			ft_env_options.c \
-			ft_env_check.c	\
-			ft_env_extra.c	\
-			ft_getenv.c		\
-			ft_setenv.c		\
-			ft_cd.c			\
-			ft_cd_check.c	\
-			ft_change_pwds.c\
-			ft_getcwd.c		\
-			ft_exit.c		\
-			ft_unsetenv.c	\
-			ft_stralnum.c 	\
-			ft_split_whitespaces.c	\
-			ft_strerror.c
+		check_and_exec.c	\
+		ft_dollar_expansion.c \
+		ft_fatal.c			\
+		ft_minishell.c		\
+		ft_echo.c			\
+		ft_env.c			\
+		ft_fork.c			\
+		ft_envcpy.c			\
+		ft_env_options.c 	\
+		ft_env_check.c		\
+		ft_env_extra.c		\
+		ft_getenv.c			\
+		ft_setenv.c			\
+		ft_cd.c				\
+		ft_cd_check.c		\
+		ft_change_pwds.c	\
+		ft_getcwd.c			\
+		ft_exit.c			\
+		ft_unsetenv.c		\
+		ft_stralnum.c 		\
+		ft_split_whitespaces.c	\
+		ft_strerror.c
 
 OBJ_D 	= obj/
 

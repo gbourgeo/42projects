@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dprintf.h                                       :+:      :+:    :+:   */
+/*   ft_dprintf.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 02:24:36 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 02:39:40 by root             ###   ########.fr       */
+/*   Created: 2018/04/11 02:13:19 by root              #+#    #+#             */
+/*   Updated: 2018/04/11 02:52:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_DPRINTF_H
-# define FT_DPRINTF_H
+#include "libft.h"
+#include "ft_dprintf.h"
 
-#include "ft_base_printf.h"
+int			ft_dprintf(int fd, const char *restrict format, ...)
+{
+	t_dt	data;
+	int		ret;
 
-int			ft_dprintf(int fd, const char *restrict format, ...);
-void		ft_dprintf_write(t_dt *data);
-
-#endif
+	ft_memset(&data, 0, sizeof(data));
+	data.fd = fd;
+	data.tail = (char *)format;
+	data.writeto = ft_dprintf_write;
+	va_start(data.ap, format);
+	ret = pf_routine(&data);
+	va_end(data.ap);
+	return (ret);
+}

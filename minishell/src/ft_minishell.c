@@ -6,58 +6,64 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 16:44:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/07/12 13:50:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "main.h"
 
-static void		prompt(char **env)
+static void		prompt(t_env *e)
 {
 	char		*pwd;
 	char		*home;
 	char		*tmp;
 
-	ft_putstr("SH1: \033[33m");
-	ft_putstr(ft_getenv("USER", env));
-	ft_putstr("\033[31m ");
-	pwd = ft_getenv("PWD", env);
-	home = ft_getenv("HOME", env);
+	pwd = ft_getenv("PWD", e->env);
+	home = ft_getenv("HOME", e->env);
 	tmp = ft_strstr(pwd, home);
 	if (tmp != NULL)
-	{
-		write(1, "~", 1);
-		ft_putstr(&pwd[ft_strlen(home)]);
-	}
+		ft_printf("\e[36m%s\e[0m@\e[31;1m%c%s \e[37m> \e[0m",
+					ft_getenv("USER", e->env), '~', &pwd[ft_strlen(home)]);
 	else
-		ft_putstr(pwd);
-	ft_putstr("\033[37m > \033[0m");
+		ft_printf("\e[36m%s\e[0m@\e[31;1m%c%s \e[37m> \e[0m",
+					ft_getenv("USER", e->env), '\0', pwd);
 }
 
-int				check_and_exec(char **command, char **env, t_env *e)
+static char		*tilde_expansion(char *command, char **env)
 {
-	static char	*builtins[] = { BUILTINS };
-	static int	(*function[])(char **, t_env *) = { FUNCTION };
-	char		**old;
-	int			i;
+	char		*new;
+	char		*ptr;
+	int			len;
+
+	while ((ptr = ft_strchr(command, '~')) != NULL)
+	{
+		len = ft_strlen(command) + ft_strlen(ft_getenv("HOME", env));
+		if ((new = malloc(len)) == NULL)
+			return (command);
+		*ptr++ = '\0';
+		ft_strcpy(new, command);
+		ft_strcat(new, ft_getenv("HOME", env));
+		ft_strcat(new, ptr);
+		free(command);
+		command = new;
+	}
+	return (command);
+}
+
+static char		*check_expansions(char *command, char **env)
+{
+	size_t		i;
 
 	i = 0;
-	old = e->env;
-	e->env = env;
-	while (builtins[i])
+	while (command[i])
 	{
-		if (ft_strcmp(*command, builtins[i]) == 0)
-		{
-			e->ret = function[i](command, e);
-			break ;
-		}
-		i++;
+		if (command[i] == '$')
+			i = dollar_expansion(&command, i, env);
+		if (command[i] == '~')
+			i = tilde_expansion(&command, env)
 	}
-	if (!builtins[i] && *command)
-		e->ret = fork_function(command, env);
-	e->env = old;
-	return (e->ret);
+	return (command);
 }
 
 void			ft_shell(t_env *e)
@@ -65,11 +71,12 @@ void			ft_shell(t_env *e)
 	char		**arg;
 
 	e->command = NULL;
-	prompt(e->env);
+	prompt(e);
 	while (get_next_line(STDIN_FILENO, &e->command) > 0)
 	{
 		if (*e->command)
 		{
+			e->command = check_expansions(e->command, e->env);
 			arg = ft_split_whitespaces(e->command);
 			if (arg == NULL)
 				ft_fatal("Memory space insufficiant.", e);
@@ -77,6 +84,6 @@ void			ft_shell(t_env *e)
 			ft_freetab(&arg);
 		}
 		ft_freestr(&e->command);
-		prompt(e->env);
+		prompt(e);
 	}
 }

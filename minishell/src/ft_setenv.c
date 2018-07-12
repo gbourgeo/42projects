@@ -6,87 +6,68 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 15:09:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/07/12 10:16:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static int			add_env(char **entry, char **new_env, t_env *e, int i)
-{
-	char		*tmp;
-
-	e->env = malloc(sizeof(char *) * (i + 2));
-	if (e->env)
-	{
-		i = 0;
-		while (new_env && new_env[i] != 0)
-		{
-			e->env[i] = ft_strdup(new_env[i]);
-			i++;
-		}
-		if (i)
-			e->env[i] = e->env[i - 1];
-		tmp = ft_strjoin(entry[1], "=");
-		if (i)
-			e->env[i - 1] = ft_strjoin(tmp, entry[2]);
-		else
-			e->env[i] = ft_strjoin(tmp, entry[2]);
-		e->env[i + 1] = 0;
-		ft_freestr(&tmp);
-		return (0);
-	}
-	ft_putendl_fd("setenv: Memory space insufficiant.", 2);
-	return (-1);
-}
-
-static int			modify_env(char **entry, t_env *e, int i)
-{
-	char		*tmp;
-
-	ft_freestr(&e->env[i]);
-	tmp = ft_strjoin(entry[1], "=");
-	if (tmp)
-	{
-		e->env[i] = ft_strjoin(tmp, entry[2]);
-		ft_freestr(&tmp);
-		if (e->env[i])
-			return (0);
-	}
-	ft_putendl_fd("setenv: Memory space insufficiant.", 2);
-	return (-1);
-}
-
-static int			search_command(char **entry, t_env *e)
+static int			add_entry(char **entry, t_env *e)
 {
 	char		**new_env;
 	int			i;
+	char		*ptr;
 
-	i = 0;
-	while (e->env && e->env[i] != 0)
+	if ((new_env = malloc(sizeof(*new_env) * (ft_tablen(e->env) + 2))))
 	{
-		if (ft_strcmp(e->env[i], entry[1]) == '=')
-			return (modify_env(entry, e, i));
-		i++;
+		i = -1;
+		while (e->env[++i])
+			new_env[i] = e->env[i];
+		if ((ptr = ft_strchr(entry[1], '=')) != NULL)
+			*(ptr - 1) = '\0';
+		new_env[i] = malloc(ft_strlen(entry[1]) + ft_strlen(entry[2]) + 2);
+		if (new_env[i])
+		{
+			ft_strcpy(new_env[i], entry[1]);
+			ft_strcat(new_env[i], "=");
+			ft_strcat(new_env[i], entry[2]);
+			new_env[i + 1] = NULL;
+			free(e->env);
+			e->env = new_env;
+			return (0);
+		}
+		free(new_env);
 	}
-	new_env = e->env;
-	e->ret = add_env(entry, new_env, e, i);
-	if (e->ret == -1)
-		e->env = new_env;
-	else
-		ft_freetab(&new_env);
-	return (e->ret);
+	ft_putendl_fd("setenv: Memory space insufficiant.", 2);
+	return (1);
+}
+
+static int			modify_entry(char **entry, t_env *e)
+{
+	char		**tmp;
+	char		*new_entry;
+	int			len;
+
+	tmp = ft_getenvaddr(entry[1], e->env);
+	len = ft_strlen(entry[1]) + ft_strlen(entry[2]) + 2;
+	if ((new_entry = malloc(len)) != NULL)
+	{
+		ft_strcpy(new_entry, entry[1]);
+		ft_strcat(new_entry, "=");
+		ft_strcat(new_entry, entry[2]);
+		free(*tmp);
+		*tmp = new_entry;
+		return (0);
+	}
+	ft_putendl_fd("setenv: Memory space insufficiant.", 2);
+	return (1);
 }
 
 int					ft_setenv(char **entry, t_env *e)
 {
-	size_t			i;
-
-	i = 0;
 	if (!entry[1])
 	{
-		while (e->env && e->env[i])
-			ft_putendl(e->env[i++]);
+		ft_puttab(e->env);
 		return (0);
 	}
 	else if (entry[1] && entry[2] && entry[3])
@@ -95,7 +76,9 @@ int					ft_setenv(char **entry, t_env *e)
 		ft_putendl_fd("setenv: Variable name must begin with a letter.", 2);
 	else if (!ft_stralnum(entry[1]))
 		ft_putendl_fd("setenv: Variable contain no alphanumeric character.", 2);
+	else if (ft_getenv(entry[1], e->env))
+		return (modify_entry(entry, e));
 	else
-		return (search_command(entry, e));
-	return (-1);
+		return (add_entry(entry, e));
+	return (1);
 }

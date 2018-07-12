@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 14:22:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/07/12 08:24:32 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ int				main(int ac, char **av, char **environ)
 	(void)ac;
 	(void)av;
 	ft_memset(&e, 0, sizeof(e));
+	e.progname = ft_strrchr(av[0], '/');
+	e.progname = (e.progname == NULL) ? av[0] : e.progname + 1;
 	init_environment(environ, &e);
 	ft_shell(&e);
 	ft_exit(NULL, &e);

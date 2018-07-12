@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/30 22:46:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/03/30 22:48:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/07/12 08:08:36 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,17 @@ void			ft_freetab(char ***table)
 {
 	char		**ptr;
 
-	if (table)
+	if (table == NULL)
+		return ;
+	ptr = *table;
+	if (ptr == NULL)
+		return ;
+	while (*ptr)
 	{
-		ptr = *table;
-		while (*ptr)
-		{
-			free(*ptr);
-			*ptr = NULL;
-			ptr++;
-		}
-		free(*table);
-		*table = NULL;
+		free(*ptr);
+		*ptr = NULL;
+		ptr++;
 	}
+	free(*table);
+	*table = NULL;
 }

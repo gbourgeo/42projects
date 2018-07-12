@@ -6,13 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 14:19:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/07/12 13:50:36 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAIN_H
 # define MAIN_H
 
+# include "ft_printf.h"
 # include "libft.h"
 # include <sys/types.h>
 # include <sys/wait.h>
@@ -38,6 +39,7 @@ typedef struct	s_opt
 
 typedef struct	s_env
 {
+	char		*progname;
 	char		**env;
 	char		**path;
 	char		*command;
@@ -47,9 +49,11 @@ typedef struct	s_env
 void			ft_fatal(const char *error, t_env *e);
 char			**ft_envcpy(char **env);
 char			*ft_getenv(char *str, char **env);
+char			**ft_getenvaddr(char *str, char **env);
 int				ft_tablen(char **tab);
 char			**ft_tabdup(char **tab);
 void			ft_shell(t_env *e);
+int				dollar_expansion(char **command, size_t i, char **env);
 int				check_and_exec(char **command, char **env, t_env *e);
 int				fork_function(char **args, char **env);
 int				ft_echo(char **args, t_env *e);
