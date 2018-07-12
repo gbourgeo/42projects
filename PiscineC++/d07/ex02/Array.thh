@@ -1,0 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Array.thh                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/07/09 22:08:03 by gbourgeo          #+#    #+#             */
+//   Updated: 2018/07/09 23:40:11 by gbourgeo         ###   ########.fr       //
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef ARRAY_THH
+# define ARRAY_THH
+
+template<typename T>
+class Array
+{
+public:
+	Array(): _elems(0), _nbElems(0) {}
+	Array(unsigned int n): _nbElems(n) {
+		if (n)
+			this->_elems = new T[n];
+		else
+			this->_elems = 0;
+		for (unsigned int i = 0; i < n; i++) {
+			this->_elems[i] = 0;
+		}
+	}
+	Array(Array<T> const & src) {
+		*this = src;
+	}
+	Array<T> & operator=(Array<T> const & rhs) {
+		if (this != &rhs) {}
+		return *this;
+	}
+	~Array() {
+		if (this->_elems)
+			delete this->_elems;
+	}
+
+	unsigned int	getNbElems() const {
+		return this->_nbElems;
+	}
+	T				getElem(unsigned int idx) const {
+		if (idx < this->_nbElems)
+			return this->_elems[idx];
+		return 1;
+	}
+		
+
+private:
+	T				*_elems;
+	unsigned int	_nbElems;
+};
+
+#endif
