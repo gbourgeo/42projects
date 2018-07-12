@@ -6,90 +6,80 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/18 08:16:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 06:08:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
 #include "libft.h"
+#include "ft_base_printf.h"
 
-/*
-** In pf_big_s(), the 'int len[2]'  to:
-** len[0] = the number of ints in *str.
-** len[1] = The number of characters to write to print each ints.
-*/
-
-static int		*ft_wcharlen(const int *str, int *i)
+static int		get_precision_2(size_t *ret, const wchar_t *w, const size_t max)
 {
-	int			w;
-
-	i[0] = 0;
-	i[1] = 0;
-	w = 0;
-	if (str)
+	if (*w <= 0x7FF)
 	{
-		while (str[i[0]])
-		{
-			if (str[i[0]] > 127)
-			{
-				w = str[i[0]];
-				while ((w = w >> 6))
-					i[1]++;
-			}
-			i[1]++;
-			i[0]++;
-		}
+		if (*ret + 2 > max)
+			return (1);
+		*ret = *ret + 2;
 	}
-	return (i);
+	else if (*w <= 0xFFFF)
+	{
+		if (*ret + 3 > max)
+			return (1);
+		*ret += 3;
+	}
+	else if (*w <= 0x10FFFF)
+	{
+		if (*ret + 4 > max)
+			return (1);
+		*ret += 4;
+	}
+	return (0);
 }
 
-static void		find_precision(t_dt *data, const int *str, int *len)
+static size_t	get_precision(const wchar_t *str, const size_t max)
 {
-	int			i;
-	int			w;
-	int			precision;
+	size_t		i;
+	size_t		ret;
 
 	i = 0;
-	precision = 0;
+	ret = 0;
 	if (!str)
-		return ;
-	len[1] = 0;
-	while (*str && len[1] < data->flag.precision)
+		return (0);
+	while (str && str[i])
 	{
-		if (*str > 127)
+		if (str[i] <= 0x7F)
 		{
-			w = *str;
-			while ((w = w >> 6))
-				precision++;
-			if (len[1] + precision > data->flag.precision)
-				return ;
-			len[1] += precision;
+			if (ret + 1 > max)
+				return (ret);
+			ret++;
 		}
-		len[1]++;
-		str++;
+		else if (get_precision_2(&ret, &str[i], max))
+			return (ret);
+		i++;
 	}
+	return (ret);
 }
 
 static void		pf_big_s(t_dt *data)
 {
 	wchar_t		*s;
-	int			len[2];
+	size_t		len;
 
 	s = va_arg(data->ap, wchar_t *);
 	if (s == NULL)
 		s = L"(null)";
-	ft_wcharlen(s, len);
-	if (data->flag.point && data->flag.precision < len[1])
-		find_precision(data, s, len);
+	len = ft_wstrlen(s);
+	if (data->flag.point && data->flag.precision < len)
+		len = get_precision(s, data->flag.precision);
 	if (!data->flag.minus)
 	{
-		while (data->flag.min_width > len[1] && data->flag.min_width--)
+		while (data->flag.min_width > len && data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	write_wchar(data, s, len);
+	write_wstr(data, s, len);
 	if (data->flag.minus)
 	{
-		while (data->flag.min_width > len[1] && data->flag.min_width--)
+		while (data->flag.min_width > len && data->flag.min_width--)
 			write_char(data, ' ');
 	}
 }
@@ -98,10 +88,10 @@ static void		pf_small_s(t_dt *data)
 {
 	t_av		av;
 
-	av.s = va_arg(data->ap, char *);
-	if (av.s == NULL)
-		av.s = "(null)";
-	av.len = ft_strlen(av.s);
+	av.str = va_arg(data->ap, char *);
+	if (av.str == NULL)
+		av.str = "(null)";
+	av.len = ft_strlen(av.str);
 	if (data->flag.point && data->flag.precision < av.len)
 		av.len = data->flag.precision;
 	if (!data->flag.minus)
@@ -109,7 +99,7 @@ static void		pf_small_s(t_dt *data)
 		while (data->flag.min_width > av.len && data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
-	write_str(data, av.s, av.len);
+	write_str(data, av.str, av.len);
 	if (data->flag.minus)
 	{
 		while (data->flag.min_width > av.len && data->flag.min_width--)

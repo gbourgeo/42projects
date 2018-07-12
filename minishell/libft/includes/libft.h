@@ -6,13 +6,16 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 03:11:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/05/02 05:51:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
 # include <stdlib.h>
+# include <wchar.h>
+
+# define ULL unsigned long long
 
 typedef struct		s_list
 {
@@ -100,5 +103,11 @@ char				*ft_strndup(const char *s1, int size);
 char				*ft_strrcdup(char *str, char c);
 
 int					ft_pow(int nb, int power);
+unsigned char		ft_atouc(char *str);
+char				*ft_itoa_base2(ULL nb, ULL base, char *str);
+char				*ft_itoa_base(ULL nb, ULL base);
+char				*ft_strtoupper(char *s);
+int					ft_wcharlen(wchar_t w);
+size_t				ft_wstrlen(const wchar_t *str);
 
 #endif

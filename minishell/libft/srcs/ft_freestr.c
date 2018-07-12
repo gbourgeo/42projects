@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/30 22:44:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 15:11:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/03/30 22:45:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,10 @@
 
 void			ft_freestr(char **str)
 {
-	if (*str)
-		free(*str);
-	*str = NULL;
+	if (str)
+	{
+		if (*str)
+			free(*str);
+		*str = NULL;
+	}
 }

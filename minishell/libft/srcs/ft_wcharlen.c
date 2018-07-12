@@ -1,21 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_wcharlen.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 05:57:26 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/05/02 01:49:11 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 05:14:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "wchar.h"
 
-# include "ft_base_printf.h"
-
-int			ft_printf(const char *restrict format, ...);
-//void		ft_printf_write(t_dt *data);
-
-#endif
+int		ft_wcharlen(wchar_t w)
+{
+	if (w <= 0x7F)
+		return (1);
+	if (w <= 0x7FF)
+		return (2);
+	if (w <= 0xFFFF)
+		return (3);
+	return (4);
+}

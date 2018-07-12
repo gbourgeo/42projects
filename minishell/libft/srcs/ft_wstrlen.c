@@ -1,21 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_wstrlen.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 05:57:26 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/05/02 01:52:39 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/05/02 05:59:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include <wchar.h>
 
-# include "ft_base_printf.h"
+size_t		ft_wstrlen(const wchar_t *str)
+{
+	size_t	i;
+	size_t	len;
 
-int			ft_printf(const char *restrict format, ...);
-//void		ft_printf_write(t_dt *data);
-
-#endif
+	i = 0;
+	len = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		if (str[i] <= 0x7F)
+			len += 1;
+		else if (str[i] <= 0x7FF)
+			len += 2;
+		else if (str[i] <= 0xFFFF)
+			len += 3;
+		else
+			len += 4;
+		i++;
+	}
+	return (len);
+}

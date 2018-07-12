@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_dprintf.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:17:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 05:57:26 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/04/11 04:05:30 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/04/11 04:05:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#ifndef FT_DPRINTF_H
+# define FT_DPRINTF_H
 
 # include "ft_base_printf.h"
 
-int			ft_printf(const char *restrict format, ...);
-//void		ft_printf_write(t_dt *data);
+int			ft_dprintf(int fd, const char *restrict format, ...);
+void		ft_dprintf_write(t_dt *data);
 
 #endif
