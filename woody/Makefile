@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/06/30 23:40:31 by root             ###   ########.fr        #
+#    Updated: 2018/07/12 05:35:34 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -53,7 +53,6 @@ all: lib $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_S)
 	$(WWW) -o $@ $^ $(LIBS)
-	$(PRINT_HEX)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
@@ -91,3 +90,6 @@ fclean: clean
 	/bin/rm -f hex
 
 re: fclean all
+
+hex: lib
+	$(PRINT_HEX)
