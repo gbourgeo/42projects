@@ -6,12 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/09 22:08:03 by gbourgeo          #+#    #+#             */
-//   Updated: 2018/07/09 23:40:11 by gbourgeo         ###   ########.fr       //
+//   Updated: 2018/07/12 21:47:34 by gbourgeo         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ARRAY_THH
 # define ARRAY_THH
+
+# include <exception>
 
 template<typename T>
 class Array
@@ -31,23 +33,33 @@ public:
 		*this = src;
 	}
 	Array<T> & operator=(Array<T> const & rhs) {
-		if (this != &rhs) {}
+		if (this != &rhs) {
+			if (this->_elems)
+				delete this->_elems;
+			this->_nbElems = rhs._nbElems;
+			if (this->_nbElems) {
+				this->_elems = new T[this->_nbElems];
+				for (unsigned int i = 0; i < this->_nbElems; i++)
+					this->_elems[i] = rhs._elems[i];
+			} else {
+				this->_elems = 0;
+			}
+		}
 		return *this;
 	}
 	~Array() {
 		if (this->_elems)
 			delete this->_elems;
 	}
+	T & operator[](unsigned int idx) {
+		if (idx >= this->_nbElems)
+			throw std::exception();
+		return this->_elems[idx];
+	}
 
-	unsigned int	getNbElems() const {
+	unsigned int	size() const {
 		return this->_nbElems;
 	}
-	T				getElem(unsigned int idx) const {
-		if (idx < this->_nbElems)
-			return this->_elems[idx];
-		return 1;
-	}
-		
 
 private:
 	T				*_elems;
