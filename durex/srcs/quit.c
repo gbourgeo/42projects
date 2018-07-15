@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/12 23:53:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/07/13 11:10:02 by root             ###   ########.fr       */
+/*   Updated: 2018/07/15 02:49:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /* exit */
 #include <stdlib.h>
 
-#include "durex.h"
+#include "main.h"
 
 void			quitClearlyDaemon()
 {
