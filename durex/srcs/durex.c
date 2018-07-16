@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/07/15 04:37:41 by root             ###   ########.fr       */
+/*   Updated: 2018/07/16 17:36:12 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ void				durex()
 	struct timeval	timeout;
 
 	server.fd = openServer(SERVER_ADDR, SERVER_PORT);
-	server.nb_clients = 0;
 	for (int i = 0; i < CLIENT_MAX; i++)
 		clearClient(&server.client[i]);
 	while (1)

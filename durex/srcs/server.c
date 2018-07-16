@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/07/15 04:50:11 by root             ###   ########.fr       */
+/*   Updated: 2018/07/16 23:40:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,31 +67,99 @@ int					openServer(const char *addr, const char *port)
 void					serverAcceptConnections(t_sv *server)
 {
 	struct sockaddr		csin;
-	struct sockaddr_in	*cs= (struct sockaddr_in *)&csin;
 	socklen_t			len= sizeof(csin);
 	int					fd;
 
-	fd = accept(server->servfd, &csin, &len);
+	fd = accept(server->fd, &csin, &len);
 	if (fd < 0)
 		return ;
 	for (int i = 0; i < CLIENT_MAX; i++) {
 		if (server->client[i].fd == -1) {
 			server->client[i].fd = fd;
 			clientWrite("Pass: ", &server->client[i]);
+			return ;
 		}
 	}
 	write(fd, "Server Full\n", 13);
 	close(fd);
 }
 
+static void			serverCommand(t_cl *client, char *command, int size)
+{
+	static char		*cmd[] = { SERVER_COMMANDS };
+	static void		(*func[])(t_cl *) = { SERVER_FUNCTIONS };
+	
+	if (!client->logged) {
+		encrypt(command, size);
+		//PasTa (5): ffffffa1,25,7d,ffffff92,ffffffca,a,ffffffe5,ffffff99,
+		//PasTa (5): -95,37,125,-110,-54,10,-27,-103
+		if (command[0] == -95	&&
+			command[1] == 37	&&
+			command[2] == 125	&&
+			command[3] == -110	&&
+			command[4] == -54	&&
+			command[5] == 10	&&
+			command[6] == -27	&&
+			command[7] == -103)
+			client->logged = 1;
+		else
+			clientWrite("Pass: ", client);
+
+	} else {
+		for (size_t i = 0; i < sizeof(cmd) / sizeof(*cmd); i++) {
+			if (!strcmp(cmd[i], command))
+				return func[i](client);
+		}
+	}
+}
+
 void				serverReadClient(t_cl *client)
 {
-	(void)client;
+	char			buff[CLIENT_BUFF];
+	int				ret;
+	char			*ptr;
+
+	ret = read(client->fd, buff, CLIENT_BUFF);
+	if (ret == -1) {
+		close(client->fd);
+		clearClient(client);
+		return ;
+	}
+	clientRead(buff, ret, client);
+	ret = 0;
+	ptr = client->rd.tail;
+	while (ptr != client->rd.head) {
+		buff[ret++] = *ptr;
+		if (*ptr == '\n') {
+			buff[ret - 1] = '\0';
+			serverCommand(client, buff, ret);
+			ret = 0;
+		}
+		if (ptr + 1 == client->rd.buff + CLIENT_BUFF)
+			ptr = client->rd.buff;
+		else
+			ptr++;
+	}
 }
 
 void				serverWriteClient(t_cl *client)
 {
-	(void)client;
+	int				ret;
+
+	if (client->wr.head != client->wr.tail) {
+		if (client->wr.head < client->wr.tail) {
+			ret = write(client->fd, client->wr.tail, CLIENT_BUFF - (client->wr.tail - client->wr.buff));
+			if (ret == -1) {
+				close(client->fd);
+				clearClient(client);
+				return ;
+			}
+			client->wr.tail = client->wr.buff;
+		} else {
+			write(client->fd, client->wr.tail, client->wr.head - client->wr.tail);
+			client->wr.tail = client->wr.head;
+		}
+	}
 }
 
 void				quitServer(t_sv *server)
