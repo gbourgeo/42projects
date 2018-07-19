@@ -1,0 +1,5 @@
+- spawn a shell
+-> can do it on same port as the binary ? if yes, how ?
+
+implementation in C
+http://www.andreadrian.de/remsh/index.html
