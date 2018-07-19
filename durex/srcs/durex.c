@@ -6,11 +6,21 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/07/16 17:36:12 by root             ###   ########.fr       */
+/*   Updated: 2018/07/19 04:39:28 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/* open */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "durex.h"
+
+static int			hireReporter()
+{
+	return open(SERVER_REPORTER, O_CREAT | O_APPEND | O_RDWR, 0600);
+}
 
 static int			setupSelect(t_sv *server)
 {
@@ -42,6 +52,7 @@ void				durex()
 	int				ret;
 	struct timeval	timeout;
 
+	server.reporter = hireReporter();
 	server.fd = openServer(SERVER_ADDR, SERVER_PORT);
 	for (int i = 0; i < CLIENT_MAX; i++)
 		clearClient(&server.client[i]);

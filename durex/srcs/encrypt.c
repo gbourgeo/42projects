@@ -6,20 +6,25 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 22:31:00 by root              #+#    #+#             */
-/*   Updated: 2018/07/16 23:05:26 by root             ###   ########.fr       */
+/*   Updated: 2018/07/19 03:10:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* uint64_t uint32_t */
 #include <inttypes.h>
+
 #include "durex.h"
 
-void			encrypt(char *msg, size_t size)
+void			encrypt(u_char *msg, size_t size)
 {
 	static uint64_t	key[] = { 0x87628687, 0x22548492, 0x12425376, 0x65748391 };
 
-	while (size < CLIENT_BUFF && size % 8)
-		msg[size++] = '1';
+	if (size % 8) {
+		if (size + size % 8 > CLIENT_BUFF)
+			size -= (size % 8);
+		else
+			size += (size % 8);
+	}
 	for (uint32_t j = 0; j < size; j += 8) {
 		uint32_t datablock[2];
 
@@ -36,13 +41,13 @@ void			encrypt(char *msg, size_t size)
 		}
 		datablock[0]=v0; datablock[1]=v1;
 
-		msg[j+0] = (char) ((datablock[0] >> 24) & 0xFF);
-		msg[j+1] = (char) ((datablock[0] >> 16) & 0xFF);
-		msg[j+2] = (char) ((datablock[0] >> 8) & 0xFF);
-		msg[j+3] = (char) ((datablock[0]) & 0xFF);
-		msg[j+4] = (char) ((datablock[1] >> 24) & 0xFF);
-		msg[j+5] = (char) ((datablock[1] >> 16) & 0xFF);
-		msg[j+6] = (char) ((datablock[1] >> 8) & 0xFF);
-		msg[j+7] = (char) ((datablock[1]) & 0xFF);
+		msg[j+0] = (u_char) ((datablock[0] >> 24) & 0xFF);
+		msg[j+1] = (u_char) ((datablock[0] >> 16) & 0xFF);
+		msg[j+2] = (u_char) ((datablock[0] >> 8) & 0xFF);
+		msg[j+3] = (u_char) ((datablock[0]) & 0xFF);
+		msg[j+4] = (u_char) ((datablock[1] >> 24) & 0xFF);
+		msg[j+5] = (u_char) ((datablock[1] >> 16) & 0xFF);
+		msg[j+6] = (u_char) ((datablock[1] >> 8) & 0xFF);
+		msg[j+7] = (u_char) ((datablock[1]) & 0xFF);
 	}
 }

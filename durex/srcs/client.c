@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:49:03 by root              #+#    #+#             */
-/*   Updated: 2018/07/16 22:19:33 by root             ###   ########.fr       */
+/*   Updated: 2018/07/19 03:33:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,9 @@ void			clientRead(char *buff, int size, t_cl *client)
 	i = 0;
 	while (i < size) {
 		*client->rd.head = buff[i];
-		if (client->rd.head + 1 == client->rd.buff + CLIENT_BUFF)
-			client->rd.head = client->rd.buff;
-		else
-			client->rd.head++;
-		if (client->rd.tail == client->rd.head) {
-			if (client->rd.tail + 1 == client->rd.buff + CLIENT_BUFF)
-				client->rd.tail = client->rd.buff;
-			else
-				client->rd.tail++;
+		client->rd.head = moveTail(client->rd.head, client->rd.buff, CLIENT_BUFF);
+		if (client->rd.head == client->rd.tail) {
+			client->rd.tail = moveTail(client->rd.tail, client->rd.buff, CLIENT_BUFF);
 		}
 		i++;
 	}
@@ -49,15 +43,9 @@ void			clientWrite(char *str, t_cl *client)
 {
 	while (*str) {
 		*client->wr.head = *str;
-		if (client->wr.head + 1 == client->wr.buff + CLIENT_BUFF)
-			client->wr.head = client->wr.buff;
-		else
-			client->wr.head++;
-		if (client->wr.tail == client->wr.head) {
-			if (client->wr.tail + 1 == client->wr.buff + CLIENT_BUFF)
-				client->wr.tail = client->wr.buff;
-			else
-				client->wr.tail++;
+		client->wr.head = moveTail(client->wr.head, client->wr.buff, CLIENT_BUFF);
+		if (client->wr.head == client->wr.tail) {
+			client->wr.tail = moveTail(client->wr.tail, client->wr.buff, CLIENT_BUFF);
 		}
 		str++;
 	}
