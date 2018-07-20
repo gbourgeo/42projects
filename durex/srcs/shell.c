@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/20 00:42:55 by root              #+#    #+#             */
-/*   Updated: 2018/07/20 05:03:16 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 16:49:29 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ void			serverShell(t_cl *client)
 	int			ret;
 	struct timeval	timeout;
 
-	ft_dprintf(client->fd, "Spawning shell on port %s\n", SERVER_PORT);
 	client->shell = 1;
 	return ;
 

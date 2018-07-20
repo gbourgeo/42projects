@@ -1,35 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quit.c                                             :+:      :+:    :+:   */
+/*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/12 23:53:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/07/15 02:49:50 by root             ###   ########.fr       */
+/*   Created: 2018/07/20 17:30:40 by root              #+#    #+#             */
+/*   Updated: 2018/07/20 17:42:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* remove */
-#include <stdio.h>
-/* exit */
-#include <stdlib.h>
-
+#include <signal.h>
 #include "main.h"
 
-void			quitClearlyDaemon()
+void		durexSigterm(int sig)
 {
-	if (e.child)
-	{
-		flock(e.lock, LOCK_UN);
-		remove(DUREX_LOCK_FILE);
-	}
-	close(e.lock);
-	exit(0);
-}
-
-void			daemonSigHandler(int sig)
-{
-	(void)sig;
+	if (sig != SIGTERM)
+		return ;
+	quitClearlyServer();
 	quitClearlyDaemon();
 }

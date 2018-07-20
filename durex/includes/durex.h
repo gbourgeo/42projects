@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/07/20 08:44:57 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 17:41:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,13 @@ typedef struct	s_sv
 }				t_sv;
 
 int				openServer(const char *addr, const char *port);
-void			serverAcceptConnections(t_sv *server);
+void			serverAcceptConnections();
 void			serverReadClient(t_cl *client);
 void			serverWriteClient(t_cl *client);
 void			serverHelp(t_cl *client);
 void			serverShell(t_cl *client);
 void			serverQuitClient(t_cl *client);
-void			quitServer(t_sv *server);
+void			quitClearlyServer();
 void			clearClient(t_cl *client);
 void			serverShellSpawned(char *buff, t_cl *client);
 

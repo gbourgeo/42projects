@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:49:13 by root              #+#    #+#             */
-/*   Updated: 2018/07/15 02:49:29 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 17:40:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,11 @@
 /* close fork setsid dup2 chdir sleep write */
 # include <unistd.h>
 /* open umask */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
+
+# include "durex.h"
 
 # define DUREX_BINARY_FILE	"/bin/Durex"
 # define DUREX_LOCK_FILE	"/var/lock/durex.lock"
@@ -31,14 +33,14 @@
 typedef struct	s_env
 {
 	int			lock;
-	int			child;
+	t_sv		server;
 }				t_env;
 
 t_env			e;
 
 void			durex();
 void			install_binary(int durex);
+void			durexSigterm(int sig);
 void			quitClearlyDaemon();
-void			daemonSigHandler(int sig);
 
 #endif
