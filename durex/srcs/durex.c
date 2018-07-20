@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 04:39:28 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 01:01:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int			setupSelect(t_sv *server)
 	FD_SET(server->fd, &server->fdr);
 	max = server->fd;
 	i = 0;
-	while (i < CLIENT_MAX)
+	while (i < SERVER_CLIENT_MAX)
 	{
 		if (server->client[i].fd > max)
 			max = server->client[i].fd;
@@ -54,7 +54,7 @@ void				durex()
 
 	server.reporter = hireReporter();
 	server.fd = openServer(SERVER_ADDR, SERVER_PORT);
-	for (int i = 0; i < CLIENT_MAX; i++)
+	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 		clearClient(&server.client[i]);
 	while (1)
 	{
@@ -64,7 +64,7 @@ void				durex()
 			break ;
 		if (FD_ISSET(server.fd, &server.fdr))
 			serverAcceptConnections(&server);
-		for (int i = 0; i < CLIENT_MAX; i++)
+		for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 		{
 			if (server.client[i].fd == -1)
 				continue ;

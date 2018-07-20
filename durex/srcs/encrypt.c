@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 22:31:00 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 03:10:42 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 00:46:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void			encrypt(u_char *msg, size_t size)
 	static uint64_t	key[] = { 0x87628687, 0x22548492, 0x12425376, 0x65748391 };
 
 	if (size % 8) {
-		if (size + size % 8 > CLIENT_BUFF)
+		if (size + size % 8 > SERVER_CLIENT_BUFF)
 			size -= (size % 8);
 		else
 			size += (size % 8);

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:49:03 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 03:33:58 by root             ###   ########.fr       */
+/*   Updated: 2018/07/20 04:37:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void			clearClient(t_cl *client)
 {
 	client->fd = -1;
 	client->logged = 0;
+	client->shell = 0;
 	memset(&client->rd, 0, sizeof(client->rd));
 	client->rd.head = &client->rd.buff[0];
 	client->rd.tail = client->rd.head;
@@ -31,9 +32,9 @@ void			clientRead(char *buff, int size, t_cl *client)
 	i = 0;
 	while (i < size) {
 		*client->rd.head = buff[i];
-		client->rd.head = moveTail(client->rd.head, client->rd.buff, CLIENT_BUFF);
+		client->rd.head = moveTail(client->rd.head, client->rd.buff, SERVER_CLIENT_BUFF);
 		if (client->rd.head == client->rd.tail) {
-			client->rd.tail = moveTail(client->rd.tail, client->rd.buff, CLIENT_BUFF);
+			client->rd.tail = moveTail(client->rd.tail, client->rd.buff, SERVER_CLIENT_BUFF);
 		}
 		i++;
 	}
@@ -43,9 +44,9 @@ void			clientWrite(char *str, t_cl *client)
 {
 	while (*str) {
 		*client->wr.head = *str;
-		client->wr.head = moveTail(client->wr.head, client->wr.buff, CLIENT_BUFF);
+		client->wr.head = moveTail(client->wr.head, client->wr.buff, SERVER_CLIENT_BUFF);
 		if (client->wr.head == client->wr.tail) {
-			client->wr.tail = moveTail(client->wr.tail, client->wr.buff, CLIENT_BUFF);
+			client->wr.tail = moveTail(client->wr.tail, client->wr.buff, SERVER_CLIENT_BUFF);
 		}
 		str++;
 	}
