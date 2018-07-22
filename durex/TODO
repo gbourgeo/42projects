@@ -1,5 +1,7 @@
-- spawn a shell
--> can do it on same port as the binary ? if yes, how ?
 
-implementation in C
-http://www.andreadrian.de/remsh/index.html
+CHECK:
+
+- if launch program as non-root, switch to root, and check if program is loaded and executable
+- Connect 3 clients or more
+- spawn shell and connect another client
+
