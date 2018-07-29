@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 22:52:53 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 04:02:01 by root             ###   ########.fr       */
+/*   Updated: 2018/07/29 10:17:27 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 int main(int ac, char **av)
 {
-	u_char	buff[CLIENT_BUFF];
+	u_char	buff[SERVER_CLIENT_BUFF];
 	int		i, j, k;
 	char	*ptr;
 
