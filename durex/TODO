@@ -1,7 +1,12 @@
 
-CHECK:
+Hide process execution:
 
-- if launch program as non-root, switch to root, and check if program is loaded and executable
-- Connect 3 clients or more
-- spawn shell and connect another client
+- Hide it from ps, top, lsof system commands
+https://sysdig.com/blog/hiding-linux-processes-for-fun-and-profit/
+https://github.com/gianlucaborello/libprocesshider/blob/master/processhider.c
 
+- Change the process name in the /proc tree
+https://github.com/emptymonkey/mimic
+
+google: (hide process execution)
+https://www.google.fr/search?q=hide+process+execution&oq=hide+process+execution&aqs=chrome..69i57.7151j0j7&sourceid=chrome&ie=UTF-8
