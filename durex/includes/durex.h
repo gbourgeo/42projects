@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/07/20 17:41:14 by root             ###   ########.fr       */
+/*   Updated: 2018/07/29 10:18:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@
 # define SERVER_PORT		"4242"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
-# define SERVER_COMMANDS	"help", "shell", "quit"
-# define SERVER_HELP		"display this help", "spawn a shell", "quit server"
-# define SERVER_FUNCTIONS	&serverHelp, &serverShell, &serverQuitClient
+# define SERVER_COMMANDS	{ "?", "Display this help", &serverHelp },	\
+							{ "shell", "Open a remote shell", &serverShell }, \
+							{ "quit", "Quit server", &serverQuitClient }
 
 typedef struct	s_buff
 {
@@ -40,7 +40,6 @@ typedef struct	s_cl
 {
 	int			fd;
 	int			logged;
-	int			shell;
 	t_buff		rd;
 	t_buff		wr;
 }				t_cl;
@@ -54,13 +53,20 @@ typedef struct	s_sv
 	t_cl		client[SERVER_CLIENT_MAX];
 }				t_sv;
 
+typedef struct	s_cmd
+{
+	char		*name;
+	char		*def;
+	void		(*func)(t_cl *, struct s_cmd *);
+}				t_cmd;
+
 int				openServer(const char *addr, const char *port);
 void			serverAcceptConnections();
 void			serverReadClient(t_cl *client);
 void			serverWriteClient(t_cl *client);
-void			serverHelp(t_cl *client);
-void			serverShell(t_cl *client);
-void			serverQuitClient(t_cl *client);
+void			serverHelp(t_cl *client, t_cmd *cmds);
+void			serverShell(t_cl *client, t_cmd *cmds);
+void			serverQuitClient(t_cl *client, t_cmd *cmds);
 void			quitClearlyServer();
 void			clearClient(t_cl *client);
 void			serverShellSpawned(char *buff, t_cl *client);
