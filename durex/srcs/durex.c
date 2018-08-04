@@ -6,10 +6,16 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/07/20 17:41:05 by root             ###   ########.fr       */
+/*   Updated: 2018/08/03 14:25:28 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/* signal */
+#include <signal.h>
+/* remove */
+#include <stdio.h>
+/* exit */
+#include <stdlib.h>
 /* open */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -17,6 +23,19 @@
 
 #include "main.h"
 #include "durex.h"
+
+static int			launch_program()
+{
+	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_WRONLY, 0600);
+	if (e.lock < 0)
+		return 0;
+	if (flock(e.lock, LOCK_EX | LOCK_NB))
+		return 0;
+	for (int i = 0; i < NSIG; i++) {
+		signal(i, &durexSigterm);
+	}
+	return 1;
+}
 
 static int			hireReporter()
 {
@@ -52,6 +71,8 @@ void				durex()
 	int				ret;
 	struct timeval	timeout;
 
+	if (!launch_program())
+		return ;
 	e.server.reporter = hireReporter();
 	e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
@@ -75,4 +96,13 @@ void				durex()
 		}
 	}
 	quitClearlyServer();
+	quitClearlyDaemon();
+}
+
+void			quitClearlyDaemon()
+{
+	flock(e.lock, LOCK_UN);
+	close(e.lock);
+	remove(DUREX_LOCK_FILE);
+	exit(0);
 }

