@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/03 14:25:28 by root             ###   ########.fr       */
+/*   Updated: 2018/08/05 21:10:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,17 @@
 
 #include "main.h"
 #include "durex.h"
+
+static void			cleanEnvironement()
+{
+	e.lock = -1;
+	e.server.reporter = -1;
+	e.server.fd = -1;
+	memset(&e.server.fdr, 0, sizeof(e.server.fdr));
+	memset(&e.server.fdw, 0, sizeof(e.server.fdw));
+	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
+		clearClient(&e.server.client[i]);
+}
 
 static int			launch_program()
 {
@@ -71,28 +82,27 @@ void				durex()
 	int				ret;
 	struct timeval	timeout;
 
-	if (!launch_program())
-		return ;
-	e.server.reporter = hireReporter();
-	e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
-	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
-		clearClient(&e.server.client[i]);
-	while (1)
-	{
-		maxfd = setupSelect();
-		ret = select(maxfd + 1, &e.server.fdr, &e.server.fdw, NULL, &timeout);
-		if (ret == -1)
-			break ;
-		if (FD_ISSET(e.server.fd, &e.server.fdr))
-			serverAcceptConnections();
-		for (int i = 0; i < SERVER_CLIENT_MAX; i++)
+	cleanEnvironement();
+	if (launch_program()) {
+		e.server.reporter = hireReporter();
+		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
+		while (1)
 		{
-			if (e.server.client[i].fd == -1)
-				continue ;
-			if (FD_ISSET(e.server.client[i].fd, &e.server.fdr))
-				serverReadClient(&e.server.client[i]);
-			if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
-				serverWriteClient(&e.server.client[i]);
+			maxfd = setupSelect();
+			ret = select(maxfd + 1, &e.server.fdr, &e.server.fdw, NULL, &timeout);
+			if (ret == -1)
+				break ;
+			if (FD_ISSET(e.server.fd, &e.server.fdr))
+				serverAcceptConnections();
+			for (int i = 0; i < SERVER_CLIENT_MAX; i++)
+			{
+				if (e.server.client[i].fd == -1)
+					continue ;
+				if (FD_ISSET(e.server.client[i].fd, &e.server.fdr))
+					serverReadClient(&e.server.client[i]);
+				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
+					serverWriteClient(&e.server.client[i]);
+			}
 		}
 	}
 	quitClearlyServer();
