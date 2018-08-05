@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/08/03 15:35:45 by root             ###   ########.fr       */
+/*   Updated: 2018/08/05 18:33:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ static void			print_usr_name(const char *av)
 		}
 		return ;
 	}
-//	durex();
 }
 
 int					main(int ac, char **av)
