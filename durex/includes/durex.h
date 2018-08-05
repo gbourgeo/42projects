@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/07/30 16:13:11 by root             ###   ########.fr       */
+/*   Updated: 2018/08/05 20:53:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define SERVER_ADDR		"localhost"
 # define SERVER_PORT		"4242"
 # define SERVER_CLIENT_MAX	3
-# define SERVER_CLIENT_BUFF	32
+# define SERVER_CLIENT_BUFF	128
 # define SERVER_COMMANDS	{ "?", "Display this help", &serverHelp },	\
 							{ "shell", "Open a remote shell", &serverShell }, \
 							{ "quit", "Quit server", &serverQuitClient }
