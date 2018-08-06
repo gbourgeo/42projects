@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/05 21:10:38 by root             ###   ########.fr       */
+/*   Updated: 2018/08/06 19:37:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static int			launch_program()
 
 static int			hireReporter()
 {
-	return open(SERVER_REPORTER, O_CREAT | O_APPEND | O_RDWR, 0600);
+	return open(SERVER_REPORTER, O_CREAT | O_TRUNC | O_RDWR, 0600);
 }
 
 static int			setupSelect()
@@ -85,7 +85,9 @@ void				durex()
 	cleanEnvironement();
 	if (launch_program()) {
 		e.server.reporter = hireReporter();
+		serverLog(e.server.reporter, "Reporter Hired.");
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
+		serverLog(e.server.reporter, "Server Opened.");
 		while (1)
 		{
 			maxfd = setupSelect();

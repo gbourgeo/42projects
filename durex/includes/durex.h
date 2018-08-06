@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/05 20:53:18 by root             ###   ########.fr       */
+/*   Updated: 2018/08/06 19:32:19 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void			clientRead(char *buff, int size, t_cl *client);
 void			clientWrite(char *str, t_cl *client);
 
 void			encrypt(u_char *msg, size_t size);
-void			reporterLog();
+void			serverLog(int fd, const char *message);
 char			*moveTail(char *ptr, char *buff, int buff_size);
 
 #endif /* DUREX_H */

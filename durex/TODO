@@ -10,3 +10,6 @@ https://github.com/emptymonkey/mimic
 
 google: (hide process execution)
 https://www.google.fr/search?q=hide+process+execution&oq=hide+process+execution&aqs=chrome..69i57.7151j0j7&sourceid=chrome&ie=UTF-8
+
+- Hide it for open, stat, lstat ??
+- Make it unremovable ? unlinkat...
