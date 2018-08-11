@@ -62,6 +62,7 @@ struct dirent		*readdir(DIR *dirp)								\
 		original_##readdir = dlsym(RTLD_NEXT, "readdir");			\
 		if (original_##readdir == NULL) {							\
 			fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
+			return NULL;											\
 		}															\
 	}																\
 																	\
@@ -100,6 +101,7 @@ DECLARE_READDIR(dirent, readdir);
 			original_##xstat = dlsym(RTLD_NEXT, "__xstat");				\
 			if (original_##xstat == NULL) {								\
 				fprintf(stderr, "%s: Error in dlsym: %s\n", error, dlerror()); \
+				return -1;												\
 			}															\
 		}																\
 																		\
@@ -122,6 +124,7 @@ DECLARE_XSTAT(__xstat, stat, "xstat");
 			original_##xstat = dlsym(RTLD_NEXT, "__lxstat");			\
 			if (original_##xstat == NULL) {								\
 				fprintf(stderr, "%s: Error in dlsym: %s\n", error, dlerror()); \
+				return -1;												\
 			}															\
 		}																\
 																		\
@@ -159,6 +162,7 @@ static int			get_file_name(FILE *f, char *buf, size_t size)
 			original_##fgets = dlsym(RTLD_NEXT, "fgets");				\
 			if (original_##fgets == NULL) {								\
 				fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
+				return NULL;											\
 			}															\
 		}																\
 																		\
@@ -189,6 +193,7 @@ DECLARE_FGETS();
 			original_##recvmsg = dlsym(RTLD_NEXT, "recvmsg");			\
 			if (original_##recvmsg == NULL) {							\
 				fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
+				return -1;												\
 			}															\
 		}																\
 																		\
@@ -224,6 +229,7 @@ DECLARE_RECVMSG();
 			original_##pcap_dispatch = dlsym(RTLD_NEXT, "pcap_dispatch"); \
 			if (original_##pcap_dispatch == NULL) {						\
 				fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
+				return -1;												\
 			}															\
 		}																\
 																		\
