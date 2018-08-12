@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/06 14:51:40 by root             ###   ########.fr       */
+/*   Updated: 2018/08/06 22:06:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ static void			serverCommands(char *buff, t_cl *client)
 			break ;
 		}
 	}
-	if (i != 1)
+	if (i != 1 && client->fd >= 0)
 		clientWrite("$> ", client);
 }
 
