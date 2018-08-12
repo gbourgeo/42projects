@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/09 17:49:15 by root             ###   ########.fr        #
+#    Updated: 2018/08/12 22:17:22 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -60,3 +60,8 @@ rm:
 	rm /etc/systemd/Durex.conf
 	rm /usr/local/lib/Durex.so
 	rm /var/log/Durex.log
+
+passwd:
+	$(CC) -o pass other/passwd.c
+hex:
+	$(CC) -o hex other/txttohex.c
