@@ -1,0 +1,10 @@
+[Unit]
+Description=Daemon to know user login
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/bin/Durex
+
+[Install]
+WantedBy=multi-user.target
