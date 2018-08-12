@@ -23,3 +23,12 @@ Supprimer /etc/ld.so.preload a la fin de Durex.
 Le recreer a son execution.
 
 Analyser les paquets passant par pcap.
+
+---------------------------------------------------------------------------------
+
+lib compilation line:
+
+/*
+Compilation status
+gcc -Wall -fPIC -shared -o /usr/local/lib/Durex.so lib_srcs/*.c -ldl
+*/
