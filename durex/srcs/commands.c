@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 23:22:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/06 14:51:07 by root             ###   ########.fr       */
+/*   Updated: 2018/08/14 01:40:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 void			serverHelp(t_cl *client, t_cmd *cmds)
 {
+	serverLog("[CMDS] - %d: Help wanted.", client->fd);
 	for (size_t i = 0; cmds[i].name; i++) {
 		clientWrite(cmds[i].name, client);
 		clientWrite(": ", client);
@@ -30,16 +31,14 @@ void			serverHelp(t_cl *client, t_cmd *cmds)
 void			serverShell(t_cl *client, t_cmd *cmds)
 {
 	pid_t		pid;
-	int			status;
 
 	(void)cmds;
-	clientWrite("Spawning shell on port ", client);
-	clientWrite(SERVER_PORT, client);
-	clientWrite("\n", client);
+	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
+	clientWrite("Spawning shell...\n", client);
 	pid = fork();
-	if (pid > 0) {
-		waitpid(pid, &status, WNOHANG);
-	} else if (pid == 0) {
+	if (pid < 0)
+		clientWrite("Failed to fork a new shell\n", client);
+	else if (pid == 0) {
 		char		*cmd[3];
 
 		dup2(client->fd, STDIN_FILENO);
@@ -50,14 +49,13 @@ void			serverShell(t_cl *client, t_cmd *cmds)
 		cmd[2] = NULL;
 		execv(cmd[0], cmd);
 		exit(0);
-	} else {
-		clientWrite("Failed to fork shell\n", client);
 	}
 }
 
 void			serverQuitClient(t_cl *client, t_cmd *cmds)
 {
 	(void)cmds;
+	serverLog("[CMDS] - %d: Client quit.", client->fd);
 	close(client->fd);
-	clearClient(client);
+	client->fd = -1;
 }
