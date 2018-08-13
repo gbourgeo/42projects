@@ -6,13 +6,13 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/12 22:17:22 by root             ###   ########.fr        #
+#    Updated: 2018/08/14 01:50:11 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= Durex
 SRC		= main.c install.c durex.c server.c client.c encrypt.c commands.c
-SRC		+= signal.c move.c reporter.c
+SRC		+= signal.c move.c reporter.c stdlib.c library.c
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 DEP		= $(addprefix $(DEP_DIR), $(SRC:.c=.d))
 SRC_DIR	= srcs/
