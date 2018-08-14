@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/06 22:06:43 by root             ###   ########.fr       */
+/*   Updated: 2018/08/14 01:43:07 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,22 @@ static int			openSocket(struct addrinfo *p)
 
 int					openServer(const char *addr, const char *port)
 {
+	int				errcode;
 	int				fd;
 	struct addrinfo	hints;
 	struct addrinfo	*res;
 	struct addrinfo	*p;
 
 	fd = -1;
-	memset(&hints, 0, sizeof(hints));
+	mymemset(&hints, 0, sizeof(hints));
 	hints.ai_flags = AI_PASSIVE | AI_CANONNAME;
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo(addr, port, &hints, &res))
+	if ((errcode = getaddrinfo(addr, port, &hints, &res))) {
+		serverLog("[ERROR] - %s", gai_strerror(errcode));
 		return (-1);
+	}
 	p = res;
 	while (p != NULL)
 	{
@@ -60,8 +63,10 @@ int					openServer(const char *addr, const char *port)
 		p = p->ai_next;
 	}
 	freeaddrinfo(res);
-	if (p == NULL || fd < 0)
+	if (p == NULL || fd < 0) {
+		serverLog("[ERROR] - Address or Socket can't be found.");
 		return (-1);
+	}
 	return fd;
 }
 
@@ -72,12 +77,16 @@ void					serverAcceptConnections()
 	int					fd;
 
 	fd = accept(e.server.fd, &csin, &len);
-	if (fd < 0)
+	if (fd < 0) {
+		serverLog("[ERROR] - Accept failed.");
 		return ;
+	}
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++) {
 		if (e.server.client[i].fd == -1) {
+			clearClient(&e.server.client[i]);
 			e.server.client[i].fd = fd;
 			clientWrite("Pass: ", &e.server.client[i]);
+			serverLog("[LOGS] - New client %d", fd);
 			return ;
 		}
 	}
@@ -85,7 +94,7 @@ void					serverAcceptConnections()
 	close(fd);
 }
 
-static int			ustrcmp(u_char *s1, u_char *s2)
+static int			umystrcmp(u_char *s1, u_char *s2)
 {
 	size_t			i;
 
@@ -97,12 +106,12 @@ static int			ustrcmp(u_char *s1, u_char *s2)
 
 static void			serverLogging(u_char *buff, int size, t_cl *client)
 {
-	memset(buff + size, 0, SERVER_CLIENT_BUFF - size);
+	mymemset(buff + size, 0, SERVER_CLIENT_BUFF - size);
 	encrypt(buff, size);
 	//kata (4): 201 121 30 74
 	//KATA (4): 44 92 192 65
 	//KatA (4): 116 103 224 84
-	if (ustrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
+	if (umystrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
 		client->logged = 1;
 		clientWrite("$> ", client);
 	} else {
@@ -116,12 +125,12 @@ static void			serverCommands(char *buff, t_cl *client)
 	size_t			i;
 
 	for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
-		if (!strcmp(cmds[i].name, buff)) {
+		if (!mystrcmp(cmds[i].name, buff)) {
 			cmds[i].func(client, cmds);
 			break ;
 		}
 	}
-	if (i != 1 && client->fd >= 0)
+	if (client->fd >= 0)
 		clientWrite("$> ", client);
 }
 
@@ -133,6 +142,7 @@ void				serverReadClient(t_cl *client)
 	ret = read(client->fd, buff, SERVER_CLIENT_BUFF);
 	if (ret <= 0)
 		return serverQuitClient(client, NULL);
+	buff[ret] = '\0';
 	clientRead(buff, ret, client);
 	/* Here we recreate the client rd buff to get a non truncated string */
 	char *ptr = client->rd.tail;
@@ -171,6 +181,7 @@ void				serverWriteClient(t_cl *client)
 
 void				quitClearlyServer()
 {
+	serverLog("[LOG] - Leaving server...");
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 	{
 		if (e.server.client[i].fd != -1)
