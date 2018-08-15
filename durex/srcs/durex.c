@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/14 01:54:55 by root             ###   ########.fr       */
+/*   Updated: 2018/08/15 18:05:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,7 @@ void				durex()
 	struct timeval	timeout;
 
 	cleanStructure();
-	install_library();
-	if (launch_program()) {
+	if (launch_program() && install_library()) {
 		e.server.reporter = hireReporter();
 		serverLog("[LOGS] - Opening Server...");
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);

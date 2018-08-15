@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/14 01:49:46 by root             ###   ########.fr       */
+/*   Updated: 2018/08/15 18:05:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct	s_cmd
 	void		(*func)(t_cl *, struct s_cmd *);
 }				t_cmd;
 
-void			install_library();
+int				install_library();
 void			check_library();
 void			uninstall_library();
 
