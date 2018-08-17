@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:49:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/14 00:44:44 by root             ###   ########.fr       */
+/*   Updated: 2018/08/17 19:43:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 void			clearClient(t_cl *client)
 {
 	client->fd = -1;
+	mymemset(client->addr, 0, sizeof(client->addr));
+	mymemset(client->host, 0, sizeof(client->host));
+	mymemset(client->port, 0, sizeof(client->port));
 	client->logged = 0;
 	mymemset(&client->rd, 0, sizeof(client->rd));
 	client->rd.head = &client->rd.buff[0];
