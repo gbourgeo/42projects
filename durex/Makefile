@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/14 01:50:11 by root             ###   ########.fr        #
+#    Updated: 2018/08/18 12:26:15 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -58,7 +58,6 @@ rm:
 	rm /etc/init.d/Durex
 	rm /lib/systemd/system/Durex.service
 	rm /etc/systemd/Durex.conf
-	rm /usr/local/lib/Durex.so
 	rm /var/log/Durex.log
 
 passwd:

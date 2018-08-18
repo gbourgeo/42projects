@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/15 18:05:38 by root             ###   ########.fr       */
+/*   Updated: 2018/08/18 15:24:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 #include <pwd.h>
 /* time */
 #include <time.h>
+/* errno */
+#include <errno.h>
 
 #include "main.h"
 #include "durex.h"
@@ -89,8 +91,10 @@ void				durex()
 		{
 			maxfd = setupSelect();
 			ret = select(maxfd + 1, &e.server.fdr, &e.server.fdw, NULL, &timeout);
-			if (ret == -1)
+			if (ret == -1 && errno != EINTR) {
+				serverLog("[ERRO] - %s", strerror(errno));
 				break ;
+			}
 			if (FD_ISSET(e.server.fd, &e.server.fdr))
 				serverAcceptConnections();
 			for (int i = 0; i < SERVER_CLIENT_MAX; i++)

