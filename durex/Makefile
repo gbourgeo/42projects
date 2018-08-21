@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/18 12:26:15 by root             ###   ########.fr        #
+#    Updated: 2018/08/21 06:19:10 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -29,7 +29,9 @@ $(OBJ_DIR):
 	mkdir -p $(DEP_DIR)
 
 $(NAME): $(OBJ)
-	$(CC) -o $@ $^ $(LIBS)
+	$(CC) -MT $@ -MMD -MP -MF $(DEP_DIR)$*.Td $(FLAGS) -D_XOPEN_SOURCE=600 -o $(OBJ_DIR)shell.o -c $(SRC_DIR)shell.c $(HDR_DIR)
+	@mv -f $(DEP_DIR)$*.Td $(DEP_DIR)$*.d && touch $@
+	$(CC) -o $@ $^ $(OBJ_DIR)shell.o $(LIBS)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(DEP_DIR)%.d
