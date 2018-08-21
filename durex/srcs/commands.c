@@ -6,15 +6,18 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 23:22:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/18 15:38:53 by root             ###   ########.fr       */
+/*   Updated: 2018/08/21 10:07:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* wait */
 #include <wait.h>
+/* errno */
+#include <errno.h>
 /* exit */
 #include <stdlib.h>
-#include <errno.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 
 #include "durex.h"
 
@@ -27,6 +30,7 @@ void				serverHelp(t_cl *client, t_cmd *cmds)
 		clientWrite(cmds[i].def, client);
 		clientWrite("\n", client);
 	}
+	clientWrite("$> ", client);
 }
 
 void				serverShell(t_cl *client, t_cmd *cmds)
@@ -36,20 +40,54 @@ void				serverShell(t_cl *client, t_cmd *cmds)
 	(void)cmds;
 	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
 	clientWrite("Spawning shell...\n", client);
-	pid = fork();
-	if (pid < 0)
-		clientWrite("Failed to fork a new shell\n", client);
-	else if (pid == 0) {
-		char		*cmd[3];
+	if (spawnShell(client->shell)) {
+		pid = fork();
+		if (pid < 0) {
+			close(client->shell[0]);
+			close(client->shell[1]);
+			client->shell[0] = -1;
+			client->shell[1] = -1;
+			clientWrite("Failed to fork a new shell\n", client);
+			clientWrite("$> ", client);
+		} else if (pid > 0) {
+			close(client->shell[1]); /* Slave pty */
+			client->shell[1] = -1;
+		} else {
+			struct termios	origin;
+			struct termios	exclusive;
+			char			buff[SERVER_CLIENT_BUFF];
+			int				ret;
 
-		dup2(client->fd, STDIN_FILENO);
-		dup2(client->fd, STDOUT_FILENO);
-		dup2(client->fd, STDERR_FILENO);
-		cmd[0] = "/bin/sh";
-		cmd[1] = "-i";
-		cmd[2] = NULL;
-		execv(cmd[0], cmd);
-		exit(0);
+			close(client->shell[0]); /* Master pty */
+			tcgetattr(client->shell[1], &origin);
+			cfmakeraw(&exclusive);
+			tcsetattr(client->shell[1], TCSANOW, &exclusive);
+			dup2(client->shell[1], STDIN_FILENO);
+			dup2(client->shell[1], STDOUT_FILENO);
+			dup2(client->shell[1], STDERR_FILENO);
+			close(client->shell[1]);
+			setsid();
+			ioctl(0, TIOCSCTTY, 1);
+			while ((ret = read(1, buff, SERVER_CLIENT_BUFF)) > 0) {
+				buff[ret] = 0;
+				char **split = mysplitwhitespaces(buff);
+				pid = fork();
+				if (pid == 0) {
+					execvp(split[0], split);
+					exit(-1);
+				} else if (pid > 0) {
+					waitpid(pid, &ret, 0);
+					if (ret == -1)
+						exit(0);
+				}
+				if (split) {
+					char **ptr = split;
+					while (*ptr)
+						free(*ptr++);
+					free(split);
+				}
+			}
+		}
 	}
 }
 
@@ -73,6 +111,7 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	hints.ai_next = NULL;
 	if ((fd = getaddrinfo(client->addr, SERVER_REMOTE_PORT, &hints, &res))) {
 		clientWrite("Failed to connect to server.\n", client);
+		clientWrite("$> ", client);
 		return serverLog("[ERRO] - %s", gai_strerror(fd));
 	}
 	tmp = res;
@@ -95,12 +134,15 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 					  client->addr, SERVER_REMOTE_PORT);
 		else
 			serverLog("[ERRO] - %s", strerror(errno));
+		clientWrite("$> ", client);
 		return ;
 	}
 	serverLog("[CMDS] - Connection to %s on %s succeeded.", client->addr, SERVER_REMOTE_PORT);
 	pid = fork();
-	if (pid < 0)
+	if (pid < 0) {
 		clientWrite("Failed to fork a new shell\n", client);
+		clientWrite("$> ", client);
+	}
 	else if (pid > 0)
 		serverQuitClient(client, cmds);
 	else {
@@ -122,8 +164,18 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 
 void			serverQuitClient(t_cl *client, t_cmd *cmds)
 {
-	(void)cmds;
 	serverLog("[CMDS] - %d: Client quit.", client->fd);
 	close(client->fd);
 	client->fd = -1;
+	if (client->shell[0] != -1)
+		serverQuitClientShell(client);
+	(void)cmds;
+}
+
+void			serverQuitClientShell(t_cl *client)
+{
+	serverLog("[CMDS] - %d: Client shell exited.", client->fd);
+	close(client->shell[0]);
+	client->shell[0] = -1;
+	client->shell[1] = -1;
 }
