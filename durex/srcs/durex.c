@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/18 15:24:30 by root             ###   ########.fr       */
+/*   Updated: 2018/08/21 09:04:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,16 @@ static int			setupSelect()
 	i = 0;
 	while (i < SERVER_CLIENT_MAX)
 	{
-		if (e.server.client[i].fd > max)
-			max = e.server.client[i].fd;
 		if (e.server.client[i].fd != -1) {
+			if (e.server.client[i].fd > max)
+				max = e.server.client[i].fd;
 			FD_SET(e.server.client[i].fd, &e.server.fdr);
 			FD_SET(e.server.client[i].fd, &e.server.fdw);
+			if (e.server.client[i].shell[0] != -1) {
+				if (e.server.client[i].shell[0] > max)
+					max = e.server.client[i].shell[0];
+				FD_SET(e.server.client[i].shell[0], &e.server.fdr);
+			}
 		}
 		i++;
 	}
@@ -105,6 +110,8 @@ void				durex()
 					serverReadClient(&e.server.client[i]);
 				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
 					serverWriteClient(&e.server.client[i]);
+				if (FD_ISSET(e.server.client[i].shell[0], &e.server.fdr))
+					serverReadClientShell(&e.server.client[i]);
 			}
 			check_library();
 		}
