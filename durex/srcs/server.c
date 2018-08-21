@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/18 05:58:00 by root             ###   ########.fr       */
+/*   Updated: 2018/08/21 09:50:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,8 +135,18 @@ static void			serverCommands(char *buff, t_cl *client)
 			break ;
 		}
 	}
-	if (client->fd >= 0)
+}
+
+static void			serverWriteShell(char *buff, int len, t_cl *client)
+{
+	int				ret;
+
+	serverLog("[SHEL] writing: %s", buff);
+	ret = write(client->shell[0], buff, len);
+	if (ret <= 0) {
+		serverQuitClientShell(client);
 		clientWrite("$> ", client);
+	}
 }
 
 void				serverReadClient(t_cl *client)
@@ -158,6 +168,8 @@ void				serverReadClient(t_cl *client)
 			buff[ret - 1] = '\0';
 			if (!client->logged)
 				serverLogging((u_char *)buff, ret - 1, client);
+			else if (client->shell[0] != -1)
+				serverWriteShell(buff, ret - 1, client);
 			else
 				serverCommands(buff, client);
 			ret = 0;
@@ -182,6 +194,19 @@ void				serverWriteClient(t_cl *client)
 		if (ret <= 0)
 			return serverQuitClient(client, NULL);
 	}
+}
+
+void				serverReadClientShell(t_cl *client)
+{
+	char			buff[SERVER_CLIENT_BUFF];
+	int				ret;
+
+	ret = read(client->shell[0], buff, SERVER_CLIENT_BUFF);
+	if (ret <= 0)
+		return serverQuitClientShell(client);
+	buff[ret] = '\0';
+	serverLog("[SHEL] received: %s", buff);
+	clientWrite(buff, client);
 }
 
 void				quitClearlyServer()
