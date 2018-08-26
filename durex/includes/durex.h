@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 09:55:46 by root             ###   ########.fr       */
+/*   Updated: 2018/08/26 23:19:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ typedef struct	s_buff
 typedef struct	s_cl
 {
 	int			fd;
-	int			shell[2];
 	char		addr[17];
 	char		host[NI_MAXHOST + 1];
 	char		port[NI_MAXSERV + 1];
@@ -78,13 +77,11 @@ int				openServer(const char *addr, const char *port);
 void			serverAcceptConnections();
 void			serverReadClient(t_cl *client);
 void			serverWriteClient(t_cl *client);
+void			serverCommands(t_cl *client);
 void			serverHelp(t_cl *client, t_cmd *cmds);
 void			serverShell(t_cl *client, t_cmd *cmds);
 void			serverRemoteShell(t_cl *client, t_cmd *cmds);
-int				spawnShell(int *fd);
-void			serverReadClientShell(t_cl *client);
 void			serverQuitClient(t_cl *client, t_cmd *cmds);
-void			serverQuitClientShell(t_cl *client);
 void			quitClearlyServer();
 void			clearClient(t_cl *client);
 void			serverShellSpawned(char *buff, t_cl *client);
@@ -95,7 +92,7 @@ void			clientWrite(char *str, t_cl *client);
 int				hireReporter();
 void			serverLog(const char *message, ...);
 
-void			encrypt(u_char *msg, size_t size);
+void			encryptFunction(u_char *msg, size_t size);
 char			*moveTail(char *ptr, char *buff, int buff_size);
 
 int				mystrlen(const char *s1);

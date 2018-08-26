@@ -6,11 +6,11 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 03:23:47 by root              #+#    #+#             */
-/*   Updated: 2018/07/19 03:27:56 by root             ###   ########.fr       */
+/*   Updated: 2018/08/26 23:27:22 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 char		*moveTail(char *ptr, char *buff, int buff_size)
 {
-	return (ptr + 1 == buff + buff_size) ? buff : ptr + 1;
+	return (ptr + 1 >= buff + buff_size) ? buff : ptr + 1;
 }

