@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:49:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/26 23:29:04 by root             ###   ########.fr       */
+/*   Updated: 2018/08/28 06:30:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ extern char **environ;
 void			clearClient(t_cl *client)
 {
 	client->fd = -1;
+	client->shell = -1;
 	mymemset(client->addr, 0, sizeof(client->addr));
 	mymemset(client->host, 0, sizeof(client->host));
 	mymemset(client->port, 0, sizeof(client->port));
@@ -71,7 +72,7 @@ void			clientWrite(char *str, t_cl *client)
 	}
 }
 
-void			clientShell(int fds, int cl_fd)
+void			clientShell(int fds)
 {
 	struct termios	origin;
 	struct termios	exclusive;
@@ -81,57 +82,20 @@ void			clientShell(int fds, int cl_fd)
 	exclusive = origin;
 	cfmakeraw(&exclusive);
 	tcsetattr(fds, TCSANOW, &exclusive);
-	if (!getrlimit(RLIMIT_NOFILE, &rlim)) {
-		if (rlim.rlim_max == RLIM_INFINITY)
-			rlim.rlim_max = 4096;
-		for (size_t i = 0; i < rlim.rlim_max; i++) {
-			if (i != (size_t)fds && i != 4)
-				close(i);
-		}
-		dup(fds);
-		dup(fds);
-		dup(fds);
-		dup2(cl_fd, fds);
-	} else {
-		dup2(fds, STDIN_FILENO);
-		dup2(fds, STDOUT_FILENO);
-		dup2(fds, STDERR_FILENO);
+	if (getrlimit(RLIMIT_NOFILE, &rlim) || rlim.rlim_max == RLIM_INFINITY)
+		rlim.rlim_max = 4096;
+	for (size_t i = 0; i < rlim.rlim_max; i++) {
+		if (i != (size_t)fds)
+			close(i);
 	}
+	dup(fds);
+	dup(fds);
+	dup(fds);
 	close(fds);
-	close(cl_fd);
-	/* pid_t pid = setsid(); */
-	/* serverLog("CHILD pid:%d", pid); */
-	/* ioctl(0, TIOCSCTTY, 1); */
-	
+	setsid();
+	ioctl(0, TIOCSCTTY, 1);
 	{
 		char *cmd[] = { "/bin/sh", "-i", NULL };
-		execv(cmd[0], cmd);
+		execvp(cmd[0], cmd);
 	}
-	serverLog("CHILD shell exited");
-	return ;
-
-	char			buff[SERVER_CLIENT_BUFF];
-	int				ret;
-	while ((ret = read(fds, buff, SERVER_CLIENT_BUFF)) > 0) {
-		buff[ret] = 0;
-		char	**split = mysplitwhitespaces(buff);
-		pid_t	pid = fork();
-		if (pid == 0) {
-			execvp(split[0], split);
-			exit(-1);
-		} else if (pid > 0) {
-			waitpid(pid, &ret, 0);
-			serverLog("[INFO] CHILD shell %d.", ret);
-			if (ret == -1)
-				break ;
-		} else {
-			break ;
-		}
-		char **ptr = split;
-		while (*ptr)
-			free(*ptr++);
-		free(split);
-	}
-	exit(0);
-
 }
