@@ -6,13 +6,13 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/26 23:10:11 by root             ###   ########.fr        #
+#    Updated: 2018/08/28 05:18:22 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= Durex
 SRC		= main.c install.c durex.c server.c client.c encrypt.c commands.c
-SRC		+= signal.c move.c reporter.c stdlib.c library.c
+SRC		+= signal.c move.c reporter.c stdlib.c library.c shell.c
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 DEP		= $(addprefix $(DEP_DIR), $(SRC:.c=.d))
 SRC_DIR	= srcs/
@@ -35,6 +35,8 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(DEP_DIR)%.d
 	$(CC) -MT $@ -MMD -MP -MF $(DEP_DIR)$*.Td $(FLAGS) -o $@ -c $< $(HDR_DIR)
 	@mv -f $(DEP_DIR)$*.Td $(DEP_DIR)$*.d && touch $@
+
+$(OBJ_DIR)shell.o: FLAGS += -D_XOPEN_SOURCE=600
 
 $(DEP_DIR)%.d: ;
 .PRECIOUS: $@
