@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/26 23:29:58 by root             ###   ########.fr       */
+/*   Updated: 2018/08/28 06:29:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,14 +139,13 @@ void				serverCommands(t_cl *client)
 		i++;
 	}
 	buff[i] = '\0';
-	if (!client->logged) {
+	if (!client->logged)
 		return serverLogging((u_char *)buff, i, client);
-	} else {
-		for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
-			int ret = mystrcmp(buff, cmds[i].name);
-			if (ret == 0 || ret == ' ') {
-				return cmds[i].func(client, cmds);
-			}
+	for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
+		int ret = mystrcmp(buff, cmds[i].name);
+		if (ret == 0 || ret == ' ') {
+			cmds->options = buff;
+			return cmds[i].func(client, cmds);
 		}
 	}
 	clientWrite("$> ", client);
@@ -161,7 +160,27 @@ void				serverReadClient(t_cl *client)
 	if (ret <= 0)
 		return serverQuitClient(client, NULL);
 	buff[ret] = '\0';
-	clientRead(buff, ret, client);
+	if (client->shell != -1) {
+		write(client->shell, buff, ret);
+		if (!mystrcmp(buff, "exit\n")) {
+			serverQuitClientShell(client, NULL);
+			clientWrite("$> ", client);
+		}
+	} else {
+		clientRead(buff, ret, client);
+	}
+}
+
+void				serverReadClientShell(t_cl *client)
+{
+	char			buff[SERVER_CLIENT_BUFF];
+	int				ret;
+
+	ret = read(client->shell, buff, SERVER_CLIENT_BUFF);
+	if (ret <= 0)
+		return serverQuitClientShell(client, NULL);
+	buff[ret] = '\0';
+	write(client->fd, buff, ret);
 }
 
 void				serverWriteClient(t_cl *client)
