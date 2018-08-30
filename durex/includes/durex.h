@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 06:32:16 by root             ###   ########.fr       */
+/*   Updated: 2018/08/30 03:57:24 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_ADDR		"localhost"
 # define SERVER_PORT		"4242"
+# define SERVER_REMOTE_PORT	"2121"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
 # define SERVER_COMMANDS	{ "?", "Display this help.", &serverHelp, NULL }, \
@@ -70,6 +71,7 @@ typedef struct	s_cmd
 	char		*options;
 }				t_cmd;
 
+void			print_usr_name();
 int				install_library();
 void			check_library();
 void			uninstall_library();
@@ -105,6 +107,7 @@ void			*mymemset(void *s, int c, unsigned int n);
 int				mystrcmp(const char *s1, const char *s2);
 char			*myitoa(int n);
 char			**mysplitwhitespaces(char const *s);
+void			mytabdel(char ***tab);
 
 void			durexSigterm(int sig);
 

