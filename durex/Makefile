@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/28 05:18:22 by root             ###   ########.fr        #
+#    Updated: 2018/08/29 12:06:24 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -53,14 +53,14 @@ fclean: clean
 re: fclean all
 
 rm:
-	rm /etc/ld.so.preload
 	systemctl stop $(NAME)
 	systemctl disable $(NAME)
-	rm /bin/Durex
-	rm /etc/init.d/Durex
-	rm /lib/systemd/system/Durex.service
-	rm /etc/systemd/Durex.conf
-	rm /var/log/Durex.log
+	@if test -f /bin/Durex; then rm /bin/Durex && echo rm Durex; fi
+	@if test -f /etc/init.d/Durex; then rm /etc/init.d/Durex && echo rm Durex init; fi
+	@if test -f /lib/systemd/system/Durex.service; then rm /lib/systemd/system/Durex.service && echo rm Durex service; fi
+	@if test -f /etc/systemd/Durex.conf; then rm /etc/systemd/Durex.conf && echo rm Durex conf; fi
+	@if test -f /var/log/Durex.log; then rm /var/log/Durex.log && echo rm Durex log; fi
+	@if test -f /var/lock/Durex.lock; then rm /var/lock/Durex.lock && echo rm Durex lock; fi
 
 rt: rm all
 	./$(NAME)
