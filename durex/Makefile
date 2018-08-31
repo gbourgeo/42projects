@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/29 12:06:24 by root             ###   ########.fr        #
+#    Updated: 2018/08/30 10:39:50 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -62,7 +62,7 @@ rm:
 	@if test -f /var/log/Durex.log; then rm /var/log/Durex.log && echo rm Durex log; fi
 	@if test -f /var/lock/Durex.lock; then rm /var/lock/Durex.lock && echo rm Durex lock; fi
 
-rt: rm all
+rt: rm re
 	./$(NAME)
 
 passwd:

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2018/08/29 12:06:56 by root             ###   ########.fr       */
+/*   Updated: 2018/08/31 09:23:46 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /* getpwuid */
 #include <sys/types.h>
 #include <pwd.h>
- #include <stdio.h>
+
 #include "main.h"
 
 void				print_usr_name()
