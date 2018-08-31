@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 22:52:53 by root              #+#    #+#             */
-/*   Updated: 2018/07/29 10:17:27 by root             ###   ########.fr       */
+/*   Updated: 2018/08/31 10:28:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ int main(int ac, char **av)
 			buff[j] = ptr[j];
 			j++;
 		}
-		buff[j] = '\0';
-		encrypt(buff, j);
+		memset(buff + j, 0, SERVER_CLIENT_BUFF - j);
+		encryptFunction(buff, j);
 		printf("%s (%d):", av[i], j);
 		k = 0;
-		while (k < 8)
+		while (buff[k])
 		{
 			printf(" %d", buff[k]);
 			k++;

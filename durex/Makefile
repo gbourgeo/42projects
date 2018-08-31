@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/30 10:39:50 by root             ###   ########.fr        #
+#    Updated: 2018/08/31 10:18:01 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -65,7 +65,8 @@ rm:
 rt: rm re
 	./$(NAME)
 
-passwd:
-	$(CC) -o pass other/passwd.c
+pass:
+	$(CC) -o pass other/passwd.c $(SRC_DIR)encrypt.c $(HDR_DIR)
+
 hex:
 	$(CC) -o hex other/txttohex.c
