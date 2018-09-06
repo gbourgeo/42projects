@@ -6,7 +6,7 @@
 /*   By: pc <marvin@42.fr>                          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/10 11:40:29 by pc                #+#    #+#             */
-/*   Updated: 2016/12/31 17:14:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/05 09:21:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,11 @@ static void			ft_get_date(t_file *file, t_opt *opt)
 {
 	char			*date;
 	time_t			now;
-	char			en[12][5] = {MONTH_US};
-	char			fr[12][5] = {MONTH_FR};
-	int				i = 0;
+	static char		en[12][5] = {MONTH_US};
+	static char		fr[12][5] = {MONTH_FR};
+	int				i;
 
+	i = 0;
 	date = ctime(&file->inf.st_atime + opt->date * 2);
 	if (date == NULL)
 		return (ft_calc_date(file->inf.st_mtime, file, opt));

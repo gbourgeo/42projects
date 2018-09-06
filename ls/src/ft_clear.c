@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/01/29 20:59:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/12/31 18:33:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/05 09:09:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ void			ft_clear_opt_files(t_file **file, int l)
 			free((*file)->info.size);
 			free((*file)->info.size2);
 			ft_bzero((*file)->info.date, 14);
-			/* if ((*file)->info.s_link) */
-			/* 	free((*file)->info.s_link); */
+			if ((*file)->info.s_link)
+				free((*file)->info.s_link);
 		}
 		free(*file);
 		*file = NULL;
