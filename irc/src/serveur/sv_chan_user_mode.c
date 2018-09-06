@@ -6,11 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/19 05:43:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/11 08:21:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/05 00:15:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.H"
+#include "sv_main.h"
 
 static t_fd			*did_user_exist(char *nick, t_env *e)
 {
