@@ -24,6 +24,17 @@ Le recreer a son execution.
 
 Analyser les paquets passant par pcap.
 
+paquets:
+nmap -sS OK
+nmap -sT NOK
+nmap -sA OK
+nmap -sW OK
+nmap -sM OK
+nmap -sU OK
+nmap -sN NOK
+nmap -sF NOK
+nmap -sX NOK
+
 ---------------------------------------------------------------------------------
 
 lib compilation line:
