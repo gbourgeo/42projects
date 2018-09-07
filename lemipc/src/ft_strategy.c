@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 01:08:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 12:53:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 static void		print_info(t_player *player, char *str)
 {
 	if (e.creator)
-		ft_printf("%s: Team:%d x:%d y:%d dist:%d\n",
+		ft_printf("%s: Team:%lld x:%d y:%lld dist:%lld\n",
 					str,
 					player->team,
 					player->x + 1,
@@ -27,8 +27,8 @@ static void		print_info(t_player *player, char *str)
 
 static void		ft_get_players_position(void)
 {
-	int			i;
-	int			p;
+	ULL			i;
+	ULL			p;
 
 	i = 0;
 	p = 0;
@@ -58,7 +58,7 @@ void			ft_strategy(void)
 {
 	int			size;
 
-	size = ft_nb_players(e.data->connected) * sizeof(*e.players);
+	size = e.data->connected * sizeof(*e.players);
 	ft_memset(e.players, 0, size);
 	e.target = NULL;
 	ft_get_players_position();

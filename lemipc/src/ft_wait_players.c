@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 03:18:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 14:28:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,26 +18,26 @@
 
 static void		ft_quit(char *err)
 {
-	if (e.map != (void *)-1 && e.x >= 0 && e.y >= 0)
-		*(e.map + e.x + e.y * MAP_WIDTH) = -1;
-	if (ft_nb_players(e.data->connected) > 1)
+	if (e.map)
+		*(e.map + GET_POS(e.x, e.y)) = MAP_0;
+	if (e.data->connected > 1)
 		ft_exit_client(1, err);
 	ft_exit_server(1, err);
 }
 
 static void		ft_place_player(void)
 {
-	ft_putendl("Positionning your player... ");
+	ft_putstr("Positionning your player... ");
 	while (1)
 	{
-		e.x = rand() % MAP_WIDTH;
-		e.y = rand() % MAP_HEIGTH;
-		if (*(e.map + e.x + e.y * MAP_HEIGTH) != -1)
+		e.x = MY_RAND(rand()) % MAP_WIDTH;
+		e.y = MY_RAND(rand()) % MAP_HEIGTH;
+		if (*(e.map + GET_POS(e.x, e.y)) != MAP_0)
 			continue ;
-		*(e.map + e.x + e.y * MAP_HEIGTH) = e.team;
+		*(e.map + GET_POS(e.x, e.y)) = e.team->uid;
 		break ;
 	}
-	ft_printf("Your team is %d\n", e.team);
+	ft_printf("x=%lld y=%lld\n", e.x, e.y);
 }
 
 static void		ft_start(size_t players, size_t teams, int max, int *table)
@@ -45,9 +45,7 @@ static void		ft_start(size_t players, size_t teams, int max, int *table)
 	int			*ptr;
 
 	ptr = table;
-	if (players < MIN_PPT * MIN_TEAMS ||
-		max < MIN_PPT ||
-		teams < MIN_TEAMS)
+	if (players < MIN_PPT * MIN_TEAMS || max < MIN_PPT || teams < MIN_TEAMS)
 		return (ft_putendl("\033[1;32mWAITING FOR PLAYERS...\033[00m"));
 	if (players * teams >= MAP_WIDTH * MAP_HEIGTH)
 		ft_putendl("\033[1;31mTOO MUCH PLAYERS JOINED...\033[00m");
@@ -90,12 +88,10 @@ void			ft_wait_players(void)
 
 	srand(time(NULL));
 	ft_lock(e.semid);
-	e.data->connected[e.team] += 1;
 	ft_place_player();
 	ft_unlock(e.semid);
 	ft_termdo("sc");
-	e.data->game_in_process = 0;
-	while (e.data->game_in_process == 0)
+	while (!e.data->game_in_process)
 	{
 		if (e.creator)
 			print_map();

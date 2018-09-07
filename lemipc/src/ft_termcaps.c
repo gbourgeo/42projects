@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:03:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 14:59:02 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 #include "libft.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <term.h>
 
-void				ft_termcaps(char **env)
+void				ft_termcaps(char **env, struct termios *oldterm)
 {
 	char			*name;
 	struct termios	term;
@@ -24,9 +25,9 @@ void				ft_termcaps(char **env)
 		ft_exit(0, "Unable to get TERM variable");
 	if (tgetent(NULL, name) != 1)
 		ft_exit(0, "termcaps: tgetent() returned.");
-	if (tcgetattr(0, &e.term) == -1)
+	if (tcgetattr(0, oldterm) == -1)
 		ft_exit(1, "termcaps: tcgetattr()");
-	ft_memcpy(&term, &e.term, sizeof(term));
+	ft_memcpy(&term, oldterm, sizeof(term));
 	term.c_lflag &= ~(ICANON);
 	term.c_lflag &= ~(ECHO);
 	term.c_cc[VMIN] = 1;
@@ -37,12 +38,12 @@ void				ft_termcaps(char **env)
 	ft_putendl("Initialized TERMCAPS...");
 }
 
-void				ft_restore_term(void)
+void				ft_restore_term(struct termios *oldterm)
 {
 	int				i;
 
 	i = -1;
-	if (e.term.c_iflag != (tcflag_t)i && tcsetattr(0, 0, &e.term) == -1)
+	if (oldterm->c_iflag != (tcflag_t)i && tcsetattr(0, 0, oldterm) == -1)
 		perror("tcsetattr");
 }
 

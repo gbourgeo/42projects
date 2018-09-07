@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:48:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 17:45:19 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,27 @@
 #include <sys/msg.h>
 #include <errno.h>
 
-void				ft_sendmsg(void)
+void				ft_sendmsg(t_ipc *ipc)
 {
-	e.snd.mtype = e.team;
+	e.snd.mtype = e.team->uid;
 	e.snd.msg.ally.x = e.x;
 	e.snd.msg.ally.y = e.y;
 	ft_memcpy(&e.snd.msg.ennemy, e.target, sizeof(e.snd.msg.ennemy));
-	if (msgsnd(e.msgqid, &e.snd, sizeof(e.snd.msg), IPC_NOWAIT) == -1)
-		ft_exit_client(1, "msgsnd");
+	if (msgsnd(ipc->msgqid, &e.snd, sizeof(e.snd.msg), IPC_NOWAIT) == -1)
+		ft_exit_client(1, "msgsnd", ipc);
 }
 
-int					ft_rcvmsg(void)
+int					ft_rcvmsg(t_ipc *ipc)
 {
 	int				size;
 
 	size = sizeof(e.rcv.msg);
 	ft_memset(&e.rcv, 0, sizeof(e.rcv));
 	errno = 0;
-	if (msgrcv(e.msgqid, &e.rcv, size, e.team, IPC_NOWAIT) == -1)
+	if (msgrcv(ipc->msgqid, &e.rcv, size, e.team->uid, IPC_NOWAIT) == -1)
 	{
 		if (errno != ENOMSG)
-			ft_exit_client(1, "msgrcv");
+			ft_exit_client(1, "msgrcv", ipc);
 		return (1);
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:25:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 17:42:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,37 +22,37 @@ static int	can_i_move(void)
 		pos--;
 	if (e.y == 0 || e.y == MAP_HEIGTH - 1)
 		pos--;
-	if (e.y > 0 && *(e.map + e.x + (e.y - 1) * MAP_WIDTH) != -1)
+	if (e.y > 0 && *(e.map + GET_POS(e.x, (e.y - 1))) != MAP_0)
 		pos--;
-	if (e.x < MAP_WIDTH - 1 && *(e.map + (e.x + 1) + e.y * MAP_WIDTH) != -1)
+	if (e.x < MAP_WIDTH - 1 && *(e.map + GET_POS((e.x + 1), e.y)) != MAP_0)
 		pos--;
-	if (e.y < MAP_HEIGTH - 1 && *(e.map + e.x + (e.y + 1) * MAP_WIDTH) != -1)
+	if (e.y < MAP_HEIGTH - 1 && *(e.map + GET_POS(e.x, (e.y + 1))) != MAP_0)
 		pos--;
-	if (e.x > 0 && *(e.map + (e.x - 1) + e.y * MAP_WIDTH) != -1)
+	if (e.x > 0 && *(e.map + GET_POS((e.x - 1), e.y)) != MAP_0)
 		pos--;
 	return (pos);
 }
 
 static void	move(int x, int y)
 {
-	*(e.map + e.x + e.y * MAP_WIDTH) = -1;
+	*(e.map + GET_POS(e.x, e.y)) = MAP_0;
 	e.x = x;
 	e.y = y;
-	*(e.map + e.x + e.y * MAP_WIDTH) = e.team;
+	*(e.map + GET_POS(e.x, e.y)) = e.team->uid;
 }
 
 void		move_verticaly(int times)
 {
 	if (e.y < e.target->y)
 	{
-		if (*(e.map + e.x + (e.y + 1) * MAP_WIDTH) == -1)
+		if (*(e.map + GET_POS(e.x, (e.y + 1))) == MAP_0)
 			return (move(e.x, e.y + 1));
 		if (!times)
 			move_horizontaly(1);
 	}
 	else
 	{
-		if (*(e.map + e.x + (e.y - 1) * MAP_WIDTH) == -1)
+		if (*(e.map + GET_POS(e.x, (e.y - 1))) == MAP_0)
 			return (move(e.x, e.y - 1));
 		if (!times)
 			move_horizontaly(1);
@@ -63,14 +63,14 @@ void		move_horizontaly(int times)
 {
 	if (e.x > e.target->x)
 	{
-		if (*(e.map + e.x + e.y * MAP_WIDTH - 1) == -1)
+		if (*(e.map + GET_POS(e.x, e.y) - 1) == MAP_0)
 			return (move(e.x - 1, e.y));
 		if (!times)
 			move_verticaly(1);
 	}
 	else
 	{
-		if (*(e.map + e.x + e.y * MAP_WIDTH + 1) == -1)
+		if (*(e.map + GET_POS(e.x, e.y) + 1) == MAP_0)
 			return (move(e.x + 1, e.y));
 		if (!times)
 			move_verticaly(1);

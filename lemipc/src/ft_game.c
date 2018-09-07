@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 01:10:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 14:21:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,53 +18,53 @@
 static int		ft_check_if_surrounded(int team, int surr, int c)
 {
 	c = *(e.map + (e.x - 1) + ((e.y - 1) * MAP_WIDTH));
-	if (e.x > 0 && e.y > 0 && c != -1 && c != team)
+	if (e.x > 0 && e.y > 0 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + e.x + ((e.y - 1) * MAP_WIDTH));
-	if (e.y > 0 && c != -1 && c != team)
+	if (e.y > 0 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + (e.x + 1) + ((e.y - 1) * MAP_WIDTH));
-	if (e.x < MAP_WIDTH - 1 && e.y > 0 && c != -1 && c != team)
+	if (e.x < MAP_WIDTH - 1 && e.y > 0 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + (e.x + 1) + (e.y * MAP_WIDTH));
-	if (e.x < MAP_WIDTH - 1 && c != -1 && c != team)
+	if (e.x < MAP_WIDTH - 1 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + (e.x + 1) + ((e.y + 1) * MAP_WIDTH));
-	if (e.x < MAP_WIDTH - 1 && e.y < MAP_HEIGTH - 1 && c != -1 && c != team)
+	if (e.x < MAP_WIDTH - 1 && e.y < MAP_HEIGTH - 1 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + e.x + ((e.y + 1) * MAP_WIDTH));
-	if (e.y < MAP_HEIGTH - 1 && c != -1 && c != team)
+	if (e.y < MAP_HEIGTH - 1 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + (e.x - 1) + ((e.y + 1) * MAP_WIDTH));
-	if (e.x > 0 && e.y < MAP_HEIGTH - 1 && c != -1 && c != team)
+	if (e.x > 0 && e.y < MAP_HEIGTH - 1 && c != MAP_0 && c != team)
 		surr++;
 	c = *(e.map + (e.x - 1) + e.y * MAP_WIDTH);
-	if (e.x > 0 && c != -1 && c != team)
+	if (e.x > 0 && c != MAP_0 && c != team)
 		surr++;
 	return (surr);
 }
 
-static void		check_who_wins(int *players)
-{
-	size_t		nb_teams;
-	int			*ptr;
+/* static void		check_who_wins(int *players) */
+/* { */
+/* 	size_t		nb_teams; */
+/* 	int			*ptr; */
 
-	nb_teams = 0;
-	ptr = players;
-	while (ptr - players < MAX_TEAMS)
-		nb_teams += (*ptr++ > 1) ? 1 : 0;
-	if (nb_teams == 1)
-	{
-		ptr = players;
-		while (ptr - players < MAX_TEAMS && *ptr < 2)
-			ptr++;
-		e.data->end = ptr - players;
-	}
-}
+/* 	nb_teams = 0; */
+/* 	ptr = players; */
+/* 	while (ptr - players < MAX_TEAMS) */
+/* 		nb_teams += (*ptr++ > 1) ? 1 : 0; */
+/* 	if (nb_teams == 1) */
+/* 	{ */
+/* 		ptr = players; */
+/* 		while (ptr - players < MAX_TEAMS && *ptr < 2) */
+/* 			ptr++; */
+/* 		e.data->end = ptr - players; */
+/* 	} */
+/* } */
 
 void			ft_launch_game(void)
 {
-	while (e.data->end == -1)
+	while (e.data->players > 1)
 	{
 		if (e.creator)
 			print_map();
@@ -73,14 +73,14 @@ void			ft_launch_game(void)
 			break ;
 		ft_strategy();
 		ft_unlock(e.semid);
-		check_who_wins(e.data->connected);
+//		check_who_wins(e.data->connected);
 		sleep(1);
 	}
-	*(e.map + e.x + e.y * MAP_WIDTH) = -1;
-	e.data->connected[e.team] -= 1;
-	while (e.data->end == -1 && e.creator)
+	*(e.map + GET_POS(e.x, e.y)) = MAP_0;
+	e.data->players--;
+	while (e.data->players && e.creator)
 		print_map();
-	if (e.data->end != -1 && e.creator)
-		ft_printf("Team %d has won the game !!!\n", e.data->end);
+	if (e.data->winner && e.creator)
+		ft_printf("Team %lld has won the game !!!\n", e.data->winner);
 	ft_free_exit();
 }

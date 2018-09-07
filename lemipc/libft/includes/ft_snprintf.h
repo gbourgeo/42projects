@@ -1,28 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pf_percent.c                                       :+:      :+:    :+:   */
+/*   ft_snprintf.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/15 23:29:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/16 04:57:34 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/04/11 04:05:00 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/04/11 04:05:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#ifndef FT_SNPRINTF_H
+# define FT_SNPRINTF_H
 
-void			pf_percent(t_dt *data)
-{
-	if (!data->flag.minus)
-	{
-		while (data->flag.min_width > 1 && data->flag.min_width--)
-			write_char(data, (data->flag.zero) ? '0' : ' ');
-	}
-	write_char(data, '%');
-	if (data->flag.minus)
-	{
-		while (data->flag.min_width > 1 && data->flag.min_width--)
-			write_char(data, ' ');
-	}
-}
+# include "ft_base_printf.h"
+
+int			ft_snprintf(char *str, size_t size, const char *restrict format, \
+						...);
+void		ft_snprintf_write(t_dt *data);
+
+#endif

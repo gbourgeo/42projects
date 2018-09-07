@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:02:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/07 17:30:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,44 +18,37 @@
 #include <sys/msg.h>
 #include <sys/sem.h>
 
-void		ft_exit_server(int print_err, char *err)
+void		ft_exit_creation(int print_err, char *err, t_ipc *ipc)
 {
 	fprintf(stderr, "%s: ", e.prog);
 	if (print_err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	if (e.msgqid != -1 && msgctl(e.msgqid, IPC_RMID, NULL))
+	if (ipc->msgqid != -1 && msgctl(ipc->msgqid, IPC_RMID, NULL))
 		perror("msgctl");
-	if (e.semid != -1 && semctl(e.semid, 0, IPC_RMID))
+	if (ipc->semid != -1 && semctl(ipc->semid, 0, IPC_RMID))
 		perror("semctl");
-	if (e.shmid != -1)
-	{
-		if (e.data != (void *)-1 && shmdt(e.data))
-			perror("shmdt");
-		if (shmctl(e.shmid, IPC_RMID, NULL))
-			perror("shmctl");
-	}
-	ft_restore_term();
-	if (e.players != (void *)-1)
-		free(e.players);
-	ft_bzero(&e, sizeof(e));
+	if (ipc->board != (void *)-1 && shmdt(ipc->board))
+		perror("shmdt");
+	if (ipc->shmid != -1 && shmctl(ipc->shmid, IPC_RMID, NULL))
+		perror("shmctl");
+	ft_memset(ipc, 0, sizeof(*ipc));
 	exit(1);
 }
 
-void		ft_exit_client(int print_err, char *err)
+void		ft_exit_client(int print_err, char *err, t_ipc *ipc)
 {
 	fprintf(stderr, "%s: ", e.prog);
 	if (print_err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	if (e.data != (void *)-1 && shmdt(e.data) == -1)
+	if (ipc->board != (void *)-1 && shmdt(ipc->board))
 		perror("shmdt");
-	ft_restore_term();
-	if (e.players != (void *)-1)
-		free(e.players);
-	ft_bzero(&e, sizeof(e));
+	/* if (e.players) */
+	/* 	free(e.players); */
+	ft_memset(ipc, 0, sizeof(*ipc));
 	exit(1);
 }
 
@@ -66,32 +59,30 @@ void		ft_exit(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	ft_restore_term();
-	ft_bzero(&e, sizeof(e));
 	exit(1);
 }
 
-void		ft_free_exit(void)
-{
-	if (ft_nb_players(e.data->connected) == 0)
-	{
-		if (e.msgqid != -1 && msgctl(e.msgqid, IPC_RMID, NULL))
-			perror("msgctl");
-		if (e.semid != -1 && semctl(e.semid, 0, IPC_RMID))
-			perror("semctl");
-		if (e.shmid != -1)
-		{
-			if (e.data != (void *)-1 && shmdt(e.data))
-				perror("shmdt");
-			if (shmctl(e.shmid, IPC_RMID, NULL))
-				perror("shmctl");
-		}
-	}
-	else if (e.data != (void *)-1 && shmdt(e.data) == -1)
-		perror("shmdt");
-	ft_restore_term();
-	if (e.players != (void *)-1)
-		free(e.players);
-	ft_bzero(&e, sizeof(e));
-	exit(0);
-}
+/* void		ft_free_exit(t_ipc *ipc) */
+/* { */
+/* 	if (e.data->connected == 0) */
+/* 	{ */
+/* 		if (e.msgqid != -1 && msgctl(e.msgqid, IPC_RMID, NULL)) */
+/* 			perror("msgctl"); */
+/* 		if (e.semid != -1 && semctl(e.semid, 0, IPC_RMID)) */
+/* 			perror("semctl"); */
+/* 		if (e.shmid != -1) */
+/* 		{ */
+/* 			if (e.data != (void *)-1 && shmdt(e.data)) */
+/* 				perror("shmdt"); */
+/* 			if (shmctl(e.shmid, IPC_RMID, NULL)) */
+/* 				perror("shmctl"); */
+/* 		} */
+/* 	} */
+/* 	else if (e.data != (void *)-1 && shmdt(e.data) == -1) */
+/* 		perror("shmdt"); */
+/* 	ft_restore_term(); */
+/* 	if (e.players != (void *)-1) */
+/* 		free(e.players); */
+/* 	ft_bzero(&e, sizeof(e)); */
+/* 	exit(0); */
+/* } */
