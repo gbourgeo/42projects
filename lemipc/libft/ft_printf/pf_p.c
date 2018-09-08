@@ -6,24 +6,24 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:33:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 06:08:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/11 02:23:32 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "libft.h"
-#include "ft_base_printf.h"
 
-static void	get_data(t_dt *data, t_av *av, size_t *len)
+static void	get_data(t_dt *data, t_av *av, int *len)
 {
 	av->ui = va_arg(data->ap, ULL);
-	ft_itoa_base2(av->ui, 16, av->s);
+	av->s = ft_itoa_base(av->ui, 16);
 	av->len = ft_strlen(av->s);
 	*len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 }
 
 static void	print_ox(t_dt *data, t_av *av)
 {
-	size_t	len;
+	int		len;
 
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	if (!data->flag.minus)
@@ -33,7 +33,7 @@ static void	print_ox(t_dt *data, t_av *av)
 		while (data->flag.min_width > len + 2 && len++)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 		len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
-		if (data->flag.min_width > len + 2 && !data->flag.zero)
+		if (data->flag.min_width >= len + 2 && !data->flag.zero)
 			write_str(data, "0x", 2);
 	}
 	else
@@ -43,7 +43,7 @@ static void	print_ox(t_dt *data, t_av *av)
 void		pf_p(t_dt *data)
 {
 	t_av	av;
-	size_t	len;
+	int		len;
 
 	get_data(data, &av, &len);
 	print_ox(data, &av);
@@ -58,4 +58,6 @@ void		pf_p(t_dt *data)
 		while (data->flag.min_width > len + 2 && data->flag.min_width--)
 			write_char(data, ' ');
 	}
+	if (av.s)
+		free(av.s);
 }

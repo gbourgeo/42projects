@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dprintf.h                                       :+:      :+:    :+:   */
+/*   ft_fprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 02:24:36 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 02:39:40 by root             ###   ########.fr       */
+/*   Created: 2018/04/11 00:44:30 by root              #+#    #+#             */
+/*   Updated: 2018/04/11 02:25:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_DPRINTF_H
-# define FT_DPRINTF_H
+#include "ft_fprintf.h"
 
-#include "ft_base_printf.h"
+void		ft_fprintf_write(t_dt *data)
+{
+	void	*buf = data->buff;
 
-int			ft_dprintf(int fd, const char *restrict format, ...);
-void		ft_dprintf_write(t_dt *data);
-
-#endif
+	data->ret += fwrite(buf, sizeof(*data->buff), data->pos, data->stream);
+}

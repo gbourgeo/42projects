@@ -1,37 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_wstrlen.c                                       :+:      :+:    :+:   */
+/*   ft_sprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/05/02 01:52:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 05:59:58 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/04/11 02:59:42 by root              #+#    #+#             */
+/*   Updated: 2018/04/11 03:13:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <wchar.h>
+#include "ft_sprintf.h"
 
-size_t		ft_wstrlen(const wchar_t *str)
+void		ft_sprintf_write(t_dt *data)
 {
 	size_t	i;
-	size_t	len;
+	size_t	j;
 
 	i = 0;
-	len = 0;
-	if (!str)
-		return (0);
-	while (str[i])
-	{
-		if (str[i] <= 0x7F)
-			len += 1;
-		else if (str[i] <= 0x7FF)
-			len += 2;
-		else if (str[i] <= 0xFFFF)
-			len += 3;
-		else
-			len += 4;
+	j = 0;
+	while (data->str[i])
 		i++;
+	while (j < data->pos)
+	{
+		data->str[i + j] = data->buff[j];
+		j++;
 	}
-	return (len);
+	data->str[i + j] = '\0';
+	data->ret += j;
 }

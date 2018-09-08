@@ -1,16 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   pf_routine.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 06:04:45 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/04/11 01:22:08 by root              #+#    #+#             */
+/*   Updated: 2018/04/11 02:30:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include "libft.h"
 #include "ft_base_printf.h"
 
@@ -92,31 +91,26 @@ static void		print_flag(t_dt *data)
 		data->tail--;
 }
 
-int				ft_printf(const char *restrict format, ...)
+int				pf_routine(t_dt *data)
 {
 	static void	(*func[])(t_dt *) = { PRINTF_FUNC1, PRINTF_FUNC2 };
-	t_dt		data;
 	char		*ptr;
 
-	ft_memset(&data, 0, sizeof(data));
-	data.tail = (char *)format;
-	va_start(data.ap, format);
-	while (*data.tail)
+	while (*data->tail)
 	{
-		if (*data.tail == '%')
+		if (*data->tail == '%')
 		{
 			ptr = NULL;
-			get_options(&data);
-			if (*data.tail)
-				ptr = ft_strchr(PRINTF_ARGS, *data.tail);
-			(ptr) ? func[ptr - PRINTF_ARGS](&data) : print_flag(&data);
-			ft_memset(&data.flag, 0, sizeof(data.flag));
+			get_options(data);
+			if (*data->tail)
+				ptr = ft_strchr(PRINTF_ARGS, *data->tail);
+			(ptr) ? func[ptr - PRINTF_ARGS](data) : print_flag(data);
+			ft_memset(&data->flag, 0, sizeof(data->flag));
 		}
 		else
-			write_char(&data, *data.tail);
-		data.tail++;
+			write_char(data, *data->tail);
+		data->tail++;
 	}
-	data.ret += write(STDOUT_FILENO, data.buff, data.pos);
-	va_end(data.ap);
-	return (data.ret - data.less);
+	data->writeto(data);
+	return (data->ret - data->less);
 }
