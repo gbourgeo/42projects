@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/07 17:45:19 by root             ###   ########.fr       */
+/*   Updated: 2018/09/08 16:43:07 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 void				ft_sendmsg(t_ipc *ipc)
 {
-	e.snd.mtype = e.team->uid;
+	e.snd.mtype = e.player.team->uid;
 	e.snd.msg.ally.x = e.x;
 	e.snd.msg.ally.y = e.y;
 	ft_memcpy(&e.snd.msg.ennemy, e.target, sizeof(e.snd.msg.ennemy));
@@ -32,7 +32,7 @@ int					ft_rcvmsg(t_ipc *ipc)
 	size = sizeof(e.rcv.msg);
 	ft_memset(&e.rcv, 0, sizeof(e.rcv));
 	errno = 0;
-	if (msgrcv(ipc->msgqid, &e.rcv, size, e.team->uid, IPC_NOWAIT) == -1)
+	if (msgrcv(ipc->msgqid, &e.rcv, size, e.player.team->uid, IPC_NOWAIT) == -1)
 	{
 		if (errno != ENOMSG)
 			ft_exit_client(1, "msgrcv", ipc);

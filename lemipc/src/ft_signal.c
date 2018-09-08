@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/07 14:50:36 by root             ###   ########.fr       */
+/*   Updated: 2018/09/08 17:38:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,32 +33,23 @@ static void	catch_sig(int sig)
 
 	err = (sig >= 0 && sig < NSIG) ? signals[sig] : "Unknown signal error";
 	ft_putchar('\n');
-	if (e.data != (void *)-1)
+	if (e.player.board != (void *)-1)
 	{
-		if (e.map)
-			*(e.map + e.x + e.y * MAP_WIDTH) = MAP_0;
-		e.data->connected--;
-		if (e.data->connected > 0)
-			ft_exit_client(0, err);
-		ft_exit_server(0, err);
+		*(e.player.map + GET_POS(e.x, e.y)) = MAP_0;
+		e.player.team->total--;
+		e.player.board->players--;
 	}
-	if (e.creator)
-		ft_exit_server(0, err);
-	ft_exit_client(0, err);
+	ft_exit_client(0, err, &e.player);
 }
 
 void		init_signal(void)
 {
 	int		i;
 
-	i = 1;
+	i = 0;
 	while (i < NSIG)
 	{
-		if (i != SIGKILL && i != SIGSTOP && i != SIGWINCH)
-		{
-			if (signal(i, catch_sig) == SIG_ERR)
-				ft_exit(1, "signal");
-		}
+		signal(i, catch_sig);
 		i++;
 	}
 }

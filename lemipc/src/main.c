@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/07 17:41:57 by root             ###   ########.fr       */
+/*   Updated: 2018/09/08 17:36:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,22 @@ static void			init_prog(int ac, const char *prog)
 
 int					main(int ac, const char **av)
 {
-	t_ipc			ipc;
-
 	init_prog(ac, av[0]);
 	init_signal();
-	init_ipc(e.prog, &ipc);
-	if (ipc.shmid < 0)
+	init_ipc(e.prog, &e.player);
+	if (e.player.shmid < 0)
 	{
 		if ((MAP_WIDTH <= 2 && MAP_HEIGTH <= 2) || MAP_WIDTH < 2 || MAP_HEIGTH < 2)
 			ft_exit(0, "Error: Map size unplayable.");
-		ft_create_game(&ipc);
-		ft_create_process_to_print_map();
+		ft_create_game(&e.player);
+		ft_create_process_to_print_map(&e.player);
 	}
 	else
-		ft_join_game(&ipc);
-	e.map = ipc.map;
-	e.team = ft_add_player(av[1], &ipc.teams);
-	ft_dprintf(1, "Your team is %s with id:%lld\n", e.team->name, e.team->uid);
+		ft_join_game(&e.player);
+	e.player.team = ft_add_team(av[1], &e.player.board->teams);
+	if (e.player.team == NULL)
+		ft_exit_client(1, "malloc", &e.player);
+	ft_dprintf(1, "Your team is %s with id:%lld\n", e.player.team->name, e.player.team->uid);
 	ft_wait_players();
 //	ft_launch_game();
 	return (0);

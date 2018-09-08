@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/07 14:52:36 by root              #+#    #+#             */
-/*   Updated: 2018/09/07 15:41:44 by root             ###   ########.fr       */
+/*   Updated: 2018/09/08 17:20:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,5 @@ void			init_ipc(const char *prog, t_ipc *ipc)
 	ipc->map = (void *)0;
 	ipc->msgqid = -1;
 	ipc->semid = -1;
-	ipc->teams = (void *)0;
+	ipc->team = (void *)0;
 }

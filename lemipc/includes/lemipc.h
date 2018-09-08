@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/07 17:44:51 by root             ###   ########.fr       */
+/*   Updated: 2018/09/08 17:36:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct		s_player
 	ULL				x;
 	ULL				y;
 	ULL				dist;
+	struct s_player	*next;
 }					t_player;
 
 typedef struct		s_msg
@@ -83,14 +84,13 @@ typedef struct		s_ipc
 	ULL				*map;
 	int				semid;
 	int				msgqid;
-	t_uid			*teams;
+	t_uid			*team;
 }					t_ipc;
 
 typedef struct		s_env
 {
 	const char		*prog;
-	ULL				*map;
-	t_uid			*team;
+	t_ipc			player;
 	ULL				x;
 	ULL				y;
 	t_player		*players;
@@ -112,20 +112,20 @@ void				ft_exit_client(int print_err, char *err, t_ipc *ipc);
 void				ft_exit(int print_err, char *err);
 void				ft_create_game(t_ipc *ipc);
 void				ft_join_game(t_ipc *ipc);
-void				ft_create_process_to_print_map();
-t_uid				*ft_add_player(const char *team_name, t_uid **teams);
+void				ft_create_process_to_print_map(t_ipc *ipc);
+t_uid				*ft_add_team(const char *name, t_uid **teams);
 void				ft_lock(int semid);
 void				ft_unlock(int semid);
 void				ft_wait_players(void);
 void				ft_launch_game(void);
 void				ft_strategy(void);
-void				print_map(void);
 void				ft_sendmsg(t_ipc *ipc);
 int					ft_rcvmsg(t_ipc *ipc);
 char				*ft_getenv(char *str, char **env);
-void				ft_move_to_target(void);
+void				ft_move_to_target(ULL *map);
+void				move_horizontaly(int times, ULL *map);
+void				move_verticaly(int times, ULL *map);
 ULL					ft_nb_players(t_uid *teams);
-void				move_horizontaly(int times);
-void				move_verticaly(int times);
+t_player			*ft_create_players_list(t_ipc *ipc);
 
 #endif
