@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/07 14:52:36 by root              #+#    #+#             */
-/*   Updated: 2018/09/12 17:38:48 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 18:07:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,8 @@ void		init_team(const char *prog, t_team *team)
 	team->key = ftok(prog, 'B');
 	if (team->key == -1)
 		ft_exit(1, "ftok");
-	team->size = sizeof(*team);
+	team->size = sizeof(*team->board);
 	team->shmid = shmget(team->key, 0, SHM_R | SHM_W);
 	team->semid = -1;
 	team->board = (void *)-1;
-}
-
-void		init_child(t_child *child)
-{
-	child->gameid = -1;
-	child->game = (void *)-1;
-	child->teamsid = -1;
-	child->teams = (void *)-1;
 }

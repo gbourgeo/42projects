@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:54:51 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 22:32:31 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_uid				*ft_create_team(const char *name, t_team *team)
 	if (team->board == (void *)-1)
 		ft_exit(1, "shmat");
 	ft_memset(team->board, 0, sizeof(*team));
-	team->board->name = name;
+	ft_strncpy(team->board->name, name, sizeof(team->board->name) - 1);
 	team->board->uid = 1;
 	team->board->total = 1;
 	team->semid = semget(team->key, 1, IPC_CREAT | IPC_EXCL | SHM_R | SHM_W);
@@ -62,35 +62,12 @@ t_uid				*ft_create_team(const char *name, t_team *team)
 	return (team->board);
 }
 
-void				ft_create_child(t_child *child)
-{
-	key_t			key;
-
-	key = ftok(e.prog, 'G');
-	if (key == -1)
-		ft_exit_child(1, "child: ftok");
-	child->gameid = shmget(key, 0, SHM_R);
-	if (child->gameid < 0)
-		ft_exit_child(1, "child: shmget");
-	child->game = shmat(child->gameid, NULL, 0);
-	if (child->game == (void *)-1)
-		ft_exit_child(1, "child: shmgat");
-	key = ftok(e.prog, 'B');
-	if (key == -1)
-		ft_exit_child(1, "child: ftok");
-	child->teamsid = shmget(key, 0, SHM_R);
-	if (child->teamsid < 0)
-		ft_exit_child(1, "child: shmget");
-	child->teams = shmat(child->teamsid, NULL, 0);
-	if (child->teams == (void *)-1)
-		ft_exit_child(1, "child: shmgat");
-}
-
 void				ft_join_game(t_game *game)
 {
 	game->board = shmat(game->shmid, NULL, 0);
 	if (game->board == (void *)-1)
 		ft_exit(1, "shmat");
+	game->board->nb_players++;
 	game->map = (ULL *)game->board + sizeof(*game->board);
 	game->semid = semget(game->key, 1, SHM_R | SHM_W);
 	if (game->semid < 0)
@@ -104,8 +81,32 @@ void				ft_join_game(t_game *game)
 	/* 	ft_exit(0, "Game in process. You can't join the battle."); */
 }
 
-t_uid				*ft_join_team(const char *name, t_team *team)
+t_uid				*ft_join_team(const char *name, t_team *teams)
 {
-	(void)name;
-	return (team->board);
+	size_t			size;
+	t_uid			*team;
+
+	size = 0;
+	teams->board = shmat(teams->shmid, NULL, 0);
+	if (teams->board == (void *)-1)
+		ft_exit(1, "shmat");
+	team = teams->board;
+	while (size < teams->size)
+	{
+		if (!ft_strcmp((team + size)->name, name))
+		{
+			ft_lock(teams->semid);
+			(team + size)->total++;
+			ft_unlock(teams->semid);
+			return (team + size);
+		}
+		size += sizeof(*team);
+	}
+	ft_lock(teams->semid);
+	teams->size += sizeof(*team);
+	ft_strncpy((team + size)->name, name, sizeof((team + size)->name) - 1);
+	(team + size)->uid = size / sizeof(*team) + 1;
+	(team + size)->total = 1;
+	ft_unlock(teams->semid);
+	return (team + size);
 }

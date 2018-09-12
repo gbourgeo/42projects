@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 16:44:26 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 22:33:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 static void			ft_usage(void)
 {
 	ft_dprintf(2, "Usage:\n\t %s [team_name]\n", e.prog);
+	ft_dprintf(2, "\n\t[team_name] must be at most 31 characters. Otherwise");
+	ft_dprintf(2, "\n\t the name will be truncated.\n");
 	exit(1);
 }
 
@@ -50,6 +52,7 @@ int					main(int ac, const char **av)
 		ft_join_game(&e.game);
 		ft_dprintf(1, "Joining team...\n");
 		e.team = ft_join_team(av[1], &e.teams);
+		ft_dprintf(1, "Teams size: %ld\n", e.teams.size);
 	}
 	ft_wait_players();
 //	ft_launch_game();

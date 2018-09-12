@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:00:04 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 22:21:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,11 @@ static void		ft_check_even_teams(void)
 void			ft_wait_players(void)
 {
 	ft_place_player();
-	while (1);
+	ft_putendl("\e[1;34mWAITING FOR PLAYERS...\e[0m");
 	while (!e.game.board->game_in_process)
 	{
 		ft_check_even_teams();
 	}
-	ft_putendl("\033[1;32mGAME IN PROGRESS...\033[00m");
+	ft_putendl("\e[1;32mGAME IN PROGRESS...\e[0m");
 	ft_create_players_list();
 }

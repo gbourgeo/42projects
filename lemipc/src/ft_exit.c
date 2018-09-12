@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:55:45 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 22:17:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static int	ft_exit_game()
 {
 	if (e.game.shmid != -1)
 	{
-		ft_lock(e.game.semid);
 		if (e.game.board == (void *)-1)
 		{
 			if (shmctl(e.game.shmid, IPC_RMID, NULL))
@@ -31,7 +30,6 @@ static int	ft_exit_game()
 		}
 		else if (e.game.board->nb_players-- == 1)
 		{
-			*(e.game.map + GET_POS(e.x, e.y)) = MAP_0;
 			ft_unlock(e.game.semid);
 			if (shmctl(e.game.shmid, IPC_RMID, NULL))
 				perror("shmctl");
@@ -43,9 +41,8 @@ static int	ft_exit_game()
 				perror("msgctl");
 			return (0);
 		}
-		else if (shmdt(e.game.board))
+		if (shmdt(e.game.board))
 			perror("shmdt");
-		ft_unlock(e.game.semid);
 	}
 	return (1);
 }
@@ -81,6 +78,18 @@ void		ft_exit(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
+	if (e.game.board != (void *)-1)
+	{
+		ft_lock(e.game.semid);
+		*(e.game.map + GET_POS(e.x, e.y)) = MAP_0;
+		ft_unlock(e.game.semid);
+	}
+	if (e.teams.board != (void *)-1)
+	{
+		ft_lock(e.teams.semid);
+		e.team->total--;
+		ft_unlock(e.teams.semid);
+	}
 	ft_exit_team(ft_exit_game());
 	if (e.pid)
 	{
@@ -98,7 +107,7 @@ void		ft_exit_child(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	ft_restore_term(&e.child.term);
+	ft_restore_term(&e.term);
 	if (e.game.board != (void *)-1)
 		shmdt(e.game.board);
 	if (e.teams.board != (void *)-1)

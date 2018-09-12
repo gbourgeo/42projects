@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:51:41 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 22:15:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ typedef	struct		s_msgbuf
 typedef struct		s_board
 {
 	ULL				nb_players;
-//	ULL				nb_teams;
 	int				game_in_process;
 	ULL				winner;
 }					t_board;
@@ -76,7 +75,7 @@ typedef struct		s_game
 
 typedef struct		s_uid
 {
-	const char		*name;
+	char			name[32];
 	ULL				uid;
 	ULL				total;
 }					t_uid;
@@ -89,15 +88,6 @@ typedef struct		s_team
 	int				semid;
 	t_uid			*board;
 }					t_team;
-
-typedef struct		s_child
-{
-	struct termios	term;
-	int				gameid;
-	t_game			*game;
-	int				teamsid;
-	t_team			*teams;
-}					t_child;
 
 typedef struct		s_env
 {
@@ -112,19 +102,17 @@ typedef struct		s_env
 	t_msgbuf		rcv;
 	t_player		*target;
 	pid_t			pid;
-	t_child			child;
+	struct termios	term;
 }					t_env;
 
 struct s_env		e;
 
 void				init_game(const char *prog, t_game *game);
 void				init_team(const char *prog, t_team *team);
-void				init_child(t_child *child);
 void				init_signal(void (*signal_catcher)(int));
 
 void				ft_create_game(t_game *game);
 t_uid				*ft_create_team(const char *name, t_team *team);
-void				ft_create_child(t_child *child);
 void				ft_create_process_to_print_map();
 
 void				ft_join_game(t_game *game);

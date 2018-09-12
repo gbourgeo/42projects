@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:54:41 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 22:21:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static void		print_info(t_game *game, t_team *teams)
 	size = 0;
 	team = teams->board;
 	ft_printf("Players connected: %llu\n", game->board->nb_players);
+	ft_printf("Teams size: %ld\n", teams->size);
 	ft_printf("Team Name | Team ID | Total Members\n");
 	while (size < teams->size)
 	{
@@ -31,7 +32,7 @@ static void		print_info(t_game *game, t_team *teams)
 		size += sizeof(*team);
 	}
 	printf("%s\n", (game->board->game_in_process) ?
-			"\e[32mGAME IN PROCESS\e[0m" : "\e[33mWAITING FOR PLAYERS\e[0m");
+			"\e[1;32mGAME IN PROCESS\e[0m" : "\e[1;34mWAITING FOR PLAYERS...\e[0m");
 }
 
 static void		print_map(ULL *map)
@@ -67,7 +68,7 @@ void			ft_create_process_to_print_map()
 	else if (e.pid == 0)
 	{
 		setsid();
-		ft_termcaps(environ, &e.child.term);
+		ft_termcaps(environ, &e.term);
 //		init_child(&e.child);
 //		init_signal(&mapper_signal_catcher);
 //		init_signal(SIG_IGN);
