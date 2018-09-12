@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:04:05 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 17:54:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,11 @@ static void		print_info(t_game *game, t_team *teams)
 
 	size = 0;
 	team = teams->board;
-	return;
 	ft_printf("Players connected: %llu\n", game->board->nb_players);
 	ft_printf("Team Name | Team ID | Total Members\n");
 	while (size < teams->size)
 	{
-		ft_printf("%p %llu %llu\n",
+		ft_printf("%s %llu %llu\n",
 				(team + size)->name, (team + size)->uid, (team + size)->total);
 		size += sizeof(*team);
 	}
@@ -42,7 +41,6 @@ static void		print_map(ULL *map)
 	char		c;
 
 	i = 0;
-	return;
 	while (i < MAP_HEIGTH)
 	{
 		j = 0;
@@ -70,23 +68,24 @@ void			ft_create_process_to_print_map()
 	{
 		setsid();
 		ft_termcaps(environ, &e.child.term);
-		init_child(&e.child);
-		init_signal(&mapper_signal_catcher);
-		ft_create_child(&e.child);
+//		init_child(&e.child);
+//		init_signal(&mapper_signal_catcher);
+//		init_signal(SIG_IGN);
+//		ft_create_child(&e.child);
 		ft_termdo("cl");
 		ft_termdo("sc");
 		while (1)
 		{
 			ft_termdo("rc");
 			ft_termdo("cd");
-			if (e.child.game != (void *)-1 && e.child.teams != (void *)-1)
-				print_info(e.child.game, e.child.teams);
-			if (e.child.game != (void *)-1)
-				print_map(e.child.game->map);
-			if (e.child.game->board->nb_players == 0)
+			if (e.game.board != (void *)-1 && e.teams.board != (void *)-1)
+				print_info(&e.game, &e.teams);
+			if (e.game.board != (void *)-1)
+				print_map(e.game.map);
+			if (e.game.board->nb_players == 0)
 				break ;
 			sleep(1);
 		}
-		ft_exit_child(0, "Bye.");
+		ft_exit_child(0, "Mapper: Bye.");
 	}
 }

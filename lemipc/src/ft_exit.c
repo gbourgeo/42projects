@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 15:44:30 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 17:55:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,11 @@ void		ft_exit(int print_err, char *err)
 		fprintf(stderr, "%s\n", err);
 	ft_exit_team(ft_exit_game());
 	if (e.pid)
+	{
+		printf("Waiting for game to end...\n");
 		waitpid(e.pid, NULL, 0);
-	ft_memset(&e, 0, sizeof(e));
+	}
+	ft_memset(&e, -1, sizeof(e));
 	exit(1);
 }
 
@@ -95,9 +98,10 @@ void		ft_exit_child(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
-	if (e.child.game != (void *)-1)
-		shmdt(e.child.game);
-	if (e.child.teams != (void *)-1)
-		shmdt(e.child.teams);
+	ft_restore_term(&e.child.term);
+	if (e.game.board != (void *)-1)
+		shmdt(e.game.board);
+	if (e.teams.board != (void *)-1)
+		shmdt(e.teams.board);
 	exit(1);
 }

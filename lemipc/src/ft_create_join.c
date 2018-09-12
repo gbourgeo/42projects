@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:05:03 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 17:54:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ t_uid				*ft_create_team(const char *name, t_team *team)
 		ft_exit(1, "shmat");
 	ft_memset(team->board, 0, sizeof(*team));
 	team->board->name = name;
-	team->board->name = NULL;
 	team->board->uid = 1;
 	team->board->total = 1;
 	team->semid = semget(team->key, 1, IPC_CREAT | IPC_EXCL | SHM_R | SHM_W);
@@ -70,7 +69,7 @@ void				ft_create_child(t_child *child)
 	key = ftok(e.prog, 'G');
 	if (key == -1)
 		ft_exit_child(1, "child: ftok");
-	child->gameid = shmget(key, e.game.size, SHM_R);
+	child->gameid = shmget(key, 0, SHM_R);
 	if (child->gameid < 0)
 		ft_exit_child(1, "child: shmget");
 	child->game = shmat(child->gameid, NULL, 0);
@@ -79,7 +78,7 @@ void				ft_create_child(t_child *child)
 	key = ftok(e.prog, 'B');
 	if (key == -1)
 		ft_exit_child(1, "child: ftok");
-	child->teamsid = shmget(key, e.teams.size, SHM_R);
+	child->teamsid = shmget(key, 0, SHM_R);
 	if (child->teamsid < 0)
 		ft_exit_child(1, "child: shmget");
 	child->teams = shmat(child->teamsid, NULL, 0);

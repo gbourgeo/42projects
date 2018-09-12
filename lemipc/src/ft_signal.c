@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 15:47:37 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 17:54:22 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,22 +36,7 @@ void			game_signal_catcher(int sig)
 	ft_exit(0, err);
 }
 
-void			mapper_signal_catcher(int sig)
-{
-	(void)sig;
-	ft_restore_term(&e.child.term);
-	ft_exit_child(0, "signal caugth");
-}
-
 void			init_signal(void (*signal_catcher)(int))
 {
-	int			i;
-
-	i = 0;
-	while (i < NSIG)
-	{
-		if (i != SIGWINCH)
-			signal(i, signal_catcher);
-		i++;
-	}
+	signal(SIGINT, signal_catcher);
 }

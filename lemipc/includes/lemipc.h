@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 17:01:10 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 17:51:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,6 @@ void				ft_restore_term(struct termios *oldterm);
 void				ft_termdo(char *doit);
 
 void				game_signal_catcher(int sig);
-void				mapper_signal_catcher(int sig);
 
 void				ft_lock(int semid);
 void				ft_unlock(int semid);
