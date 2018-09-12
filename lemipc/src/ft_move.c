@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/08 16:42:32 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 15:29:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	move(int x, int y, ULL *map)
 	*(map + GET_POS(e.x, e.y)) = MAP_0;
 	e.x = x;
 	e.y = y;
-	*(map + GET_POS(e.x, e.y)) = e.player.team->uid;
+	*(map + GET_POS(e.x, e.y)) = e.team->uid;
 }
 
 void		move_verticaly(int times, ULL *map)

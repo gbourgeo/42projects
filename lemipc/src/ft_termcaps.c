@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/07 14:59:02 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 16:44:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ void				ft_termcaps(char **env, struct termios *oldterm)
 	term.c_cc[VTIME] = 0;
 	if (tcsetattr(0, TCSADRAIN, &term) == -1)
 		ft_exit(1, "termcaps: tcsetattr()");
-	ft_termdo("cl");
-	ft_putendl("Initialized TERMCAPS...");
 }
 
 void				ft_restore_term(struct termios *oldterm)

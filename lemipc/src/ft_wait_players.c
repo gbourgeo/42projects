@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/08 17:17:50 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 17:00:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,65 +16,73 @@
 #include <unistd.h>
 #include <time.h>
 
-static void		ft_place_player(t_ipc *player)
+static void		ft_place_player()
 {
+	/* ft_printf("Processing your team %p\n", player->board->teams); */
+	/* player->team = ft_search_team(team_name, &player->board->teams, player); */
+	/* if (player->team == NULL || player->board->teams == NULL) */
+	/* 	ft_exit_client(1, "malloc", &e.player); */
+	/* ft_printf("Your team is %s with id:%lld\n", player->team->name, player->team->uid); */
+	srand(time(NULL));
 	ft_putstr("Positionning your player... ");
+	ft_lock(e.game.semid);
 	while (1)
 	{
 		e.x = MY_RAND(rand()) % MAP_WIDTH;
 		e.y = MY_RAND(rand()) % MAP_HEIGTH;
-		if (*(player->map + GET_POS(e.x, e.y)) != MAP_0)
+		if (*(e.game.map + GET_POS(e.x, e.y)) != MAP_0)
 			continue ;
-		*(player->map + GET_POS(e.x, e.y)) = player->team->uid;
+		*(e.game.map + GET_POS(e.x, e.y)) = e.team->uid;
 		break ;
 	}
-	ft_printf("x=%lld y=%lld\n", e.x, e.y);
+	ft_unlock(e.game.semid);
+	ft_printf("x=%llu y=%llu\n", e.x, e.y);
 }
 
-static void		ft_start(size_t nbteams, ULL players, ULL max, t_uid *teams)
+static void		ft_start(size_t nbteams, ULL players, ULL max)
 {
+	size_t		size;
+	t_uid		*team;
+
+	size = 0;
+	team = e.teams.board;
 	if (players < MIN_PPT * MIN_TEAMS || max < MIN_PPT || nbteams < MIN_TEAMS)
-		return (ft_putendl("\033[1;32mWAITING FOR PLAYERS...\033[00m"));
-	while (teams)
+		return ;//(ft_putendl("\033[1;32mWAITING FOR PLAYERS...\033[00m"));
+	while (size < e.teams.size)
 	{
-		if (teams->total != max)
-			return (ft_putendl("\033[1;33mWAITING FOR EVEN TEAMS...\033[00m"));
-		teams = teams->next;
+		if ((team + size)->total != max)
+			return ;//(ft_putendl("\033[1;33mWAITING FOR EVEN TEAMS...\033[00m"));
+		size += sizeof(*team);
 	}
-	e.player.board->game_in_process = 1;
+	e.game.board->game_in_process = 1;
 }
 
-static void		ft_check_even_teams(t_uid *teams)
+static void		ft_check_even_teams(void)
 {
-	size_t		nb_teams;
-	ULL			nb_players;
+	size_t		size;
+	t_uid		*team;
 	ULL			max;
 
+	size = 0;
+	team = e.teams.board;
 	max = 0;
-	nb_players = 0;
-	nb_teams = 0;
-	while (teams)
+	while (size < e.teams.size)
 	{
-		nb_teams++;
-		if (teams->total > max)
-			max = teams->total;
-		nb_players += teams->total;
-		teams = teams->next;
+		if ((team + size)->total > max)
+			max = (team + size)->total;
+		size += sizeof(*team);
 	}
-	ft_printf("Players:%ld Max:%d Teams:%ld\n", nb_players, max, nb_teams);
-	ft_start(nb_teams, nb_players, max, teams);
+	ft_start(e.teams.size / sizeof(*e.teams.board), e.game.board->nb_players, max);
 }
 
 void			ft_wait_players(void)
 {
-	srand(time(NULL));
-	ft_lock(e.player.semid);
-	ft_place_player(&e.player);
-	ft_unlock(e.player.semid);
-	while (!e.player.board->game_in_process)
+	ft_place_player();
+	while (1);
+	while (!e.game.board->game_in_process)
 	{
-		ft_check_even_teams(e.player.board->teams);
+		ft_check_even_teams();
 	}
 	ft_putendl("\033[1;32mGAME IN PROGRESS...\033[00m");
-	ft_create_players_list(&e.player);
+	ft_create_players_list();
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:35:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/08/30 21:01:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/12 15:46:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void				ft_lock(int semid)
 	sem.sem_num = 0;
 	sem.sem_op = -1;
 	sem.sem_flg = 0;
-	semop(semid, &sem, sizeof(sem));
+	if (semid != -1)
+		semop(semid, &sem, sizeof(sem));
 }
 
 void				ft_unlock(int semid)
@@ -29,5 +30,6 @@ void				ft_unlock(int semid)
 	sem.sem_num = 0;
 	sem.sem_op = 1;
 	sem.sem_flg = 0;
-	semop(semid, &sem, sizeof(sem));
+	if (semid != -1)
+		semop(semid, &sem, sizeof(sem));
 }

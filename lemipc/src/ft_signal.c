@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/08 17:38:37 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 15:47:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "lemipc.h"
 #include <signal.h>
 
-static void	catch_sig(int sig)
+void			game_signal_catcher(int sig)
 {
 	char		*err;
 	static char	*signals[] = { "0", "SIGUP", "SIGINT", "SIGQUIT", "SIGILL",
@@ -33,23 +33,25 @@ static void	catch_sig(int sig)
 
 	err = (sig >= 0 && sig < NSIG) ? signals[sig] : "Unknown signal error";
 	ft_putchar('\n');
-	if (e.player.board != (void *)-1)
-	{
-		*(e.player.map + GET_POS(e.x, e.y)) = MAP_0;
-		e.player.team->total--;
-		e.player.board->players--;
-	}
-	ft_exit_client(0, err, &e.player);
+	ft_exit(0, err);
 }
 
-void		init_signal(void)
+void			mapper_signal_catcher(int sig)
 {
-	int		i;
+	(void)sig;
+	ft_restore_term(&e.child.term);
+	ft_exit_child(0, "signal caugth");
+}
+
+void			init_signal(void (*signal_catcher)(int))
+{
+	int			i;
 
 	i = 0;
 	while (i < NSIG)
 	{
-		signal(i, catch_sig);
+		if (i != SIGWINCH)
+			signal(i, signal_catcher);
 		i++;
 	}
 }

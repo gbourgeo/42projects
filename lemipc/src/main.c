@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/08 17:36:52 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 16:44:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,14 @@
 
 static void			ft_usage(void)
 {
-	uintmax_t		i;
-
-	i = -1;
-	ft_dprintf(2, "Usage:\t %s [team_number]\n", e.prog);
-	ft_dprintf(2, "\tteam_number:\tmust be a digit from 1 to %lld.\n", i);
+	ft_dprintf(2, "Usage:\n\t %s [team_name]\n", e.prog);
 	exit(1);
 }
 
 static void			init_prog(int ac, const char *prog)
 {
 	ft_memset(&e, 0, sizeof(e));
-	e.prog = ft_strrchr(prog, '/');
-	e.prog = (e.prog == NULL) ? prog : e.prog + 1;
+	e.prog = prog;
 	if (ac != 2)
 		ft_usage();
 }
@@ -36,21 +31,26 @@ static void			init_prog(int ac, const char *prog)
 int					main(int ac, const char **av)
 {
 	init_prog(ac, av[0]);
-	init_signal();
-	init_ipc(e.prog, &e.player);
-	if (e.player.shmid < 0)
+	init_signal(&game_signal_catcher);
+	init_game(e.prog, &e.game);
+	init_team(e.prog, &e.teams);
+	if (e.game.shmid < 0)
 	{
 		if ((MAP_WIDTH <= 2 && MAP_HEIGTH <= 2) || MAP_WIDTH < 2 || MAP_HEIGTH < 2)
 			ft_exit(0, "Error: Map size unplayable.");
-		ft_create_game(&e.player);
-		ft_create_process_to_print_map(&e.player);
+		ft_dprintf(1, "Creating game...\n");
+		ft_create_game(&e.game);
+		ft_dprintf(1, "Creating team...\n");
+		e.team = ft_create_team(av[1], &e.teams);
+		ft_create_process_to_print_map();
 	}
 	else
-		ft_join_game(&e.player);
-	e.player.team = ft_add_team(av[1], &e.player.board->teams);
-	if (e.player.team == NULL)
-		ft_exit_client(1, "malloc", &e.player);
-	ft_dprintf(1, "Your team is %s with id:%lld\n", e.player.team->name, e.player.team->uid);
+	{
+		ft_dprintf(1, "Joining game...\n");
+		ft_join_game(&e.game);
+		ft_dprintf(1, "Joining team...\n");
+		e.team = ft_join_team(av[1], &e.teams);
+	}
 	ft_wait_players();
 //	ft_launch_game();
 	return (0);

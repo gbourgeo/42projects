@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/07 17:30:57 by root             ###   ########.fr       */
+/*   Updated: 2018/09/12 15:44:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,39 +17,61 @@
 #include <stdlib.h>
 #include <sys/msg.h>
 #include <sys/sem.h>
+#include <sys/wait.h>
 
-void		ft_exit_creation(int print_err, char *err, t_ipc *ipc)
+static int	ft_exit_game()
 {
-	fprintf(stderr, "%s: ", e.prog);
-	if (print_err)
-		perror(err);
-	else
-		fprintf(stderr, "%s\n", err);
-	if (ipc->msgqid != -1 && msgctl(ipc->msgqid, IPC_RMID, NULL))
-		perror("msgctl");
-	if (ipc->semid != -1 && semctl(ipc->semid, 0, IPC_RMID))
-		perror("semctl");
-	if (ipc->board != (void *)-1 && shmdt(ipc->board))
-		perror("shmdt");
-	if (ipc->shmid != -1 && shmctl(ipc->shmid, IPC_RMID, NULL))
-		perror("shmctl");
-	ft_memset(ipc, 0, sizeof(*ipc));
-	exit(1);
+	if (e.game.shmid != -1)
+	{
+		ft_lock(e.game.semid);
+		if (e.game.board == (void *)-1)
+		{
+			if (shmctl(e.game.shmid, IPC_RMID, NULL))
+				perror("shmctl");
+		}
+		else if (e.game.board->nb_players-- == 1)
+		{
+			*(e.game.map + GET_POS(e.x, e.y)) = MAP_0;
+			ft_unlock(e.game.semid);
+			if (shmctl(e.game.shmid, IPC_RMID, NULL))
+				perror("shmctl");
+			if (shmdt(e.game.board))
+				perror("shmdt");
+			if (e.game.semid != -1 && semctl(e.game.semid, 0, IPC_RMID))
+				perror("semctl");
+			if (e.game.msgqid != -1 && msgctl(e.game.msgqid, IPC_RMID, NULL))
+				perror("msgctl");
+			return (0);
+		}
+		else if (shmdt(e.game.board))
+			perror("shmdt");
+		ft_unlock(e.game.semid);
+	}
+	return (1);
 }
 
-void		ft_exit_client(int print_err, char *err, t_ipc *ipc)
+static void	ft_exit_team(int rm_all)
 {
-	fprintf(stderr, "%s: ", e.prog);
-	if (print_err)
-		perror(err);
-	else
-		fprintf(stderr, "%s\n", err);
-	if (ipc->board != (void *)-1 && shmdt(ipc->board))
-		perror("shmdt");
-	/* if (e.players) */
-	/* 	free(e.players); */
-	ft_memset(ipc, 0, sizeof(*ipc));
-	exit(1);
+	if (e.teams.shmid != -1)
+	{
+		if (e.teams.board == (void *)-1)
+		{
+			if (shmctl(e.teams.shmid, IPC_RMID, NULL))
+				perror("shmctl");
+		}
+		else
+		{
+			if (shmdt(e.teams.board))
+				perror("shmdt");
+			if (rm_all == 0)
+			{
+				if (shmctl(e.teams.shmid, IPC_RMID, NULL))
+					perror("shmctl");
+				if (e.teams.semid != -1 && semctl(e.teams.semid, 0, IPC_RMID))
+					perror("semctl");
+			}
+		}
+	}
 }
 
 void		ft_exit(int print_err, char *err)
@@ -59,30 +81,23 @@ void		ft_exit(int print_err, char *err)
 		perror(err);
 	else
 		fprintf(stderr, "%s\n", err);
+	ft_exit_team(ft_exit_game());
+	if (e.pid)
+		waitpid(e.pid, NULL, 0);
+	ft_memset(&e, 0, sizeof(e));
 	exit(1);
 }
 
-/* void		ft_free_exit(t_ipc *ipc) */
-/* { */
-/* 	if (e.data->connected == 0) */
-/* 	{ */
-/* 		if (e.msgqid != -1 && msgctl(e.msgqid, IPC_RMID, NULL)) */
-/* 			perror("msgctl"); */
-/* 		if (e.semid != -1 && semctl(e.semid, 0, IPC_RMID)) */
-/* 			perror("semctl"); */
-/* 		if (e.shmid != -1) */
-/* 		{ */
-/* 			if (e.data != (void *)-1 && shmdt(e.data)) */
-/* 				perror("shmdt"); */
-/* 			if (shmctl(e.shmid, IPC_RMID, NULL)) */
-/* 				perror("shmctl"); */
-/* 		} */
-/* 	} */
-/* 	else if (e.data != (void *)-1 && shmdt(e.data) == -1) */
-/* 		perror("shmdt"); */
-/* 	ft_restore_term(); */
-/* 	if (e.players != (void *)-1) */
-/* 		free(e.players); */
-/* 	ft_bzero(&e, sizeof(e)); */
-/* 	exit(0); */
-/* } */
+void		ft_exit_child(int print_err, char *err)
+{
+	fprintf(stderr, "%s: ", e.prog);
+	if (print_err)
+		perror(err);
+	else
+		fprintf(stderr, "%s\n", err);
+	if (e.child.game != (void *)-1)
+		shmdt(e.child.game);
+	if (e.child.teams != (void *)-1)
+		shmdt(e.child.teams);
+	exit(1);
+}
