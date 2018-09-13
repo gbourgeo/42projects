@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 22:15:52 by root             ###   ########.fr       */
+/*   Updated: 2018/09/13 14:16:21 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@
 # define MIN_PPT		2
 # define MIN_TEAMS		2
 # define MAP_0			0
+
+# define TEAMNAME_MAX	32
 
 # define MY_RAND(nb)	(((nb + 8357) / 3))
 # define GET_POS(x, y)	((x) + (y) * MAP_WIDTH)
@@ -75,7 +77,7 @@ typedef struct		s_game
 
 typedef struct		s_uid
 {
-	char			name[32];
+	char			name[TEAMNAME_MAX];
 	ULL				uid;
 	ULL				total;
 }					t_uid;

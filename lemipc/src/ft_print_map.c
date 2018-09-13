@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 22:21:44 by root             ###   ########.fr       */
+/*   Updated: 2018/09/13 16:30:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,16 @@ static void		print_info(t_game *game, t_team *teams)
 	size_t		size;
 	t_uid		*team;
 
-	size = 0;
+	size = sizeof(size);
 	team = teams->board;
 	ft_printf("Players connected: %llu\n", game->board->nb_players);
-	ft_printf("Teams size: %ld\n", teams->size);
 	ft_printf("Team Name | Team ID | Total Members\n");
-	while (size < teams->size)
+	while (size < *(size_t *)team)
 	{
 		ft_printf("%s %llu %llu\n",
-				(team + size)->name, (team + size)->uid, (team + size)->total);
+				  (team + size)->name,
+				  (team + size)->uid,
+				  (team + size)->total);
 		size += sizeof(*team);
 	}
 	printf("%s\n", (game->board->game_in_process) ?
@@ -69,10 +70,6 @@ void			ft_create_process_to_print_map()
 	{
 		setsid();
 		ft_termcaps(environ, &e.term);
-//		init_child(&e.child);
-//		init_signal(&mapper_signal_catcher);
-//		init_signal(SIG_IGN);
-//		ft_create_child(&e.child);
 		ft_termdo("cl");
 		ft_termdo("sc");
 		while (1)

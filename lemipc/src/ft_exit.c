@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 22:17:10 by root             ###   ########.fr       */
+/*   Updated: 2018/09/13 16:31:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@ static int	ft_exit_game()
 			if (shmctl(e.game.shmid, IPC_RMID, NULL))
 				perror("shmctl");
 		}
-		else if (e.game.board->nb_players-- == 1)
+		else if (e.game.board->nb_players == 0)
 		{
-			ft_unlock(e.game.semid);
 			if (shmctl(e.game.shmid, IPC_RMID, NULL))
 				perror("shmctl");
 			if (shmdt(e.game.board))
@@ -82,9 +81,10 @@ void		ft_exit(int print_err, char *err)
 	{
 		ft_lock(e.game.semid);
 		*(e.game.map + GET_POS(e.x, e.y)) = MAP_0;
+		e.game.board->nb_players--;
 		ft_unlock(e.game.semid);
 	}
-	if (e.teams.board != (void *)-1)
+	if (e.teams.board != (void *)-1 && e.team)
 	{
 		ft_lock(e.teams.semid);
 		e.team->total--;
@@ -92,10 +92,7 @@ void		ft_exit(int print_err, char *err)
 	}
 	ft_exit_team(ft_exit_game());
 	if (e.pid)
-	{
-		printf("Waiting for game to end...\n");
 		waitpid(e.pid, NULL, 0);
-	}
 	ft_memset(&e, -1, sizeof(e));
 	exit(1);
 }
