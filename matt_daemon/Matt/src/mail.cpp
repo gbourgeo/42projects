@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/10/15 18:42:22 by root              #+#    #+#             //
-//   Updated: 2017/11/18 22:35:04 by root             ###   ########.fr       //
+//   Updated: 2018/09/15 18:30:04 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -47,10 +47,10 @@ static int		getWhatToSend(t_client & cl)
 	return tosend;
 }
 
-void				Server::sendMailCorpse( t_client & cl )
+bool				Server::sendMailCorpse( std::string plaintext, t_client & cl )
 {
 	int					tosend = getWhatToSend(cl);
-	std::string			plaintext = "";
+//	std::string			plaintext = "";
 	const std::string	nl = "\r\n";
 
 	plaintext += std::string("From: ") + std::string(MAIL_HEADER_FROM) + nl;
@@ -79,6 +79,7 @@ void				Server::sendMailCorpse( t_client & cl )
 	}		
 	plaintext += std::string("\r\n.\r\n");
 	writeMail(plaintext, cl);
+	return true;
 }
 
 void			Server::sendMail(t_client &cl)
@@ -87,30 +88,30 @@ void			Server::sendMail(t_client &cl)
 
 	if (tosend == 0) {
 		cl.wr += "Nothing to send.\r\n";
+		cl.wr += "Usage: mail [[daemoninfo], [machinfo], [servinfo], [daemonlogs], [all]].\r\n";
 		return ;
 	}
 	if (SSHConnection(cl) == false)
 		return ;
-	readMail("220", cl);
-	writeMail(std::string("EHLO ") + std::string(MAIL_DOMAIN), cl);
-	readMail("250", cl);
-	writeMail(std::string("AUTH LOGIN"), cl);
-	readMail("334", cl);
-	writeMail(std::string(AUTH_UID), cl);
-	readMail("334", cl);
-	writeMail(std::string(AUTH_PWD), cl);
-	readMail("235", cl);
-	writeMail(std::string("MAIL FROM: ") + std::string(MAIL_FROM), cl);
-	readMail("250", cl);
-	writeMail(std::string("RCPT TO: ") + std::string(MAIL_TO), cl);
-	readMail("250", cl);
-	writeMail(std::string("DATA"), cl);
-	readMail("354", cl);
-	sendMailCorpse(cl);
-	readMail("250", cl);
+	t_mail		msg[] = { { "220", std::string("EHLO ") + std::string(MAIL_DOMAIN), &Server::writeMail},
+						  { "250", std::string("AUTH LOGIN"), &Server::writeMail },
+						  { "334", std::string(AUTH_UID), &Server::writeMail },
+						  { "334", std::string(AUTH_PWD), &Server::writeMail },
+						  { "235", std::string("MAIL FROM: ") + std::string(MAIL_FROM), &Server::writeMail },
+						  { "250", std::string("RCPT TO: ") + std::string(MAIL_TO), &Server::writeMail },
+						  { "250", std::string("DATA"), &Server::writeMail },
+						  { "354", std::string(""), &Server::sendMailCorpse },
+						  { "250", std::string(), NULL } };
+	bool		ret = true;
+
+	for (size_t i = 0; i < sizeof(msg) / sizeof(*msg); i++) {
+		if (!(ret = readMail(msg[i].nb, cl)))
+			return ;
+		if (msg[i].func && !(ret = CALL_MEMBER_FN(*this, msg[i].func)(msg[i].msg, cl)))
+			return ;
+	}
 	if (this->ssl) {
-		while (!SSL_shutdown(this->ssl))
-			;
+		while (!SSL_shutdown(this->ssl)) ;
 		SSL_clear(this->ssl);
 		SSL_free(this->ssl);
 		this->ssl = NULL;
@@ -151,9 +152,9 @@ bool			Server::writeMail( std::string msg, t_client & cl )
 	msg += "\r\n";
 	len = msg.size();
 	ret = 0;
-	while (len)
+	while (this->ssl && len)
 	{
-		ret += SSL_write(ssl, &msg[ret], len);
+		ret += SSL_write(this->ssl, &msg[ret], len);
 		if (ret == 0)
 			return mailError("Connection lost while write.", cl);
 		if (ret < 0) {
@@ -176,7 +177,7 @@ bool			Server::readMail( const char *code, t_client & cl )
 	int			ret = 0;
 	std::string	rd;
 
-	while (true)
+	while (this->ssl)
 	{
 		ret = SSL_read(this->ssl, rcv, sizeof(rcv) - 1);
 		if (ret == 0)
@@ -185,7 +186,7 @@ bool			Server::readMail( const char *code, t_client & cl )
 			int val = SSL_get_error(this->ssl, ret);
 			if (SSL_ERROR_WANT_READ != val)
 				continue ;
-			std::string err = std::string("SSL_WRITE: ");
+			std::string err = std::string("SSL_READ: ");
 			err += ssh_err[val];
 			return mailError(&err[0], cl);
 		}
@@ -209,11 +210,11 @@ bool			Server::readMail( const char *code, t_client & cl )
 bool		Server::mailError(const char *err, t_client & cl)
 {
 	Server::log("ERROR", err);
+	cl.wr += "Mail not sent:\n";
 	cl.wr += err;
 	cl.wr += "\n";
 	if (this->ssl) {
-		while (!SSL_shutdown(this->ssl))
-			;
+		while (!SSL_shutdown(this->ssl)) ;
 		SSL_clear(this->ssl);
 		SSL_free(this->ssl);
 		this->ssl = NULL;

@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/11 05:22:09 by root              #+#    #+#             //
-//   Updated: 2017/11/19 00:25:05 by root             ###   ########.fr       //
+//   Updated: 2018/09/15 18:29:31 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -71,6 +71,14 @@ class			Server
 {
 	
 public:
+
+	typedef struct	s_mail
+	{
+		const char	*nb;
+		std::string	msg;
+		bool		(Server::*func)(std::string, t_client &);
+	}				t_mail;
+
 	Server(void);
 	Server(Server const & src);
 	~Server(void);
@@ -102,7 +110,7 @@ private:
 	void		clearDaemonLogs( t_client & cl );
 	void		clearClient( t_client & cl);
 	void		sendMail( t_client & cl );
-	void		sendMailCorpse( t_client & cl );
+	bool		sendMailCorpse( std::string plaintext, t_client & cl );
 	bool		SSHConnection( t_client & cl );
 	bool		readMail( const char *code, t_client & cl );
 	bool		writeMail( std::string msg, t_client & cl );
@@ -132,5 +140,8 @@ private:
 	std::string		passwd;
 	bool			encrypt;
 };
+
+typedef bool (Server::*func)(std::string, t_client &);
+# define CALL_MEMBER_FN(object,funcPtr)		((object).*(funcPtr))
 
 #endif

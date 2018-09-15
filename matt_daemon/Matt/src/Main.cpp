@@ -6,7 +6,7 @@
 //   By: root </var/mail/root>                      +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2017/09/28 18:38:19 by root              #+#    #+#             //
-//   Updated: 2017/11/21 23:37:04 by root             ###   ########.fr       //
+//   Updated: 2018/09/15 17:18:18 by root             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -82,11 +82,11 @@ int					main(void)
 	}
 	catch (DAEMONException& err) {
 		std::cerr << "Matt_daemon: " << err.explain() << std::endl;
-		quitClearlyDaemon("ERROR", err.explain());
+		quitClearlyDaemon("FATAL", err.explain());
 	}
 	catch (std::exception& err) {
 		std::cerr << "Matt_daemon: " << err.what() << std::endl;
-		quitClearlyDaemon("ERROR", err.what());
+		quitClearlyDaemon("FATAL", err.what());
 	}
 	return 0;
 }
@@ -124,5 +124,5 @@ void			daemonSigHandler(int sig)
 									"SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2",
 									"UNKNOWN SIGNAL"};
 
-	quitClearlyDaemon("ERROR", signals[sig]);
+	quitClearlyDaemon("FATAL", signals[sig]);
 }

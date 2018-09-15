@@ -43,9 +43,9 @@ BenWindow::BenWindow(QWidget *parent) :
     /* Historic search config */
     this->hist_size = 0;
     this->hist = new t_hist;
-    this->hist->prev = NULL;
+    this->hist->prev = nullptr;
     this->hist->data.clear();
-    this->hist->next = NULL;
+    this->hist->next = nullptr;
     this->head = this->hist;
     this->tail = this->head;
     this->hist_fd.setFileName("/tmp/.Matt_hist");
@@ -56,7 +56,7 @@ BenWindow::BenWindow(QWidget *parent) :
                 continue ;
             this->hist->data[this->hist->data.size() - 1] = '\0';
             this->hist = new t_hist;
-            this->hist->prev = NULL;
+            this->hist->prev = nullptr;
             this->hist->data.clear();
             this->hist->next = this->head;
             this->head->prev = this->hist;
@@ -109,7 +109,7 @@ bool    BenWindow::eventFilter(QObject *watched, QEvent *event)
                 return (true);
             }
             if (keyEvent->key() == Qt::Key_Up) {
-                if (this->head->next == NULL)
+                if (this->head->next == nullptr)
                     return (true);
                 this->head->data = ui->sendField->toPlainText().toUtf8();
                 this->head = this->head->next;
@@ -118,7 +118,7 @@ bool    BenWindow::eventFilter(QObject *watched, QEvent *event)
                 return (true);
             }
             if (keyEvent->key() == Qt::Key_Down) {
-                if (this->head->prev == NULL)
+                if (this->head->prev == nullptr)
                     return (true);
                 this->head->data = ui->sendField->toPlainText().toUtf8();
                 this->head = this->head->prev;
@@ -137,12 +137,12 @@ void    BenWindow::connectClient()
     QString         addr = ui->addressField->text();
     QString         port = ui->portField->text();
 
-    if (addr == NULL) {
+    if (addr == nullptr) {
         ui->addressField->setStyleSheet("background-color:red;");
         return ui->statusBar->showMessage("ERROR: Address missing.");
     }
     ui->addressField->setStyleSheet("background-color:white;");
-    if (port == NULL) {
+    if (port == nullptr) {
         ui->portField->setStyleSheet("background-color:red;");
         return ui->statusBar->showMessage("ERROR: Port missing.");
     }
@@ -150,7 +150,7 @@ void    BenWindow::connectClient()
     ui->statusBar->showMessage("Establishing connection...");
     ui->ConnectButton->setEnabled(false);
     this->socket->abort();
-    this->socket->connectToHost(addr, port.toUShort(NULL, 10));
+    this->socket->connectToHost(addr, port.toUShort(nullptr, 10));
     this->socket->waitForConnected(5000);
 }
 
@@ -185,7 +185,7 @@ void    BenWindow::sockRead()
     QByteArray  data;
 
     do {
-        ret = rcv.readRawData((char *)&this->hdr, sizeof(this->hdr));
+        ret = rcv.readRawData(reinterpret_cast<char *>(&this->hdr), sizeof(this->hdr));
         if (ret <= 0) {
             ui->logBrowser->append("Server disconnected.");
             QString msg = "Read ret: " + QString::number(ret) + "\n";
@@ -258,7 +258,7 @@ void    BenWindow::sendText()
             do {
                 this->hdr.datalen = mystrlen(&tosend[len]);
                 strncpy(this->hdr.data, &tosend[len], DAEMON_BUFF - 1);
-                this->socket->write((char *)&this->hdr, sizeof(this->hdr));
+                this->socket->write(reinterpret_cast<char *>(&this->hdr), sizeof(this->hdr));
                 len += DAEMON_BUFF;
                 this->socket->waitForBytesWritten();
             } while (sendLen > len);
@@ -288,7 +288,7 @@ void    BenWindow::AddToHist(QByteArray &message) {
     }
     this->hist->data = message;
     this->hist = new t_hist;
-    this->hist->prev = NULL;
+    this->hist->prev = nullptr;
     this->hist->data.clear();
     this->hist->next = this->head;
     this->head->prev = this->hist;
@@ -296,7 +296,7 @@ void    BenWindow::AddToHist(QByteArray &message) {
     if (this->hist_size >= BEN_HIST_SIZE) {
         this->tail = this->tail->prev;
         delete this->tail->next;
-        this->tail->next = NULL;
+        this->tail->next = nullptr;
         return ;
     }
     this->hist_size++;
@@ -310,5 +310,5 @@ size_t  BenWindow::mystrlen(char *buff)
         return 0;
     while (*ptr)
         ptr++;
-    return ptr - buff;
+    return static_cast<size_t>(ptr - buff);
 }
