@@ -33,3 +33,23 @@ La communication entre le client et le serveur se fera en TCP/IP (v4).
 ### Bonus
 - respect de la RFC (standard 9 ou rfc 959)
 - support de l’IPv6
+
+## USAGE
+### Create the server
+```
+$> make server
+$> ./server
+Usage: ./server [port] [-i] (for interactive server)
+$>
+```
+### Create the client
+```
+$> make client
+$> ./client
+Usage: ./client [server_address] [server_port]
+$>
+```
+### Create the server and the client
+```
+$> make
+```
