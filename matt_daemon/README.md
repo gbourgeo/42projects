@@ -1,14 +1,57 @@
-Ce projet constitue une introduction au concept de daemon.
-
-Un démon est un processus de service qui s'exécute en arrière-plan et supervise le système 
-ou fournit des fonctionnalités à d'autres processus. 
-Traditionnellement, les démons sont implémentés suivant un schéma provenant de SysV Unix. 
-Les démons modernes devraient suivre un schéma plus simple mais plus puissant (appelé "démons de style nouveau"), 
-tel qu'il est implémenté par systemd (1).
+# Matt Daemon
+*Ce projet constitue une introduction au concept de daemon.*
 
 Ce petit programme a pour fonction de traiter et stocker les messages reçus sur un port spécifique, 
 ouvert par ce daemon justement.
 
+## The Program
+* Le programme va se lancer uniquement avec les droits root.
+* Votre programme devra s’exécuter en tâche de fond à la façon d’un vrai daemon.
+* Le daemon va devoir écouter sur le port 4242.
+* Tout ce que le daemon fait doit être visible dans un fichier de log matt_daemon.log
+avec timestamp (sous la forme [ DD / MM / YYYY - HH : MM : SS]) situé dans
+le dossier /var/log/matt_daemon/.
+* Une seule instance du daemon doit pouvoir être lancée.
+* Un fichier matt_daemon.lock doit être créé dans /var/lock/ au lancement du daemon.
+* À la fermeture du daemon le fichier matt_daemon.lock doit être effacé.
+* La fermeture du programme doit se faire par l’envoi d’une simple chaîne de caractère
+"quit" sur le socket ouvert.
+* Toute autre chaîne de caractère doit être inscrite dans le fichier de log.
+* Seuls 3 clients peuvent se connecter en simultané sur le daemon.
+* Lorsque le daemon reçoit un signal, il doit l’intercepter et l’inscrire dans le fichier
+matt_daemon.log avec un message explicite, puis quitter proprement.
+
+### BONUS
+* Créer un client graphique pour interagir avec le daemon (Qt 5.0 a été mon choix).
+```
+install Qt 5.9.1
+```
+* Ajouter des fonctions utilitaires à votre daemon:
+```
+    "daemonlogs"    "Prints the Daemon log file."
+    "daemoninfo"    "Shows informations about the Daemon itself."
+    "daemonpass"    "Changes the Daemon protection status."
+                    "TRUE with an argument (will be the new password)."
+                    "FALSE with no argument."
+    "daemoncrypt"   "Changes the Daemon messages status."
+    "machinfo"      "Gives informations about the machine the Daemon"
+                    "is running on."
+    "servinfo"      "Gives informations about the services of the"
+                    "machine the Daemon is runing on."
+    "clearlogs"     "Clears the Daemon log file."
+    "mail"          "Sends an email with informations related to the"
+                    "parameters given (daemonlogs, machinfo, ..., all)."
+    "quit"          "Shutdown the Daemon."
+```
+* Chiffrer l’envoi et la réception des données (simple Base64 pour encoder et decoder).
+* Envoi de mail suivant des règles de filtrages choisis.
+```
+apt-get install openssl-dev
+```
+* Créer un système d’authentification pour se connecter au daemon (via client graphique).
+
+## Information
+Un démon est un processus de service qui s'exécute en arrière-plan et supervise le système ou fournit des fonctionnalités à d'autres processus. 
 Ce daemon reprends les pre-requis des daemons sysV:
 
 1.  Close all open file descriptors except standard input, output, and error (i.e. the first three file descriptors 0,1,2). 
@@ -39,43 +82,3 @@ Ce daemon reprends les pre-requis des daemons sysV:
     and hence available in both the original and the daemon process.
 15. Call exit() in the original process. The process that invoked the daemon must be able to rely on that this exit() 
     happens after initialization is complete and all external communication channels are established and accessible.
-
-
-MORE INFORMATION:
-• Le programme va se lancer uniquement avec les droits root.
-• Votre programme devra s’exécuter en tâche de fond à la façon d’un vrai daemon.
-• Le daemon va devoir écouter sur le port 4242.
-• Tout ce que le daemon fait doit être visible dans un fichier de log matt_daemon.log
-avec timestamp (sous la forme [ DD / MM / YYYY - HH : MM : SS]) situé dans
-le dossier /var/log/matt_daemon/.
-• Une seule instance du daemon doit pouvoir être lancée.
-• Un fichier matt_daemon.lock doit être créé dans /var/lock/ au lancement du daemon.
-• À la fermeture du daemon le fichier matt_daemon.lock doit être effacé.
-• La fermeture du programme doit se faire par l’envoi d’une simple chaîne de caractère
-"quit" sur le socket ouvert.
-• Toute autre chaîne de caractère doit être inscrite dans le fichier de log.
-• Seuls 3 clients peuvent se connecter en simultané sur le daemon.
-• Lorsque le daemon reçoit un signal, il doit l’intercepter et l’inscrire dans le fichier
-matt_daemon.log avec un message explicite, puis quitter proprement.
-
-BONUS:
-• Créer un client graphique pour interagir avec le daemon (Qt 5.0 a été mon choix).
-• Ajouter des fonctions utilitaires à votre daemon:
-    "daemonlogs"    "Prints the Daemon log file."
-    "daemoninfo"    "Shows informations about the Daemon itself."
-    "daemonpass"    "Changes the Daemon protection status."
-                    "TRUE with an argument (will be the new password)."
-                    "FALSE with no argument."
-    "daemoncrypt"   "Changes the Daemon messages status."
-    "machinfo"      "Gives informations about the machine the Daemon"
-                    "is running on."
-    "servinfo"      "Gives informations about the services of the"
-                    "machine the Daemon is runing on."
-    "clearlogs"     "Clears the Daemon log file."
-    "mail"          "Sends an email with informations related to the"
-                    "parameters given (daemonlogs, machinfo, ..., all)."
-    "quit"          "Shutdown the Daemon."
-• Chiffrer l’envoi et la réception des données (simple Base64 pour encoder et decoder).
-• Envoi de mail suivant des règles de filtrages choisis.
-• Créer un système d’authentification pour se connecter au daemon (via client graphique/remote
-shell).
