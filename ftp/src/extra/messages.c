@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 09:14:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/08/20 10:51:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 20:25:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
+#include "libft.h"
 
 int				usage(char *prog_name, int caller)
 {

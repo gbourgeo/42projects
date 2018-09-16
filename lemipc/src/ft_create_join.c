@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/13 16:25:25 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 18:32:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,9 @@ t_uid				*ft_create_team(const char *name, t_team *teams)
 		ft_exit(1, "semget team IPC_CREAT");
 	if (semctl(teams->semid, 0, SETVAL, 0) < 0)
 		ft_exit(1, "semctl team SETVAL");
+	/* struct shmid_ds buf; */
+	/* shmctl(teams->shmid, IPC_STAT, &buf); */
+	/* teams->size = buf.shm_segsz; */
 	return (team);
 }
 
@@ -78,8 +81,8 @@ void				ft_join_game(t_game *game)
 		ft_exit(1, "msgget");
 	if (game->board->nb_players >= MAP_WIDTH * MAP_HEIGTH - 1)
 		ft_exit(0, "Game is full.\n");
-	/* if (game->data->game_in_process > 0) */
-	/* 	ft_exit(0, "Game in process. You can't join the battle."); */
+	if (game->data->game_in_process)
+		ft_exit(0, "Game in process. You can't join the battle.");
 }
 
 t_uid				*ft_join_team(const char *name, t_team *teams)

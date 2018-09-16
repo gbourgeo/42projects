@@ -6,14 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 17:21:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 20:24:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMON_H
 # define COMMON_H
 
-# include "libft.h"
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <sys/socket.h>

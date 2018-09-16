@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/13 16:28:50 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 10:14:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void			ft_usage(void)
 	exit(1);
 }
 
-static void			init_prog(int ac, const char *prog)
+static void			init_program(int ac, const char *prog)
 {
 	ft_memset(&e, 0, sizeof(e));
 	e.prog = prog;
@@ -32,7 +32,7 @@ static void			init_prog(int ac, const char *prog)
 
 int					main(int ac, const char **av)
 {
-	init_prog(ac, av[0]);
+	init_program(ac, av[0]);
 	init_signal(&game_signal_catcher);
 	init_game(e.prog, &e.game);
 	init_team(e.prog, &e.teams);
@@ -54,6 +54,7 @@ int					main(int ac, const char **av)
 		e.team = ft_join_team(av[1], &e.teams);
 	}
 	ft_wait_players();
-//	ft_launch_game();
+	ft_launch_game();
+	ft_exit(2, NULL);
 	return (0);
 }

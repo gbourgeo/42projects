@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/13 14:16:21 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 18:11:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,24 +57,6 @@ typedef	struct		s_msgbuf
 	t_msg			msg;
 }					t_msgbuf;
 
-typedef struct		s_board
-{
-	ULL				nb_players;
-	int				game_in_process;
-	ULL				winner;
-}					t_board;
-
-typedef struct		s_game
-{
-	key_t			key;
-	size_t			size;
-	int				shmid;
-	int				semid;
-	int				msgqid;
-	t_board			*board;
-	ULL				*map;
-}					t_game;
-
 typedef struct		s_uid
 {
 	char			name[TEAMNAME_MAX];
@@ -91,6 +73,24 @@ typedef struct		s_team
 	t_uid			*board;
 }					t_team;
 
+typedef struct		s_board
+{
+	ULL				nb_players;
+	int				game_in_process;
+	t_uid			*winner;
+}					t_board;
+
+typedef struct		s_game
+{
+	key_t			key;
+	size_t			size;
+	int				shmid;
+	int				semid;
+	int				msgqid;
+	t_board			*board;
+	ULL				*map;
+}					t_game;
+
 typedef struct		s_env
 {
 	const char		*prog;
@@ -100,9 +100,7 @@ typedef struct		s_env
 	ULL				x;
 	ULL				y;
 	t_player		*players;
-	t_msgbuf		snd;
-	t_msgbuf		rcv;
-	t_player		*target;
+	t_player		target;
 	pid_t			pid;
 	struct termios	term;
 }					t_env;
@@ -135,13 +133,13 @@ void				ft_unlock(int semid);
 
 void				ft_wait_players(void);
 void				ft_launch_game(void);
-void				ft_strategy(void);
-void				ft_sendmsg(void);
-int					ft_rcvmsg(void);
+void				ft_strategy(t_player *players, t_uid *team, t_game *game);
+void				ft_sendmsg(ULL uid, t_player *target, t_game *game);
+void				ft_rcvmsg(ULL uid, t_player *target, t_game *game);
 
-void				ft_move_to_target(ULL *map);
-void				move_horizontaly(int times, ULL *map);
-void				move_verticaly(int times, ULL *map);
+void				ft_move_to_target(t_player *target, ULL *map);
+void				move_horizontaly(int times, t_player *target, ULL *map);
+void				move_verticaly(int times, t_player *target, ULL *map);
 t_player			*ft_create_players_list(void);
 
 unsigned long long	ft_atoull(const char *str);

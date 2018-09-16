@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/13 16:31:59 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 10:18:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,13 @@ static void	ft_exit_team(int rm_all)
 void		ft_exit(int print_err, char *err)
 {
 	fprintf(stderr, "%s: ", e.prog);
-	if (print_err)
+	if (print_err == 0)
+		fprintf(stderr, "%s\n", err);
+	else if (print_err == 1)
 		perror(err);
 	else
-		fprintf(stderr, "%s\n", err);
+		fprintf(stdout, "Team \e[31m%s\e[0m win the game !\n",
+					e.game.board->winner->name);
 	if (e.game.board != (void *)-1)
 	{
 		ft_lock(e.game.semid);
@@ -100,10 +103,13 @@ void		ft_exit(int print_err, char *err)
 void		ft_exit_child(int print_err, char *err)
 {
 	fprintf(stderr, "%s: ", e.prog);
-	if (print_err)
+	if (print_err == 0)
+		fprintf(stderr, "%s\n", err);
+	else if (print_err == 1)
 		perror(err);
 	else
-		fprintf(stderr, "%s\n", err);
+		fprintf(stdout, "Well played to \e[31m%s\e[0m who win the game !\n",
+				e.game.board->winner->name);
 	ft_restore_term(&e.term);
 	if (e.game.board != (void *)-1)
 		shmdt(e.game.board);

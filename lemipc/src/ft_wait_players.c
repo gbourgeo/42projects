@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/13 14:39:17 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 15:42:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,6 @@
 
 static void		ft_place_player()
 {
-	/* ft_printf("Processing your team %p\n", player->board->teams); */
-	/* player->team = ft_search_team(team_name, &player->board->teams, player); */
-	/* if (player->team == NULL || player->board->teams == NULL) */
-	/* 	ft_exit_client(1, "malloc", &e.player); */
-	/* ft_printf("Your team is %s with id:%lld\n", player->team->name, player->team->uid); */
 	srand(time(NULL));
 	ft_putstr("Positionning your player... ");
 	ft_lock(e.game.semid);
@@ -86,5 +81,5 @@ void			ft_wait_players(void)
 		ft_check_even_teams();
 	}
 	ft_putendl("\e[1;32mGAME IN PROGRESS...\e[0m");
-	ft_create_players_list();
+	e.players = ft_create_players_list();
 }

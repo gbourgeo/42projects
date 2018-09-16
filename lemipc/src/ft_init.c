@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/07 14:52:36 by root              #+#    #+#             */
-/*   Updated: 2018/09/13 16:28:05 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 18:34:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void		init_game(const char *prog, t_game *game)
 	game->key = ftok(prog, 'G');
 	if (game->key == -1)
 		ft_exit(1, "ftok");
-	game->size = MAP_WIDTH * MAP_HEIGTH * sizeof(*game->map) + sizeof(*game->board);
+ 	game->size = MAP_WIDTH * MAP_HEIGTH * sizeof(*game->map) + sizeof(*game->board);
 	game->shmid = shmget(game->key, 0, SHM_R | SHM_W);
 	game->semid = semget(game->key, 1, SHM_R | SHM_W);
 	game->msgqid = msgget(game->key, SHM_R | SHM_W);

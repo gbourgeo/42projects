@@ -6,11 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 18:33:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/30 16:24:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 20:50:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
+#include "libft.h"
 
 int				file_error(char *msg, t_envi *e, int caller, int do_send)
 {

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 15:49:51 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 18:24:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,44 +14,42 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static void		ft_get_players_position(void)
+static void		ft_get_positions(t_player *player, ULL uid, ULL *map)
 {
 	ULL			i;
-	ULL			p;
 
 	i = 0;
-	p = 0;
+	ft_putendl("position");
 	while (i < MAP_WIDTH * MAP_HEIGTH)
 	{
-		if (e.game.map[i] != MAP_0)
+		ft_printf("%llu\n", i);
+		if (map[i] != MAP_0 && i != GET_POS(e.x, e.y))
 		{
-			e.players[p].team = e.game.map[i];
-			e.players[p].x = i % MAP_WIDTH;
-			e.players[p].y = i / MAP_WIDTH;
-			e.players[p].dist = (e.x > e.players[p].x) ?
-				e.x - e.players[p].x : e.players[p].x - e.x;
-			e.players[p].dist += (e.y > e.players[p].y) ?
-				e.y - e.players[p].y : e.players[p].y - e.y;
-			if (e.team->uid != e.players[p].team &&
-				(e.target == NULL || e.players[p].dist < e.target->dist))
-				e.target = &e.players[p];
-			p += sizeof(*e.players);
+			player->team = map[i];
+			player->x = i % MAP_WIDTH;
+			player->y = i / MAP_WIDTH;
+			player->dist = (e.x > player->x) ?
+				e.x - player->x : player->x - e.x;
+			player->dist += (e.y > player->y) ?
+				e.y - player->y : player->y - e.y;
+			if (uid != player->team &&
+				(e.target.team == 0 || player->dist < e.target.dist))
+				ft_memcpy(&e.target, player, sizeof(*player));
+			player = player->next;
 		}
 		i++;
 	}
+	ft_putendl("position");
 }
 
-void			ft_strategy(void)
+void			ft_strategy(t_player *players, t_uid *team, t_game *game)
 {
-	int			size;
-
-	size = e.game.board->nb_players * sizeof(*e.players);
-	ft_memset(e.players, 0, size);
-	e.target = NULL;
-	ft_get_players_position();
-	if (ft_rcvmsg())
-		ft_sendmsg();
+	ft_memset(&e.target, 0, sizeof(e.target));
+	ft_rcvmsg(team->uid, &e.target, game);
+	ft_putendl("rcvmsg");
+	if (e.target.team)
+		ft_sendmsg(team->uid, &e.target, game);
 	else
-		e.target = &e.rcv.msg.ennemy;
-	ft_move_to_target(e.game.map);
+		ft_get_positions(players, team->uid, game->map);
+	ft_move_to_target(&e.target, e.game.map);
 }

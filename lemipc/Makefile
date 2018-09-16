@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2018/09/12 18:06:32 by root             ###   ########.fr        #
+#    Updated: 2018/09/16 10:19:22 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,18 +18,18 @@ SRC = main.c 			\
 	ft_atoull.c			\
 	ft_create_join.c 	\
 	ft_exit.c 			\
+	ft_game.c			\
 	ft_getenv.c			\
 	ft_init.c			\
 	ft_move.c			\
 	ft_msg.c 			\
 	ft_players.c		\
+	ft_print_map.c		\
 	ft_sem.c	 		\
 	ft_signal.c 		\
 	ft_strategy.c 		\
 	ft_termcaps.c 		\
-	ft_wait_players.c	\
-	ft_print_map.c		
-#	ft_game.c			\
+	ft_wait_players.c
 
 OBJ_D = obj/
 

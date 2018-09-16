@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/13 16:30:52 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 18:16:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static void		print_info(t_game *game, t_team *teams)
 	size = sizeof(size);
 	team = teams->board;
 	ft_printf("Players connected: %llu\n", game->board->nb_players);
+	ft_printf("TEAMS size: %ld %ld\n", *(size_t *)teams->board, teams->size);
 	ft_printf("Team Name | Team ID | Total Members\n");
 	while (size < *(size_t *)team)
 	{
@@ -72,7 +73,7 @@ void			ft_create_process_to_print_map()
 		ft_termcaps(environ, &e.term);
 		ft_termdo("cl");
 		ft_termdo("sc");
-		while (1)
+		while (e.game.board->nb_players)
 		{
 			ft_termdo("rc");
 			ft_termdo("cd");
@@ -80,10 +81,13 @@ void			ft_create_process_to_print_map()
 				print_info(&e.game, &e.teams);
 			if (e.game.board != (void *)-1)
 				print_map(e.game.map);
-			if (e.game.board->nb_players == 0)
-				break ;
+			/* if (e.game.board->nb_players == 0) */
+			/* 	break ; */
 			sleep(1);
 		}
-		ft_exit_child(0, "Mapper: Bye.");
+		if (e.game.board->winner)
+			ft_exit_child(2, NULL);
+		else
+			ft_exit_child(0, "BYE !");
 	}
 }

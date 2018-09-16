@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/07 15:07:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 20:49:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
+#include "libft.h"
 
 void			ft_error(const char *err)
 {

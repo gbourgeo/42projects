@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 16:40:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 17:20:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 20:50:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
+#include "libft.h"
 
 static char		*check_path(char *path)
 {

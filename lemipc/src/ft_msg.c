@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 15:36:37 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 18:20:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,29 @@
 #include <sys/msg.h>
 #include <errno.h>
 
-void				ft_sendmsg(void)
+void				ft_sendmsg(ULL uid, t_player *target, t_game *game)
 {
-	e.snd.mtype = e.team->uid;
-	e.snd.msg.ally.x = e.x;
-	e.snd.msg.ally.y = e.y;
-	ft_memcpy(&e.snd.msg.ennemy, e.target, sizeof(e.snd.msg.ennemy));
-	if (msgsnd(e.game.msgqid, &e.snd, sizeof(e.snd.msg), IPC_NOWAIT) == -1)
+	t_msgbuf		snd;
+
+	snd.mtype = uid;
+	snd.msg.ally.x = e.x;
+	snd.msg.ally.y = e.y;
+	ft_memcpy(&snd.msg.ennemy, target, sizeof(snd.msg.ennemy));
+	if (msgsnd(game->msgqid, &snd, sizeof(snd.msg), IPC_NOWAIT) == -1)
 		ft_exit(1, "msgsnd");
+	ft_putendl("msgsnd");
 }
 
-int					ft_rcvmsg(void)
+void				ft_rcvmsg(ULL uid, t_player *target, t_game *game)
 {
-	int				size;
+	t_msgbuf		rcv;
 
-	size = sizeof(e.rcv.msg);
-	ft_memset(&e.rcv, 0, sizeof(e.rcv));
+	ft_memset(&rcv, 0, sizeof(rcv));
 	errno = 0;
-	if (msgrcv(e.game.msgqid, &e.rcv, size, e.team->uid, IPC_NOWAIT) == -1)
+	if (msgrcv(game->msgqid, &rcv, sizeof(rcv.msg), uid, IPC_NOWAIT) == -1)
 	{
 		if (errno != ENOMSG)
 			ft_exit(1, "msgrcv");
-		return (1);
 	}
-	return (0);
+	ft_memcpy(target, &rcv.msg.ennemy, sizeof(*target));
 }

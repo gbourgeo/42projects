@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 15:29:59 by root             ###   ########.fr       */
+/*   Updated: 2018/09/16 13:38:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,51 +41,51 @@ static void	move(int x, int y, ULL *map)
 	*(map + GET_POS(e.x, e.y)) = e.team->uid;
 }
 
-void		move_verticaly(int times, ULL *map)
+void		move_verticaly(int times, t_player *target, ULL *map)
 {
-	if (e.y < e.target->y)
+	if (e.y < target->y)
 	{
 		if (*(map + GET_POS(e.x, (e.y + 1))) == MAP_0)
 			return (move(e.x, e.y + 1, map));
 		if (!times)
-			move_horizontaly(1, map);
+			move_horizontaly(1, target, map);
 	}
 	else
 	{
 		if (*(map + GET_POS(e.x, (e.y - 1))) == MAP_0)
 			return (move(e.x, e.y - 1, map));
 		if (!times)
-			move_horizontaly(1, map);
+			move_horizontaly(1, target, map);
 	}
 }
 
-void		move_horizontaly(int times, ULL *map)
+void		move_horizontaly(int times, t_player *target, ULL *map)
 {
-	if (e.x > e.target->x)
+	if (e.x > target->x)
 	{
 		if (*(map + GET_POS(e.x, e.y) - 1) == MAP_0)
 			return (move(e.x - 1, e.y, map));
 		if (!times)
-			move_verticaly(1, map);
+			move_verticaly(1, target, map);
 	}
 	else
 	{
 		if (*(map + GET_POS(e.x, e.y) + 1) == MAP_0)
 			return (move(e.x + 1, e.y, map));
 		if (!times)
-			move_verticaly(1, map);
+			move_verticaly(1, target, map);
 	}
 }
 
-void		ft_move_to_target(ULL *map)
+void		ft_move_to_target(t_player *target, ULL *map)
 {
 	if (!can_i_move(map))
 		return ;
-	else if (e.target && e.target->dist > 0)
+	else if (target->dist > 0)
 	{
-		if (e.x < e.target->x - 1 || e.x > e.target->x + 1)
-			move_horizontaly(0, map);
+		if (e.x < target->x - 1 || e.x > target->x + 1)
+			move_horizontaly(0, target, map);
 		else
-			move_verticaly(0, map);
+			move_verticaly(0, target, map);
 	}
 }

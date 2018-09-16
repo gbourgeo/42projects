@@ -6,11 +6,12 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 04:50:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 05:53:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 20:49:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
+#include "libft.h"
 
 void					ft_aff_ip(struct addrinfo *p, int v6)
 {
