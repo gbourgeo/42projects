@@ -23,6 +23,9 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
 
 ### BONUS
 * Créer un client graphique pour interagir avec le daemon (Qt 5.0 a été mon choix).
+```
+install Qt 5.9.1
+```
 * Ajouter des fonctions utilitaires à votre daemon:
 ```
     "daemonlogs"    "Prints the Daemon log file."
@@ -42,6 +45,9 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
 ```
 * Chiffrer l’envoi et la réception des données (simple Base64 pour encoder et decoder).
 * Envoi de mail suivant des règles de filtrages choisis.
+```
+apt-get install openssl-dev
+```
 * Créer un système d’authentification pour se connecter au daemon (via client graphique).
 
 ## Information
