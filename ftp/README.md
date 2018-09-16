@@ -1,4 +1,4 @@
-#FTP
+# FTP
 *Ce projet consiste à implémenter un client et un serveur permettant le transfert de fichier en réseau TCP/IP.*
 
 ## THe Program
