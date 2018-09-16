@@ -12,14 +12,14 @@ Si il n’y a pas de paramètre fourni, ou si le paramètre est invalide, le pro
 disponibles et quitte.
 - Utilisation la minilibX, dans sa version pour XQuartz installée par défaut.
 - Utilisation des images de la minilibX.
-
-## USAGE
 - Gérer l’expose correctement.
 - La touche ESC permet de quitter le programme.
 - En plus du zoom, déplacement avec les flèches.
 - Faire tourner la palette de couleur.
 - Plein de fractales sympa.
 - Deux paramètres valides en ligne de commande, deux fenêtres pour deux fractales.
+
+## USAGE
 
 ```
 $> make
