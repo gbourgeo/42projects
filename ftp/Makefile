@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/09/16 20:54:26 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/09/16 20:57:31 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -16,7 +16,7 @@ CLI_C	= cl_main.c cl_loop.c cl_prompt.c cl_help.c cl_ls_and_pwd.c cl_get.c \
 		cl_put.c cl_help.c cl_cd.c cl_commands.c cl_lcd.c cl_change_pwds.c \
 		cl_end.c cl_mkdir_rmdir_unlink.c cl_mget_mput.c ft_signals.c \
 
-SERVEUR	= serveur
+SERVEUR	= server
 SER_D	= src/server/
 SER_C	= sv_main.c sv_loop.c sv_launch_client.c sv_ls.c sv_cd.c sv_get.c \
 		sv_put.c sv_client_end.c sv_mkdir_rmdir_unlink.c \
