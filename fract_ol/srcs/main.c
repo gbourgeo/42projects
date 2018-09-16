@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/04/29 20:12:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/19 20:05:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/16 23:11:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ static void		ft_usage(char *name, t_env *e)
 	int			i;
 
 	i = 0;
-	ft_putstr_fd("usage: ", 2);
+	ft_putstr_fd("Usage: ", 2);
 	ft_putstr_fd(name, 2);
-	ft_putendl_fd(" [name]\nAvailable names :", 2);
+	ft_putendl_fd(" [name1] [name2]\nAvailable names :", 2);
 	while (e->fract[i])
 	{
 		ft_putstr_fd("- ", 2);
