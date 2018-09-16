@@ -24,7 +24,7 @@ disponibles et quitte.
 ```
 $> make
 $> ./fractol
-usage: ./fractol [name]
+Usage: ./fractol [name1] [name2]
 Available names :
 - julia
 - brain
