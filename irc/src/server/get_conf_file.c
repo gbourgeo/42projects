@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/10 23:04:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/11 07:05:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/17 15:02:29 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static void			sv_machine_information(char **table, t_env *e)
 	table++;
 	ft_strncpy(e->name, *table++, SERVER_LEN);
 	ft_strncpy(e->addr, *table++, ADDR_LEN);
+	if (!*e->addr)
+		ft_strncpy(e->addr, "127.0.0.1", SERVER_LEN);
 	table++;
 	table++;
 	ft_strncpy(e->sid, *table++, SID_LEN);

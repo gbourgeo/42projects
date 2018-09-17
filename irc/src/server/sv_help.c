@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/02 10:00:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 02:53:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/17 14:33:40 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 static void		rpl_help(char *num, char *txt, t_env *e, t_fd *cl)
 {
-	int			nb;
-
-	nb = 0;
 	sv_cl_write(":", cl);
 	sv_cl_write(e->name, cl);
 	sv_cl_write(" ", cl);

@@ -6,13 +6,15 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/16 07:34:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/11 08:28:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/17 14:52:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/socket.h>
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 
 static void		sv_kill_channels(t_chan *chan)
 {
@@ -74,7 +76,7 @@ void			sv_error(char *str, t_env *e)
 	close(e->v4.fd);
 	close(e->v6.fd);
 	if (e->verb)
-		fprintf(stderr, "\b\b:%s NOTICE * :*** %s\n", e->name, str);
+		fprintf(stderr, "\b\b:%s NOTICE * :*** %s: %s\n", e->name, str, strerror(errno));
 	ft_memset(e, 0, sizeof(*e));
 	exit(EXIT_FAILURE);
 }

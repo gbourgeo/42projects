@@ -6,14 +6,14 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:49:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/11 06:38:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/17 15:03:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 #include <sys/types.h>
 #include <pwd.h>
-#include <uuid/uuid.h>
+//#include <uuid/uuid.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>

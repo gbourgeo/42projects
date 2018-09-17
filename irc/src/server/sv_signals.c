@@ -6,10 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 00:27:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/05 04:55:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/17 14:35:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <signal.h>
 #include "sv_main.h"
 
 static void			sv_server_killed(int sig)
