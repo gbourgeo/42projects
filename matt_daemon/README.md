@@ -23,9 +23,9 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
 
 ### BONUS
 * Créer un client graphique pour interagir avec le daemon (Qt 5.9.1 a été mon choix).
-```
-install Qt 5.9.1
-```
+
+[Download Qt 5.9.1](https://download.qt.io/archive/qt/5.9/5.9.1/)
+
 * Ajouter des fonctions utilitaires à votre daemon:
 ```
     "daemonlogs"    "Prints the Daemon log file."
