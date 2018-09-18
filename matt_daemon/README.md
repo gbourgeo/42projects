@@ -46,7 +46,8 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
 
 ## Dependencies
 
-* Pour le client graphique, installez Qt 5.9.1 [Download Qt](https://download.qt.io/archive/qt/5.9/5.9.1/)
+* Pour le client graphique, installez [Qt 5.9.1](https://download.qt.io/archive/qt/5.9/5.9.1/)
+![](https://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/qt_logo.png)
 * Pour l'envoi de mail, installez openssl
 ```
 apt-get install openssl-dev
