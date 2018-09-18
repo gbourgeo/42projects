@@ -23,9 +23,6 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
 
 ### BONUS
 * Créer un client graphique pour interagir avec le daemon (Qt 5.9.1 a été mon choix).
-
-[Download Qt 5.9.1](https://download.qt.io/archive/qt/5.9/5.9.1/)
-
 * Ajouter des fonctions utilitaires à votre daemon:
 ```
     "daemonlogs"    "Prints the Daemon log file."
@@ -45,12 +42,48 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
 ```
 * Chiffrer l’envoi et la réception des données (simple Base64 pour encoder et decoder).
 * Envoi de mail suivant des règles de filtrages choisis.
+* Créer un système d’authentification pour se connecter au daemon (via client graphique).
+
+## Dependencies
+
+* Pour le client graphique, installez Qt 5.9.1
+
+[Download Qt 5.9.1](https://download.qt.io/archive/qt/5.9/5.9.1/)
+
+* Pour l'envoi de mail, installez openssl
 ```
 apt-get install openssl-dev
 ```
-* Créer un système d’authentification pour se connecter au daemon (via client graphique).
+
+## Installation
+* Client and Server
+```
+    $> make
+```
+* Client
+```
+    $> make client
+```
+* Server
+```
+    $> make server
+```
+
+## Usage
+* Le server se lance sans arguments, en tache de fond automatiquement.
+```
+    $> ./Matt_daemon
+    $> 
+```
+* Le client se lance egalement sans argument.
+```
+    $> ./Ben_AFK
+    
+```
+![alt text](http://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/ben_afk.png)
 
 ## Information
+
 Un démon est un processus de service qui s'exécute en arrière-plan et supervise le système ou fournit des fonctionnalités à d'autres processus. 
 Ce daemon reprends les pre-requis des daemons sysV:
 
