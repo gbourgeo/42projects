@@ -80,7 +80,7 @@ apt-get install openssl-dev
     $> ./Ben_AFK
     
 ```
-![alt text](http://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/ben_afk.png)
+![](https://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/ben_afk.png)
 
 ## Information
 
