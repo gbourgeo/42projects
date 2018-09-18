@@ -1,37 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pf_writes.c                                        :+:      :+:    :+:   */
+/*   ft_fprintf.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/08/15 22:27:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/05/02 06:09:45 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/04/11 02:39:07 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include "libft.h"
-#include "ft_base_printf.h"
+#include "ft_fprintf.h"
 
-void			write_str(t_dt *data, const char *str, size_t len)
+int			ft_fprintf(FILE *stream, const char *restrict format, ...)
 {
-	size_t		j;
+	t_dt	data;
+	int		ret;
 
-	j = 0;
-	if (!str)
-		return ;
-	while (j < len)
-		write_char(data, str[j++]);
-}
-
-void			write_char(t_dt *data, unsigned char c)
-{
-	data->buff[data->pos++] = c;
-	if (data->pos >= PRINTF_BUFF)
-	{
-		data->ret += PRINTF_BUFF;
-		write(STDOUT_FILENO, data->buff, data->pos);
-		data->pos = 0;
-	}
+	ft_memset(&data, 0, sizeof(data));
+	data.stream = stream;
+	data.tail = (char *)format;
+	data.writeto = ft_fprintf_write;
+	va_start(data.ap, format);
+	ret = pf_routine(&data);
+	va_end(data.ap);
+	return (ret);
 }

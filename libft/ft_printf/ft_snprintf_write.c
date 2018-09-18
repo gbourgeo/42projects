@@ -1,21 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dprintf.h                                       :+:      :+:    :+:   */
+/*   ft_snprintf_write.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 02:24:36 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 02:39:40 by root             ###   ########.fr       */
+/*   Created: 2018/04/11 03:05:56 by root              #+#    #+#             */
+/*   Updated: 2018/04/11 03:13:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_DPRINTF_H
-# define FT_DPRINTF_H
-
 #include "ft_base_printf.h"
 
-int			ft_dprintf(int fd, const char *restrict format, ...);
-void		ft_dprintf_write(t_dt *data);
+void		ft_snprintf_write(t_dt *data)
+{
+	size_t	i;
+	size_t	j;
 
-#endif
+	i = 0;
+	j = 0;
+	if (data->str_size <= 1)
+		return ;
+	while (data->str[i])
+		i++;
+	while (j < data->pos && data->str_size > 1)
+	{
+		data->str[i + j] = data->buff[j];
+		j++;
+		data->str_size--;
+	}
+	data->str[i + j] = '\0';
+	data->ret += j;
+}
