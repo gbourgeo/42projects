@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 01:14:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/04/08 04:36:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/18 15:03:29 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define SYN6 "LIST [[#|&|+|!]channel]"
 # define SYN7 "MSG <nick> <message>"
 # define SYN8 "MODE <nick> <+/-> <mode>, MODE <channel> <+|-> <modes>"
-# define SYN9 "NICK <nick>", "PASS <password>"
+# define SYN9 "NICK <nick>"
 # define SYN10 "OPER <name> <password>"
 # define SYN11 "PASS <password>"
 # define SYN12 "QUIT [<comment>]"
