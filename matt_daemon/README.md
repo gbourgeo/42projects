@@ -22,7 +22,7 @@ le dossier /var/log/matt_daemon/.
 matt_daemon.log avec un message explicite, puis quitter proprement.
 
 ### BONUS
-* Créer un client graphique pour interagir avec le daemon (Qt 5.0 a été mon choix).
+* Créer un client graphique pour interagir avec le daemon (Qt 5.9.1 a été mon choix).
 ```
 install Qt 5.9.1
 ```
