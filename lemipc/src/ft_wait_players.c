@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 15:42:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 02:19:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,18 @@
 static void		ft_place_player()
 {
 	srand(time(NULL));
-	ft_putstr("Positionning your player... ");
-	ft_lock(e.game.semid);
 	while (1)
 	{
 		e.x = MY_RAND(rand()) % MAP_WIDTH;
 		e.y = MY_RAND(rand()) % MAP_HEIGTH;
 		if (*(e.game.map + GET_POS(e.x, e.y)) != MAP_0)
 			continue ;
+		ft_lock(e.game.semid);
 		*(e.game.map + GET_POS(e.x, e.y)) = e.team->uid;
+		e.game.board->nb_players++;
+		ft_unlock(e.game.semid);
 		break ;
 	}
-	ft_unlock(e.game.semid);
-	ft_printf("x=%llu y=%llu\n", e.x, e.y);
 }
 
 static void		ft_start(size_t nbteams, ULL players, ULL max)
@@ -42,11 +41,11 @@ static void		ft_start(size_t nbteams, ULL players, ULL max)
 	size = sizeof(size);
 	team = e.teams.board;
 	if (players < MIN_PPT * MIN_TEAMS || max < MIN_PPT || nbteams < MIN_TEAMS)
-		return ;//(ft_putendl("\033[1;32mWAITING FOR PLAYERS...\033[00m"));
+		return ;
 	while (size < *(size_t *)team)
 	{
 		if ((team + size)->total != max)
-			return ;//(ft_putendl("\033[1;33mWAITING FOR EVEN TEAMS...\033[00m"));
+			return ;
 		size += sizeof(*team);
 	}
 	ft_lock(e.game.semid);
@@ -74,12 +73,13 @@ static void		ft_check_even_teams(void)
 
 void			ft_wait_players(void)
 {
+	ft_putstr("\e[1;33mPOSITIONNING YOUR PLAYER... \e[0m");
 	ft_place_player();
+	ft_printf("X=%llu Y=%llu\n", e.x + 1, e.y + 1);
 	ft_putendl("\e[1;34mWAITING FOR PLAYERS...\e[0m");
 	while (!e.game.board->game_in_process)
 	{
 		ft_check_even_teams();
 	}
 	ft_putendl("\e[1;32mGAME IN PROGRESS...\e[0m");
-	e.players = ft_create_players_list();
 }

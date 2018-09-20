@@ -6,29 +6,29 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 13:38:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 05:56:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
 #include <stdio.h>
 
-static int	can_i_move(ULL *map)
+static int	can_i_move(t_game *game)
 {
 	int		pos;
 
 	pos = 4;
-	if (e.x == 0 || e.x == MAP_WIDTH - 1)
+	if (e.x == 0 || e.x == game->board->map_width - 1)
 		pos--;
-	if (e.y == 0 || e.y == MAP_HEIGTH - 1)
+	if (e.y == 0 || e.y == game->board->map_heigth - 1)
 		pos--;
-	if (e.y > 0 && *(map + GET_POS(e.x, (e.y - 1))) != MAP_0)
+	if (e.y > 0 && *(game->map + GET_POS(e.x, (e.y - 1))) != MAP_0)
 		pos--;
-	if (e.x < MAP_WIDTH - 1 && *(map + GET_POS((e.x + 1), e.y)) != MAP_0)
+	if (e.x < game->board->map_width - 1 && *(game->map + GET_POS((e.x + 1), e.y)) != MAP_0)
 		pos--;
-	if (e.y < MAP_HEIGTH - 1 && *(map + GET_POS(e.x, (e.y + 1))) != MAP_0)
+	if (e.y < game->board->map_heigth - 1 && *(game->map + GET_POS(e.x, (e.y + 1))) != MAP_0)
 		pos--;
-	if (e.x > 0 && *(map + GET_POS((e.x - 1), e.y)) != MAP_0)
+	if (e.x > 0 && *(game->map + GET_POS((e.x - 1), e.y)) != MAP_0)
 		pos--;
 	return (pos);
 }
@@ -77,15 +77,15 @@ void		move_horizontaly(int times, t_player *target, ULL *map)
 	}
 }
 
-void		ft_move_to_target(t_player *target, ULL *map)
+void		ft_move_to_target(t_player *target, t_game *game)
 {
-	if (!can_i_move(map))
+	if (!can_i_move(game))
 		return ;
 	else if (target->dist > 0)
 	{
 		if (e.x < target->x - 1 || e.x > target->x + 1)
-			move_horizontaly(0, target, map);
+			move_horizontaly(0, target, game->map);
 		else
-			move_verticaly(0, target, map);
+			move_verticaly(0, target, game->map);
 	}
 }

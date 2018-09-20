@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2018/09/16 10:19:22 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/09/20 08:17:06 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -39,7 +39,7 @@ LIBFT = libft/
 
 HEADERS = -I includes -I $(LIBFT)includes
 
-WWW = gcc -Wall -Werror -Wextra
+WWW = gcc -Wall -Werror -Wextra 
 
 all: preall $(NAME)
 

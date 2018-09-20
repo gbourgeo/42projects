@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 15:44:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 07:01:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,5 @@ void			init_signal(void (*signal_catcher)(int))
 {
 	signal(SIGINT, signal_catcher);
 	signal(SIGSEGV, signal_catcher);
+	signal(SIGBUS, signal_catcher);
 }

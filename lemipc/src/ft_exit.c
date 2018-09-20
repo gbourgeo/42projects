@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 10:18:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 10:03:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
 #include "libft.h"
-#include <stdio.h>
+#include "ft_fprintf.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/msg.h>
@@ -38,12 +38,12 @@ static int	ft_exit_game()
 				perror("semctl");
 			if (e.game.msgqid != -1 && msgctl(e.game.msgqid, IPC_RMID, NULL))
 				perror("msgctl");
-			return (0);
+			return (1);
 		}
 		if (shmdt(e.game.board))
 			perror("shmdt");
 	}
-	return (1);
+	return (0);
 }
 
 static void	ft_exit_team(int rm_all)
@@ -59,7 +59,7 @@ static void	ft_exit_team(int rm_all)
 		{
 			if (shmdt(e.teams.board))
 				perror("shmdt");
-			if (rm_all == 0)
+			if (rm_all)
 			{
 				if (shmctl(e.teams.shmid, IPC_RMID, NULL))
 					perror("shmctl");
@@ -72,14 +72,14 @@ static void	ft_exit_team(int rm_all)
 
 void		ft_exit(int print_err, char *err)
 {
-	fprintf(stderr, "%s: ", e.prog);
+	ft_fprintf(stderr, "NB : %d\n", print_err);
+//	ft_fprintf(stderr, "%s: ", e.prog);
 	if (print_err == 0)
-		fprintf(stderr, "%s\n", err);
+		ft_fprintf(stderr, "%s\n", err);
 	else if (print_err == 1)
 		perror(err);
 	else
-		fprintf(stdout, "Team \e[31m%s\e[0m win the game !\n",
-					e.game.board->winner->name);
+		ft_fprintf(stdout, "Team \e[31m%d\e[0m won the game !\n", e.game.board->winner);
 	if (e.game.board != (void *)-1)
 	{
 		ft_lock(e.game.semid);
@@ -96,20 +96,19 @@ void		ft_exit(int print_err, char *err)
 	ft_exit_team(ft_exit_game());
 	if (e.pid)
 		waitpid(e.pid, NULL, 0);
-	ft_memset(&e, -1, sizeof(e));
-	exit(1);
+	ft_memset(&e, 0, sizeof(e));
+	exit(print_err % 2);
 }
 
 void		ft_exit_child(int print_err, char *err)
 {
-	fprintf(stderr, "%s: ", e.prog);
+//	ft_fprintf(stderr, "%s: ", e.prog);
 	if (print_err == 0)
-		fprintf(stderr, "%s\n", err);
+		ft_fprintf(stderr, "%s\n", err);
 	else if (print_err == 1)
 		perror(err);
 	else
-		fprintf(stdout, "Well played to \e[31m%s\e[0m who win the game !\n",
-				e.game.board->winner->name);
+		ft_fprintf(stdout, "Team \e[31m%d\e[0m. You won the game !\n", e.game.board->winner);
 	ft_restore_term(&e.term);
 	if (e.game.board != (void *)-1)
 		shmdt(e.game.board);

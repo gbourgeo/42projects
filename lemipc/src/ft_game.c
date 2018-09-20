@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 15:59:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 09:34:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,41 +46,43 @@ static int		ft_check_if_surrounded(ULL *map, int team, int surr, int c)
 
 static void		check_who_wins(t_uid *teams, t_board *game)
 {
-	t_uid		*winner;
 	size_t		size;
 	ULL			nb_win;
 
-	winner = NULL;
 	nb_win = 0;
 	size = sizeof(size);
 	while (size < *(size_t *)teams)
 	{
 		if ((teams + size)->total > 1)
 		{
-			winner = teams + size;
-			if (nb_win++ > 1)
+			game->winner = (teams + size)->uid;
+			if (++nb_win > 1)
+			{
+				game->winner = 0;
 				return ;
+			}
 		}
 		size += sizeof(*teams);
 	}
-	game->winner = winner;
 	game->game_in_process = 0;
+	ft_unlock(e.game.semid);
+	ft_exit(2, NULL);
 }
 
 void			ft_launch_game(void)
 {
 	while (e.game.board->game_in_process)
 	{
-		ft_lock(e.game.semid);
 		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
-			break ;
-		ft_printf("strategy\n");
-		sleep(1);
-		ft_strategy(e.players, e.team, &e.game);
-		ft_printf("check\n");
-		sleep(1);
+			ft_exit(0, "You got surrounded !!!");
+		ft_lock(e.game.semid);
+		if (!e.game.board->winner)
+		{
+			sleep(1);
+			check_who_wins(e.teams.board, e.game.board);
+			ft_strategy(e.players, e.team, &e.game);
+		}
 		ft_unlock(e.game.semid);
-		check_who_wins(e.teams.board, e.game.board);
-		sleep(1);
 	}
+	ft_exit(2, NULL);
 }

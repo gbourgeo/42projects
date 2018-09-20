@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 18:11:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 10:18:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 #  define ULL unsigned long long
 # endif
 
-# define MAP_WIDTH		10
-# define MAP_HEIGTH		10
+# define MAP_WIDTH		100
+# define MAP_HEIGTH		100
 
 # define MIN_PPT		2
 # define MIN_TEAMS		2
@@ -75,9 +75,11 @@ typedef struct		s_team
 
 typedef struct		s_board
 {
+	ULL				map_width;
+	ULL				map_heigth;
 	ULL				nb_players;
 	int				game_in_process;
-	t_uid			*winner;
+	ULL				winner;
 }					t_board;
 
 typedef struct		s_game
@@ -97,10 +99,9 @@ typedef struct		s_env
 	t_game			game;
 	t_team			teams;
 	t_uid			*team;
+	t_player		*players;
 	ULL				x;
 	ULL				y;
-	t_player		*players;
-	t_player		target;
 	pid_t			pid;
 	struct termios	term;
 }					t_env;
@@ -113,11 +114,10 @@ void				init_signal(void (*signal_catcher)(int));
 
 void				ft_create_game(t_game *game);
 t_uid				*ft_create_team(const char *name, t_team *team);
-void				ft_create_process_to_print_map();
+void				ft_create_process_to_print_map(void);
 
 void				ft_join_game(t_game *game);
 t_uid				*ft_join_team(const char *name, t_team *team);
-//t_uid				*ft_search_team(const char *name, t_uid **teams);
 
 void				ft_exit(int print_err, char *err);
 void				ft_exit_child(int print_err, char *err);
@@ -134,12 +134,14 @@ void				ft_unlock(int semid);
 void				ft_wait_players(void);
 void				ft_launch_game(void);
 void				ft_strategy(t_player *players, t_uid *team, t_game *game);
-void				ft_sendmsg(ULL uid, t_player *target, t_game *game);
-void				ft_rcvmsg(ULL uid, t_player *target, t_game *game);
 
-void				ft_move_to_target(t_player *target, ULL *map);
+void				ft_sendmsg(ULL uid, t_player *target, t_game *game);
+int					ft_rcvmsg(ULL uid, t_player *target, t_game *game);
+
+void				ft_move_to_target(t_player *target, t_game *game);
 void				move_horizontaly(int times, t_player *target, ULL *map);
 void				move_verticaly(int times, t_player *target, ULL *map);
+
 t_player			*ft_create_players_list(void);
 
 unsigned long long	ft_atoull(const char *str);

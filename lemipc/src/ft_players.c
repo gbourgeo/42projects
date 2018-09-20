@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/08 17:06:41 by root              #+#    #+#             */
-/*   Updated: 2018/09/12 15:47:01 by root             ###   ########.fr       */
+/*   Updated: 2018/09/20 02:05:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "libft.h"
 #include "lemipc.h"
 
-static t_player	*ft_new_player(void)
+static t_player	*ft_new_player(t_player *next)
 {
 	t_player	*ret;
 
@@ -24,27 +24,18 @@ static t_player	*ft_new_player(void)
 		return (NULL);
 	}
 	ft_memset(ret, 0, sizeof(*ret));
+	ret->next = next;
 	return (ret);
 }
 
 t_player		*ft_create_players_list(void)
 {
 	t_player	*ret;
-	t_player	*ptr;
 	ULL			i;
 
 	ret = NULL;
-	i = 0;
-	while (i < e.game.board->nb_players - 1)
-	{
-		if (!ret)
-		{
-			ret = ft_new_player();
-			ptr = ret;
-		}
-		else
-			ptr->next = ft_new_player();
-		i++;
-	}
+	i = 1;
+	while (i++ < e.game.board->nb_players)
+		ret = ft_new_player(ret);
 	return (ret);
 }

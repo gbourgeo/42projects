@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 18:32:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 10:07:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ void				ft_create_game(t_game *game)
 	if (game->board == (void *)-1)
 		ft_exit(1, "shmat");
 	ft_memset(game->board, 0, sizeof(*game->board));
-	game->board->nb_players = 1;
-	game->map = (ULL *)game->board + sizeof(*game->board);
+	game->board->map_width = MAP_WIDTH;
+	game->board->map_heigth = MAP_HEIGTH;
+	game->board->nb_players = 0;
+	game->map = (ULL *)(game->board + 1);
 	ft_memset(game->map, MAP_0, MAP_WIDTH * MAP_HEIGTH * sizeof(*game->map));
 	game->semid = semget(game->key, 1, IPC_CREAT | IPC_EXCL | SHM_R | SHM_W);
 	if (game->semid < 0)
@@ -63,9 +65,6 @@ t_uid				*ft_create_team(const char *name, t_team *teams)
 		ft_exit(1, "semget team IPC_CREAT");
 	if (semctl(teams->semid, 0, SETVAL, 0) < 0)
 		ft_exit(1, "semctl team SETVAL");
-	/* struct shmid_ds buf; */
-	/* shmctl(teams->shmid, IPC_STAT, &buf); */
-	/* teams->size = buf.shm_segsz; */
 	return (team);
 }
 
@@ -73,16 +72,13 @@ void				ft_join_game(t_game *game)
 {
 	if (game->board == (void *)-1)
 		ft_exit(1, "shmat");
-	game->board->nb_players++;
-	game->map = (ULL *)game->board + sizeof(*game->board);
+	game->map = (ULL *)(game->board + 1);
 	if (game->semid < 0)
 		ft_exit(1, "semget");
 	if (game->msgqid < 0)
 		ft_exit(1, "msgget");
-	if (game->board->nb_players >= MAP_WIDTH * MAP_HEIGTH - 1)
-		ft_exit(0, "Game is full.\n");
-	if (game->data->game_in_process)
-		ft_exit(0, "Game in process. You can't join the battle.");
+	if (game->board->game_in_process)
+		ft_exit(0, "Game in process... Come back later !");
 }
 
 t_uid				*ft_join_team(const char *name, t_team *teams)
@@ -107,11 +103,18 @@ t_uid				*ft_join_team(const char *name, t_team *teams)
 		}
 		size += sizeof(*team);
 	}
+	ft_printf("Adding one...\n");
 	ft_lock(teams->semid);
-	*(size_t *)team += sizeof(*team);
+	ft_printf("1\n");
 	ft_strncpy((team + size)->name, name, TEAMNAME_MAX - 1);
+	ft_printf("1\n");
 	(team + size)->uid = size / sizeof(*team) + 1;
+	ft_printf("1\n");
 	(team + size)->total = 1;
+	ft_printf("1\n");
+	*(size_t *)team += sizeof(*team);
+	ft_printf("1\n");
 	ft_unlock(teams->semid);
+	ft_printf("1\n");
 	return (team + size);
 }

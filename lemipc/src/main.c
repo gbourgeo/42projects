@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 10:14:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 02:11:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ int					main(int ac, const char **av)
 		e.team = ft_join_team(av[1], &e.teams);
 	}
 	ft_wait_players();
+	if ((e.players = ft_create_players_list()) == NULL)
+		ft_exit(1, "create players list");
 	ft_launch_game();
-	ft_exit(2, NULL);
 	return (0);
 }

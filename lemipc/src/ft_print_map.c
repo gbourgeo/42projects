@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 18:16:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/20 09:52:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ static void		print_info(t_game *game, t_team *teams)
 	size = sizeof(size);
 	team = teams->board;
 	ft_printf("Players connected: %llu\n", game->board->nb_players);
-	ft_printf("TEAMS size: %ld %ld\n", *(size_t *)teams->board, teams->size);
+	ft_printf("Number of teams  : %ld %ld\n",
+				*(size_t *)teams->board / sizeof(*teams->board), teams->size);
 	ft_printf("Team Name | Team ID | Total Members\n");
 	while (size < *(size_t *)team)
 	{
-		ft_printf("%s %llu %llu\n",
+		ft_printf("%-10s %-9llu %llu\n",
 				  (team + size)->name,
 				  (team + size)->uid,
 				  (team + size)->total);
@@ -41,7 +42,6 @@ static void		print_map(ULL *map)
 {
 	ULL			i;
 	ULL			j;
-	char		c;
 
 	i = 0;
 	while (i < MAP_HEIGTH)
@@ -49,9 +49,7 @@ static void		print_map(ULL *map)
 		j = 0;
 		while (j < MAP_WIDTH)
 		{
-			c = *(map + GET_POS(j, i));
-			c = (c == MAP_0) ? '.' : c + '0';
-			ft_putchar(c);
+			ft_printf("\e[1;%dm%02X\e[0m ", 31 + *(map + GET_POS(j, i)) % 7, *(map + GET_POS(j, i)));
 			j++;
 		}
 		ft_putchar('\n');
@@ -81,11 +79,9 @@ void			ft_create_process_to_print_map()
 				print_info(&e.game, &e.teams);
 			if (e.game.board != (void *)-1)
 				print_map(e.game.map);
-			/* if (e.game.board->nb_players == 0) */
-			/* 	break ; */
 			sleep(1);
 		}
-		if (e.game.board->winner)
+		if (e.game.board && e.game.board->winner)
 			ft_exit_child(2, NULL);
 		else
 			ft_exit_child(0, "BYE !");
