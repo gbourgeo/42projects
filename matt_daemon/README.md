@@ -1,29 +1,23 @@
 # Matt Daemon
-*Ce projet constitue une introduction au concept de daemon.*
+*This project is an introduction to the concept of Daemon*
 
-Ce petit programme a pour fonction de traiter et stocker les messages reçus sur un port spécifique, 
-ouvert par ce daemon justement.
+This little program main function is to treat and stock messages received on a specific port, opened by the daemon.
 
-## The Program
-* Le programme va se lancer uniquement avec les droits root.
-* Votre programme devra s’exécuter en tâche de fond à la façon d’un vrai daemon.
-* Le daemon va devoir écouter sur le port 4242.
-* Tout ce que le daemon fait doit être visible dans un fichier de log matt_daemon.log
-avec timestamp (sous la forme [ DD / MM / YYYY - HH : MM : SS]) situé dans
-le dossier /var/log/matt_daemon/.
-* Une seule instance du daemon doit pouvoir être lancée.
-* Un fichier matt_daemon.lock doit être créé dans /var/lock/ au lancement du daemon.
-* À la fermeture du daemon le fichier matt_daemon.lock doit être effacé.
-* La fermeture du programme doit se faire par l’envoi d’une simple chaîne de caractère
-"quit" sur le socket ouvert.
-* Toute autre chaîne de caractère doit être inscrite dans le fichier de log.
-* Seuls 3 clients peuvent se connecter en simultané sur le daemon.
-* Lorsque le daemon reçoit un signal, il doit l’intercepter et l’inscrire dans le fichier
-matt_daemon.log avec un message explicite, puis quitter proprement.
+## The Server
 
-### BONUS
-* Créer un client graphique pour interagir avec le daemon (Qt 5.9.1 a été mon choix).
-* Ajouter des fonctions utilitaires à votre daemon:
+### Behaviour
+* The program launch itself only if you are root.
+* The program run in the background like a real daemon.
+* The program open and listen on port 4242.
+* The program logs all actions made in a logfile named matt_daemon.log on the form [ DD / MM / YYYY - HH : MM : SS] located
+in /var/log/matt_daemon/.
+* The program creates a lock file named matt_daemon.lock in /var/lock, so only one instance of the daemon can be started.
+* The program close when you send "quit" on the open socket.
+* Three clients can connect simultaneously on the daemon.
+* The program catch signals, writes it to the log file and quits properly.
+
+### Functionnalities
+* Here's a list of all the daemon functionnalities :
 ```
     "daemonlogs"    "Prints the Daemon log file."
     "daemoninfo"    "Shows informations about the Daemon itself."
@@ -40,20 +34,48 @@ matt_daemon.log avec un message explicite, puis quitter proprement.
                     "parameters given (daemonlogs, machinfo, ..., all)."
     "quit"          "Shutdown the Daemon."
 ```
-* Chiffrer l’envoi et la réception des données (simple Base64 pour encoder et decoder).
-* Envoi de mail suivant des règles de filtrages choisis.
-* Créer un système d’authentification pour se connecter au daemon (via client graphique).
+* The daemon can be password protected. No password required for the first client to connect. Alterable on the run.
+* The daemon can be in encrypt mode: All messages send and received will and must be encrypted.
+* The daemon can send mail with informations about the machine and services of the infected host.
+
+### Usage
+```
+$> ./Matt_Daemon
+$>
+```
+
+## The Client
+
+You can connect to the daemon with netcat :
+```
+$> nc [machine IP] 4242
+
+```
+or by executing Ben_AFK :
+```
+$> ./Ben_AFK
+```
+![](https://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/ben_afk.png)
 
 ## Dependencies
 
-* Pour le client graphique, installez [Qt 5.9.1](https://download.qt.io/archive/qt/5.9/5.9.1/)
+* FOr the graphical client, download and install [**Qt 5.9.1**](https://download.qt.io/archive/qt/5.9/5.9.1/)
 ![](https://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/qt_logo.png)
-* Pour l'envoi de mail, installez openssl
+* For sending mails, download and install **openssl**
 ```
 apt-get install openssl-dev
 ```
 
-## Installation
+## Configuration
+
+You can change :
+* The lock file (inc/Main.hpp).
+* The log directory and file (inc/Tintin.hpp).
+* The server address and port, encryption mode and password protection at start, the maximum client and the loggin' time (inc/Server.hpp)
+* The mail server connection configuration like server URL, port, domain, uid, password (inc/mail.hpp).
+* The mail send information like, from, to, header, header from, header to (inc/mail.hpp).
+
+## Compilation
 * Client and Server
 ```
     $> make
@@ -66,19 +88,6 @@ apt-get install openssl-dev
 ```
     $> make server
 ```
-
-## Usage
-* Le server se lance sans arguments, en tache de fond automatiquement.
-```
-    $> ./Matt_daemon
-    $> 
-```
-* Le client se lance egalement sans argument.
-```
-    $> ./Ben_AFK
-    
-```
-![](https://github.com/gbourgeo/42projects/blob/master/matt_daemon/Common/ben_afk.png)
 
 ## Information
 
