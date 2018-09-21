@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 10:03:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/21 08:59:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <sys/sem.h>
 #include <sys/wait.h>
 
-static int	ft_exit_game()
+static int	ft_exit_game(void)
 {
 	if (e.game.shmid != -1)
 	{
@@ -72,14 +72,13 @@ static void	ft_exit_team(int rm_all)
 
 void		ft_exit(int print_err, char *err)
 {
-	ft_fprintf(stderr, "NB : %d\n", print_err);
-//	ft_fprintf(stderr, "%s: ", e.prog);
+	ft_fprintf(stderr, "%s: ", e.prog);
 	if (print_err == 0)
 		ft_fprintf(stderr, "%s\n", err);
 	else if (print_err == 1)
 		perror(err);
 	else
-		ft_fprintf(stdout, "Team \e[31m%d\e[0m won the game !\n", e.game.board->winner);
+		ft_fprintf(stdout, LEMIPC_WINNING_WORDS, e.game.board->winner);
 	if (e.game.board != (void *)-1)
 	{
 		ft_lock(e.game.semid);
@@ -102,13 +101,13 @@ void		ft_exit(int print_err, char *err)
 
 void		ft_exit_child(int print_err, char *err)
 {
-//	ft_fprintf(stderr, "%s: ", e.prog);
+	ft_fprintf(stderr, "%s: ", e.prog);
 	if (print_err == 0)
 		ft_fprintf(stderr, "%s\n", err);
 	else if (print_err == 1)
 		perror(err);
 	else
-		ft_fprintf(stdout, "Team \e[31m%d\e[0m. You won the game !\n", e.game.board->winner);
+		ft_fprintf(stdout, LEMIPC_WINNING_WORDS, e.game.board->winner);
 	ft_restore_term(&e.term);
 	if (e.game.board != (void *)-1)
 		shmdt(e.game.board);

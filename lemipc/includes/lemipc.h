@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 10:18:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/21 08:58:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 #  define ULL unsigned long long
 # endif
 
-# define MAP_WIDTH		100
-# define MAP_HEIGTH		100
+# define MAP_WIDTH		10
+# define MAP_HEIGTH		10
 
 # define MIN_PPT		2
 # define MIN_TEAMS		2
@@ -33,8 +33,10 @@
 
 # define TEAMNAME_MAX	32
 
+# define LEMIPC_CREATE	IPC_CREAT | IPC_EXCL | SHM_R | SHM_W
 # define MY_RAND(nb)	(((nb + 8357) / 3))
 # define GET_POS(x, y)	((x) + (y) * MAP_WIDTH)
+# define LEMIPC_WINNING_WORDS	"Team \e[31m%d\e[0m won the game !\n"
 
 typedef struct		s_player
 {
@@ -78,6 +80,7 @@ typedef struct		s_board
 	ULL				map_width;
 	ULL				map_heigth;
 	ULL				nb_players;
+	ULL				players_ready;
 	int				game_in_process;
 	ULL				winner;
 }					t_board;

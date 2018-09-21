@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 02:19:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/21 06:39:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,21 @@ static void		ft_place_player()
 			continue ;
 		ft_lock(e.game.semid);
 		*(e.game.map + GET_POS(e.x, e.y)) = e.team->uid;
-		e.game.board->nb_players++;
+		e.game.board->players_ready++;
 		ft_unlock(e.game.semid);
 		break ;
 	}
 }
 
-static void		ft_start(size_t nbteams, ULL players, ULL max)
+static void		ft_start(size_t nbteams, t_board *board, ULL max)
 {
 	size_t		size;
 	t_uid		*team;
 
 	size = sizeof(size);
 	team = e.teams.board;
-	if (players < MIN_PPT * MIN_TEAMS || max < MIN_PPT || nbteams < MIN_TEAMS)
+	if (board->nb_players < MIN_PPT * MIN_TEAMS || max < MIN_PPT ||
+		nbteams < MIN_TEAMS)
 		return ;
 	while (size < *(size_t *)team)
 	{
@@ -48,6 +49,8 @@ static void		ft_start(size_t nbteams, ULL players, ULL max)
 			return ;
 		size += sizeof(*team);
 	}
+	if (board->nb_players != board->players_ready)
+		return ;
 	ft_lock(e.game.semid);
 	e.game.board->game_in_process = 1;
 	ft_unlock(e.game.semid);
@@ -68,7 +71,7 @@ static void		ft_check_even_teams(void)
 			max = (team + size)->total;
 		size += sizeof(*team);
 	}
-	ft_start(*(size_t *)team / sizeof(*team), e.game.board->nb_players, max);
+	ft_start(*(size_t *)team / sizeof(*team), e.game.board, max);
 }
 
 void			ft_wait_players(void)

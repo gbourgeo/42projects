@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoull.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/07 11:47:16 by root              #+#    #+#             */
-/*   Updated: 2018/09/07 11:50:40 by root             ###   ########.fr       */
+/*   Created: 2018/09/21 08:36:18 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 08:36:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ unsigned long long		ft_atoull(const char *str)
 	i = 0;
 	res = 0;
 	while (str[i] == ' ' || str[i] == '\n' || str[i] == '\t' || str[i] == '\v'
-		   || str[i] == '\f' || str[i] == '\r')
+			|| str[i] == '\f' || str[i] == '\r')
 		i++;
 	while (str[i] && ft_isdigit(str[i]))
 	{

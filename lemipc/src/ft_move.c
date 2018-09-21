@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 05:56:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/21 09:01:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ static int	can_i_move(t_game *game)
 		pos--;
 	if (e.y > 0 && *(game->map + GET_POS(e.x, (e.y - 1))) != MAP_0)
 		pos--;
-	if (e.x < game->board->map_width - 1 && *(game->map + GET_POS((e.x + 1), e.y)) != MAP_0)
+	if (e.x < game->board->map_width - 1 &&
+		*(game->map + GET_POS((e.x + 1), e.y)) != MAP_0)
 		pos--;
-	if (e.y < game->board->map_heigth - 1 && *(game->map + GET_POS(e.x, (e.y + 1))) != MAP_0)
+	if (e.y < game->board->map_heigth - 1 &&
+		*(game->map + GET_POS(e.x, (e.y + 1))) != MAP_0)
 		pos--;
 	if (e.x > 0 && *(game->map + GET_POS((e.x - 1), e.y)) != MAP_0)
 		pos--;
