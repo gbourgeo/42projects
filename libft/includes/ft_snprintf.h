@@ -3,19 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   ft_snprintf.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 03:11:42 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 03:12:44 by root             ###   ########.fr       */
+/*   Created: 2018/09/21 08:33:57 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 08:33:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_SNPRINTF_H
 # define FT_SNPRINTF_H
 
-#include "ft_base_printf.h"
+# include "ft_base_printf.h"
 
-int			ft_snprintf(char *str, size_t size, const char *restrict format, ...);
+int			ft_snprintf(char *str, size_t size,
+						const char *restrict format, ...);
 void		ft_snprintf_write(t_dt *data);
 
 #endif
