@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/08/31 10:18:01 by root             ###   ########.fr        #
+#    Updated: 2018/09/27 09:04:53 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -65,8 +65,29 @@ rm:
 rt: rm re
 	./$(NAME)
 
-pass:
-	$(CC) -o pass other/passwd.c $(SRC_DIR)encrypt.c $(HDR_DIR)
 
-hex:
-	$(CC) -o hex other/txttohex.c
+OTHER_D	= other/
+
+PASS	= pass
+PASS_C	= passwd.c encrypt.c
+PASS_O	= $(addprefix $(OTHER_D), $(PASS_C:.c=.o))
+
+$(PASS): $(PASS_O)
+	$(CC) -o $@ $^
+$(OTHER_D)%.o: $(OTHER_D)%.c
+	$(CC) -o $@ -c $< $(HDR_DIR)
+$(OTHER_D)%.o: $(SRC_DIR)%.c
+	$(CC) -o $@ -c $< $(HDR_DIR)
+passrm:
+	/bin/rm $(PASS_O)
+	/bin/rm $(PASS)
+
+HEX		= hex
+HEX_C	= txttohex.c
+HEX_O	= $(addprefix $(OTHER_D), $(HEX_C:.c=.o))
+
+$(HEX): $(HEX_O)
+	$(CC) -o $@ $^
+hexrm:
+	/bin/rm $(HEX_O)
+	/bin/rm $(HEX)
