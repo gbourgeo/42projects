@@ -6,12 +6,18 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 22:52:53 by root              #+#    #+#             */
-/*   Updated: 2018/08/31 10:28:53 by root             ###   ########.fr       */
+/*   Updated: 2018/09/27 08:47:28 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "durex.h"
+
+static int usage(const char *av)
+{
+	printf("Usage:\n\t%s [passphrase]\n", av);
+	return 1;
+}
 
 int main(int ac, char **av)
 {
@@ -20,7 +26,7 @@ int main(int ac, char **av)
 	char	*ptr;
 
 	if (ac == 1)
-		return 1;
+		return usage(av[0]);
 	i = 1;
 	while (av[i])
 	{

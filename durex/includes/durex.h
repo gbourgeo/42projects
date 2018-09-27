@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/08/30 04:45:20 by root             ###   ########.fr       */
+/*   Updated: 2018/09/27 09:34:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 							{ "rshell", "Open a reverse shell on port "SERVER_PORT" or specify it.", &serverRemoteShell, NULL }, \
 							{ "quit", "Quit server.", &serverQuitClient, NULL }, \
 							{ NULL, NULL, NULL, NULL }
+# define SERVER_PASS		201, 121, 30, 74, 3, 83, 154, 250 /* kata */
 
 typedef struct	s_buff
 {

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/17 22:47:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/30 03:57:48 by root             ###   ########.fr       */
+/*   Updated: 2018/09/27 09:21:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void			serverLog(const char *message, ...)
 				}
 			} else if (message[i+1] == 's') {
 				char *ptr = va_arg(ap, char *);
-
 				write(e.server.reporter, ptr, mystrlen(ptr));
 			} else if (message[i+1] == 'p') {
 				char *ptr;

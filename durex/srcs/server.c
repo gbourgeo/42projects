@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 06:29:05 by root             ###   ########.fr       */
+/*   Updated: 2018/09/27 09:32:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,22 +102,22 @@ void					serverAcceptConnections()
 	close(fd);
 }
 
-static int			myustrcmp(u_char *s1, u_char *s2)
+static int			myustrncmp(u_char *s1, u_char *s2, int n)
 {
-	size_t			i;
+	int				i;
 
 	i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
+	while (s1[i] && s2[i] && s1[i] == s2[i] && i < n) {
 		i++;
-	return (s1[i] - s2[i]);
+	}
+	return (i != n);
 }
 
 static void			serverLogging(u_char *buff, int size, t_cl *client)
 {
-	mymemset(buff + size, 0, SERVER_CLIENT_BUFF - size);
+	mymemset(buff + size, 0, size % 8);
 	encryptFunction(buff, size);
-	//kata (4): 201 121 30 74
-	if (myustrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
+	if (!myustrncmp(buff, (u_char []){ SERVER_PASS }, size + size % 8)) {
 		client->logged = 1;
 		clientWrite("$> ", client);
 	} else {
