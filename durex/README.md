@@ -43,14 +43,9 @@ make pass
 ./pass [mot_de_passe]
 ```
 
-Utiliser ensuite votre meilleur éditeur pour modifier le fichier **server.c** :
+Utiliser ensuite votre meilleur éditeur pour modifier le fichier **durex.h** :
 ```
-static void			serverLogging(u_char *buff, int size, t_cl *client)
-{
-...
-  if (myustrcmp(buff, (u_char []){ 201, 121, 30, 74, 0 }) == 3) {
-...
-}
+# define SERVER_PASS .. .. .. .. ..
 ```
 
 ##### Exemples
