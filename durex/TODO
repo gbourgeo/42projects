@@ -43,3 +43,8 @@ lib compilation line:
 Compilation status
 gcc -Wall -fPIC -shared -o /usr/local/lib/Durex.so lib_srcs/*.c -ldl
 */
+
+KEYLOGGER:
+https://github.com/SCOTPAUL/keylog/blob/master/main.c
+
+CAPTURE ECRAN:
