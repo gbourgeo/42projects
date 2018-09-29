@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 09:52:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/25 04:17:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,14 @@ static void		print_info(t_game *game, t_team *teams)
 	while (size < *(size_t *)team)
 	{
 		ft_printf("%-10s %-9llu %llu\n",
-				  (team + size)->name,
-				  (team + size)->uid,
-				  (team + size)->total);
+					(team + size)->name,
+					(team + size)->uid,
+					(team + size)->total);
 		size += sizeof(*team);
 	}
 	printf("%s\n", (game->board->game_in_process) ?
-			"\e[1;32mGAME IN PROCESS\e[0m" : "\e[1;34mWAITING FOR PLAYERS...\e[0m");
+			"\e[1;32mGAME IN PROCESS\e[0m" :
+			"\e[1;34mWAITING FOR PLAYERS...\e[0m");
 }
 
 static void		print_map(ULL *map)
@@ -49,7 +50,9 @@ static void		print_map(ULL *map)
 		j = 0;
 		while (j < MAP_WIDTH)
 		{
-			ft_printf("\e[1;%dm%02X\e[0m ", 31 + *(map + GET_POS(j, i)) % 7, *(map + GET_POS(j, i)));
+			ft_printf("\e[1;%dm%02X\e[0m ",
+						31 + *(map + GET_POS(j, i)) % 7,
+						*(map + GET_POS(j, i)));
 			j++;
 		}
 		ft_putchar('\n');
@@ -58,7 +61,7 @@ static void		print_map(ULL *map)
 	ft_putchar('\n');
 }
 
-void			ft_create_process_to_print_map()
+void			ft_create_process_to_print_map(void)
 {
 	extern char	**environ;
 
@@ -83,7 +86,6 @@ void			ft_create_process_to_print_map()
 		}
 		if (e.game.board && e.game.board->winner)
 			ft_exit_child(2, NULL);
-		else
-			ft_exit_child(0, "BYE !");
+		ft_exit_child(0, "BYE !");
 	}
 }

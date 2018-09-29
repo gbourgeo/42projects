@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/21 16:11:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 09:34:47 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/09/25 04:11:52 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/25 04:11:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ static void		ft_target(t_player *players, t_game *game, t_player *target)
 	length = game->board->map_width * game->board->map_heigth;
 	while (i < length && players)
 	{
-//		ft_printf("%c%02X", (i%10==0)?'\n':' ', game->map[i]);
 		if (game->map[i] != MAP_0 && i != GET_POS(e.x, e.y))
 		{
 			players->team = game->map[i];
@@ -53,6 +52,5 @@ void			ft_strategy(t_player *players, t_uid *team, t_game *game)
 		ft_target(players, game, &target);
 		ft_sendmsg(team->uid, &target, game);
 	}
-//	ft_printf("\ntarget team %llu x:%llu y:%llu\n", target.team, target.x, target.y);
 	ft_move_to_target(&target, game);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 06:39:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/25 04:16:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <time.h>
 
-static void		ft_place_player()
+static void		ft_place_player(void)
 {
 	srand(time(NULL));
 	while (1)

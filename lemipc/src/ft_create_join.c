@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 08:59:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/09/25 04:15:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void				ft_create_game(t_game *game)
 {
 	struct msqid_ds	buf;
 
+	ft_printf("Creating game...\n");
 	game->shmid = shmget(game->key, game->size, LEMIPC_CREATE);
 	if (game->shmid < 0)
 		ft_exit(1, "shmget");
@@ -48,6 +49,7 @@ t_uid				*ft_create_team(const char *name, t_team *teams)
 {
 	t_uid			*team;
 
+	ft_printf("Creating team...\n");
 	teams->shmid = shmget(teams->key, teams->size, LEMIPC_CREATE);
 	if (teams->shmid < 0)
 		ft_exit(1, "shmget");
@@ -70,6 +72,7 @@ t_uid				*ft_create_team(const char *name, t_team *teams)
 
 void				ft_join_game(t_game *game)
 {
+	ft_printf("Joining game...\n");
 	if (game->board == (void *)-1)
 		ft_exit(1, "shmat");
 	game->board->nb_players++;
@@ -103,6 +106,7 @@ t_uid				*ft_join_team(const char *name, t_team *teams)
 	size_t			size;
 	t_uid			*team;
 
+	ft_printf("Joining team...\n");
 	if (teams->semid < 0)
 		ft_exit(1, "semget");
 	if (teams->board == (void *)-1)
