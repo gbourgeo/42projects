@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/17 22:47:39 by root              #+#    #+#             */
-/*   Updated: 2018/09/27 09:21:44 by root             ###   ########.fr       */
+/*   Updated: 2018/10/01 09:28:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@
 
 int				hireReporter()
 {
-	return open(SERVER_REPORTER, O_CREAT | O_TRUNC | O_RDWR, 0600);
+	e.server.reporter = open(SERVER_REPORTER, O_CREAT | O_TRUNC | O_RDWR, 0600);
+	return e.server.reporter >= 0;
 }
 
 void			serverLog(const char *message, ...)
