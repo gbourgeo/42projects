@@ -44,7 +44,25 @@ Compilation status
 gcc -Wall -fPIC -shared -o /usr/local/lib/Durex.so lib_srcs/*.c -ldl
 */
 
+---------------------------------------------------------------------------------
+
 KEYLOGGER:
+
+/* Simple keylogger to capture keys pressed, released and repeated */
 https://github.com/SCOTPAUL/keylog/blob/master/main.c
+
+/* get keyboard rate */
+https://unix.stackexchange.com/questions/58651/adjusting-keyboard-sensitivity-in-a-command-line-terminal
+
+/* Keyboard config file */
+https://wiki.debian.org/fr/Keyboard
+
+/* kernel keyboard keymap */
+https://manpages.debian.org/stretch/kbd/loadkeys.1.en.html
+
+/* cpp example advanced keylogger */
+https://github.com/htmercury/Cpp-Keylogger/blob/master/Keylogger/KeyConstants.h
+
+---------------------------------------------------------------------------------
 
 CAPTURE ECRAN:
