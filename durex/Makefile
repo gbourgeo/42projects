@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/09/27 09:04:53 by root             ###   ########.fr        #
+#    Updated: 2018/10/04 22:12:39 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -91,3 +91,13 @@ $(HEX): $(HEX_O)
 hexrm:
 	/bin/rm $(HEX_O)
 	/bin/rm $(HEX)
+
+KEY		= key
+KEY_C	= keylogger.c
+KEY_O	= $(addprefix $(OTHER_D), $(KEY_C:.c=.o))
+
+$(KEY): $(KEY_O)
+	$(CC) -o $@ $^
+keyrm:
+	/bin/rm $(KEY_O)
+	/bin/rm $(KEY)
