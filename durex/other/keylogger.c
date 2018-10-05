@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/28 05:57:11 by root              #+#    #+#             */
-/*   Updated: 2018/10/04 23:10:51 by root             ###   ########.fr       */
+/*   Updated: 2018/10/05 11:06:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@
 #include <linux/input.h>
 #include <signal.h>
 #include <linux/keyboard.h>
+
+#ifndef MAX_NR_KEYMAPS
+# define MAX_NR_KEYMAPS NR_KEYMAPS
+#endif
 
 static int			filter(const struct dirent *file)
 {
@@ -348,28 +352,55 @@ static int			has_keys(int fd, int n)
 	return !ioctl(fd, KDGKBENT, (unsigned long)&ke);
 }
 
-static void			get_keys(int fd)
+static void			get_keys(int fd, char ***key_table)
 {
-	int				nb_keys;
-	char			**keys;
+	struct kbentry	ke;
+	int				ret;
 
-	nb_keys = (has_keys(fd, 255) ? 256 : has_keys(fd, 127) ? 128 : 112);
-	keys = malloc(sizeof(*keys) * nb_keys);
-	if (keys == NULL) {
-		fprintf(stderr, "Can't allocate %do for keys\n", nb_keys);
-		return;
-	}
-	for (int i = 0; i < nb_keys; i++)
-	{
-		keys[i] = malloc(sizeof(**keys) * MAX_NR_KEYMAPS);
-		if (keys[i] == NULL) {
-			fprintf(stderr, "Can't allocate %do for %dth key\n", MAX_NR_KEYMAPS, i);
-			return;
+	for (int i = 0; i < MAX_NR_KEYMAPS; i++) {
+		ke.kb_index = 0;
+		ke.kb_table = 1;
+		ret = ioctl(fd, KDGKBENT, (unsigned long)&ke);
+		if (ret && errno != EINVAL) {
+			perror("KDBGENT");
+			fprintf(stderr, "KDBGENT error at index 0 in table %d\n", i);
+			return ;
+		}
+		if (!ret && ke.kb_value != K_NOSUCHMAP) {
+			key_table[i][0] = NULL;
+		} else {
+			key_table[i][0] = NULL;
 		}
 	}
 }
 
-static void dumpkeys()
+static char			***allocate_keys(int fd)
+{
+	int				nb_keys;
+	char			***key_table;
+
+	nb_keys = (has_keys(fd, 255) ? 256 : has_keys(fd, 127) ? 128 : 112);
+	key_table = malloc(sizeof(*keys) * nb_keys);
+	if (key_table == NULL) {
+		fprintf(stderr, "Can't allocate %do for keys\n", nb_keys);
+		return NULL;
+	}
+	for (int i = 0; i < nb_keys; i++)
+	{
+		key_table[i] = malloc(sizeof(**key_table) * MAX_NR_KEYMAPS);
+		if (key_table[i] == NULL) {
+			fprintf(stderr, "Can't allocate %do for %dth key\n", MAX_NR_KEYMAPS, i);
+			for (int j = 0; j < i; j++)
+				free(key_table[j]);
+			free(key_table);
+			return NULL;
+		}
+	}
+	get_keys(fd, key_table);
+	return key_table;
+}
+
+static char ***dumpkeys()
 {
 	char	*console[] = { "/dev/tty", "/dev/tty0", "/dev/vc/0", "/dev/console" };
 	int		fd;
@@ -394,18 +425,20 @@ static void dumpkeys()
 		for (fd = 0; fd < 3; fd++)
 			if (is_a_console(fd))
 				break ;
-	if (fd < 0)
+	if (fd < 0) {
 		fprintf(stderr, "Can't get a file descriptor refering to a terminal\n");
-	else
-		get_keys();
+		return NULL;
+	}
+	return allocate_keys();
 }
 
 int			main(void)
 {
+	char	***key_table;
 	char	*keyboard;
 	int		fd;
 
-	dumpkeys();
+	key_table = dumpkeys();
 	if ((keyboard = get_keyboard()) == NULL)
 		return 1;
 	printf("keyboard: %s\n", keyboard);
