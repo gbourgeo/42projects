@@ -31,12 +31,6 @@
 
 int					loop;
 
-typedef struct		s_sym
-{
-	unsigned short	uni;
-	const char		*name;
-}					t_sym;
-
 typedef struct 		s_event
 {
 	int				value;
@@ -329,7 +323,18 @@ t_event key[] = {
 	{ KEY_WWAN,				"KEY_WWAN" },
 	{ KEY_WIMAX,			"KEY_WIMAX" },
 	{ KEY_RFKILL,			"KEY_RFKILL" },
-	{ KEY_MICMUTE,			"KEY_MICMUTE" },
+	{ KEY_MICMUTE,			"KEY_MICMUTE" }
+};
+
+t_event modifiers[] = {
+	{ KG_SHIFT,				"shift"},
+	{ KG_ALTGR,				"altgr"},
+	{ KG_CTRL,				"control"},
+	{ KG_ALT,				"alt"},
+	{ KG_SHIFTL,			"shiftl"},
+	{ KG_SHIFTR,			"shiftr"},
+	{ KG_CTRLL,				"ctrll"},
+	{ KG_CTRLR,				"ctrlr"}
 };
 
 void 					sigint(int sig)
@@ -388,10 +393,11 @@ static char			*get_keyboard()
 	return keybd;
 }
 
-static void				keylogger(int keybd)
+static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 {
 	int					nbread;
 	struct input_event	events[128];
+	int 				modifier;
 
 	signal(SIGINT, sigint);
 	loop = 1;
@@ -412,18 +418,9 @@ static void				keylogger(int keybd)
 			printf("\ntype: %s ", name);
 			if (events[i].type == EV_KEY)
 			{
-				int value = -1;
-				name = "UNKNOWN";
-				for (size_t j = 0; j < sizeof(key); j++)
-				{
-					if (events[i].code == key[j].value)
-					{
-						value = key[j].value;
-						name = key[j].name;
-						break ;
-					}
-				}
-				printf("code: %s(%d) ", name, value);
+				int value = events[i].code;
+				int c = (events[i].code < nb_keys) ? key_table[events[i].code][0] : -1;
+				printf("code: %c(%x) ", c, value);
 			}
 			else if (events[i].type == EV_LED)
 			{
@@ -435,7 +432,6 @@ static void				keylogger(int keybd)
 						name = led[j].name;
 						break ;
 					}
-					// printf("%ld\n", j);
 				}
 				printf("code: %s ", name);
 			}
@@ -452,19 +448,13 @@ static void				keylogger(int keybd)
 				}
 				printf("code: %s ", name);
 			} else {
-				printf("code: %d ", events[i].code);
+				printf("code: %x ", events[i].code);
 			}
 			printf("value: %#06x ; ", events[i].value);
 		}
 		printf("\n");
 	}
 }
-
-typedef struct		s_keys
-{
-	char			*name;
-	size_t			value;
-}					t_keys;
 
 int 				get_fd();
 int					get_keymaps(int, int (*)[256]);
@@ -479,32 +469,50 @@ static int			has_keys(int fd, int n)
 	return !ioctl(fd, KDGKBENT, (unsigned long)&ke);
 }
 
+static void 		free_tab(int ***tab)
+{
+	int			**ptr;
+
+	if (tab && *tab)
+	{
+		ptr = *tab;
+		while (ptr)
+			free(*ptr++);
+		free(*tab);
+		*tab = NULL;
+	}
+}
+
 int					main(void)
 {
 	int				fd;
 	int				nb_keys;
 	int 			nb_keymap;
-	t_sym			*syms;
 	int 			keymaps[2][MAX_NR_KEYMAPS];
 	int				**key_table;
 	char			*keyboard;
 
-	fd = get_fd();
-	if (fd < 0)
+	if ((fd = get_fd()) < 0)
 		return 1;
 	nb_keys = (has_keys(fd, 255) ? 256 : has_keys(fd, 127) ? 128 : 112);
-	nb_keymap = get_keymaps(fd, keymaps);
-	if (!nb_keymap)
-		return 0;
+	if ((nb_keymap = get_keymaps(fd, keymaps)) == 0)
+		return 1;
 	key_table = dump_keys(fd, nb_keys, nb_keymap, keymaps);
 	close(fd);
-	if ((keyboard = get_keyboard()) == NULL)
+	if (key_table == NULL)
 		return 1;
+	if ((keyboard = get_keyboard()) == NULL) {
+		free_tab(&key_table);
+		return 1;
+	}
+	if ((fd = open(keyboard, O_RDONLY)) < 0) {
+		free(keyboard);
+		free_tab(&key_table);
+		return 1;
+	}
 	printf("keyboard: %s\n", keyboard);
-	if ((fd = open(keyboard, O_RDONLY)) < 0)
-		return 1;
 	free(keyboard);
-	keylogger(fd);
+	keylogger(fd, key_table, nb_keys, nb_keymap);
 	close(fd);
 	return 0;
 }
@@ -629,7 +637,7 @@ int 				**dump_keys(int fd, int nb_keys, int nb_keymap, int keymaps[2][256])
 		printf("%03d(%s):\n", i, key[i].name);
 		for (int j = 0; j < nb_keymap; j++) {
 			key_table[i][j] = get_bind(fd, i, keymaps[1][j]);
-			printf(" %d %d(%c) -", keymaps[1][j], key_table[i][j], key_table[i][j]);
+			printf(" %d %x(%c) -", keymaps[1][j], key_table[i][j], key_table[i][j]);
 		}
 		printf("\n");
 	}
