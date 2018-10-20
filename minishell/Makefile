@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/07/12 13:49:40 by root             ###   ########.fr        #
+#    Updated: 2018/10/20 16:41:09 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,13 +18,13 @@ HDR		= includes/
 
 SRC		= main.c			\
 		check_and_exec.c	\
-		ft_dollar_expansion.c \
+		ft_expansions.c 	\
 		ft_fatal.c			\
 		ft_minishell.c		\
 		ft_echo.c			\
 		ft_env.c			\
 		ft_fork.c			\
-		ft_envcpy.c			\
+		ft_envdup.c			\
 		ft_env_options.c 	\
 		ft_env_check.c		\
 		ft_env_extra.c		\

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/07/12 10:16:20 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 15:38:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int			add_entry(char **entry, t_env *e)
 	int			i;
 	char		*ptr;
 
-	if ((new_env = malloc(sizeof(*new_env) * (ft_tablen(e->env) + 2))))
+	if ((new_env = malloc(sizeof(*new_env) * (ft_tablen((const char **)e->env) + 2))))
 	{
 		i = -1;
 		while (e->env[++i])

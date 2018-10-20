@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/07/12 13:50:36 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 17:35:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <sys/wait.h>
 # include <sys/stat.h>
 # include <unistd.h>
+
+# define UNUSED		__attribute__((unused))
 
 # define BUILTINS "echo", "cd", "setenv", "unsetenv", "env", "exit", NULL
 # define FUNCTION ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
@@ -39,7 +41,7 @@ typedef struct	s_opt
 
 typedef struct	s_env
 {
-	char		*progname;
+	const char	*progname;
 	char		**env;
 	char		**path;
 	char		*command;
@@ -47,13 +49,14 @@ typedef struct	s_env
 }				t_env;
 
 void			ft_fatal(const char *error, t_env *e);
-char			**ft_envcpy(char **env);
-char			*ft_getenv(char *str, char **env);
-char			**ft_getenvaddr(char *str, char **env);
-int				ft_tablen(char **tab);
-char			**ft_tabdup(char **tab);
+char			**ft_envdup(const char **env);
+char			*ft_getenv(const char *str, char **env);
+char			**ft_getenvaddr(const char *str, char **env);
+int				ft_tablen(const char **tab);
+char			**ft_tabdup(const char **tab);
 void			ft_shell(t_env *e);
-int				dollar_expansion(char **command, size_t i, char **env);
+int				ft_dollar(size_t i, t_env *e);
+int				ft_tilde(size_t i, t_env *e);
 int				check_and_exec(char **command, char **env, t_env *e);
 int				fork_function(char **args, char **env);
 int				ft_echo(char **args, t_env *e);

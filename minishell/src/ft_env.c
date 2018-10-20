@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 13:02:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/07/12 08:09:18 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 15:47:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int				ft_env(char **command, t_env *e)
 	int			i;
 
 	ft_memset(&opt, 0, sizeof(opt));
-	if ((opt.cpy = ft_tabdup(e->env)) == NULL)
+	if ((opt.cpy = ft_tabdup((const char **)e->env)) == NULL)
 		return (ft_enverror("malloc failed", 0, &opt));
 	if (!command[1])
 		ft_puttab(e->env);
