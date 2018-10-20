@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/26 09:56:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 14:31:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/20 20:06:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ static char		*ft_get_path(char *path, char *pwd)
 	char		*new;
 	char		**list;
 
+	if (!path)
+		return (NULL);
 	if (!pwd || !*pwd)
 		return (ft_strdup(path));
 	new = ft_strnew(ft_strlen(path) + ft_strlen(pwd) + 2);
@@ -59,7 +61,7 @@ char			*cd_check(char **args, char **env, int i)
 {
 	char	*pwd;
 
-	if (!args[i] || !ft_strcmp(args[i], "--") || !ft_strcmp(args[i], "~"))
+	if (!args[i] || !ft_strcmp(args[i], "--"))
 	{
 		pwd = ft_getenv("HOME", env);
 		if (pwd == NULL)

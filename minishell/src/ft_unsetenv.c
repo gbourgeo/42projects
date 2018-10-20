@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:39:13 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:06:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char		**copy_env(char *unset, char **env)
 	int			i;
 
 	i = 0;
-	if ((new = malloc(sizeof(*env) * ft_tablen((const char **)env))) == NULL)
+	if ((new = malloc(sizeof(*env) * ft_tablen(env))) == NULL)
 	{
 		ft_putendl_fd("unsetenv: Memory space insufficiant.", 2);
 		return (env);

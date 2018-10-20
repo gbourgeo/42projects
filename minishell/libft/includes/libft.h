@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:46:54 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:03:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 t_list				*ft_lstnew(void const *content, size_t content_size);
 void				ft_lstswap(t_list *one, t_list *two);
 char				**ft_tabdup(const char **table);
-int					ft_tablen(const char **table);
+int					ft_tablen(char **table);
 void				ft_puttab(char **table);
 void				ft_puttab_fd(char **table, int fd);
 void				ft_tabdel(char **table);

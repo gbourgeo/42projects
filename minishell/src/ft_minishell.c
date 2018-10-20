@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 17:35:36 by root             ###   ########.fr       */
+/*   Updated: 2018/10/21 00:48:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,18 @@
 
 static void		prompt(t_env *e)
 {
-	char		*pwd;
+	char		*user;
+	char		pwd[256];
 	char		*home;
-	char		*tmp;
+	char		c;
 
-	pwd = ft_getenv("PWD", e->env);
+	if (!(user = ft_getenv("USER", e->env)))
+		user = "";
+	getcwd(pwd, 256);
 	home = ft_getenv("HOME", e->env);
-	tmp = ft_strstr(pwd, home);
-	if (tmp != NULL)
-		ft_printf("\e[36m%s\e[0m@\e[31;1m%c%s \e[37m> \e[0m",
-					ft_getenv("USER", e->env), '~', &pwd[ft_strlen(home)]);
-	else
-		ft_printf("\e[36m%s\e[0m@\e[31;1m%c%s \e[37m> \e[0m",
-					ft_getenv("USER", e->env), '\0', pwd);
+	c = (home && *home && ft_strstr(pwd, home)) ? '~' : '\0';
+	ft_printf("\e[37m<\e[36m%s\e[0m@\e[31;1m%c%s\e[37m> \e[0m",
+				user, c, &pwd[ft_strlen(home)]);
 }
 
 static void		check_expansions(t_env *e)
@@ -40,10 +39,12 @@ static void		check_expansions(t_env *e)
 	while (ptr[i])
 	{
 		if (ptr[i] == '$')
-			i = ft_dollar(i, e);
+			i += ft_dollar(i, e);
 		else if (ptr[i] == '~')
-			i = ft_tilde(i, e);
-		i++;
+			i += ft_tilde(i, e);
+		else
+			i++;
+		ptr = e->command;
 	}
 }
 

@@ -6,11 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/28 00:19:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:35:19 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:03:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int			ft_tablen(const char **table)
+int			ft_tablen(char **table)
 {
 	int		i;
 

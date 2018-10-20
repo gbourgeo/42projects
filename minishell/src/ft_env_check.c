@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 16:25:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:37:32 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:05:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static char		**ft_env_opt_u(char **cmd, int *i, int j, t_opt *opt)
 	char		**tab;
 	int			k;
 
-	if (!(tab = (char **)malloc(sizeof(*tab) * (ft_tablen((const char **)opt->ptr) + 2))))
+	if (!(tab = (char **)malloc(sizeof(*tab) * (ft_tablen(opt->ptr) + 2))))
 		return (opt->ptr);
 	k = 0;
 	while (opt->ptr && opt->ptr[k])
@@ -115,7 +115,7 @@ int				ft_env_check_opt_plus(char **cmd, t_opt *opt, int i)
 
 	while (ft_strchr(cmd[i], '=') != NULL)
 	{
-		if ((tab = (char **)malloc(ft_tablen((const char **)opt->extra) + 2)) == NULL)
+		if ((tab = (char **)malloc(ft_tablen(opt->extra) + 2)) == NULL)
 			return (ft_enverror("malloc failed", 0, opt));
 		j = 0;
 		while (opt->extra && opt->extra[j])

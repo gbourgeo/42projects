@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 12:12:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:49:42 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:07:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ char		**ft_getenvaddr(const char *str, const char **env)
 		while (env[i] != NULL)
 		{
 			if (ft_strcmp(env[i], str) == '=')
-					return (char **)(&env[i]);
+				return (char **)(&env[i]);
 			++i;
 		}
 	}

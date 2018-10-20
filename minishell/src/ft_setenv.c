@@ -6,21 +6,19 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/20 23:26:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:38:59 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:11:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-static int			add_entry(char **entry, t_env *e)
+static int			add_entry(int i, char **entry, t_env *e)
 {
 	char		**new_env;
-	int			i;
 	char		*ptr;
 
-	if ((new_env = malloc(sizeof(*new_env) * (ft_tablen((const char **)e->env) + 2))))
+	if ((new_env = malloc(sizeof(*new_env) * (ft_tablen(e->env) + 2))))
 	{
-		i = -1;
 		while (e->env[++i])
 			new_env[i] = e->env[i];
 		if ((ptr = ft_strchr(entry[1], '=')) != NULL)
@@ -79,6 +77,6 @@ int					ft_setenv(char **entry, t_env *e)
 	else if (ft_getenv(entry[1], e->env))
 		return (modify_entry(entry, e));
 	else
-		return (add_entry(entry, e));
+		return (add_entry(-1, entry, e));
 	return (1);
 }

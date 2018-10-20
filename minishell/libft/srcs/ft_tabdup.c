@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:46:00 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:06:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char		**ft_tabdup(const char **table)
 	char	**cpy;
 	int		i;
 
-	cpy = malloc(sizeof(*table) * (ft_tablen(table) + 1));
+	cpy = malloc(sizeof(*table) * (ft_tablen((char **)table) + 1));
 	if (cpy == NULL)
 		return (NULL);
 	i = 0;

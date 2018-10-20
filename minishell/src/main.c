@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:04:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 16:15:54 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:09:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void		init_env(const char *prog, const char **environ, t_env *e)
 	path = ft_strsplit(ft_getenv("PATH", e->env), ':');
 	if (path == NULL)
 		ft_fatal("Can't split PATH.", e);
-	e->path = malloc(sizeof(*e->path) * (ft_tablen((const char **)path) + 1));
+	e->path = malloc(sizeof(*e->path) * (ft_tablen(path) + 1));
 	if (e->path == NULL)
 		ft_fatal("Can't copy PATH.", e);
 	while (path[i])
@@ -40,10 +40,12 @@ static void		init_env(const char *prog, const char **environ, t_env *e)
 	ft_freetab(&path);
 }
 
-int				main(UNUSED int ac, UNUSED char **av, const char **environ)
+int				main(int ac, char **av, const char **environ)
 {
 	t_env		e;
 
+	(void)ac;
+	(void)av;
 	ft_memset(&e, 0, sizeof(e));
 	init_env(av[0], environ, &e);
 	ft_shell(&e);

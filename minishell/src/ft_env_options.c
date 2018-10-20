@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/03 21:50:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 15:36:52 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:05:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static char		**ft_new_env(t_opt *opt, int k)
 	char		**new;
 	int			i;
 
-	if (!(new = (char **)malloc(sizeof(*new) * ft_tablen((const char **)opt->cpy))))
+	if (!(new = (char **)malloc(sizeof(*new) * ft_tablen(opt->cpy))))
 		return (opt->cpy);
 	i = 0;
 	while (opt->cpy && opt->cpy[i])

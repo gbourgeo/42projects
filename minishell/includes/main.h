@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 02:25:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 17:35:44 by root             ###   ########.fr       */
+/*   Updated: 2018/10/20 21:04:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <unistd.h>
 
 # define UNUSED		__attribute__((unused))
-
+# define RESCUE "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # define BUILTINS "echo", "cd", "setenv", "unsetenv", "env", "exit", NULL
 # define FUNCTION ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit
 
@@ -52,8 +52,6 @@ void			ft_fatal(const char *error, t_env *e);
 char			**ft_envdup(const char **env);
 char			*ft_getenv(const char *str, char **env);
 char			**ft_getenvaddr(const char *str, char **env);
-int				ft_tablen(const char **tab);
-char			**ft_tabdup(const char **tab);
 void			ft_shell(t_env *e);
 int				ft_dollar(size_t i, t_env *e);
 int				ft_tilde(size_t i, t_env *e);
