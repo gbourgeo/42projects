@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_fprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/11 00:44:30 by root              #+#    #+#             */
-/*   Updated: 2018/04/11 02:25:10 by root             ###   ########.fr       */
+/*   Created: 2018/09/21 07:17:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 07:17:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void		ft_fprintf_write(t_dt *data)
 {
-	void	*buf = data->buff;
+	void	*buf;
 
+	buf = data->buff;
 	data->ret += fwrite(buf, sizeof(*data->buff), data->pos, data->stream);
 }

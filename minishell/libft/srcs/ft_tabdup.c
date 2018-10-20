@@ -6,13 +6,13 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/28 00:22:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 00:57:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/20 15:46:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		**ft_tabdup(char **table)
+char		**ft_tabdup(const char **table)
 {
 	char	**cpy;
 	int		i;
