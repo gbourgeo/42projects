@@ -339,15 +339,22 @@ t_event key[] = {
 	{ 255,					"undefined" }
 };
 
-t_event modifiers[] = {
-	{ KG_SHIFT,				"shift"},
-	{ KG_ALTGR,				"altgr"},
-	{ KG_CTRL,				"control"},
-	{ KG_ALT,				"alt"},
-	{ KG_SHIFTL,			"shiftl"},
-	{ KG_SHIFTR,			"shiftr"},
-	{ KG_CTRLL,				"ctrll"},
-	{ KG_CTRLR,				"ctrlr"}
+typedef struct 	s_modifiers
+{
+	int 		value;
+	int 		bit;
+	char 		*name;
+}				t_modifiers;
+
+t_modifiers modifiers[] = {
+	{ 0, 				KG_SHIFT,	"shift"},
+	{ KEY_RIGHTALT, 	KG_ALTGR,	"altgr"},
+	{ 0, 				KG_CTRL,	"control"},
+	{ KEY_LEFTALT, 		KG_ALT,		"alt"},
+	{ KEY_LEFTSHIFT, 	KG_SHIFTL,	"shiftl"},
+	{ KEY_RIGHTSHIFT, 	KG_SHIFTR,	"shiftr"},
+	{ KEY_LEFTCTRL, 	KG_CTRLL,	"ctrll"},
+	{ KEY_RIGHTCTRL, 	KG_CTRLR,	"ctrlr"}
 };
 
 int						loop;
@@ -408,11 +415,41 @@ static char			*get_keyboard()
 	return keybd;
 }
 
+static int  		print_keysym(int code)
+{
+	int 			type;
+	int 			value;
+	const char 		*p;
+
+	type = KTYP(code);
+	value = KVAL(code);
+	if (type >= syms_size) {
+		code = code ^ 0xf000;
+		// if (code < 0)
+//			return printf("(null) ");
+		if (code < 0x80)
+			return printf("%s ", iso646_syms[code]);
+		return printf("%#04x ", code);
+	}
+	if (type == KT_LETTER)
+		type = KT_LATIN;
+	if (type < syms_size && value < syms[type].size && (p = syms[type].table[value])[0])
+		return printf("%s ", p);
+	if (type == KT_META && value < 128 && value < syms[0].size && (p = syms[0].table[value])[0])
+		return printf("Meta_%s ", p);
+	return printf("%#04x ", code);
+}
+
+static int 			isprintable(int code)
+{
+	return code >= ' ' && code <= '~';
+}
+
 static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 {
 	int					nbread;
 	struct input_event	events[128];
-	int 				modifier;
+	static int 			modifier = 0;
 
 	signal(SIGINT, sigint);
 	loop = 1;
@@ -430,13 +467,13 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 					break ;
 				}
 			}
-			printf("\ntype: %s ", name);
+			printf("type: %s ", name);
 			if (events[i].type == EV_KEY)
 			{
 				int value = events[i].code;
 				int c = (events[i].code < nb_keys) ? key_table[events[i].code][0] : -1;
 				name = key[events[i].code].name;
-				printf("code: %c(%x %s) ", c, value, name);
+				printf("code: %c(%x \"%s\") ", c, value, name);
 			}
 			else if (events[i].type == EV_LED)
 			{
@@ -469,6 +506,57 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 			printf("value: %#06x ; ", events[i].value);
 		}
 		printf("\n");
+
+		int value = -1; // which key have been pressed
+		int state = 0; // state 0: released 1:pressed 2:repeated
+		int key = 0;
+		for (size_t i = 0; i < nbread / sizeof(struct input_event); i++)
+		{
+			// if (events[i].type == EV_MSC) {
+			// 	if (events[i].code == MSC_SCAN) {
+			// 		value = events[i].value;
+			// 	}
+			// 	continue ;
+			// }
+			if (events[i].type == EV_KEY) {
+				value = events[i].code;
+			//	if (events[i].code == value)
+					state = events[i].value;
+			}
+		}
+		for (size_t i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
+			if (value == modifiers[i].value) {
+				if (state == 0)
+					modifier -= ((1 << modifiers[i].bit)); // update position on the character table values
+				else if (state == 1)
+					modifier += ((1 << modifiers[i].bit)); // update position on the character table values
+				state = 0;
+				break ;
+			}
+		}
+		if (state) {
+			if (modifier) {
+				for (size_t i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
+					if (modifier & (1 << modifiers[i].bit))
+						printf("<%s>", modifiers[i].name);
+				}
+				key = key_table[value][0];
+				if (isprintable(key))
+					printf("%c", key);
+				else
+					print_keysym(key);
+				modifier++;
+			}
+			printf(" [%d][%d] -> ", value, modifier);
+			key = key_table[value][modifier];
+			if (isprintable(key))
+				printf("%c", key);
+			else
+				print_keysym(key);
+			printf("\n");
+			if (modifier)
+				modifier--;
+		}
 	}
 }
 
@@ -641,36 +729,6 @@ static int			get_bind(int fd, u_char index, u_char table)
 		return -1;
 	}
 	return ke.kb_value;
-}
-
-static int  		print_keysym(int code)
-{
-	int 			type;
-	int 			value;
-	const char 		*p;
-
-	type = KTYP(code);
-	value = KVAL(code);
-	if (type >= syms_size) {
-		code = code ^ 0xf000;
-		if (code < 0)
-//			return printf("(null) ");
-		if (code < 0x80)
-			return printf("(%s) ", iso646_syms[code]);
-		return printf("(%#04x) ", code);
-	}
-	if (type == KT_LETTER)
-		type = KT_LATIN;
-	if (type < syms_size && value < syms[type].size && (p = syms[type].table[value])[0])
-		return printf("(%s) ", p);
-	if (type == KT_META && value < 128 && value < syms[0].size && (p = syms[0].table[value])[0])
-		return printf("(Meta_%s) ", p);
-	return printf("(%#04x) ", code);
-}
-
-static int 			isprintable(int code)
-{
-	return code >= ' ' && code <= '~';
 }
 
 int 				**dump_keys(int fd, int nb_keys, int nb_keymap, int keymaps[2][256])
