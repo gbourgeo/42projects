@@ -18,24 +18,19 @@ DAEMON=/bin/$NAME
 SCRIPTNAME=/etc/init.d/$NAME
 
 start() {
-	[ -f /var/lock/Durex.lock ] && exit 0
-	touch /var/lock/Durex.lock
-	start_daemon /bin/Durex
+	start_daemon $DAEMON
 	RETVAL=$?
 	return $RETVAL
 }
 
 stop() {
-	[ -f /var/lock/Durex.lock ] || exit 0
-	# pkill send SIGTERM signal by default
-	killproc Durex
+	killproc $NAME
 	RETVAL=$?
-	/bin/rm /var/lock/Durex.lock
 	return $RETVAL
 }
 
 rhstatus() {
-	status_of_proc Durex
+	status_of_proc $NAME
 	RETVAL=$?
 	return $RETVAL
 }

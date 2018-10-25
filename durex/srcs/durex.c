@@ -6,13 +6,13 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/10/01 09:28:58 by root             ###   ########.fr       */
+/*   Updated: 2018/10/25 06:25:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* signal */
 #include <signal.h>
-/* remove */
+/* remove, snprintf */
 #include <stdio.h>
 /* exit */
 #include <stdlib.h>
@@ -40,11 +40,40 @@ static void			cleanStructure()
 
 static int			launch_program()
 {
-	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_WRONLY, 0600);
+	char			proc[256];
+	char			buf[20];
+	int				ret;
+
+	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_RDWR, 0600);
 	if (e.lock < 0)
 		return 0;
 	if (flock(e.lock, LOCK_EX | LOCK_NB))
-		return 0;
+	{
+		/* Can't lock the file ? check if the process is running */
+		ret = read(e.lock, buf, sizeof(buf));
+		close(e.lock);
+		if (ret > 0)
+		{
+			buf[ret] = '\0';
+			snprintf(proc, sizeof(proc), "/proc/%s/cmdline", buf);
+			e.lock = open(proc, O_RDONLY);
+			if (e.lock >= 0)
+			{
+				ret = read(e.lock, buf, sizeof(buf));
+				close(e.lock);
+				if (ret > 0)
+				{
+					buf[ret] = '\0';
+					if (!mystrcmp(buf, "/bin/Durex"))
+						return 0;
+				}
+			}
+		}
+		remove(DUREX_LOCK_FILE);
+		return launch_program();
+	}
+	snprintf(buf, sizeof(buf), "%d", getpid());
+	write(e.lock, buf, mystrlen(buf));
 	for (int i = 0; i < NSIG; i++) {
 		signal(i, &durexSigterm);
 	}
