@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 20:58:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/20 20:58:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/26 08:55:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int				check_and_exec(char **command, char **env, t_env *e)
 		i++;
 	}
 	if (*command)
-		e->ret = fork_function(command, env);
+		e->ret = fork_function(command, env, e->progname);
 	e->env = old;
 	return (e->ret);
 }

@@ -6,10 +6,11 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/22 19:03:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/05 15:07:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/26 08:59:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_dprintf.h"
 #include "main.h"
 
 static char		*check_command(char **cmd, char **env)
@@ -90,7 +91,7 @@ static char		*get_path(char **cmd, char **env)
 	return (search_path(*cmd, env));
 }
 
-int				fork_function(char **args, char **env)
+int				fork_function(char **args, char **env, const char *prog)
 {
 	pid_t		pid;
 	int			status;
@@ -102,19 +103,19 @@ int				fork_function(char **args, char **env)
 		if ((pid = fork()) > 0)
 		{
 			if (waitpid(pid, &status, 0) < 0)
-				ft_putendl_fd("minishell: waitpid error.", 2);
+				ft_dprintf(2, "%s: waitpid error.\n", prog);
 		}
 		else if (pid == 0)
 		{
-			execve(path, args, env);
-			ft_putendl_fd("minishell: check your arguments.", 2);
-			exit(1);
+			status = execve(path, args, env);
+			ft_dprintf(2, "%s: check your arguments.", prog);
+			exit(status);
 		}
 		else
-			ft_putendl_fd("minishell: Fork error.", 2);
+			ft_dprintf(2, "%s: Fork error.", prog);
 		ft_freestr(&path);
 	}
 	else
-		ft_putendl_fd("minishell: command not found.", 2);
+		ft_dprintf(2, "%s: command not found: %s\n", prog, args[0]);
 	return (status);
 }
