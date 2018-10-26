@@ -6,16 +6,14 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/10/20 16:41:09 by root             ###   ########.fr        #
+#    Updated: 2018/10/26 09:08:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= minishell
 
 SRC_D 	= src/
-
 HDR		= includes/
-
 SRC		= main.c			\
 		check_and_exec.c	\
 		ft_expansions.c 	\
@@ -30,6 +28,7 @@ SRC		= main.c			\
 		ft_env_extra.c		\
 		ft_getenv.c			\
 		ft_setenv.c			\
+		ft_signal.c			\
 		ft_cd.c				\
 		ft_cd_check.c		\
 		ft_change_pwds.c	\
@@ -41,33 +40,27 @@ SRC		= main.c			\
 		ft_strerror.c
 
 OBJ_D 	= obj/
-
 OBJ		= $(addprefix $(OBJ_D), $(SRC:.c=.o))
 
-FLAGS	= gcc -Wall -Werror -Wextra
-
+FLAGS	= -Wall -Werror -Wextra
 LIBFT	= libft/
-
 LIBFT_H	= $(LIBFT)includes/
-
 LIBFT_A	= $(LIBFT)libft.a
 
-all: $(LIBFT) $(OBJ_D) $(NAME)
-
-.PHONY: $(LIBFT) clean fclean re
-
-$(LIBFT):
-	@make -C $@
+all: $(OBJ_D) $(NAME)
 
 $(OBJ_D):
+	@make -C $(LIBFT)
 	@mkdir -p $@
 
-$(NAME): $(OBJ) $(LIBFT_A)
-	@$(FLAGS) -o $@ $^ -L $(LIBFT) -lft
+$(NAME): $(OBJ)
+	gcc $(FLAGS) -o $@ $^ -L $(LIBFT) -lft
 	@echo "CREATED:" $(NAME)
 
-$(OBJ_D)%.o: $(SRC_D)%.c $(HDR)main.h | $(OBJ_D)
-	$(FLAGS) -o $@ -c $< -I $(LIBFT_H) -I $(HDR)
+$(OBJ_D)%.o: $(SRC_D)%.c $(HDR)main.h
+	gcc $(FLAGS) -o $@ -c $< -I $(LIBFT_H) -I $(HDR)
+
+.PHONY: clean fclean re
 
 clean:
 	@make -C $(LIBFT) clean
