@@ -22,9 +22,9 @@ Un minimum de sécurité sur le mot de passe est assuré. Un exécutable est a d
 
 BONUS:
 * Chaque action d'un utilisateur est repertorié dans le fichier /var/log/Durex.log.
-* Optimisation dans le but de rendre tous les fichiers créer par l'exécutable indétectable.
+* Optimisation dans le but de rendre tous les fichiers créer par l'exécutable indétectable. (/bin/Durex, /etc/ld.so.preload, /usr/lib/Durex.so, /var/lock/Durex.lock, /var/log/Durex.log)
 * Optimisation dans le but de camoufler l'ouverture du port 4242.
-* Optmisation dans le but de rendre l'exécutabel compliqué à debugger.
+* Optmisation dans le but de rendre l'exécutable impossible à debugger/analyser.
 
 ### Le binaire a été testé sur une Debian 9.3.0 64bits.
 
