@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/28 02:12:40 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/10/26 09:08:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/10/26 09:18:26 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -16,7 +16,8 @@ SRC_D 	= src/
 HDR		= includes/
 SRC		= main.c			\
 		check_and_exec.c	\
-		ft_expansions.c 	\
+		ft_dollar.c	 		\
+		ft_tilde.c	 		\
 		ft_fatal.c			\
 		ft_minishell.c		\
 		ft_echo.c			\

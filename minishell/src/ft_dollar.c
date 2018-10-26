@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_expansions.c                                    :+:      :+:    :+:   */
+/*   ft_dollar.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 21:07:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/21 00:47:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/26 09:19:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int		ft_dollar_getint(char **command, size_t i, int value)
 	return (len);
 }
 
-static int		ft_dollar_copy(char c, int cmdlen, size_t i, t_env *e)
+static int		ft_dollar_getenv(char c, int cmdlen, size_t i, t_env *e)
 {
 	char		*ptr;
 	char		*new;
@@ -73,30 +73,5 @@ int				ft_dollar(size_t i, t_env *e)
 		ptr++;
 	c = *ptr;
 	*ptr = '\0';
-	return (ft_dollar_copy(c, len, i, e));
-}
-
-int				ft_tilde(size_t i, t_env *e)
-{
-	char		*new;
-	char		*ptr;
-	int			len;
-
-	ptr = e->command + i;
-	if ((!i || *(ptr - 1) == ' ' || *(ptr - 1) == '\t')
-		&& (*(ptr + 1) == '\0' || *(ptr + 1) == ' ' || *(ptr + 1) == '\t'
-			|| *(ptr + 1) == '/'))
-	{
-		ptr = ft_getenv("HOME", e->env);
-		len = ft_strlen(e->command) + ft_strlen(ptr);
-		if ((new = malloc(len)) == NULL)
-			return (1);
-		ft_strncpy(new, e->command, i);
-		ft_strcpy(new + i, ft_getenv("HOME", e->env));
-		ft_strcat(new, e->command + i + 1);
-		free(e->command);
-		e->command = new;
-		return (ft_strlen(ptr));
-	}
-	return (1);
+	return (ft_dollar_getenv(c, len, i, e));
 }
