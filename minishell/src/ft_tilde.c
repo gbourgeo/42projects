@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 09:18:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/26 09:28:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/26 09:35:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int				ft_tilde(size_t i, t_env *e)
 			|| *(ptr + 1) == '/'))
 			return (ft_tilde_getenv(i, 1, "HOME", e));
 		if (*(ptr + 1) == '+')
-			return (ft_tilde_getenv(i, 2, "PWD", e));			
+			return (ft_tilde_getenv(i, 2, "PWD", e));
 		if (*(ptr + 1) == '-')
 			return (ft_tilde_getenv(i, 2, "OLDPWD", e));
 	}
