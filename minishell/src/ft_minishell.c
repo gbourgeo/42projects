@@ -6,14 +6,15 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/28 04:47:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/21 00:48:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/26 08:57:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "get_next_line.h"
 #include "main.h"
 
-static void		prompt(t_env *e)
+void			prompt(t_env *e)
 {
 	char		*user;
 	char		pwd[256];
