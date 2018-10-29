@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:33:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/29 06:36:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/29 09:49:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,15 @@ static char			*strjoin(const char *s1, const char *s2)
 	return ret;
 }
 
-static int 			init_select(int size, fd_set *fdr, fd_set *fdw)
+static int 			init_select(int server, int size, fd_set *fdr, fd_set *fdw)
 {
 	int 			max;
 
-	max = 0;
+	max = server;
 	FD_ZERO(fdr);
 	FD_ZERO(fdw);
+	if (server)
+		FD_SET(server, fdr);
 	for (int i = 0; i < size; i++) {
 		if (clients[i].fd == -1 || clients[i].leaved)
 			continue ;
@@ -43,11 +45,11 @@ static int 			init_select(int size, fd_set *fdr, fd_set *fdw)
 	return max;
 }
 
-static void				accept_connection()
+static void				accept_connection(int server)
 {
 	int					fd;
 
-	fd = accept(clients[0].fd, NULL, NULL);
+	fd = accept(server, NULL, NULL);
 	if (fd < 0) {
 		clients[0].leaved = 1;
 		return ;
@@ -58,7 +60,7 @@ static void				accept_connection()
 		clear_clients(&clients[i], 1);
 		clients[i].fd = fd;
 		strcpy(clients[i].wr, "Connected: ");
-		for (int j = 1; j < MAX_CLIENTS; j++) {
+		for (int j = 0; j < MAX_CLIENTS; j++) {
 			if (clients[j].fd == -1)
 				continue ;
 			strcat(clients[i].wr, clients[j].user);
@@ -131,16 +133,16 @@ static int 				check_clients(int size)
 			close(clients[i].fd);
 			clear_clients(&clients[i], 1);
 		}
-		else if (i && !clients[i].user[0] && clients[i].try <= 0) {
+		else if (!clients[i].user[0] && clients[i].try <= 0) {
 			write(clients[i].fd, "Nickname not defined.\n", 22);
 			close(clients[i].fd);
 			clear_clients(&clients[i], 1);
 		}
 	}
-	return (clients[0].fd != -1 && clients[1].fd != -1);
+	return (clients[0].fd != -1);
 }
 
-void					loop(int size, int is_client)
+void					loop(int server, int size)
 {
 	fd_set				fdr;
 	fd_set				fdw;
@@ -148,20 +150,18 @@ void					loop(int size, int is_client)
 
 	while (check_clients(size))
 	{
-		max = init_select(size, &fdr, &fdw);
+		max = init_select(server, size, &fdr, &fdw);
 		if (select(max + 1, &fdr, &fdw, NULL, NULL) == -1) {
 			printf("ERROR: select failed\n");
 			break;
 		}
+		if (server && FD_ISSET(server, &fdr))
+			accept_connection(server);
 		for (int i = 0; i < size; i++) {
 			if (clients[i].fd == -1)
 				continue ;
-			if (FD_ISSET(clients[i].fd, &fdr)) {
-				if (i == 0 && !is_client)
-					accept_connection();
-				else
-					read_clients(i);
-			}
+			if (FD_ISSET(clients[i].fd, &fdr))
+				read_clients(i);
 			if (FD_ISSET(clients[i].fd, &fdw))
 				write_clients(i, size);
 		}
@@ -170,4 +170,6 @@ void					loop(int size, int is_client)
 		if (clients[i].fd != -1)
 			close(clients[i].fd);
 	}
+	if (server)
+		close(server);
 }
