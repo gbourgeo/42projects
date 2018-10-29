@@ -1,12 +1,12 @@
-# MINITALK
-*Simple Tchat in terminal*
+# MINITALK 2
+*Simple Tchat in terminal using the ncurses library*
 
-## DESCRIPTION
-Minitalk let you tchat in your terminal the simplest way it can.
+### DESCRIPTION
+Minitalk2 let you tchat in your terminal the simplest way it can.
 The server do not handle any command, except the /USER at start to authentify yourself, so your friends know who they are talkin with.
 Nothing more.
 
-## USAGE
+### USAGE
 **Make** generates a single executable that handles both *server* and *client* :
 ```
 $> make
@@ -20,7 +20,7 @@ Client:
 - The other try to connect to the *server*.
 - Change your username by modifying the $USER environnement variable.
 
-## SERVER
+### SERVER
 ### Norme
 None.
 ### Support
