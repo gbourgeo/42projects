@@ -41,10 +41,10 @@ HEADERS = -I includes -I $(LIBFT)includes
 
 WWW = gcc -Wall -Werror -Wextra 
 
-all: preall $(NAME)
+all: $(OBJ_D) $(NAME)
 
-preall:
-	@mkdir -p obj
+$(OBJ_D):
+	@mkdir -p $@
 	@make -C $(LIBFT)
 
 $(NAME): $(OBJ)
@@ -52,6 +52,8 @@ $(NAME): $(OBJ)
 
 $(OBJ_D)%.o: $(SRC_D)%.c includes/lemipc.h
 	$(WWW) -o $@ -c $< $(HEADERS)
+
+.PHONY: clean fclean re
 
 clean:
 	make -C $(LIBFT) clean

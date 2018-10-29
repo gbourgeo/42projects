@@ -32,6 +32,8 @@ static void			init_program(int ac, const char *prog)
 
 int					main(int ac, const char **av)
 {
+	if ((void *)-1 == NULL)
+		ft
 	init_program(ac, av[0]);
 	init_signal(&game_signal_catcher);
 	init_game(e.prog, &e.game);

@@ -31,7 +31,7 @@ void				ft_create_game(t_game *game)
 	game->board->map_width = MAP_WIDTH;
 	game->board->map_heigth = MAP_HEIGTH;
 	game->board->nb_players = 1;
-	game->map = (ULL *)(game->board + 1);
+	game->map = (ULL *)game->board + 1;
 	ft_memset(game->map, MAP_0, MAP_WIDTH * MAP_HEIGTH * sizeof(*game->map));
 	game->semid = semget(game->key, 1, LEMIPC_CREATE);
 	if (game->semid < 0)
@@ -57,8 +57,8 @@ t_uid				*ft_create_team(const char *name, t_team *teams)
 	if (teams->board == (void *)-1)
 		ft_exit(1, "shmat");
 	ft_memset(teams->board, 0, teams->size);
-	*(size_t *)teams->board = sizeof(*teams->board);
-	team = teams->board + sizeof(teams->size);
+	*(size_t *)teams->board = 1;
+	team = (t_uid *)teams->board + sizeof(size_t);
 	ft_strncpy(team->name, name, TEAMNAME_MAX - 1);
 	team->uid = 1;
 	team->total = 1;
@@ -85,20 +85,20 @@ void				ft_join_game(t_game *game)
 		ft_exit(0, "Game in process... Come back later !");
 }
 
-static t_uid		*ft_join_info(const char *name, t_uid *team, t_team *teams)
+static t_uid		*ft_join_info(const char *name, t_uid *team, size_t size, t_team *teams)
 {
 	ft_lock(teams->semid);
-	if (!ft_strcmp(team->name, name))
-		team->total++;
+	if (!ft_strcmp((team + size)->name, name))
+		(team + size)->total++;
 	else
 	{
-		ft_strncpy(team->name, name, TEAMNAME_MAX - 1);
-		team->uid = (team - teams->board) / sizeof(*team) + 1;
+		ft_strncpy((team + size)->name, name, TEAMNAME_MAX - 1);
+		team->uid = size;
 		team->total = 1;
-		*(size_t *)team += sizeof(*team);
+		*(size_t *)teams->board += 1;
 	}
 	ft_unlock(teams->semid);
-	return (team);
+	return (team + size);
 }
 
 t_uid				*ft_join_team(const char *name, t_team *teams)
@@ -111,13 +111,13 @@ t_uid				*ft_join_team(const char *name, t_team *teams)
 		ft_exit(1, "semget");
 	if (teams->board == (void *)-1)
 		ft_exit(1, "shmat");
-	size = sizeof(size);
-	team = teams->board;
-	while (size < *(size_t *)team)
+	size = 0;
+	team = (t_uid *)teams->board + sizeof(size_t);
+	while (size < *(size_t *)teams->board)
 	{
 		if (!ft_strcmp((team + size)->name, name))
-			return (ft_join_info(name, team + size, teams));
-		size += sizeof(*team);
+			return (ft_join_info(name, team, size, teams));
+		size++;
 	}
-	return (ft_join_info(name, team + size, teams));
+	return (ft_join_info(name, team, size, teams));
 }

@@ -31,13 +31,13 @@ void		init_game(const char *prog, t_game *game)
 	game->map = (void *)0;
 }
 
-void		init_team(const char *prog, t_team *team)
+void		init_team(const char *prog, t_team *teams)
 {
-	team->key = ftok(prog, 'B');
-	if (team->key == -1)
+	teams->key = ftok(prog, 'B');
+	if (teams->key == -1)
 		ft_exit(1, "ftok");
-	team->size = sizeof(*team->board) * 100 + sizeof(size_t);
-	team->shmid = shmget(team->key, 0, SHM_R | SHM_W);
-	team->semid = semget(team->key, 1, SHM_R | SHM_W);
-	team->board = shmat(team->shmid, (void *)0, 0);
+	teams->size = sizeof(size_t) + sizeof(e.team) * 100;
+	teams->shmid = shmget(teams->key, 0, SHM_R | SHM_W);
+	teams->semid = semget(teams->key, 1, SHM_R | SHM_W);
+	teams->board = shmat(teams->shmid, (void *)0, 0);
 }

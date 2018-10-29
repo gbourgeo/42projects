@@ -72,7 +72,7 @@ typedef struct		s_team
 	size_t			size;
 	int				shmid;
 	int				semid;
-	t_uid			*board;
+	void			*board;
 }					t_team;
 
 typedef struct		s_board
@@ -112,7 +112,7 @@ typedef struct		s_env
 struct s_env		e;
 
 void				init_game(const char *prog, t_game *game);
-void				init_team(const char *prog, t_team *team);
+void				init_team(const char *prog, t_team *teams);
 void				init_signal(void (*signal_catcher)(int));
 
 void				ft_create_game(t_game *game);

@@ -20,11 +20,11 @@ static void		print_info(t_game *game, t_team *teams)
 	size_t		size;
 	t_uid		*team;
 
-	size = sizeof(size);
-	team = teams->board;
+	size = 0;
+	team = (t_uid *)teams->board + sizeof(size_t);
 	ft_printf("Players connected: %llu\n", game->board->nb_players);
 	ft_printf("Number of teams  : %ld %ld\n",
-				*(size_t *)teams->board / sizeof(*teams->board), teams->size);
+				*(size_t *)teams->board, teams->size);
 	ft_printf("Team Name | Team ID | Total Members\n");
 	while (size < *(size_t *)team)
 	{
@@ -32,7 +32,7 @@ static void		print_info(t_game *game, t_team *teams)
 					(team + size)->name,
 					(team + size)->uid,
 					(team + size)->total);
-		size += sizeof(*team);
+		size++;
 	}
 	printf("%s\n", (game->board->game_in_process) ?
 			"\e[1;32mGAME IN PROCESS\e[0m" :
@@ -74,6 +74,7 @@ void			ft_create_process_to_print_map(void)
 		ft_termcaps(environ, &e.term);
 		ft_termdo("cl");
 		ft_termdo("sc");
+		ft_printf("nb_players: %d\n", e.game.board->nb_players);
 		while (e.game.board->nb_players)
 		{
 			ft_termdo("rc");
