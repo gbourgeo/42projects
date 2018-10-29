@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/28 02:31:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/29 12:25:11 by root             ###   ########.fr       */
+/*   Updated: 2018/10/29 12:56:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,11 @@ void			ncurses()
 	{
 		ncu.tchatWinBox = subwin(ncu.mainWin, (LINES * 0.8), COLS, 0, 0);
 		box(ncu.tchatWinBox, 0, 0);
-		mvwaddch(ncu.tchatWinBox, 0, (COLS * 0.5) - 6, ACS_RTEE);
+		mvwaddch(ncu.tchatWinBox, 0, (COLS * 0.5) - 7, ACS_RTEE);
 		wattron(ncu.tchatWinBox, COLOR_PAIR(3));
-		mvwaddstr(ncu.tchatWinBox, 0, (COLS * 0.5) - 5, " MiniTalk " );
+		mvwaddstr(ncu.tchatWinBox, 0, (COLS * 0.5) - 6, " MiniTalk 2 " );
 		wattroff(ncu.tchatWinBox, COLOR_PAIR(3));
-		mvwaddch(ncu.tchatWinBox, 0, (COLS * 0.5) + 5, ACS_LTEE);
+		mvwaddch(ncu.tchatWinBox, 0, (COLS * 0.5) + 6, ACS_LTEE);
 		wrefresh(ncu.tchatWinBox);
 		ncu.tchatWin = subwin(ncu.tchatWinBox, (LINES * 0.8 - 2), COLS - 2, 1, 1);
 		scrollok(ncu.tchatWin, TRUE);
