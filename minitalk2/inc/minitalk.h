@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:28:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/29 12:16:22 by root             ###   ########.fr       */
+/*   Updated: 2018/10/30 06:44:02 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <time.h>
 
 # define MAX_CLIENTS	10
+# define BUF_CLIENTS	512
 
 typedef struct	s_opt
 {
@@ -35,20 +36,13 @@ typedef struct	s_opt
 	int			fd;
 }				t_opt;
 
-typedef struct	s_win
-{
-	WINDOW		*win;
-	int			startx;
-	int			starty;
-	int			width;
-	int			height;
-}				t_win;
-
 typedef struct	s_ncu
 {
 	WINDOW		*mainWin;
 	WINDOW		*tchatWinBox;
 	WINDOW		*tchatWin;
+	WINDOW		*usersWinBox;
+	WINDOW		*usersWin;
 	WINDOW		*textWinBox;
 	WINDOW		*textWin;
 	WINDOW		*infoLine;
@@ -61,8 +55,8 @@ typedef struct	s_cl
 	int			fd;
 	int			try;
 	char		user[12];
-	char		rd[512];
-	char		wr[512];
+	char		rd[BUF_CLIENTS];
+	char		wr[BUF_CLIENTS];
 	int			leaved;
 }				t_cl;
 
@@ -74,6 +68,10 @@ typedef int	(*type2)(int, int);
 void			ncurses();
 void			ncurses_end();
 void			termTooSmall();
+void			createChatBox();
+void			createUsersBox();
+void			createTextBox();
+void			createInfoLine();
 
 void			quitprogram(int signum);
 void			changewindow(int signum);

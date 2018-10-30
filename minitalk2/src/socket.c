@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:30:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/29 12:33:44 by root             ###   ########.fr       */
+/*   Updated: 2018/10/30 03:03:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,21 @@ int 				opensocket(char *ip, char *port, type1 func, type2 func2)
 	}
 	if (func2)
 		func2(fd, MAX_CLIENTS);
-	wattron(ncu.infoLine, COLOR_PAIR(7));
-	wprintw(ncu.infoLine, "OK\n");
-	wattroff(ncu.infoLine, COLOR_PAIR(7));
+	wclear(ncu.infoLine);
+	wrefresh(ncu.infoLine);
+	wprintTime(ncu.infoLine, time(NULL));
+	wattron(ncu.infoLine, COLOR_PAIR(1));
+	wprintw(ncu.infoLine, "Connected to [IPv4] ");
+	wattroff(ncu.infoLine, COLOR_PAIR(1));
+	wattron(ncu.infoLine, COLOR_PAIR(3));
+	wprintw(ncu.infoLine, "%s", ip);
+	wattroff(ncu.infoLine, COLOR_PAIR(3));
+	wattron(ncu.infoLine, COLOR_PAIR(1));
+	wprintw(ncu.infoLine, ":");
+	wattroff(ncu.infoLine, COLOR_PAIR(1));
+	wattron(ncu.infoLine, COLOR_PAIR(3));
+	wprintw(ncu.infoLine, "%s", port);
+	wattroff(ncu.infoLine, COLOR_PAIR(3));
 	wrefresh(ncu.infoLine);
 	return (fd);
 }

@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:51:31 by root              #+#    #+#             */
-/*   Updated: 2018/10/29 12:00:50 by root             ###   ########.fr       */
+/*   Updated: 2018/10/30 06:37:44 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,9 @@ void		changewindow(int signum)
 		termTooSmall();
 	else
 	{
-		ncu.tchatWinBox = subwin(ncu.mainWin, (LINES * 0.8), COLS, 0, 0);
-		box(ncu.tchatWinBox, 0, 0);
-		mvwaddch(ncu.tchatWinBox, 0, (COLS * 0.5) - 6, ACS_RTEE);
-		mvwaddstr(ncu.tchatWinBox, 0, (COLS * 0.5) - 5, " MiniTalk " );
-		mvwaddch(ncu.tchatWinBox, 0, (COLS * 0.5) + 6, ACS_LTEE);
-		wrefresh(ncu.tchatWinBox);
-		ncu.tchatWin = subwin(ncu.tchatWinBox, (LINES * 0.8 - 2), COLS - 2, 1, 1);
-		scrollok(ncu.tchatWin, TRUE);
-
-		ncu.textWinBox = subwin(ncu.mainWin, (LINES * 0.2) - 1, COLS, (LINES * 0.8) + 1, 0);
-		box(ncu.textWinBox, 0, 0);
-		ncu.textWin = subwin(ncu.textWinBox, (LINES * 0.2) - 3, COLS - 2, (LINES * 0.8) + 2, 1);
-
-		ncu.infoLine = subwin(ncu.mainWin, 1, COLS, (LINES - 1), 0);
+		createChatBox();
+		createUsersBox();
+		createTextBox();
+		createInfoLine();
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:33:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/29 12:37:10 by root             ###   ########.fr       */
+/*   Updated: 2018/10/30 06:31:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,80 @@ static void				accept_connection(int server)
 	close(fd);
 }
 
+static void				read_in(int i)
+{
+	int					j = 0;
+	int					len = 0;
+	int					ch;
+
+	wmove(ncu.textWin, 0, 0);
+	wrefresh(ncu.textWin);
+	while ((ch = getch()) != '\n')
+	{
+//		wprintw(ncu.textWin, "(%d)", ch);
+		// Backspace
+		if (ch == KEY_BACKSPACE) {
+			if (j > 0) {
+				wmove(ncu.textWin, 0, --j);
+				wdelch(ncu.textWin);
+				strncpy(clients[i].rd + j, clients[i].rd + j + 1, len - j);
+				len--;
+				wrefresh(ncu.textWin);
+			}
+		}
+		else if (ch == KEY_DC) {
+			if (j < len) {
+				wdelch(ncu.textWin);
+				strncpy(clients[i].rd + j, clients[i].rd + j + 1, len - j);
+				len--;
+				wrefresh(ncu.textWin);
+			}
+		}
+		else if (ch == KEY_LEFT) {
+			if (j > 0) {
+				wmove(ncu.textWin, 0, --j);
+				wrefresh(ncu.textWin);
+			}
+		}
+		else if (ch == KEY_RIGHT) {
+			if (j < len) {
+				wmove(ncu.textWin, 0, ++j);
+				wrefresh(ncu.textWin);
+			}
+		}
+		else if (ch != ERR && ch >= 32 && ch <= 126) {
+			if (j < BUF_CLIENTS - 1) {
+				if (j < len) {
+					strncpy(clients[i].rd + j + 1, clients[i].rd + j, len - j);
+					winsch(ncu.textWin, ch);
+					wmove(ncu.textWin, 0, j + 1);
+				}
+				else {
+					wprintw(ncu.textWin, "%c", ch);
+				}
+				clients[i].rd[j++] = ch;
+				len++;
+				wrefresh(ncu.textWin);
+			}
+			else {
+				clients[i].rd[--j] = '\0';
+				clients[i].rd[j - 1] = ch;
+				wprintw(ncu.textWin, "\b%c", ch);
+				wrefresh(ncu.textWin);
+			}
+		}
+	}
+	clients[i].rd[len] = '\0';
+	strcpy(clients[i].wr, clients[i].rd);
+	wclear(ncu.textWin);
+	wrefresh(ncu.textWin);
+}
+
 static void				read_clients(int i)
 {
 	int					ret;
 
-	ret = read(clients[i].fd, clients[i].rd, sizeof(clients[i].rd) - 1);
+	ret = read(clients[i].fd, clients[i].rd, BUF_CLIENTS - 1);
 	if (ret <= 0) {
 		clients[i].leaved = 1;
 		return;
@@ -112,13 +181,18 @@ static void				write_clients(int i, int size)
 		ptr = clients[i].wr;
 	len = strlen(ptr);
 	for (int j = 0; j < size; j++) {
-		if (j == i || clients[j].fd == -1)
+		if (clients[j].fd == -1)
 			continue ;
-		write(clients[j].fd, ptr, len);
+		if (clients[j].fd == STDIN_FILENO) {
+			wprintTime(ncu.tchatWin, time(NULL));
+			wprintw(ncu.tchatWin, "%s\n", ptr);
+		}
+		else
+			write(clients[j].fd, ptr, len);
 	}
 	if (clients[i].fd == STDIN_FILENO)
 		free(ptr);
-	memset(clients[i].wr, 0, sizeof(clients[i].wr));
+	memset(clients[i].wr, 0, BUF_CLIENTS);
 }
 
 static int 				check_clients(int size)
@@ -161,8 +235,12 @@ void					loop(int server, int size)
 		for (int i = 0; i < size; i++) {
 			if (clients[i].fd == -1)
 				continue ;
-			if (FD_ISSET(clients[i].fd, &fdr))
-				read_clients(i);
+			if (FD_ISSET(clients[i].fd, &fdr)) {
+				if (clients[i].fd == STDIN_FILENO)
+					read_in(i);
+				else
+					read_clients(i);
+			}
 			if (FD_ISSET(clients[i].fd, &fdw))
 				write_clients(i, size);
 		}
