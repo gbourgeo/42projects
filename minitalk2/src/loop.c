@@ -6,20 +6,42 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:33:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/30 06:31:08 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 09:32:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static char			*strjoin(const char *s1, const char *s2)
+static void			infoLine(char *ip, char *port)
+{
+	wclear(ncu.infoLine);
+	wrefresh(ncu.infoLine);
+	wprintTime(ncu.infoLine, time(NULL));
+	wattron(ncu.infoLine, COLOR_PAIR(1));
+	wprintw(ncu.infoLine, "Connected to ");
+	wattroff(ncu.infoLine, COLOR_PAIR(1));
+	wattron(ncu.infoLine, COLOR_PAIR(3));
+	wprintw(ncu.infoLine, "%s", ip);
+	wattroff(ncu.infoLine, COLOR_PAIR(3));
+	wattron(ncu.infoLine, COLOR_PAIR(1));
+	wprintw(ncu.infoLine, ":");
+	wattroff(ncu.infoLine, COLOR_PAIR(1));
+	wattron(ncu.infoLine, COLOR_PAIR(3));
+	wprintw(ncu.infoLine, "%s", port);
+	wattroff(ncu.infoLine, COLOR_PAIR(3));
+	wrefresh(ncu.infoLine);
+}
+
+static char			*my_strjoin(const char *s1, const char *s2)
 {
 	char			*ret;
 
-	ret = malloc(strlen(s1) + strlen(s2) + 1);
+	ret = malloc(strlen(s1) + strlen(s2) + 4);
 	if (ret == NULL)
 		return NULL;
-	strcpy(ret, s1);
+	strcpy(ret, "[");
+	strcat(ret, s1);
+	strcat(ret, "] ");
 	strcat(ret, s2);
 	return ret;
 }
@@ -59,14 +81,6 @@ static void				accept_connection(int server)
 			continue ;
 		clear_clients(&clients[i], 1);
 		clients[i].fd = fd;
-		strcpy(clients[i].wr, "Connected: ");
-		for (int j = 0; j < MAX_CLIENTS; j++) {
-			if (clients[j].fd == -1)
-				continue ;
-			strcat(clients[i].wr, clients[j].user);
-		}
-		strcat(clients[i].wr, "\n");
-		write(clients[i].fd, clients[i].wr, strlen(clients[i].wr));
 		return ;
 	}
 	write(fd, "Server Full\n", 12);
@@ -152,20 +166,15 @@ static void				read_clients(int i)
 		return;
 	}
 	clients[i].rd[ret] = '\0';
-	if (!clients[i].user[0]) {
+	if (clients[i].try == 1) {
 		char *ptr = strstr(clients[i].rd, "/USER ");
-		if (ptr && *(ptr + 6)) {
-			strcpy(clients[i].user, "[");
-			strncpy(clients[i].user + 1, ptr + 6, 8);
-			strcat(clients[i].user, "] ");
-			strcpy(clients[i].wr, clients[i].user);
-			strcat(clients[i].wr, "\e[32mconnected\e[0m\n");
-		} else {
-			clients[i].try--;
-		}
-	} else {
-		strncpy(clients[i].wr, clients[i].rd, ret);
+		if (ptr && !strchr(clients[i].rd, '\n'))
+			strncpy(clients[i].user, ptr + 6, 8);
+		clients[i].try = 0;
 	}
+	else
+		strcpy(clients[i].wr, clients[i].rd);
+	clients[i].rd[0] = '\0';
 }
 
 static void				write_clients(int i, int size)
@@ -173,26 +182,25 @@ static void				write_clients(int i, int size)
 	char				*ptr;
 	int					len;
 
-	if (!clients[i].wr[0])
-		return ;
 	if (clients[i].fd == STDIN_FILENO)
-		ptr = strjoin(clients[i].user, clients[i].wr);
+		ptr = my_strjoin(clients[i].user, clients[i].wr);
 	else
 		ptr = clients[i].wr;
 	len = strlen(ptr);
 	for (int j = 0; j < size; j++) {
-		if (clients[j].fd == -1)
+		if (clients[j].fd == -1 || clients[j].leaved)
 			continue ;
 		if (clients[j].fd == STDIN_FILENO) {
 			wprintTime(ncu.tchatWin, time(NULL));
 			wprintw(ncu.tchatWin, "%s\n", ptr);
 		}
-		else
+		else if (i != j)
 			write(clients[j].fd, ptr, len);
+		len = len;
 	}
 	if (clients[i].fd == STDIN_FILENO)
 		free(ptr);
-	memset(clients[i].wr, 0, BUF_CLIENTS);
+	clients[i].wr[0] = '\0';
 }
 
 static int 				check_clients(int size)
@@ -201,30 +209,36 @@ static int 				check_clients(int size)
 		if (clients[i].fd == -1)
 			continue ;
 		if (clients[i].leaved) {
-			strcpy(clients[i].wr, clients[i].user);
-			strcat(clients[i].wr, "\e[31mdisconnected\e[0m\n");
+			sprintf(clients[i].wr, "[%s] disconnected.\n", clients[i].user);
 			write_clients(i, size);
 			close(clients[i].fd);
 			clear_clients(&clients[i], 1);
 		}
-		else if (!clients[i].user[0] && clients[i].try <= 0) {
-			write(clients[i].fd, "Nickname not defined.\n", 22);
-			close(clients[i].fd);
-			clear_clients(&clients[i], 1);
+		else if (!clients[i].try) {
+			if (!clients[i].user[0]) {
+				write(clients[i].fd, "Kicked from server (Invalid username)\n", 38);
+				close(clients[i].fd);
+				clear_clients(&clients[i], 1);
+			} else {
+				clients[i].try = 2;
+			}
 		}
 	}
 	return (clients[0].fd != -1);
 }
 
-void					loop(int server, int size)
+void					loop(int server, int size, char *ip, char *port)
 {
 	fd_set				fdr;
 	fd_set				fdw;
 	int					max;
 
+	ncurses_start();
+	infoLine(ip, port);
 	while (check_clients(size))
 	{
 		wrefresh(ncu.tchatWin);
+		wrefresh(ncu.usersWin);
 		wcursyncup(ncu.textWin);
 		wrefresh(ncu.textWin);
 		max = init_select(server, size, &fdr, &fdw);
@@ -252,4 +266,5 @@ void					loop(int server, int size)
 	if (server)
 		close(server);
 	ncurses_end();
+	printf("Disconnected from the server.\n");
 }

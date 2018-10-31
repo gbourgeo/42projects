@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/28 02:31:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/29 12:04:47 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 09:33:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,24 +29,28 @@ static int		get_options(t_opt *opt, char **av)
 		opt->size = MAX_CLIENTS;
 		if (!(opt->fd = opensocket(opt->ip, opt->port, &bind, &listen)))
 			return (-1);
+		clear_clients(&clients[0], 1);
 		clients[0].fd = STDIN_FILENO;
-		strcpy(clients[0].user, "[");
-		strncpy(clients[0].user + 1, opt->user, 8);
-		strcat(clients[0].user, "] ");
+		clients[0].try = 0;
+		strcpy(clients[0].user, opt->user);
 	} else {
 		opt->ip = av[1];
 		opt->port = av[2];
 		opt->size = 2;
-		strcpy(clients[1].wr, "/USER ");
-		strcat(clients[1].wr, opt->user);
 		if (!(opt->fd = opensocket(opt->ip, opt->port, &connect, NULL)))
 			return (-1);
+		clear_clients(&clients[0], 1);
 		clients[0].fd = opt->fd;
-		strncpy(clients[0].user, "[Server] ", sizeof(clients[0].user) - 1);
+		clients[0].try = 0;
+		strncpy(clients[0].user, "Server", sizeof(clients[0].user) - 1);
+		clear_clients(&clients[1], 1);
 		clients[1].fd = STDIN_FILENO;
-		strcpy(clients[1].user, "[");
-		strncpy(clients[1].user + 1, opt->user, 8);
-		strcat(clients[1].user, "] ");
+		clients[1].try = 0;
+		strcpy(clients[1].user, opt->user);
+		strcpy(clients[1].rd, "/USER ");
+		strcat(clients[1].rd, clients[1].user);
+		write(opt->fd, clients[1].rd, strlen(clients[1].rd));
+		memset(clients[1].rd, 0, sizeof(clients[1].rd));
 		opt->fd = 0;
 	}
 	return (opt->fd);
@@ -62,10 +66,8 @@ int 			main(int ac, char **av)
 		return (printf("Error: $USER variable not set or empty.\n"));
 	signal(SIGINT, &quitprogram);
 	signal(SIGWINCH, &changewindow);
-	ncurses();
 	clear_clients(clients, MAX_CLIENTS);
 	if (get_options(&opt, av) != -1)
-		loop(opt.fd, opt.size);
-	ncurses_end();
+		loop(opt.fd, opt.size, opt.ip, opt.port);
 	return (0);
 }

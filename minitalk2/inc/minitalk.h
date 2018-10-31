@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:28:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/30 06:44:02 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 09:10:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,19 @@ typedef struct	s_cl
 
 struct s_cl		clients[MAX_CLIENTS];
 
+typedef struct	s_usr
+{
+	struct s_usr	*prev;
+	char			*name;
+	struct s_usr	*next;
+}				t_usr;
+
+struct s_usr	*users;
+
 typedef int	(*type1)(int, const struct sockaddr *, socklen_t);
 typedef int	(*type2)(int, int);
 
-void			ncurses();
+void			ncurses_start();
 void			ncurses_end();
 void			termTooSmall();
 void			createChatBox();
@@ -79,7 +88,7 @@ void			changewindow(int signum);
 void			wprintTime(WINDOW *win, time_t ts);
 
 int				opensocket(char *ip, char *port, type1 func, type2 func2);
-void			loop(int server, int size);
+void			loop(int server, int size, char *ip, char *port);
 void			clear_clients(t_cl *cl, int size);
 
 #endif

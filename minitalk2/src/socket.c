@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:30:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/30 03:03:13 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 09:06:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,28 +34,11 @@ int 				opensocket(char *ip, char *port, type1 func, type2 func2)
 	struct addrinfo	*tmp;
 	int				fd;
 
-	wprintTime(ncu.infoLine, time(NULL));
-	wattron(ncu.infoLine, COLOR_PAIR(1));
-	wprintw(ncu.infoLine, "Connecting to ");
-	wattroff(ncu.infoLine, COLOR_PAIR(1));
-	wattron(ncu.infoLine, COLOR_PAIR(3));
-	wprintw(ncu.infoLine, "%s", ip);
-	wattroff(ncu.infoLine, COLOR_PAIR(3));
-	wattron(ncu.infoLine, COLOR_PAIR(1));
-	wprintw(ncu.infoLine, " on port ");
-	wattroff(ncu.infoLine, COLOR_PAIR(1));
-	wattron(ncu.infoLine, COLOR_PAIR(3));
-	wprintw(ncu.infoLine, "%s", port);
-	wattroff(ncu.infoLine, COLOR_PAIR(3));
-	wattron(ncu.infoLine, COLOR_PAIR(1));
-	wprintw(ncu.infoLine, "... ");
-	wattroff(ncu.infoLine, COLOR_PAIR(1));
-	wrefresh(ncu.infoLine);
+	printf("Connection to %s:%s ... ", ip, port);
+	fflush(stdout);
 	if ((status = init_addrinfo(ip, port, &results))) {
-		wattron(ncu.infoLine, COLOR_PAIR(4));
-		wprintw(ncu.infoLine, "%s\n", gai_strerror(status));
-		wattroff(ncu.infoLine, COLOR_PAIR(4));
-		wrefresh(ncu.infoLine);
+		printf("\e[31mFailed\e[0m\n");
+		printf("%s\n", gai_strerror(status));
 		return (0);
 	}
 	tmp = results;
@@ -72,29 +55,12 @@ int 				opensocket(char *ip, char *port, type1 func, type2 func2)
 	}
 	freeaddrinfo(results);
 	if (tmp == NULL) {
-		wattron(ncu.infoLine, COLOR_PAIR(4));
-		wprintw(ncu.infoLine, "\e[31mCan't establish connection.\n\e[0m");
-		wattroff(ncu.infoLine, COLOR_PAIR(4));
-		wrefresh(ncu.infoLine);
+		printf("\e[31mFailed\e[0m\n");
+		printf("No server found.\n");
 		return (0);
 	}
 	if (func2)
 		func2(fd, MAX_CLIENTS);
-	wclear(ncu.infoLine);
-	wrefresh(ncu.infoLine);
-	wprintTime(ncu.infoLine, time(NULL));
-	wattron(ncu.infoLine, COLOR_PAIR(1));
-	wprintw(ncu.infoLine, "Connected to [IPv4] ");
-	wattroff(ncu.infoLine, COLOR_PAIR(1));
-	wattron(ncu.infoLine, COLOR_PAIR(3));
-	wprintw(ncu.infoLine, "%s", ip);
-	wattroff(ncu.infoLine, COLOR_PAIR(3));
-	wattron(ncu.infoLine, COLOR_PAIR(1));
-	wprintw(ncu.infoLine, ":");
-	wattroff(ncu.infoLine, COLOR_PAIR(1));
-	wattron(ncu.infoLine, COLOR_PAIR(3));
-	wprintw(ncu.infoLine, "%s", port);
-	wattroff(ncu.infoLine, COLOR_PAIR(3));
-	wrefresh(ncu.infoLine);
+	printf("\e[32mOK\e[0m\n");
 	return (fd);
 }

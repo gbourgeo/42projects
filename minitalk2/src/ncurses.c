@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/28 02:31:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/30 07:56:33 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 08:07:01 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ void			createChatBox()
 	mvwaddch(ncu.tchatWinBox, 0, (winx * 0.5) + 6, ACS_LTEE);
 	wrefresh(ncu.tchatWinBox);
 	ncu.tchatWin = subwin(ncu.tchatWinBox, (winy - 2), winx - 2, 1, 1);
-	box(ncu.tchatWin, 0, 0);
 	scrollok(ncu.tchatWin, TRUE);
 }
 
@@ -73,7 +72,6 @@ void			createUsersBox()
 	mvwaddch(ncu.usersWinBox, 0, 11, ACS_LTEE);
 	wrefresh(ncu.usersWinBox);
 	ncu.usersWin = subwin(ncu.usersWinBox, (winy - 2), winx - 2, 1, COLS - winx + 1);
-	box(ncu.usersWin, 0, 0);
 	scrollok(ncu.usersWin, TRUE);
 }
 
@@ -91,7 +89,7 @@ void			createInfoLine()
 	ncu.infoLine = subwin(ncu.mainWin, 1, COLS, (LINES - 1), 0);
 }
 
-void			ncurses()
+void			ncurses_start()
 {
 	if ((ncu.mainWin = initscr()) == NULL)
 		exit(1);
