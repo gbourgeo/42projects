@@ -12,12 +12,13 @@
 
 #include "minitalk.h"
 
+extern t_cl	clients[];
+
 void		quitprogram(int signum)
 {
 	if (signum != SIGINT)
 		return ;
-	close(clients[0].fd);
-	clients[0].fd = -1;
+	clients[0].leaved = 1;
 }
 
 void		changewindow(int signum)

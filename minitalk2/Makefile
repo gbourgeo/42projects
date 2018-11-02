@@ -6,14 +6,14 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/10/29 06:23:06 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/10/29 12:16:32 by root             ###   ########.fr        #
+#    Updated: 2018/11/02 06:19:27 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= minitalk
 
 SRC_D	= src/
-SRC		= minitalk.c socket.c loop.c clear.c ncurses.c signal.c print.c
+SRC		= minitalk.c socket.c loop.c clear.c ncurses.c signal.c print.c users.c
 
 OBJ_D	= obj/
 OBJ		= $(addprefix $(OBJ_D), $(SRC:.c=.o))

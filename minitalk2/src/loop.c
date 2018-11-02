@@ -12,6 +12,9 @@
 
 #include "minitalk.h"
 
+struct s_cl		clients[MAX_CLIENTS];
+extern t_ncu	ncu;
+
 static void			infoLine(char *ip, char *port)
 {
 	wclear(ncu.infoLine);
@@ -32,20 +35,6 @@ static void			infoLine(char *ip, char *port)
 	wrefresh(ncu.infoLine);
 }
 
-static char			*my_strjoin(const char *s1, const char *s2)
-{
-	char			*ret;
-
-	ret = malloc(strlen(s1) + strlen(s2) + 4);
-	if (ret == NULL)
-		return NULL;
-	strcpy(ret, "[");
-	strcat(ret, s1);
-	strcat(ret, "] ");
-	strcat(ret, s2);
-	return ret;
-}
-
 static int 			init_select(int server, int size, fd_set *fdr, fd_set *fdw)
 {
 	int 			max;
@@ -56,7 +45,7 @@ static int 			init_select(int server, int size, fd_set *fdr, fd_set *fdw)
 	if (server)
 		FD_SET(server, fdr);
 	for (int i = 0; i < size; i++) {
-		if (clients[i].fd == -1 || clients[i].leaved)
+		if (clients[i].fd == 0 || clients[i].leaved)
 			continue ;
 		FD_SET(clients[i].fd, fdr);
 		if (clients[i].wr[0])
@@ -77,10 +66,11 @@ static void				accept_connection(int server)
 		return ;
 	}
 	for (int i = 0; i < MAX_CLIENTS; i++) {
-		if (clients[i].fd != -1)
+		if (clients[i].fd)
 			continue ;
 		clear_clients(&clients[i], 1);
 		clients[i].fd = fd;
+		clients[i].try = 1;
 		return ;
 	}
 	write(fd, "Server Full\n", 12);
@@ -151,7 +141,10 @@ static void				read_in(int i)
 		}
 	}
 	clients[i].rd[len] = '\0';
-	strcpy(clients[i].wr, clients[i].rd);
+	strcpy(clients[i].wr, "[");
+	strcat(clients[i].wr, clients[i].user);
+	strcat(clients[i].wr, "] ");
+	strcat(clients[i].wr, clients[i].rd);
 	wclear(ncu.textWin);
 	wrefresh(ncu.textWin);
 }
@@ -167,11 +160,16 @@ static void				read_clients(int i)
 	}
 	clients[i].rd[ret] = '\0';
 	if (clients[i].try == 1) {
-		char *ptr = strstr(clients[i].rd, "/USER ");
-		if (ptr && !strchr(clients[i].rd, '\n'))
-			strncpy(clients[i].user, ptr + 6, 8);
+		if (!strncmp(clients[i].rd, "/NICK ", 6))
+			strncpy(clients[i].user, clients[i].rd + 6, NICK_CLIENTS);
 		clients[i].try = 0;
 	}
+	else if (!strncmp(clients[i].rd, "/USERS ", 7)) {wprintw(ncu.tchatWin, "%s\n", clients[i].rd);wrefresh(ncu.tchatWin);
+		parse_users(clients[i].rd + 7);}
+	// else if (!strncmp(clients[i].rd, "/ADD ", 5))
+	// 	add_user(clients[i].rd + 5);
+	// else if (!strncmp(clients[i].rd, "/DEL ", 5))
+	// 	del_user(clients[i].rd + 5);
 	else
 		strcpy(clients[i].wr, clients[i].rd);
 	clients[i].rd[0] = '\0';
@@ -179,38 +177,36 @@ static void				read_clients(int i)
 
 static void				write_clients(int i, int size)
 {
-	char				*ptr;
 	int					len;
 
-	if (clients[i].fd == STDIN_FILENO)
-		ptr = my_strjoin(clients[i].user, clients[i].wr);
-	else
-		ptr = clients[i].wr;
-	len = strlen(ptr);
+	len = strlen(clients[i].wr);
 	for (int j = 0; j < size; j++) {
-		if (clients[j].fd == -1 || clients[j].leaved)
+		if (clients[j].fd == 0 || clients[j].leaved)
 			continue ;
-		if (clients[j].fd == STDIN_FILENO) {
-			wprintTime(ncu.tchatWin, time(NULL));
-			wprintw(ncu.tchatWin, "%s\n", ptr);
+		if (clients[j].fd == STDOUT_FILENO) {
+			if (*clients[j].wr != '/') {
+				wprintTime(ncu.tchatWin, time(NULL));
+				wprintw(ncu.tchatWin, "%s\n", clients[i].wr);
+			}
 		}
-		else if (i != j)
-			write(clients[j].fd, ptr, len);
-		len = len;
+		else if (j != i)
+			write(clients[j].fd, clients[i].wr, len);
 	}
-	if (clients[i].fd == STDIN_FILENO)
-		free(ptr);
 	clients[i].wr[0] = '\0';
 }
 
-static int 				check_clients(int size)
+static int 				check_clients(int server)
 {
-	for (int i = 0; i < size; i++) {
-		if (clients[i].fd == -1)
+	if (!server)
+		return (clients[1].leaved == 0);
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (clients[i].fd == 0)
 			continue ;
 		if (clients[i].leaved) {
-			sprintf(clients[i].wr, "[%s] disconnected.\n", clients[i].user);
-			write_clients(i, size);
+			del_user(clients[i].user);
+			send_users("/USERS ", clients);
+			sprintf(clients[i].wr, "[%s] disconnected.", clients[i].user);
+			write_clients(i, MAX_CLIENTS);
 			close(clients[i].fd);
 			clear_clients(&clients[i], 1);
 		}
@@ -220,11 +216,15 @@ static int 				check_clients(int size)
 				close(clients[i].fd);
 				clear_clients(&clients[i], 1);
 			} else {
+				add_user(clients[i].user);
+				send_users("/USERS ", clients);
+				sprintf(clients[i].wr, "[%s] connected.", clients[i].user);
+				write_clients(i, MAX_CLIENTS);
 				clients[i].try = 2;
 			}
 		}
 	}
-	return (clients[0].fd != -1);
+	return (clients[0].leaved == 0);
 }
 
 void					loop(int server, int size, char *ip, char *port)
@@ -235,10 +235,10 @@ void					loop(int server, int size, char *ip, char *port)
 
 	ncurses_start();
 	infoLine(ip, port);
-	while (check_clients(size))
+	while (check_clients(server))
 	{
 		wrefresh(ncu.tchatWin);
-		wrefresh(ncu.usersWin);
+		aff_users(&ncu);
 		wcursyncup(ncu.textWin);
 		wrefresh(ncu.textWin);
 		max = init_select(server, size, &fdr, &fdw);
@@ -247,10 +247,10 @@ void					loop(int server, int size, char *ip, char *port)
 		if (server && FD_ISSET(server, &fdr))
 			accept_connection(server);
 		for (int i = 0; i < size; i++) {
-			if (clients[i].fd == -1)
+			if (clients[i].fd == 0)
 				continue ;
 			if (FD_ISSET(clients[i].fd, &fdr)) {
-				if (clients[i].fd == STDIN_FILENO)
+				if (clients[i].fd == STDOUT_FILENO)
 					read_in(i);
 				else
 					read_clients(i);
@@ -259,12 +259,14 @@ void					loop(int server, int size, char *ip, char *port)
 				write_clients(i, size);
 		}
 	}
+	ncurses_end();
 	for (int i = 0; i < size; i++) {
-		if (clients[i].fd != -1)
+		if (clients[i].fd && clients[i].fd != STDOUT_FILENO)
 			close(clients[i].fd);
 	}
+	clear_clients(clients, MAX_CLIENTS);
 	if (server)
 		close(server);
-	ncurses_end();
+	clear_users();
 	printf("Disconnected from the server.\n");
 }

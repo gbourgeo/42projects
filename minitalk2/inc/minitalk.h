@@ -18,6 +18,7 @@
 # include <unistd.h>
 # include <sys/types.h>
 # include <sys/socket.h>
+# include <sys/select.h>
 # include <netdb.h>
 # include <string.h>
 # include <signal.h>
@@ -25,6 +26,7 @@
 # include <time.h>
 
 # define MAX_CLIENTS	10
+# define NICK_CLIENTS	9
 # define BUF_CLIENTS	512
 
 typedef struct	s_opt
@@ -48,28 +50,22 @@ typedef struct	s_ncu
 	WINDOW		*infoLine;
 }				t_ncu;
 
-struct s_ncu	ncu;
-
 typedef struct	s_cl
 {
 	int			fd;
 	int			try;
-	char		user[12];
+	char		user[NICK_CLIENTS];
 	char		rd[BUF_CLIENTS];
 	char		wr[BUF_CLIENTS];
 	int			leaved;
 }				t_cl;
 
-struct s_cl		clients[MAX_CLIENTS];
-
 typedef struct	s_usr
 {
 	struct s_usr	*prev;
-	char			*name;
+	char			name[NICK_CLIENTS];
 	struct s_usr	*next;
 }				t_usr;
-
-struct s_usr	*users;
 
 typedef int	(*type1)(int, const struct sockaddr *, socklen_t);
 typedef int	(*type2)(int, int);
@@ -81,6 +77,13 @@ void			createChatBox();
 void			createUsersBox();
 void			createTextBox();
 void			createInfoLine();
+
+void			add_user(char *name);
+void			del_user(char *name);
+void			parse_users(char *buf);
+void			aff_users(t_ncu *n);
+void			send_users(const char *key, t_cl *cl);
+void			clear_users();
 
 void			quitprogram(int signum);
 void			changewindow(int signum);
