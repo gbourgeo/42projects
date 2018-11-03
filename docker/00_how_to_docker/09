@@ -1,0 +1,4 @@
+apt -y update
+apt -y upgrade
+apt-get install -y gcc
+apt-get install -y git
