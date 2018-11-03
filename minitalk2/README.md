@@ -8,10 +8,6 @@
 ### DESCRIPTION
 Minitalk2 let you tchat in your terminal the simplest way it can.
 
-The server the command /NICK at start to authentify yourself, so your friends know who they are talkin with.
-
-Nothing more.
-
 ### USAGE
 **Make** generates a single executable that handles both *server* and *client* :
 ```
