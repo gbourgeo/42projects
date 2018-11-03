@@ -164,14 +164,9 @@ static void				read_clients(int i)
 			strncpy(clients[i].user, clients[i].rd + 6, NICK_CLIENTS);
 		clients[i].try = 0;
 	}
-	else if (!strncmp(clients[i].rd, "/USERS ", 7)) {wprintw(ncu.tchatWin, "%s\n", clients[i].rd);wrefresh(ncu.tchatWin);
-		parse_users(clients[i].rd + 7);}
-	// else if (!strncmp(clients[i].rd, "/ADD ", 5))
-	// 	add_user(clients[i].rd + 5);
-	// else if (!strncmp(clients[i].rd, "/DEL ", 5))
-	// 	del_user(clients[i].rd + 5);
-	else
-		strcpy(clients[i].wr, clients[i].rd);
+	else if (!strncmp(clients[i].rd, "/USERS ", 7))
+		parse_users(clients[i].rd, 7);
+	strcpy(clients[i].wr, clients[i].rd);
 	clients[i].rd[0] = '\0';
 }
 

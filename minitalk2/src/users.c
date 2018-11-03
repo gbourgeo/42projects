@@ -72,10 +72,10 @@ void			clear_users()
 	}
 }
 
-void			parse_users(char *buf)
+void			parse_users(char *buf, int pos)
 {
 	clear_users();
-	for (size_t i = 0, j = 0; buf[i]; i = j) {
+	for (size_t i = pos, j = 0; buf[i]; i = j, pos = i) {
 		for (j = i; buf[j] && buf[j] != ' '; j++)
 			;
 		buf[j] = '\0';
@@ -84,6 +84,7 @@ void			parse_users(char *buf)
 		for (; buf[j] && buf[j] == ' '; j++)
 			;
 	}
+	strcpy(buf, buf + pos + 1);
 }
 
 void			aff_users(t_ncu *n)
@@ -100,6 +101,7 @@ void			send_users(const char *key, t_cl *cl)
 	char		buf[BUF_CLIENTS];
 	int			len;
 
+	memset(buf, 0, BUF_CLIENTS);
 	strcpy(buf, key);
 	for (t_usr *ptr = users; ptr; ptr = ptr->next) {
 		strcat(buf, ptr->name);
@@ -109,6 +111,6 @@ void			send_users(const char *key, t_cl *cl)
 	buf[len - 1] = '\0';
 	for (int i = 1; i < MAX_CLIENTS; i++) {
 		if (cl[i].fd)
-			write(cl[i].fd, buf, len);
+			write(cl[i].fd, buf, len + 1);
 	}
 }

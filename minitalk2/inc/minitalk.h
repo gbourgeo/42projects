@@ -80,7 +80,7 @@ void			createInfoLine();
 
 void			add_user(char *name);
 void			del_user(char *name);
-void			parse_users(char *buf);
+void			parse_users(char *buf, int pos);
 void			aff_users(t_ncu *n);
 void			send_users(const char *key, t_cl *cl);
 void			clear_users();
