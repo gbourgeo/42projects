@@ -1,6 +1,10 @@
 # MINITALK 2
 *Simple Tchat in terminal using the ncurses library*
 
+![minitalk][minitalk1]
+
+[minitalk1]: https://github.com/gbourgeo/42projects/blob/master/minitalk2/minitalk2.png
+
 ### DESCRIPTION
 Minitalk2 let you tchat in your terminal the simplest way it can.
 
