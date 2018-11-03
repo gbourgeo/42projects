@@ -3,7 +3,9 @@
 
 ### DESCRIPTION
 Minitalk2 let you tchat in your terminal the simplest way it can.
-The server do not handle any command, except the /USER at start to authentify yourself, so your friends know who they are talkin with.
+
+The server the command /NICK at start to authentify yourself, so your friends know who they are talkin with.
+
 Nothing more.
 
 ### USAGE
