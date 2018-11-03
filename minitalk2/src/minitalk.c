@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/28 02:31:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/31 09:33:34 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 21:38:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,10 @@ int 			main(int ac, char **av)
 	signal(SIGINT, &quitprogram);
 	signal(SIGWINCH, &changewindow);
 	clear_clients(clients, MAX_CLIENTS);
+	allusers = add_user("Server", allusers);
+	allusers = add_user(opt.user, allusers);
 	if (get_options(&opt, av) != -1)
 		loop(opt.fd, opt.size, opt.ip, opt.port);
+	free_users_list(allusers);
 	return (0);
 }

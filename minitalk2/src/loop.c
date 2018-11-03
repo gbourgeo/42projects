@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:33:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/31 09:32:39 by root             ###   ########.fr       */
+/*   Updated: 2018/11/03 20:44:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,17 @@ static void			infoLine(char *ip, char *port)
 	wprintw(ncu.infoLine, "%s", port);
 	wattroff(ncu.infoLine, COLOR_PAIR(3));
 	wrefresh(ncu.infoLine);
+}
+
+static void			show_users()
+{
+	wclear(ncu.usersWin);
+	wmove(ncu.usersWin, 0, 0);
+	for (t_usr *ptr = allusers; ptr; ptr = ptr->next) {
+		wprintw(ncu.tchatWin, "%s\n", ptr->name);
+	}
+	wrefresh(ncu.usersWin);
+	wrefresh(ncu.tchatWin);
 }
 
 static char			*my_strjoin(const char *s1, const char *s2)
@@ -196,7 +207,6 @@ static void				write_clients(int i, int size)
 		}
 		else if (i != j)
 			write(clients[j].fd, ptr, len);
-		len = len;
 	}
 	if (clients[i].fd == STDIN_FILENO)
 		free(ptr);
@@ -220,6 +230,8 @@ static int 				check_clients(int size)
 				close(clients[i].fd);
 				clear_clients(&clients[i], 1);
 			} else {
+				wprintTime(ncu.tchatWin, time(NULL));
+				wprintw(ncu.tchatWin, "[%s] connected.\n", clients[i].user);
 				clients[i].try = 2;
 			}
 		}
@@ -238,7 +250,7 @@ void					loop(int server, int size, char *ip, char *port)
 	while (check_clients(size))
 	{
 		wrefresh(ncu.tchatWin);
-		wrefresh(ncu.usersWin);
+		show_users();
 		wcursyncup(ncu.textWin);
 		wrefresh(ncu.textWin);
 		max = init_select(server, size, &fdr, &fdw);

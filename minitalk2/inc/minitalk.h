@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 06:28:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/10/31 09:10:45 by root             ###   ########.fr       */
+/*   Updated: 2018/10/31 21:44:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,11 @@ struct s_cl		clients[MAX_CLIENTS];
 typedef struct	s_usr
 {
 	struct s_usr	*prev;
-	char			*name;
+	char			name[12];
 	struct s_usr	*next;
 }				t_usr;
 
-struct s_usr	*users;
+static struct s_usr	*allusers = NULL;
 
 typedef int	(*type1)(int, const struct sockaddr *, socklen_t);
 typedef int	(*type2)(int, int);
@@ -81,6 +81,10 @@ void			createChatBox();
 void			createUsersBox();
 void			createTextBox();
 void			createInfoLine();
+
+t_usr			*add_user(char *name, t_usr *usr);
+t_usr			*del_user(char *name, t_usr *usr);
+void			free_users_list(t_usr *usr);
 
 void			quitprogram(int signum);
 void			changewindow(int signum);
