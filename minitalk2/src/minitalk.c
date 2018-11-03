@@ -12,6 +12,8 @@
 
 #include "minitalk.h"
 
+extern t_cl		clients[];
+
 static int		usage(const char *prog)
 {
 	printf("Server:\n");
@@ -30,27 +32,28 @@ static int		get_options(t_opt *opt, char **av)
 		if (!(opt->fd = opensocket(opt->ip, opt->port, &bind, &listen)))
 			return (-1);
 		clear_clients(&clients[0], 1);
-		clients[0].fd = STDIN_FILENO;
-		clients[0].try = 0;
-		strcpy(clients[0].user, opt->user);
+		clients[0].fd = STDOUT_FILENO;
+		clients[0].try = 1;
+		strncpy(clients[0].user, opt->user, NICK_CLIENTS - 1);
+		strcpy(clients[0].wr, "/NICK ");
+		strcat(clients[0].wr, opt->user);
+		add_user(clients[0].user);
 	} else {
 		opt->ip = av[1];
 		opt->port = av[2];
 		opt->size = 2;
 		if (!(opt->fd = opensocket(opt->ip, opt->port, &connect, NULL)))
 			return (-1);
-		clear_clients(&clients[0], 1);
-		clients[0].fd = opt->fd;
-		clients[0].try = 0;
-		strncpy(clients[0].user, "Server", sizeof(clients[0].user) - 1);
-		clear_clients(&clients[1], 1);
-		clients[1].fd = STDIN_FILENO;
-		clients[1].try = 0;
-		strcpy(clients[1].user, opt->user);
-		strcpy(clients[1].rd, "/USER ");
-		strcat(clients[1].rd, clients[1].user);
-		write(opt->fd, clients[1].rd, strlen(clients[1].rd));
-		memset(clients[1].rd, 0, sizeof(clients[1].rd));
+		clear_clients(clients, 2);
+		clients[0].fd = STDOUT_FILENO;
+		clients[0].try = 1;
+		opt->user = "Paul";
+		strncpy(clients[0].user, opt->user, NICK_CLIENTS - 1);
+		strcpy(clients[0].wr, "/NICK ");
+		strcat(clients[0].wr, opt->user);
+		clients[1].fd = opt->fd;
+		clients[1].try = 2;
+		strncpy(clients[1].user, "Server", NICK_CLIENTS - 1);
 		opt->fd = 0;
 	}
 	return (opt->fd);

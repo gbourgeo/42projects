@@ -316,7 +316,7 @@ static const char *iso646_syms[] = {
 	"plus",
 	"comma",
 	"minus",
-	"period",
+	".",
 	"slash",
 	"zero",
 	"one",

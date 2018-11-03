@@ -1,10 +1,12 @@
 # MINITALK 2
 *Simple Tchat in terminal using the ncurses library*
 
+![minitalk][minitalk1]
+
+[minitalk1]: https://github.com/gbourgeo/42projects/blob/master/minitalk2/minitalk2.png
+
 ### DESCRIPTION
 Minitalk2 let you tchat in your terminal the simplest way it can.
-The server do not handle any command, except the /USER at start to authentify yourself, so your friends know who they are talkin with.
-Nothing more.
 
 ### USAGE
 **Make** generates a single executable that handles both *server* and *client* :

@@ -15,11 +15,6 @@
 void 				clear_clients(t_cl *cl, int size)
 {
 	for (int i = 0; i < size; i++) {
-		cl[i].fd = -1;
-		cl[i].try = 1;
-		memset(cl[i].user, 0, sizeof(cl[i].user));
-		memset(cl[i].rd, 0, BUF_CLIENTS);
-		memset(cl[i].wr, 0, BUF_CLIENTS);
-		cl[i].leaved = 0;
+		memset(cl + i, 0, sizeof(*cl));
 	}
 }

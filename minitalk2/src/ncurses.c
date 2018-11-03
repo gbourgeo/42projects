@@ -12,6 +12,8 @@
 
 #include "minitalk.h"
 
+t_ncu			ncu;
+
 void			colors()
 {
 	start_color();
@@ -72,6 +74,8 @@ void			createUsersBox()
 	mvwaddch(ncu.usersWinBox, 0, 11, ACS_LTEE);
 	wrefresh(ncu.usersWinBox);
 	ncu.usersWin = subwin(ncu.usersWinBox, (winy - 2), winx - 2, 1, COLS - winx + 1);
+	box(ncu.usersWin, 0, 0);
+	wrefresh(ncu.usersWin);
 	scrollok(ncu.usersWin, TRUE);
 }
 
@@ -120,8 +124,8 @@ void			ncurses_end()
 
 	delwin(ncu.tchatWin);
 	delwin(ncu.tchatWinBox);
-	delwin(ncu.usersWinBox);
 	delwin(ncu.usersWin);
+	delwin(ncu.usersWinBox);
 	delwin(ncu.textWin);
 	delwin(ncu.textWinBox);
 	delwin(ncu.infoLine);
