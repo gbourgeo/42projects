@@ -1,9 +1,12 @@
 [Unit]
-Description=Daemon to know user login
+Description=Print username daemon
 After=network-online.target
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
+Restart=always
+RestartSec=1
 ExecStart=/bin/Durex
 
 [Install]
