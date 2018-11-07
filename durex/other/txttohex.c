@@ -18,16 +18,21 @@
 
 int main(int ac, char **av)
 {
+	char buff[1];
+
 	for ( int i = 1; av[i]; i++) {
-		printf("%s:\n", av[i]);
 		int fd = open(av[i], O_RDONLY);
-		if (fd < 0)
-			continue ;
-		char buff[1];
-		while (read(fd, buff, 1) > 0)
-			printf("\\x%02x", *buff);
+		if (fd < 0) {
+			printf("Convertig string '%s':\n", av[i]);
+			for (int j = 0; av[i][j]; j++)
+				printf("\\x%02x", av[i][j]);
+		} else {
+			printf("Convertig file '%s':\n", av[i]);
+			while (read(fd, buff, 1) > 0)
+				printf("\\x%02x", *buff);
+			close(fd);
+		}
 		printf("\n\n");
-		close(fd);
 	}
 	return 0;
 }
