@@ -15,7 +15,7 @@
 
 #include "durex.h"
 
-void			encryptFunction(u_char *msg, size_t size)
+void			encryptFunction(unsigned char *msg, size_t size)
 {
 	static uint64_t	key[] = { 0x87628687, 0x22548492, 0x12425376, 0x65748391 };
 
@@ -41,13 +41,13 @@ void			encryptFunction(u_char *msg, size_t size)
 		}
 		datablock[0]=v0; datablock[1]=v1;
 
-		msg[j+0] = (u_char) ((datablock[0] >> 24) & 0xFF);
-		msg[j+1] = (u_char) ((datablock[0] >> 16) & 0xFF);
-		msg[j+2] = (u_char) ((datablock[0] >> 8) & 0xFF);
-		msg[j+3] = (u_char) ((datablock[0]) & 0xFF);
-		msg[j+4] = (u_char) ((datablock[1] >> 24) & 0xFF);
-		msg[j+5] = (u_char) ((datablock[1] >> 16) & 0xFF);
-		msg[j+6] = (u_char) ((datablock[1] >> 8) & 0xFF);
-		msg[j+7] = (u_char) ((datablock[1]) & 0xFF);
+		msg[j+0] = (unsigned char) ((datablock[0] >> 24) & 0xFF);
+		msg[j+1] = (unsigned char) ((datablock[0] >> 16) & 0xFF);
+		msg[j+2] = (unsigned char) ((datablock[0] >> 8) & 0xFF);
+		msg[j+3] = (unsigned char) ((datablock[0]) & 0xFF);
+		msg[j+4] = (unsigned char) ((datablock[1] >> 24) & 0xFF);
+		msg[j+5] = (unsigned char) ((datablock[1] >> 16) & 0xFF);
+		msg[j+6] = (unsigned char) ((datablock[1] >> 8) & 0xFF);
+		msg[j+7] = (unsigned char) ((datablock[1]) & 0xFF);
 	}
 }
