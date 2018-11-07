@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <signal.h>
+#include <stdlib.h>
 #include "main.h"
 
 void		durexSigterm(int sig)
@@ -18,7 +19,7 @@ void		durexSigterm(int sig)
 	if (sig != SIGTERM)
 		return ;
 	serverLog("[LOGS] - Signal received %d", sig);
-	uninstall_library();
 	quitClearlyServer();
 	quitClearlyDaemon();
+	exit(0);
 }
