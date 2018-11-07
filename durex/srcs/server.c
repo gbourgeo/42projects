@@ -31,6 +31,7 @@ static int			openSocket(struct addrinfo *p)
 	if (fd < 0)
 		return -1;
 	if (!setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) &&
+		!setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) &&
 		!bind(fd, p->ai_addr, p->ai_addrlen) &&
 		!listen(fd, SERVER_CLIENT_MAX))
 		return fd;
@@ -46,7 +47,6 @@ int					openServer(const char *addr, const char *port)
 	struct addrinfo	*res;
 	struct addrinfo	*p;
 
-	fd = -1;
 	mymemset(&hints, 0, sizeof(hints));
 	hints.ai_flags = AI_PASSIVE | AI_CANONNAME;
 	hints.ai_family = AF_INET;
@@ -56,11 +56,11 @@ int					openServer(const char *addr, const char *port)
 		serverLog("[ERROR] - %s", gai_strerror(errcode));
 		return (-1);
 	}
+	fd = -1;
 	p = res;
 	while (p != NULL)
 	{
-		if (p->ai_family == AF_INET)
-			fd = openSocket(p);
+		fd = openSocket(p);
 		if (fd >= 0)
 			break ;
 		p = p->ai_next;
@@ -70,7 +70,7 @@ int					openServer(const char *addr, const char *port)
 		serverLog("[ERROR] - Address or Socket can't be found.");
 		return (-1);
 	}
-	return fd;
+	return e.server.fd = fd;
 }
 
 void					serverAcceptConnections()
@@ -102,7 +102,7 @@ void					serverAcceptConnections()
 	close(fd);
 }
 
-static int			myustrncmp(u_char *s1, u_char *s2, int n)
+static int			myustrncmp(unsigned char *s1, unsigned char *s2, int n)
 {
 	int				i;
 
@@ -113,16 +113,18 @@ static int			myustrncmp(u_char *s1, u_char *s2, int n)
 	return (i != n);
 }
 
-static void			serverLogging(u_char *buff, int size, t_cl *client)
+static void			serverLogging(unsigned char *buff, int size, t_cl *client)
 {
-	mymemset(buff + size, 0, size % 8);
-	encryptFunction(buff, size);
-	if (!myustrncmp(buff, (u_char []){ SERVER_PASS }, size + size % 8)) {
-		client->logged = 1;
-		clientWrite("$> ", client);
-	} else {
-		clientWrite("Pass: ", client);
+	if (size) {
+		mymemset(buff + size, 0, size % 8);
+		encryptFunction(buff, size);
+		if (!myustrncmp(buff, (unsigned char []){ SERVER_PASS }, size + size % 8)) {
+			client->logged = 1;
+			clientWrite("$> ", client);
+			return ;
+		}
 	}
+	clientWrite("Pass: ", client);
 }
 
 void				serverCommands(t_cl *client)
@@ -140,11 +142,11 @@ void				serverCommands(t_cl *client)
 	}
 	buff[i] = '\0';
 	if (!client->logged)
-		return serverLogging((u_char *)buff, i, client);
+		return serverLogging((unsigned char *)buff, i, client);
 	for (i = 0; i < sizeof(cmds) / sizeof(*cmds); i++) {
 		int ret = mystrcmp(buff, cmds[i].name);
 		if (ret == 0 || ret == ' ') {
-			cmds->options = buff;
+			cmds->opt = buff;
 			return cmds[i].func(client, cmds);
 		}
 	}
@@ -208,11 +210,11 @@ void				quitClearlyServer()
 		clearClient(&e.server.client[i]);
 	}
 	if (e.server.fd != -1) {
-		serverLog("[LOG] - Closing server...");
+		serverLog("[INFO] - Closing server...");
 		close(e.server.fd);
 	}
 	if (e.server.reporter != -1) {
-		serverLog("[LOG] - Firing reporter...");		
+		serverLog("[INFO] - Firing reporter...");		
 		close(e.server.reporter);
 	}
 }
