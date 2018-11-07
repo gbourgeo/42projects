@@ -59,8 +59,10 @@ void			clientRead(char *buff, int size, t_cl *client)
 	}
 }
 
-void			clientWrite(char *str, t_cl *client)
+void			clientWrite(const char *str, t_cl *client)
 {
+	if (!str)
+		return ;
 	while (*str) {
 		*client->wr.head = *str;
 		client->wr.head = moveTail(client->wr.head, client->wr.buff, SERVER_CLIENT_BUFF);
