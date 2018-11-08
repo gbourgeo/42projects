@@ -553,7 +553,7 @@ static void				keylogger(int keybd, int **key_table, int nb_keys, int nb_keymap)
 				modifier -= ((1 << modifiers[1].bit)); // update position on the character table values
 			else if (state == 1)
 				modifier += ((1 << modifiers[1].bit)); // update position on the character table values
-//			state = 0;
+			state = 0;
 		}
 		else if (value == KEY_RIGHTMETA) {
 			if (state == 0)
