@@ -13,20 +13,20 @@
 #include "ft_dprintf.h"
 #include "main.h"
 
-static char		*check_command(char **cmd, char **env)
+static char		*check_command(char **cmd)
 {
 	char		*pwd;
 	char		*tmp;
 	int			i;
 
-	pwd = ft_strdup(ft_getenv("PWD", env));
+	pwd = getcwd(NULL, 0);
 	if (pwd == NULL)
 		return (NULL);
 	i = 0;
 	while (cmd && cmd[i])
 	{
 		if (!ft_strcmp(cmd[i], ".."))
-			ft_strcpy(ft_strrchr(pwd, '/'), "/0");
+			ft_strcpy(ft_strrchr(pwd, '/'), "\0");
 		else if (ft_strcmp(cmd[i], "."))
 			break ;
 		i++;
@@ -36,6 +36,7 @@ static char		*check_command(char **cmd, char **env)
 		tmp = ft_strjoin(pwd, "/");
 		ft_freestr(&pwd);
 		pwd = ft_strjoin(tmp, cmd[i]);
+		ft_freestr(&tmp);
 		i++;
 	}
 	ft_freetab(&cmd);
@@ -87,7 +88,7 @@ static char		*get_path(char **cmd, char **env)
 	if (cmd && *cmd[0] == '/')
 		return (check_path(ft_strdup(*cmd)));
 	if (cmd && ft_strchr(*cmd, '/'))
-		return (check_command(ft_strsplit(*cmd, '/'), env));
+		return (check_command(ft_strsplit(*cmd, '/')));
 	return (search_path(*cmd, env));
 }
 
