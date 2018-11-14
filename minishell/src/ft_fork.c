@@ -109,11 +109,11 @@ int				fork_function(char **args, char **env, const char *prog)
 		else if (pid == 0)
 		{
 			status = execve(path, args, env);
-			ft_dprintf(2, "%s: check your arguments.", prog);
+			ft_dprintf(2, "%s: failed to execute: %s.\n", prog, args[0]);
 			exit(status);
 		}
 		else
-			ft_dprintf(2, "%s: Fork error.", prog);
+			ft_dprintf(2, "%s: Fork error.\n", prog);
 		ft_freestr(&path);
 	}
 	else

@@ -72,10 +72,10 @@ char			*cd_check(char **args, char **env, int i)
 	else if (ft_strcmp(args[i], "-") == 0)
 	{
 		pwd = ft_getenv("OLDPWD", env);
-		if (pwd)
-			ft_putendl(pwd);
-		else
+		if (!pwd)
 			ft_putendl_fd("cd: OLDPWD not defined", 2);
+		else if (chdir(pwd) != -1)
+			ft_putendl(pwd);
 	}
 	else if (*args[i] == '/')
 		return (ft_get_path("/", args[i]));

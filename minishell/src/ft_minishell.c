@@ -17,12 +17,13 @@
 void			prompt(t_env *e)
 {
 	char		*user;
-	char		pwd[256];
+	char		pwd[4097];
 	char		*home;
 
 	if (!(user = ft_getenv("USER", e->env)))
 		user = "";
-	getcwd(pwd, 256);
+	if (getcwd(pwd, sizeof(pwd)) == NULL)
+		pwd[0] = '\0';
 	home = ft_getenv("HOME", e->env);
 	ft_printf("\e[37m<\e[36m%s\e[0m@\e[31;1m", user);
 	if (home && *home && ft_strstr(pwd, home))

@@ -15,12 +15,10 @@
 static int		cd_error(char *pwd, char *entry)
 {
 	struct stat	buffer;
-	int			ret;
 
 	if (pwd)
 	{
-		ret = stat(pwd, &buffer);
-		if (ret == -1)
+		if (stat(pwd, &buffer) == -1)
 		{
 			if (lstat(pwd, &buffer) != -1)
 				ft_putstr("cd: too many levels of symbolic links: ");
@@ -56,7 +54,7 @@ static int		cd_write_in_pwd(char **args, t_env *e, int i)
 		ft_freestr(&pwd);
 		return (0);
 	}
-	return (cd_error(pwd, args[i]));
+	return (cd_error(pwd, pwd));
 }
 
 static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)

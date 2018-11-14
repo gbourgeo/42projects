@@ -84,7 +84,6 @@ static char		*ft_resolve_shellpath(const char *prog)
 		if (!dir)
 			return (NULL);
 		ft_resolve_copy(dir);
-		ft_putendl(dir);
 		ptr = ft_strjoin("SHELL=", dir);
 	}
 	free(dir);
