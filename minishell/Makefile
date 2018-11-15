@@ -33,7 +33,6 @@ SRC		= main.c			\
 		ft_cd.c				\
 		ft_cd_check.c		\
 		ft_change_pwds.c	\
-		ft_getcwd.c			\
 		ft_exit.c			\
 		ft_unsetenv.c		\
 		ft_stralnum.c 		\

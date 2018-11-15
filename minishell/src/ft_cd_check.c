@@ -44,7 +44,7 @@ static char		*ft_get_path(char *path, char *pwd)
 	if (!path)
 		return (NULL);
 	if (!pwd || !*pwd)
-		return (ft_strdup(path));
+		return (path);
 	new = ft_strnew(ft_strlen(path) + ft_strlen(pwd) + 2);
 	new = ft_strcpy(new, path);
 	list = ft_strsplit(pwd, '/');
@@ -57,7 +57,7 @@ static char		*ft_get_path(char *path, char *pwd)
 	return (new);
 }
 
-char			*cd_check(char **args, char **env, int i)
+char			*cd_get_new_pwd(char **args, char **env, int i)
 {
 	char	*pwd;
 

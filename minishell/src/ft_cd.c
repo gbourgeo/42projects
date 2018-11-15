@@ -12,84 +12,84 @@
 
 #include "main.h"
 
-static int		cd_error(char *pwd, char *entry)
+static int		cd_error(char *pwd, char *pwd2, char *entry)
 {
 	struct stat	buffer;
 
-	if (pwd)
+	if (stat(pwd, &buffer) == -1)
 	{
-		if (stat(pwd, &buffer) == -1)
-		{
-			if (lstat(pwd, &buffer) != -1)
-				ft_putstr("cd: too many levels of symbolic links: ");
-			else
-				ft_putstr("cd: no such file or directory: ");
-		}
-		else if (!S_ISDIR(buffer.st_mode))
-			ft_putstr("cd: not a directory: ");
+		if (lstat(pwd, &buffer) != -1)
+			ft_putstr("cd: too many levels of symbolic links: ");
 		else
-			ft_putstr("cd: permission denied: ");
-		ft_putendl(entry);
-		ft_freestr(&pwd);
+			ft_putstr("cd: no such file or directory: ");
 	}
+	else if (!S_ISDIR(buffer.st_mode))
+		ft_putstr("cd: not a directory: ");
+	else
+		ft_putstr("cd: permission denied: ");
+	ft_putendl(entry);
+	ft_freestr(&pwd);
+	ft_freestr(&pwd2);
 	return (1);
 }
 
 static int		cd_write_in_pwd(char **args, t_env *e, int i)
 {
-	char		*pwd;
-	char		*tmp;
+	char		*old_pwd;
+	char		*new_pwd;
 
-	pwd = cd_check(args, e->env, i);
-	if (chdir(pwd) != -1)
+	old_pwd = getcwd(NULL, 0);
+	new_pwd = cd_get_new_pwd(args, e->env, i);
+	if (chdir(new_pwd) != -1)
 	{
-		tmp = pwd;
 		if (args[i - 1][0] == '-' &&
 			ft_strlen(ft_strrchr(args[i - 1], 'P')) == 1)
 		{
-			pwd = ft_getcwd(tmp, e->env);
-			ft_freestr(&tmp);
+			ft_freestr(&new_pwd);
+			new_pwd = getcwd(NULL, 0);
 		}
-		ft_change_pwds(pwd, e);
-		ft_freestr(&pwd);
+		ft_change_pwds(new_pwd, old_pwd, e);
+		ft_freestr(&old_pwd);
 		return (0);
 	}
-	return (cd_error(pwd, pwd));
+	return (cd_error(new_pwd, old_pwd, args[i]));
 }
 
 static char		*cd_change_in_pwd(char *pwd, char *spot, char **args)
 {
-	char		*tmp1;
+	char		*tmp;
 
-	pwd = ft_strndup(pwd, ft_strlen(pwd) - ft_strlen(spot));
-	tmp1 = ft_strjoin(pwd, args[2]);
+	tmp = ft_strndup(pwd, ft_strlen(pwd) - ft_strlen(spot));
+	pwd = ft_strjoin(tmp, args[2]);
+	ft_freestr(&tmp);
+	tmp = ft_strjoin(pwd, spot + ft_strlen(args[1]));
 	ft_freestr(&pwd);
-	pwd = ft_strjoin(tmp1, spot + ft_strlen(args[1]));
-	ft_freestr(&tmp1);
-	return (pwd);
+	return (tmp);
 }
 
 static int		cd_search_in_pwd(char **args, t_env *e)
 {
-	char		*pwd;
+	char		*old_pwd;
+	char		*new_pwd;
 	char		*tmp;
 
-	pwd = ft_getenv("PWD", e->env);
-	if ((tmp = ft_strstr(pwd, args[1])) == NULL)
+	old_pwd = getcwd(NULL, 0);
+	if ((tmp = ft_strstr(old_pwd, args[1])) == NULL)
 	{
 		ft_putstr_fd("cd: string not in pwd: ", 2);
 		ft_putendl_fd(args[1], 2);
+		ft_freestr(&old_pwd);
 		return (1);
 	}
-	pwd = cd_change_in_pwd(pwd, tmp, args);
-	if (chdir(pwd) != -1)
+	new_pwd = cd_change_in_pwd(old_pwd, tmp, args);
+	if (chdir(new_pwd) != -1)
 	{
-		ft_change_pwds(pwd, e);
-		ft_putendl(pwd);
-		ft_freestr(&pwd);
+		ft_putendl(new_pwd);
+		ft_change_pwds(new_pwd, old_pwd, e);
+		ft_freestr(&old_pwd);
 		return (0);
 	}
-	return (cd_error(pwd, pwd));
+	return (cd_error(new_pwd, old_pwd, new_pwd));
 }
 
 int				ft_cd(char **args, t_env *e)
