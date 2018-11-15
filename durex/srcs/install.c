@@ -113,7 +113,7 @@ int			install_service()
 	close(fd);
 	if (ret != sizeof(DUREX_SERVICE_SCRIPT))
 		return install_error(-1);
-//	printf("ret:%d\n", system(DUREX_ACTIVATE));
+	// printf("ret:%d\n", system(DUREX_ACTIVATE));
 	if (system(DUREX_ACTIVATE))
 		return install_error(-1);
 	return 0;
