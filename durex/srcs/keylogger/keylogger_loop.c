@@ -9,12 +9,6 @@
 #include "keys.h"
 //#include "debug.h"
 
-// static void 		sigint(int sig)
-// {
-// 	if (sig == SIGINT)
-// 		loop = 0;
-// }
-
 static int  		print_keysym(int *key, int state, int *lockers, int socket)
 {
 	static int		modifier = 0;
