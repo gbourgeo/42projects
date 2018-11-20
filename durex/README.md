@@ -88,16 +88,18 @@ int				install_library()
 ```
 * Recompile the binary
 
-### Infos
+### Deleting the Trojan
 + If you had previously executed the binary has root you must :
 	- Stop the service durex
 	- Disable the service durex
 	- Remove /etc/ld.so.preload
 	- Remove /bin/Durex
-+ Optionnaly :
 	- Remove /lib/systemd/system/durex.service
 	- Remove /var/log/Durex.log
 	- Remove /var/lock/Durex.lock
+
++ I intentionnaly let the user infected be able to delete **/etc/ld.so.preload** to clean his setup.
++ Read **lib_srcs/rm.c** to undo it. ;)
 
 # AUTEUR
 * gbourgeo
