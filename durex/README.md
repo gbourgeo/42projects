@@ -3,31 +3,35 @@ Simple Trojan
 
 ## INSTALLATION
 ### As Normal User
-
 ```sh
 $> make && ./Durex
 JohnDoe
 $>
 ```
-At execution, Durex will print the user actually connected.
+Durex only print the user actually connected.
 
 ### As Root
-If the user is root, Durex will:
+```sh
+$> make && ./Durex
+root
+$>
+```
+Durex only print the user actually connected, but Durex will also:
 
 + Create a copy of himself in /bin
-+ Create a durex.service file in /lib/systemd/ to add himself as a service, launching himslef at bootime as a deamon
++ Create a durex.service file in **/lib/systemd/** to add himself as a service, launching himslef at bootime as a deamon
 + Create a durex.so library in /usr/local/lib/ to hide himself and his functions from the system
 + Add this library in /etc/ld.so.preload
 + Create a Durex.log file in /var/log/
 
-Only one instance of Durex is created.
+Only one instance of Durex is created. And during his copy, Durex will changed a bit his behaviour allowing himself to :
 
-+ Durex opens a server on port 4242, allowing 3 clients to connect to it
-+ The server is locked by a password
-+ The server offers to the clients:
-	+ A shell as root
-	+ A remote shell as root
-	+ A keylogger
++ Open a server on port 4242, allowing 3 clients to connect to it
+	+ The server is locked by a password
+	+ The server offers to the clients:
+		+ A shell as root
+		+ A remote shell as root
+		+ A keylogger
 
 ### Le binaire a été testé sur une Debian 9.3.0 64bits.
 
