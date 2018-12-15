@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-void		ft_change_pwds(char *pwd, t_env *e)
+void		ft_change_pwds(char *new_pwd, char *old_pwd, t_env *e)
 {
 	char		**tmp;
 
@@ -20,19 +20,13 @@ void		ft_change_pwds(char *pwd, t_env *e)
 	{
 		tmp[0] = ft_strdup("setenv");
 		tmp[3] = 0;
-		if (ft_getenv("OLDPWD", e->env))
-		{
-			tmp[1] = ft_strdup("OLDPWD");
-			tmp[2] = ft_getenv("PWD", e->env);
-			e->ret = ft_setenv(tmp, e);
-			ft_freestr(&tmp[1]);
-		}
-		if (ft_getenv("PWD", e->env))
-		{
-			tmp[1] = ft_strdup("PWD");
-			tmp[2] = ft_strdup(pwd);
-			e->ret = ft_setenv(tmp, e);
-		}
+		tmp[1] = ft_strdup("OLDPWD");
+		tmp[2] = old_pwd;
+		e->ret = ft_setenv(tmp, e);
+		ft_freestr(&tmp[1]);
+		tmp[1] = ft_strdup("PWD");
+		tmp[2] = new_pwd;
+		e->ret = ft_setenv(tmp, e);
 		ft_freetab(&tmp);
 	}
 }

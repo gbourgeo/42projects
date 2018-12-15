@@ -6,12 +6,13 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/02 03:43:52 by gbourgeo          #+#    #+#              #
-#    Updated: 2014/01/19 22:01:05 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/11/19 18:17:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= ft_select
 
+SRC_D	= srcs/
 SRC		= ft_select.c		\
 			ft_color.c		\
 			ft_delete.c		\
@@ -26,38 +27,42 @@ SRC		= ft_select.c		\
 			key_functions.c	\
 			termios_functions.c
 
-OBJ		= $(SRC:.c=.o)
-
-FLAGS	= -Wall -Werror -Wextra
+OBJ_D	= objs/
+OBJ		= $(addprefix $(OBJ_D), $(SRC:.c=.o))
 
 LIBFT	= libft/
 
-LIBFT_H	= libft/includes/
+LIBS	= -L$(LIBFT) -lft -ltermcap
 
-all: $(NAME)
+FLAGS	= -Wall -Werror -Wextra
 
-$(NAME): message $(OBJ)
-	@echo
+HDRS	= -Iincludes/ -I$(LIBFT)includes
+
+all: $(OBJ_D) libft.a $(NAME)
+
+$(OBJ_D):
+	@mkdir -p $@
+
+libft.a:
 	@make -C libft/
-	@gcc -o $(NAME) $(OBJ) -L $(LIBFT) -lft -O3 -ltermcap
 
-%.o: %.c
-	@echo -n .
-	@gcc $(FLAGS) -c $(SRC) -I $(LIBFT_H)
+$(NAME): $(OBJ)
+	@gcc -o $@ $^ $(LIBS)
+	@echo $(NAME) compiled !
+
+$(OBJ_D)%.o: $(SRC_D)%.c
+	gcc $(FLAGS) -o $@ -c $< $(HDRS)
 
 clean:
 	@make -C $(LIBFT) clean
-	@rm -f $(OBJ)
+	@rm -rf $(OBJ_D)
 	@echo "- "$(NAME)"/ .o erased !"
 
 fclean: clean
 	@rm -f $(LIBFT)libft.a
 	@rm -f $(NAME)
-	@echo "- libft.a & "$(NAME)"(.out) erased !"
+	@echo "- libft.a & "$(NAME)" erased !"
 
 re: fclean all
-
-message:
-	@echo -n - Compilation du projet
 
 .PHONY: clean fclean re all

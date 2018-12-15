@@ -19,8 +19,7 @@ static char		*check_command(char **cmd)
 	char		*tmp;
 	int			i;
 
-	pwd = getcwd(NULL, 0);
-	if (pwd == NULL)
+	if ((pwd = getcwd(NULL, 0)) == NULL)
 		return (NULL);
 	i = 0;
 	while (cmd && cmd[i])
@@ -109,7 +108,7 @@ int				fork_function(char **args, char **env, const char *prog)
 		else if (pid == 0)
 		{
 			status = execve(path, args, env);
-			ft_dprintf(2, "%s: failed to execute: %s.\n", prog, args[0]);
+			ft_dprintf(2, "%s: failed to execute: %s\n", prog, args[0]);
 			exit(status);
 		}
 		else

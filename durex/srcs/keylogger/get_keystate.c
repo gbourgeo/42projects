@@ -1,16 +1,22 @@
 #include <X11/XKBlib.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/ioctl.h>
+#include <linux/kd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
 
-int				get_keystate(int keybit, int socket)
+int			get_keystate(int keybit, int socket)
 {
-	Display		*display;
-	char		*monitor;
-	unsigned	state;
+  Display	*display;
+  char		*monitor;
+  unsigned	state;
 
 //	monitor = getenv("DISPLAY");
-	state = 0;
-	monitor = ":0.0";
+	monitor = ":0";
 	display = XOpenDisplay(monitor);
 	if (!display) {
 		dprintf(socket, "Can't get display to find Lockers states.\n");
@@ -20,5 +26,24 @@ int				get_keystate(int keybit, int socket)
 		dprintf(socket, "Can't get indicator state for Lockers.\n");
 	}
 	XCloseDisplay(display);
+	return (state & keybit);
+}
+
+int			get_keystate2(int keybit, int socket)
+{
+	int		fd;
+	char	state;
+
+	fd = open("/dev/console", O_WRONLY);
+	if (fd < 0) {
+		dprintf(socket, "Can't open /dev/console.\n");
+		return 0;
+	}
+	state = LED_CAP;
+	if (ioctl(fd, KDGKBLED, &state)) {
+		dprintf(socket, "ioctl: %s\n", strerror(errno));
+		return 0;
+	}
+	dprintf(socket, "state is %d\n", state);
 	return (state & keybit);
 }
