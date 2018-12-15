@@ -15,11 +15,12 @@ des Tetriminos à agencer. Ce fichier est formaté de façon très précise : ch
 d’un Tetriminos est sur 4 lignes et deux Tetriminos sont séparés par une ligne vide.
 
 La description d’un Tetrimino doit respecter les règles suivantes :
-• Exactement 4 lignes de 4 caractères suivis d’un retour à la ligne.
-• Un Tetriminos est une pièce de Tetris classique composée de 4 blocs.
-• Chaque caractère doit être, soit un ’#’ lorsque la case correspond à l’un des 4
+
++ Exactement 4 lignes de 4 caractères suivis d’un retour à la ligne.
++ Un Tetriminos est une pièce de Tetris classique composée de 4 blocs.
++ Chaque caractère doit être, soit un ’#’ lorsque la case correspond à l’un des 4
 blocs d’un Tetriminos, soit un ’.’ lorsque la case est vide.
-• Chaque bloc d’un Tetriminos doit être en contact avec au moins un autre bloc
++ Chaque bloc d’un Tetriminos doit être en contact avec au moins un autre bloc
 sur l’un ou l’autre de ses 4 côtés.
 
 Quelques exemples de descriptions de Tetriminos valides :
@@ -47,7 +48,7 @@ dans le fichier de description.
 Si le fichier de description comporte au moins une erreur, votre programme doit afficher
 error sur la sortie standard et quitter proprement.
 
-```
+```sh
 $> cat sample.fillit | cat -e
 ....$
 ##..$
