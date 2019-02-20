@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/20 18:41:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2015/04/04 19:47:46 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/12/15 07:02:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -40,7 +40,7 @@ $(NAME): $(OBJ)
 	ranlib $(NAME)
 
 %.o: %.c
-	gcc $(WWW) -c $^ -I includes/
+	gcc $(WWW) -c $^ -I include/
 
 clean:
 	rm -f $(OBJ)

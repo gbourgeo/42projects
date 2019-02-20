@@ -1,7 +1,6 @@
 #include <X11/XKBlib.h>
 #include <stdlib.h>
 #include <stdio.h>
-
 #include <sys/ioctl.h>
 #include <linux/kd.h>
 #include <sys/types.h>
@@ -25,8 +24,8 @@ int			get_keystate(int keybit, int socket)
 	}
 	if (XkbGetIndicatorState(display, XkbUseCoreKbd, &state) != Success) {
 		dprintf(socket, "Can't get indicator state for Lockers.\n");
-		return 0;
 	}
+	XCloseDisplay(display);
 	return (state & keybit);
 }
 

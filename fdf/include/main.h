@@ -6,12 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/18 12:30:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/13 16:52:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/12/15 07:16:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAIN_H
 # define MAIN_H
+
 # include "libft.h"
 # include <unistd.h>
 # include <mlx.h>

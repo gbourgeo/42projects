@@ -6,57 +6,62 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/18 13:43:18 by gbourgeo          #+#    #+#              #
-#    Updated: 2016/05/13 16:56:51 by gbourgeo         ###   ########.fr        #
+#    Updated: 2018/12/15 07:22:16 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= fdf
 
-SRC		= main.c \
-	get_map.c \
-	get_next_line.c\
-	ft_free.c \
-	get_coord.c \
-	ft_strangesplit.c \
-	fdf.c \
-	ft_draw.c \
-	ft_draw_parallel.c \
-	ft_draw_isometric.c \
-	ft_draw_conic.c \
-	ft_put_color.c \
-	key_hook_func.c \
-	ft_clear_image.c \
-	ft_draw_cases.c \
-	ft_abs.c \
-	ft_pow.c
+SRC_D	= srcs/
+OBJ_D	= objs/
+INC_D	= include/
+LIB_D	= libft/
 
-OBJ		= $(SRC:.c=.o)
+SRC		= main.c			\
+		get_map.c			\
+		get_next_line.c		\
+		ft_free.c			\
+		get_coord.c			\
+		ft_strangesplit.c	\
+		fdf.c				\
+		ft_draw.c			\
+		ft_draw_parallel.c	\
+		ft_draw_isometric.c	\
+		ft_draw_conic.c		\
+		ft_put_color.c		\
+		key_hook_func.c		\
+		ft_clear_image.c	\
+		ft_draw_cases.c		\
+		ft_abs.c			\
+		ft_pow.c			\
+
+OBJ		= $(addprefix $(OBJ_D), $(SRC:.c=.o))
 
 FLAGS	= -Wall -Werror -Wextra
 
-LIBX	= -L /usr/local/lib -lmlx -framework OpenGL -framework AppKit
+LIBS	= -L /usr/local/lib -lmlx -framework OpenGL -framework AppKit
+LIBS	+= -L libft/ -lft
 
-LIBX_H	= /usr/X11/include/
+INCS	= -I /usr/X11/$(INC_D) -I libft/$(INC_D) -I $(INC_D)
 
-LIBFT	= libft/
+all: $(LIB_D) $(OBJ_D) $(NAME)
 
-LIBFT_H	= libft/includes
-
-all: $(NAME)
+$(OBJ_D):
+	@mkdir -p $@
 
 $(NAME): $(OBJ)
-	make -C libft/
-	gcc -o $(NAME) $(OBJ) $(LIBX) -L $(LIBFT) -lft
+	@make -C $(LIB_D)
+	gcc -o $@ $^ $(LIBS)
 
-%.o: %.c
-	gcc $(FLAGS) -o $@ -c $^ -I $(LIBX_H) -I $(LIBFT_H)
+$(OBJ_D)%.o: $(SRC_D)%.c
+	gcc $(FLAGS) -o $@ -c $< $(INCS)
 
 clean:
-	make -C libft/ clean
-	rm -f $(OBJ)
+	@make -C $(LIB_D) clean
+	rm -rf $(OBJ_D)
 
 fclean: clean
-	make -C libft/ fclean
+	@make -C $(LIB_D) fclean
 	rm -f $(NAME)
 
 re: fclean all
