@@ -6,7 +6,7 @@
 /*   By: root </var/mail/root>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/10/01 09:34:51 by root             ###   ########.fr       */
+/*   Updated: 2018/11/26 22:23:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int			install_service()
 	close(fd);
 	if (ret != sizeof(DUREX_SERVICE_SCRIPT))
 		return install_error(-1);
-	// printf("ret:%d\n", system(DUREX_ACTIVATE));
+	/* printf("%s = %d\n", DUREX_ACTIVATE, system(DUREX_ACTIVATE)); */
 	if (system(DUREX_ACTIVATE))
 		return install_error(-1);
 	return 0;
