@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2018/04/29 02:27:41 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/04/18 19:11:16 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ SRC			=	main.cpp				\
 OBJDIR		=	obj
 
 #	Printf library directory
-PRINTFDIR	=	../printf/
+PRINTFDIR	=	/Users/gbourgeo/42/printf
 
 #	Variables
 LIBFT		=	2	#1 or 0 to include the libft / 2 for autodetct
@@ -218,13 +218,13 @@ fclean: clean
 
 printf:
 	@mkdir -p $(ASSETS_DIR)
-	@make -C "$(PRINTFDIR)"
+#	@make -C "$(PRINTFDIR)"
 	@cp "$(PRINTFDIR)"/$(LIB_FTPRINTF) $(ASSETS_DIR)
 	@rm -rf $(TMP_LIB_FTPRINTF)
 	@mkdir -p $(TMP_LIB_FTPRINTF)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Creating libftprintf.so lib",\
 		cd $(TMP_LIB_FTPRINTF) && ar -xv ../$(LIB_FTPRINTF) >/dev/null && $(CC) -shared -fPIC *.o -o $(LIB_FTPRINTF_SO) && cp $(LIB_FTPRINTF_SO) ../..)
-	
+
 #	All removing then compiling
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created  2016/12/22 16:20:34 by alelievr          #+#    #+#             */
-/*   Updated  2016/12/23 17:41:50 by alelievr         ###   ########.fr       */
+//   Updated: 2019/04/18 19:02:50 by gbourgeo         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ static std::list< std::string >		generateModifiers(char convertion)
 		mods.push_back("ll");
 		mods.push_back("h");
 		mods.push_back("hh");
-		mods.push_back("j");
-		mods.push_back("z");
+		// mods.push_back("j");
+		// mods.push_back("z");
 	}
 	return mods;
 }
