@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lemipc.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 08:58:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:46:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@
 # define MIN_TEAMS		2
 # define MAP_0			0
 
+# define MAX_TEAMS		100
 # define TEAMNAME_MAX	32
 
 # define LEMIPC_CREATE	IPC_CREAT | IPC_EXCL | SHM_R | SHM_W
 # define MY_RAND(nb)	(((nb + 8357) / 3))
 # define GET_POS(x, y)	((x) + (y) * MAP_WIDTH)
-# define LEMIPC_WINNING_WORDS	"Team \e[31m%d\e[0m won the game !\n"
+# define LEMIPC_WINNING_WORDS	"Team \e[%dm%d\e[0m won the game !"
 
 typedef struct		s_player
 {
@@ -122,7 +123,7 @@ void				ft_create_process_to_print_map(void);
 void				ft_join_game(t_game *game);
 t_uid				*ft_join_team(const char *name, t_team *team);
 
-void				ft_exit(int print_err, char *err);
+void				ft_exit(int print_err, char *err, int locked);
 void				ft_exit_child(int print_err, char *err);
 
 void				ft_termcaps(char **env, struct termios *oldterm);

@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   ft_msg.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 09:02:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:16:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lemipc.h"
-#include "libft.h"
 #include <sys/msg.h>
 #include <errno.h>
 #include <stdio.h>
+#include "lemipc.h"
+#include "libft.h"
 
 void				ft_sendmsg(ULL uid, t_player *target, t_game *game)
 {
@@ -24,8 +24,12 @@ void				ft_sendmsg(ULL uid, t_player *target, t_game *game)
 	snd.msg.ally.x = e.x;
 	snd.msg.ally.y = e.y;
 	ft_memcpy(&snd.msg.ennemy, target, sizeof(snd.msg.ennemy));
+	errno = 0;
 	if (msgsnd(game->msgqid, &snd, sizeof(snd.msg), IPC_NOWAIT) == -1)
-		perror("msgsnd");
+	{
+		if (errno != EAGAIN)
+			perror("msgsnd");
+	}
 }
 
 int					ft_rcvmsg(ULL uid, t_player *target, t_game *game)

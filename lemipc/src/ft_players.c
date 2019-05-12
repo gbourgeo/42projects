@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_players.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 04:11:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/25 04:11:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:35:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static t_player	*ft_new_player(t_player *next)
 
 	if ((ret = malloc(sizeof(*ret))) == NULL)
 	{
-		ft_exit(1, "malloc");
+		ft_exit(1, "malloc", 0);
 		return (NULL);
 	}
 	ft_memset(ret, 0, sizeof(*ret));

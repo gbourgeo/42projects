@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_init.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/21 08:59:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 09:00:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:34:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void		init_game(const char *prog, t_game *game)
 {
 	game->key = ftok(prog, 'G');
 	if (game->key == -1)
-		ft_exit(1, "ftok");
+		ft_exit(1, "ftok", 0);
 	game->size = sizeof(*game->board) +
 		(MAP_WIDTH * MAP_HEIGTH * sizeof(*game->map));
 	game->shmid = shmget(game->key, 0, SHM_R | SHM_W);
@@ -35,8 +35,8 @@ void		init_team(const char *prog, t_team *teams)
 {
 	teams->key = ftok(prog, 'B');
 	if (teams->key == -1)
-		ft_exit(1, "ftok");
-	teams->size = sizeof(size_t) + sizeof(e.team) * 100;
+		ft_exit(1, "ftok", 0);
+	teams->size = sizeof(size_t) + sizeof(*e.team) * MAX_TEAMS;
 	teams->shmid = shmget(teams->key, 0, SHM_R | SHM_W);
 	teams->semid = semget(teams->key, 1, SHM_R | SHM_W);
 	teams->board = shmat(teams->shmid, (void *)0, 0);

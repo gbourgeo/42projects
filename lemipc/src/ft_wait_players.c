@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_loop.c                                          :+:      :+:    :+:   */
+/*   ft_wait_players.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 12:34:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/25 04:16:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:47:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,21 +33,21 @@ static void		ft_place_player(void)
 	}
 }
 
-static void		ft_start(size_t nbteams, t_board *board, ULL max)
+static void		ft_start(t_team *teams, t_board *board, ULL max)
 {
 	size_t		size;
 	t_uid		*team;
 
-	size = sizeof(size);
-	team = e.teams.board;
+	size = 0;
+	team = (t_uid *)((size_t *)teams + 1);
 	if (board->nb_players < MIN_PPT * MIN_TEAMS || max < MIN_PPT ||
-		nbteams < MIN_TEAMS)
+		*(size_t *)teams < MIN_TEAMS)
 		return ;
-	while (size < *(size_t *)team)
+	while (size < *(size_t *)teams)
 	{
 		if ((team + size)->total != max)
 			return ;
-		size += sizeof(*team);
+		++size;
 	}
 	if (board->nb_players != board->players_ready)
 		return ;
@@ -62,16 +62,16 @@ static void		ft_check_even_teams(void)
 	t_uid		*team;
 	ULL			max;
 
-	size = sizeof(size);
-	team = e.teams.board;
+	size = 0;
+	team = (t_uid *)((size_t *)e.teams.board + 1);
 	max = 0;
-	while (size < *(size_t *)team)
+	while (size < *(size_t *)e.teams.board)
 	{
 		if ((team + size)->total > max)
 			max = (team + size)->total;
-		size += sizeof(*team);
+		++size;
 	}
-	ft_start(*(size_t *)team / sizeof(*team), e.game.board, max);
+	ft_start(e.teams.board, e.game.board, max);
 }
 
 void			ft_wait_players(void)
@@ -81,8 +81,6 @@ void			ft_wait_players(void)
 	ft_printf("X=%llu Y=%llu\n", e.x + 1, e.y + 1);
 	ft_putendl("\e[1;34mWAITING FOR PLAYERS...\e[0m");
 	while (!e.game.board->game_in_process)
-	{
 		ft_check_even_teams();
-	}
 	ft_putendl("\e[1;32mGAME IN PROGRESS...\e[0m");
 }

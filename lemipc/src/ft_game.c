@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_game.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 09:34:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 21:09:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,45 +44,39 @@ static int		ft_check_if_surrounded(ULL *map, int team, int surr, int c)
 	return (surr);
 }
 
-static void		check_who_wins(t_uid *teams, t_board *game)
+static int		check_who_wins(t_uid *teams, t_board *game)
 {
 	size_t		size;
+	t_uid		*team;
 	ULL			nb_win;
 
+	size = 0;
+	team = (t_uid *)((size_t *)teams + 1);
 	nb_win = 0;
-	size = sizeof(size);
 	while (size < *(size_t *)teams)
 	{
-		if ((teams + size)->total > 1)
+		if ((team + size)->total > 1)
 		{
-			game->winner = (teams + size)->uid;
+			game->winner = (team + size)->uid;
 			if (++nb_win > 1)
-			{
-				game->winner = 0;
-				return ;
-			}
+				break ;
 		}
-		size += sizeof(*teams);
+		size++;
 	}
-	game->game_in_process = 0;
-	ft_unlock(e.game.semid);
-	ft_exit(2, NULL);
+	return (nb_win > 1);
 }
 
 void			ft_launch_game(void)
 {
-	while (e.game.board->game_in_process)
+	while (check_who_wins(e.teams.board, e.game.board))
 	{
-		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
-			ft_exit(0, "You got surrounded !!!");
 		ft_lock(e.game.semid);
-		if (!e.game.board->winner)
-		{
-			sleep(1);
-			check_who_wins(e.teams.board, e.game.board);
+		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
+			ft_exit(0, "You got surrounded !!!", 1);
+		if (e.game.board->game_in_process)
 			ft_strategy(e.players, e.team, &e.game);
-		}
+		sleep(1);
 		ft_unlock(e.game.semid);
 	}
-	ft_exit(2, NULL);
+	ft_exit(2, NULL, 0);
 }

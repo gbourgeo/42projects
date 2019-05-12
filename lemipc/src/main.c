@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/25 04:15:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:33:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int					main(int ac, const char **av)
 	{
 		if ((MAP_WIDTH <= 2 && MAP_HEIGTH <= 2) ||
 			MAP_WIDTH < 2 || MAP_HEIGTH < 2)
-			ft_exit(0, "Error: Map size unplayable.");
+			ft_exit(0, "Error: Map size unplayable.", 0);
 		ft_create_game(&e.game);
 		e.team = ft_create_team(av[1], &e.teams);
 		ft_create_process_to_print_map();
@@ -48,11 +48,12 @@ int					main(int ac, const char **av)
 	else
 	{
 		ft_join_game(&e.game);
-		e.team = ft_join_team(av[1], &e.teams);
+		if (!(e.team = ft_join_team(av[1], &e.teams)))
+			return (0);
 	}
 	ft_wait_players();
 	if ((e.players = ft_create_players_list()) == NULL)
-		ft_exit(1, "create players list");
+		ft_exit(1, "create players list", 0);
 	ft_launch_game();
 	return (0);
 }

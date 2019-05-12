@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_termcaps.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/10 13:19:07 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/12 16:44:53 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 20:37:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,18 @@ void				ft_termcaps(char **env, struct termios *oldterm)
 	struct termios	term;
 
 	if ((name = ft_getenv("TERM", env)) == NULL)
-		ft_exit(0, "Unable to get TERM variable");
+		ft_exit(0, "Unable to get TERM variable", 0);
 	if (tgetent(NULL, name) != 1)
-		ft_exit(0, "termcaps: tgetent() returned.");
+		ft_exit(0, "termcaps: tgetent() returned.", 0);
 	if (tcgetattr(0, oldterm) == -1)
-		ft_exit(1, "termcaps: tcgetattr()");
+		ft_exit(1, "termcaps: tcgetattr()", 0);
 	ft_memcpy(&term, oldterm, sizeof(term));
 	term.c_lflag &= ~(ICANON);
 	term.c_lflag &= ~(ECHO);
 	term.c_cc[VMIN] = 1;
 	term.c_cc[VTIME] = 0;
 	if (tcsetattr(0, TCSADRAIN, &term) == -1)
-		ft_exit(1, "termcaps: tcsetattr()");
+		ft_exit(1, "termcaps: tcsetattr()", 0);
 }
 
 void				ft_restore_term(struct termios *oldterm)

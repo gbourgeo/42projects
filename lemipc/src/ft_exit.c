@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 08:59:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:53:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static void	ft_exit_team(int rm_all)
 	}
 }
 
-void		ft_exit(int print_err, char *err)
+static void	ft_exit_print_winner(int print_err, char *err)
 {
 	ft_fprintf(stderr, "%s: ", e.prog);
 	if (print_err == 0)
@@ -78,21 +78,38 @@ void		ft_exit(int print_err, char *err)
 	else if (print_err == 1)
 		perror(err);
 	else
-		ft_fprintf(stdout, LEMIPC_WINNING_WORDS, e.game.board->winner);
-	if (e.game.board != (void *)-1)
 	{
-		ft_lock(e.game.semid);
-		*(e.game.map + GET_POS(e.x, e.y)) = MAP_0;
-		e.game.board->nb_players--;
-		ft_unlock(e.game.semid);
+		if (e.game.board->winner == e.team->uid)
+		{
+			ft_fprintf(stdout, LEMIPC_WINNING_WORDS, 32, e.game.board->winner);
+			ft_fprintf(stdout, "\e[32m ~ VICTORY ~\e[0m\n");
+		}
+		else
+		{
+			ft_fprintf(stdout, LEMIPC_WINNING_WORDS, 31, e.game.board->winner);
+			ft_fprintf(stdout, "\e[31m ~ DEFEAT ~\e[0m\n");
+		}
 	}
+}
+
+void		ft_exit(int print_err, char *err, int locked)
+{
+	if (!locked)
+		ft_lock(e.game.semid);
+	ft_exit_print_winner(print_err, err);
 	if (e.teams.board != (void *)-1 && e.team)
 	{
 		ft_lock(e.teams.semid);
 		e.team->total--;
 		ft_unlock(e.teams.semid);
 	}
+	if (e.game.board != (void *)-1)
+	{
+		*(e.game.map + GET_POS(e.x, e.y)) = MAP_0;
+		e.game.board->nb_players--;
+	}
 	ft_exit_team(ft_exit_game());
+	ft_unlock(e.game.semid);
 	if (e.pid)
 		waitpid(e.pid, NULL, 0);
 	ft_memset(&e, 0, sizeof(e));
@@ -101,13 +118,7 @@ void		ft_exit(int print_err, char *err)
 
 void		ft_exit_child(int print_err, char *err)
 {
-	ft_fprintf(stderr, "%s: ", e.prog);
-	if (print_err == 0)
-		ft_fprintf(stderr, "%s\n", err);
-	else if (print_err == 1)
-		perror(err);
-	else
-		ft_fprintf(stdout, LEMIPC_WINNING_WORDS, e.game.board->winner);
+	ft_exit_print_winner(print_err, err);
 	ft_restore_term(&e.term);
 	if (e.game.board != (void *)-1)
 		shmdt(e.game.board);

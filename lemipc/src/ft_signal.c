@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signal.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/20 07:01:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/12 20:36:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void			game_signal_catcher(int sig)
 
 	err = (sig >= 0 && sig < NSIG) ? signals[sig] : "Unknown signal error";
 	ft_putchar('\n');
-	ft_exit(0, err);
+	ft_exit(0, err, 0); /// 0); ???
 }
 
 void			init_signal(void (*signal_catcher)(int))
