@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 01:38:48 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/22 20:32:54 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/15 20:43:36 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ static void	put_cpl_screen(t_line *line, int nb_ret)
 {
 	int		iter;
 
-	tputs(tgetstr("cd", NULL), 1, ft_pchar);
 	line->len = ft_strlen(line->curr->buff);
 	line->index = line->len;
 	iter = line->len + line->lprompt;
@@ -47,8 +46,7 @@ static int	deal_unfind(t_line *line)
 
 	tmp_len = ft_strlen(line->curr->buff) + line->lprompt;
 	write(2, "\a", 1);
-	free(line->curr->buff_tmp);
-	line->curr->buff_tmp = NULL;
+	ft_bzero(line->curr->buff_tmp, MAX_SHELL_LEN + 2);
 	line->is_putb = 0;
 	line->tmp[0] = 0;
 	while (tmp_len >= 0)
@@ -88,9 +86,10 @@ void		deal_complet(t_tree *file, t_line *line)
 	go_end(line);
 	tputs(tgetstr("do", NULL), 1, ft_pchar);
 	tputs(tgoto(tgetstr("ch", NULL), 0, 0), 1, ft_pchar);
-	if (!line->curr->buff_tmp)
+	if (!line->curr->buff_tmp[MAX_SHELL_LEN + 1])
 	{
-		line->curr->buff_tmp = ft_strdup(line->curr->buff);
+		ft_strcpy(line->curr->buff_tmp, line->curr->buff);
+		line->curr->buff_tmp[MAX_SHELL_LEN + 1] = 1;
 		if (deal_ret(file, line, &nb_ret, 0))
 			return ;
 	}

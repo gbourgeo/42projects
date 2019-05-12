@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/23 05:18:39 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 21:56:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/02 15:13:54 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	expand_select_left(t_line *line, int diff, int mal)
 	line->slct_beg = diff > 0 ? diff - mal : 0;
 	line->index = (size_t)line->slct_beg;
 	tputs(tgetstr("mr", NULL), 1, ft_pchar);
-	ft_putchar_fd(line->curr->buff[line->index + 1], 0);
+	ft_putchar(line->curr->buff[line->index + 1]);
 	tputs(tgetstr("me", NULL), 1, ft_pchar);
 	if (line->index
 			&& (line->index + line->lprompt) % line->nb_col == line->nb_col - 1)
@@ -48,8 +48,7 @@ static void	is_in_completion(t_line *line)
 		tputs(tgetstr("rc", NULL), 1, ft_pchar);
 		line->index = index_tmp;
 		*line->e_cmpl &= ~COMPLETION;
-		free(line->curr->buff_tmp);
-		line->curr->buff_tmp = NULL;
+		ft_bzero(line->curr->buff_tmp, MAX_SHELL_LEN + 2);
 	}
 }
 
@@ -66,12 +65,12 @@ void		select_left(t_line *line)
 			expand_select_left(line, line->slct_beg, 1);
 		else
 		{
-			ft_putchar_fd(line->curr->buff[line->index], 0);
+			ft_putchar(line->curr->buff[line->index]);
 			line->slct_end -= 1;
 			line->index -= 1;
 			if (line->index
-					&& (line->index + line->lprompt) % line->nb_col
-					== line->nb_col - 1)
+					&& (line->index + line->lprompt) % line->nb_col ==
+					line->nb_col - 1)
 				deal_scroll(line, 1, 1);
 			tputs(tgoto(tgetstr("ch", NULL), 0,
 						(line->lprompt + line->index) % line->nb_col), 1,
@@ -85,7 +84,7 @@ static void	expand_select_right(t_line *line, int diff)
 	line->slct_end = diff < (int)line->len ? diff + 1 : (int)line->len;
 	line->index = (size_t)line->slct_end;
 	tputs(tgetstr("mr", NULL), 1, ft_pchar);
-	ft_putchar_fd(line->curr->buff[line->index - 1], 0);
+	ft_putchar(line->curr->buff[line->index - 1]);
 	tputs(tgetstr("me", NULL), 1, ft_pchar);
 	if (line->index && (line->index + line->lprompt) % line->nb_col == 0)
 		deal_scroll(line, 0, line->nb_line);
@@ -108,11 +107,11 @@ void		select_right(t_line *line)
 			expand_select_right(line, line->slct_end);
 		else
 		{
-			ft_putchar_fd(line->curr->buff[line->index], 0);
+			ft_putchar(line->curr->buff[line->index]);
 			line->slct_beg += 1;
 			line->index += 1;
-			if (line->index && (line->index + line->lprompt) % line->nb_col
-					== 0)
+			if (line->index && (line->index + line->lprompt) % line->nb_col ==
+					0)
 				deal_scroll(line, 0, line->nb_line);
 			tputs(tgoto(tgetstr("ch", NULL), 0,
 						(line->lprompt + line->index) % line->nb_col), 1,

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 22:30:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/27 18:47:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/06 18:55:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,31 +63,15 @@ static int		name_type(t_token *token)
 	return (NAME);
 }
 
-static int		identify_alias(t_param *param)
-{
-	t_token		*token;
-	t_token		*prev;
-
-	token = param->token;
-	prev = param->token->prev;
-	if ((!prev
-	|| (prev->type == OPERATOR && prev->id < LESS_VALUE)
-	|| (prev->type == TOKEN && prev->alias
-		&& ft_isspace(prev->alias->value[ft_strlen(prev->alias->value) - 1])
-		&& quote_type(prev->quote) == NO_QUOTE))
-	&& is_alias_valid_name(token->head, token->len)
-	&& (param->token = handle_alias(param, param->e))
-	&& quote_type(param->token->quote) != NO_QUOTE)
-		return (1);
-	return (0);
-}
-
 t_token			*identify_word(t_param *param)
 {
-	if (!param->token->oldhd)
+	if (!param->token->alias)
 		param->token->len = param->line + param->i - param->token->head;
 	else
-		param->token->oldlen = param->line + param->i - param->token->oldhd;
+	{
+		param->token->len = ft_strlen(param->token->head);
+		param->token->alen = param->line + param->i - param->token->alias;
+	}
 	if (ft_isquote(*param->token->head))
 		param->token->id = WORD;
 	else if (param->token->id == WORD
@@ -97,8 +81,10 @@ t_token			*identify_word(t_param *param)
 			param->token->id = ionumber_type(param->token);
 		else
 			param->token->id = name_type(param->token);
-		if (identify_alias(param) || !param->token)
+		if (!(param->token = handle_alias(param, param->e)))
 			return (param->token);
+		if (quote_type(param->token->quote) != NO_QUOTE)
+			return (token_error(ERR_INVALID_KEY, param));
 	}
 	if (!(param->token->next = new_token(param->line, param->i)))
 		return (token_error(ERR_MALLOC, param));

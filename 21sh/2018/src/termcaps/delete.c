@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 04:51:36 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 21:55:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/23 17:47:43 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,39 @@
 #include "libft.h"
 #include "shell_term.h"
 
+void		del_lines(t_line *line)
+{
+	int		i;
+	int		j;
+
+	i = (line->index + line->lprompt) / line->nb_col - 1;
+	j = (line->len + line->lprompt) / line->nb_col;
+	tputs(tgetstr("sc", NULL), 1, ft_pchar);
+	while (++i < j)
+	{
+		tputs(tgetstr("do", NULL), 1, ft_pchar);
+		tputs(tgetstr("cr", NULL), 1, ft_pchar);
+		tputs(tgetstr("dl", NULL), 1, ft_pchar);
+	}
+	tputs(tgetstr("rc", NULL), 1, ft_pchar);
+}
+
 static void	del_left_tool(t_line *line)
 {
-	if ((line->index + line->lprompt) % line->nb_col == line->nb_col - 1
-			&& line->index == line->len)
+	if ((line->index + line->lprompt) % line->nb_col == line->nb_col - 1)
 	{
 		tputs(tgetstr("sc", NULL), 1, ft_pchar);
-		ft_putchar_fd(' ', 0);
+		ft_putchar(' ');
 		tputs(tgetstr("rc", NULL), 1, ft_pchar);
 	}
 	if (line->len + line->lprompt > line->nb_col - 1)
+	{
 		del_lines(line);
+		tputs(tgetstr("sc", NULL), 1, ft_pchar);
+		line->index < line->len ?
+			ft_putstr(&(line->curr->buff[line->index])) : ft_putstr("");
+		tputs(tgetstr("rc", NULL), 1, ft_pchar);
+	}
 }
 
 static void	del_left(t_line *line)
@@ -55,8 +77,7 @@ void		deal_dleft(t_line *line)
 	{
 		delete_down();
 		*(line->e_cmpl) &= ~COMPLETION;
-		free(line->curr->buff_tmp);
-		line->curr->buff_tmp = NULL;
+		ft_bzero(line->curr->buff_tmp, MAX_SHELL_LEN + 2);
 		line->index = line->len;
 	}
 	else
@@ -79,7 +100,12 @@ void		del_right(t_line *line)
 		while (line->index + ++j < line->len)
 			line->curr->buff[line->index + j] =
 				line->curr->buff[line->index + j + 1];
-		line->len = line->len > line->index ? line->len - 1 : line->index;
+		tputs(tgetstr("dc", NULL), 1, ft_pchar);
 		del_lines(line);
+		tputs(tgetstr("sc", NULL), 1, ft_pchar);
+		line->index < line->len ?
+			ft_putstr(&(line->curr->buff)[line->index]) : ft_putstr("");
+		tputs(tgetstr("rc", NULL), 1, ft_pchar);
+		line->len = line->len > line->index ? line->len - 1 : line->index;
 	}
 }

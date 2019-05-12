@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/19 00:57:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 11:41:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:27:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ static int		unalias_usage(char *cmd)
 static int		unalias_error(char *cmd, char *alias, t_s_env *e)
 {
 	ft_dprintf(STDERR_FILENO, "%s: ", e->progname);
-	if (e->filein)
-		ft_dprintf(STDERR_FILENO, "line %ld: ", e->filein);
+	if (e->interactive)
+		ft_dprintf(STDERR_FILENO, "line %ld: ", e->interactive);
 	ft_dprintf(STDERR_FILENO, "%s: %s : not found\n", cmd, alias);
 	return (1);
 }

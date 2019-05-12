@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 08:54:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/26 12:39:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:33:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ int				cd_write_in_pwd(t_execute *exec, t_s_env *e, size_t i);
 int				cd_search_in_pwd(t_execute *exec, t_s_env *e, size_t i);
 int				cd_change_pwds(char *new, char **env, t_s_env *e);
 char			*cd_recreate_path(char *pwd);
-int				cd_get_path(char *pwd, char *cmd);
 
 int				cd_error(int err, char *arg, t_s_env *e);
 int				cd_dir_error(char *newpwd, char *entry, t_s_env *e);

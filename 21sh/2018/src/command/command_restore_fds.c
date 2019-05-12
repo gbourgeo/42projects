@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/04 00:02:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/25 17:00:21 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:47:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ int				command_restore_fds(int fds[3])
 		{
 			if (dup2(fds[i], i) < 0)
 				ret = 1;
-			if (fds[i] != -1)
-				close(fds[i]);
+			close(fds[i]);
 		}
 		i++;
 	}

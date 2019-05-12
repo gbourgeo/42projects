@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 20:31:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 21:33:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:06:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,11 @@ void			launch_new_cmd(char **line, t_s_env *e)
 	remove_line_continuation(line);
 	if ((tokens = tokenise(line, e)) != NULLTOKEN)
 	{
-		if (!e->forked && !e->filein)
+		if (!e->forked && !e->interactive)
 			term_restore(&e->save);
 		if ((tree = parse(line, &tokens, e)) != NULLLIST)
 			execute_list(tree, e);
-		if (!e->forked && !e->filein)
+		if (!e->forked && !e->interactive)
 			define_new_term(&e->save);
 		free_m_list(&tree);
 		free_token(&tokens);

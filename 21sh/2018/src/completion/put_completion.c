@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 01:42:34 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/28 19:17:07 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/15 20:41:09 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,12 @@
 #include "shell_lib.h"
 #include "shell_term.h"
 
-void		change_buff(t_slct *select, t_cpl_e *env, t_line *line,
-		t_tree *tern)
+static void	init_cpl(t_cpl_e *env, t_line *line, int *put, int *nb_ret)
 {
-	char	*ptr;
-
-	ptr = sh_strrchr(line->curr->buff, ' ');
-	if (!ptr || !(env->ptr = sh_strrchr(ptr, '/')))
-		env->ptr = find_start_pos(line->curr->buff);
-	if (ft_strchr("&;|/ ", *env->ptr))
-		env->ptr += 1;
-	if (deal_change(select, tern, env))
-		return ;
+	env->put = put;
+	env->nb_ret = nb_ret;
+	env->nb_col = line->nb_col / (env->lenm + 1);
+	env->len = ft_strlen(env->chr);
 }
 
 void		deal_all_put(t_line *line, t_tree *tern, t_slct **select,
@@ -100,12 +94,9 @@ int			put_complet(t_tree *tern, int *put, t_line *line, int *nb_ret)
 	select = NULL;
 	env.nb_ret = nb_ret;
 	if ((env.lenm = get_select(line, tern, &env, &select)) == -1
-			|| env.lenm + line->len > MALLOC_MAX)
+			|| env.lenm + line->len > MAX_SHELL_LEN)
 		return (-1);
-	env.put = put;
-	env.nb_ret = nb_ret;
-	env.nb_col = line->nb_col / (env.lenm + 1);
-	env.len = ft_strlen(env.chr);
+	init_cpl(&env, line, put, nb_ret);
 	if ((env.lenm + line->lprompt + line->len) % line->nb_col
 			< (line->lprompt + line->len) % line->nb_col && !line->is_putb
 			&& *line->e_cmpl & COMPLETION)

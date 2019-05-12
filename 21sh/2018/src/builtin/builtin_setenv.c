@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/27 09:37:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/25 23:40:39 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:18:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #include "ft_dprintf.h"
 #include "shell_lib.h"
 #include "builtin_setenv.h"
-#include "main_tools.h"
-#include "shell.h"
 
 static int		setenv_error(int err, char *cmd_name, t_s_env *e)
 {
@@ -25,8 +23,8 @@ static int		setenv_error(int err, char *cmd_name, t_s_env *e)
 	};
 
 	ft_dprintf(STDERR_FILENO, "%s: ", e->progname);
-	if (e->filein)
-		ft_dprintf(STDERR_FILENO, "line %ld: ", e->filein);
+	if (e->interactive)
+		ft_dprintf(STDERR_FILENO, "line %ld: ", e->interactive);
 	ft_dprintf(STDERR_FILENO, "%s: %s\n", cmd_name, errors[err]);
 	return (1);
 }
@@ -53,8 +51,5 @@ int				builtin_setenv(t_execute *exec, t_s_env *e)
 		sh_unsetenv(exec->cmd[1], e->private_env);
 	if (sh_setenv(exec->cmd[1], exec->cmd[2], &e->public_env))
 		return (setenv_error(ERR_MALLOC_ERROR, exec->cmd[0], e));
-	if (ft_strcmp(exec->cmd[1], "PATH") == 0)
-		check_path(e);
-	get_tree_env();
 	return (0);
 }

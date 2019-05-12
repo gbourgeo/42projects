@@ -6,7 +6,7 @@
 /*   By: rfontain <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 17:00:18 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/28 19:18:57 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/12 19:57:26 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "libft.h"
 #include "shell_term.h"
 #include "shell.h"
-#include "shell_lib.h"
 
 int			check_is_file(char *buff, t_line *line)
 {
@@ -57,24 +56,22 @@ static void	finish_glob(t_line *line, t_slst **tmp, int nb_line)
 	tputs(tgoto(tgetstr("ch", NULL), 0, line->lprompt), 1, ft_pchar);
 }
 
-static void	get_new_glob(t_line *line, t_slst *tmp, int pos)
+static void	get_new_glob(t_line *line, t_slst *tmp, char *ptr)
 {
 	int		i;
 	t_slst	*to_free;
 	int		tmp_len;
 	int		len;
 
-	tmp_len = erase_complet(&line->curr->buff[pos], line);
-	line->len = (size_t)pos;
+	tmp_len = erase_complet(ptr, line);
 	while ((to_free = tmp))
 	{
-		if (line->len / MAX_SHELL_LEN < line->len
-				+ (len = ft_strlen(tmp->str)) / MAX_SHELL_LEN)
-			get_buff_realloc(line, len);
+		if (line->len + (len = ft_strlen(tmp->str)) + 1 > MAX_SHELL_LEN)
+			break ;
 		i = -1;
 		while (tmp->str[++i])
-			line->curr->buff[line->len++] = tmp->str[i];
-		line->curr->buff[line->len++] = ' ';
+			*ptr++ = tmp->str[i];
+		*ptr++ = ' ';
 		tmp = tmp->next;
 		free(to_free->str);
 		free(to_free);
@@ -82,14 +79,13 @@ static void	get_new_glob(t_line *line, t_slst *tmp, int pos)
 	finish_glob(line, &tmp, (tmp_len / line->nb_col));
 }
 
-void		set_new_glob(t_line *line, t_slst *tmp, int pos)
+void		set_new_glob(t_line *line, t_slst *tmp, char *ptr)
 {
 	if (tmp)
 	{
 		while (tmp->prev)
 			tmp = tmp->prev;
-		get_new_glob(line, tmp, pos);
-		tputs(tgetstr("cd", NULL), 1, ft_pchar);
+		get_new_glob(line, tmp, ptr);
 		ft_putstr(line->curr->buff);
 		line->len = ft_strlen(line->curr->buff);
 		line->index = line->len;

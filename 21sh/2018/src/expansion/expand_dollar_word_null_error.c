@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 19:00:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 21:37:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:51:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,16 @@ int				word_null_error(t_ret *subs, t_ret *para, t_exp *param)
 		return (ERR_NONE);
 	if (!(para->action & COLON_ACTION) && para->substitute)
 		return (ERR_NONE);
-	if (param->e->filein)
-		param->e->shell_loop = 0;
-	if (para->freeable)
-		free(para->substitute);
-	if (!(para->substitute = subs->word) || !para->substitute[0])
-		para->substitute = "parameter null or not set";
-	else
-		para->freeable = 1;
-	subs->word = NULL;
+	if (param_addstr(": ", para))
+		return (ERR_MALLOC);
+	if ((subs->substitute && subs->substitute[0])
+	|| (subs->word && subs->word[0]))
+	{
+		if (param_addstr(subs->word, para))
+			return (ERR_MALLOC);
+	}
+	else if (param_addstr("parameter not set", para))
+		return (ERR_MALLOC);
+	para->substitute = para->word + para->brace + para->hash + 1;
 	return (ERR_GIVEN);
 }

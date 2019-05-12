@@ -6,16 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/24 20:10:26 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 21:58:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 19:57:21 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "shell.h"
-#include "shell_lib.h"
 #include "history.h"
 #include "main_tools.h"
-#include "job_control.h"
 
 static void		get_cursor_pos(void)
 {
@@ -70,13 +68,14 @@ void			init_shell_line(t_line **line, t_s_env *e)
 	}
 	(*line)->public_env = &e->public_env;
 	(*line)->private_env = &e->private_env;
-	if (!((*line)->curr = ft_memalloc(sizeof(t_buff)))
-			|| init_line(e->public_env, *line))
+	if (!((*line)->curr = ft_memalloc(sizeof(t_buff))))
 	{
 		free(line);
 		free_shell_env(e);
 		exit(1);
 	}
+	init_line(e->public_env, *line);
+	(*line)->beg_buff = (*line)->curr;
 }
 
 void			shell_loop(t_line *line, t_s_env *e)
@@ -85,17 +84,14 @@ void			shell_loop(t_line *line, t_s_env *e)
 	tputs(tgetstr("cd", NULL), 1, ft_pchar);
 	while (e->shell_loop && line->shell_loop)
 	{
-		jobs_remove(&e->jobs, 1);
 		if (line->tmp[0] == -1)
 			*e->ret = 130;
 		put_prompt(line->prompt, *line->ret);
+		check_path(line, e->public_env);
 		deal_typing(line);
-		write(STDIN_FILENO, "\n", 1);
-		if (line->curr->buff && line->curr->buff[0] && line->tmp[0] != -1
+		write(1, "\n", 1);
+		if (line->curr->buff[0] && line->tmp[0] != -1
 				&& line->curr->buff[0] != 10)
 			get_new_cmd(line, e);
-		jobs_notify_ended(e->jobs, e);
-		if (line->path)
-			check_mod_path(e, line, 0);
 	}
 }

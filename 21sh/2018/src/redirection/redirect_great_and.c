@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 07:25:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 18:31:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/13 18:50:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,6 @@ static ssize_t	is_a_file_descriptor(char *arg)
 		return (i);
 	return (-1);
 }
-
-/*
-** Lines of code for bash 5.0.7 compliance :
-** -> can not overwrite existing file.
-**
-** static int		check_access(char *cmd)
-** {
-** return (cmd[0] == '/' || access(cmd, F_OK));
-** }
-**
-** else if (!check_access((*redir)->arg->cmd[0]))
-** return (redirect_error(ERR_EXISTING, (*redir)->arg->cmd[0], e));
-*/
 
 int				redirect_great_and(t_redirection **redir, t_s_env *e)
 {
@@ -59,6 +46,8 @@ int				redirect_great_and(t_redirection **redir, t_s_env *e)
 	}
 	else if ((*redir)->fdio != 1)
 		return (redirect_error(ERR_AMBIGUOUS, (*redir)->arg->cmd[0], e));
+	else if (access((*redir)->arg->cmd[0], F_OK) == 0)
+		return (redirect_error(ERR_EXISTING, (*redir)->arg->cmd[0], e));
 	else if (((*redir)->fdarg = open((*redir)->arg->cmd[0], mode, 0644)) < 0)
 		return (redirect_open_error((*redir)->arg->cmd[0], e));
 	if (fcntl(GET_FD((*redir)->fdarg), F_GETFD) < 0)

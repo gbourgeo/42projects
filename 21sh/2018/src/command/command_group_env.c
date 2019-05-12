@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/21 18:14:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 15:22:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:47:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,46 +28,37 @@ static size_t	new_env_length(t_argument *var, t_argument *cmd)
 	return (length);
 }
 
-static size_t	new_env_fill(char **new_env, size_t len, const char **env)
+static size_t	new_env_fill(char **new_env, const char **env)
 {
 	size_t		i;
-	size_t		j;
-	size_t		match;
 
 	i = 0;
-	match = 0;
 	if (env)
 		while (env[i])
 		{
-			j = 0;
-			while (j < len && new_env[j]
-			&& ft_strcmp(new_env[j], env[i]) != '=')
-				j++;
-			if (len == 0 || j == len)
-				new_env[len + i - match] = ft_strdup((char *)env[i]);
-			else
-				match++;
+			new_env[i] = (char *)env[i];
 			i++;
 		}
 	return (i);
 }
 
 char			**command_group_env(t_argument *var, t_argument *cmd,
-const char **public)
+const char **public, const char **private)
 {
 	char		**ret;
 	size_t		i;
 
-	i = new_env_length(var, cmd) + sh_tablen(public);
+	i = new_env_length(var, cmd) + sh_tablen(public) + sh_tablen(private);
 	if (!(ret = ft_memalloc(sizeof(*ret) * (i + 1))))
 		return (NULL);
 	i = 0;
 	while (var != cmd)
 	{
-		ret[i] = ft_strdup(var->cmd[0]);
+		ret[i] = var->cmd[0];
 		++i;
 		var = var->next;
 	}
-	i += new_env_fill(ret, i, public);
+	i += new_env_fill(ret + i, public);
+	i += new_env_fill(ret + i, private);
 	return (ret);
 }

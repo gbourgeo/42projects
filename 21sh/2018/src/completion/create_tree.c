@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/21 21:15:52 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/28 16:33:19 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/16 18:19:50 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "put.h"
 #include "libft.h"
 #include "shell_lib.h"
-#include "quote_removal.h"
 #include <dirent.h>
 
 static char	*add_escape(char *str, int nb)
@@ -102,18 +101,9 @@ t_tree		*create_file_tree(char *path, char *beg, t_tree *tern)
 {
 	struct dirent	*indir;
 	DIR				*dir;
-	char			*tmp;
 
-	tmp = ft_strdup(path);
-	check_str(path);
 	if (!path || !(dir = opendir(path)))
-	{
-		free(tmp);
 		return (NULL);
-	}
-	if (ft_strcmp(path, "."))
-		ft_strcpy(path, tmp);
-	free(tmp);
 	if (!tern)
 	{
 		if (!(tern = ft_memalloc(sizeof(t_tree))))

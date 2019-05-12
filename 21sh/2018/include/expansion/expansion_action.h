@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/26 05:45:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/28 21:55:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:48:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ enum
 typedef struct	s_action
 {
 	const char	*value;
-	int			(*handler)(t_exp *, t_ret *, int);
+	int			(*handler)(t_ret *, t_exp *);
 }				t_action;
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/17 16:24:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/25 08:36:31 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/04/16 21:14:26 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,9 @@ typedef struct	s_token
 	size_t			len;
 	int				type;
 	int				id;
-	const char		*oldhd;
-	size_t			oldlen;
-	t_alias			*alias;
+	const char		*alias;
+	size_t			alen;
 	t_quote			*quote;
-	const char		*hdocline;
-	size_t			hdoclen;
-	int				hdocfree;
 	struct s_token	*next;
 	struct s_token	*prev;
 }				t_token;
@@ -71,7 +67,6 @@ typedef struct	s_param
 	t_s_env		*e;
 	t_token		*head;
 	t_token		*token;
-	t_hdoc		*hdoc;
 	size_t		i;
 	char		*line;
 }				t_param;
@@ -132,7 +127,6 @@ void			token_loop(t_param *param, int (*ft_end)(int));
 t_token			*new_token(char *buff, size_t pos);
 void			free_token(t_token **token);
 void			free_quote(t_quote **quote);
-void			free_hdoc(t_hdoc **hdoc);
 void			clean_end_token(t_token **token, t_token **head);
 t_token			*token_error(int err, t_param *param);
 
@@ -150,6 +144,10 @@ size_t			check_operator(t_token *token, size_t len);
 t_token			*identify_operator(t_param *param);
 t_token			*identify_word(t_param *param);
 
+t_quote			*quote_add(t_quote **head, int type, size_t line);
+void			quote_remove(t_quote **head, int type);
+int				quote_type(t_quote *head);
+t_quote			*quote_get(t_quote *head);
 t_token			*quote_line(t_param *param);
 
 int				aliased_line(t_param *param, t_line *line);
@@ -161,7 +159,6 @@ int				dbraced_line(t_param *param, t_line *line);
 int				parenthed_line(t_param *param, t_line *line);
 int				dparenthed_line(t_param *param, t_line *line);
 int				backquoted_line(t_param *param, t_line *line);
-int				heredoc_line(t_param *param, t_line *line);
 
 t_token			*backslash(t_param *param, int type);
 t_token			*singlequote(t_param *param, int type);

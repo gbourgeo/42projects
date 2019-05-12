@@ -6,12 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/06 15:38:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/17 19:09:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/14 23:53:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "quote.h"
+#include "token.h"
 
 t_quote			*quote_add(t_quote **head, int type, size_t line)
 {

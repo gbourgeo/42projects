@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 03:05:48 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/21 21:09:17 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/24 16:55:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,7 @@ char		**collect_env(char **ep, t_s_env *e)
 	int		i;
 
 	i = 0;
-	if (!(env = ft_memalloc(sizeof(char*)
-					* (sh_tablen((const char **)ep) + 1))) || !ep)
+	if (!(env = ft_memalloc(sizeof(char*) * (get_tab_len(ep) + 1))) || !ep)
 		return (env);
 	while (ep[i])
 	{

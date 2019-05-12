@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 13:59:17 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/01/29 13:40:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,14 @@ static void		print_ox(t_dt *data, t_av *av)
 	len = (data->flag.precision > av->len) ? data->flag.precision : av->len;
 	if (!data->flag.minus)
 	{
-		while (data->flag.min_width > len + data->flag.hash
-				&& data->flag.min_width--)
+		while (data->flag.min_width > len + data->flag.hash &&
+				data->flag.min_width--)
 			write_char(data, (data->flag.zero) ? '0' : ' ');
 	}
 	if (data->flag.hash && !data->flag.zero && av->ui)
 		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
-	while (data->flag.precision > av->len
-			&& data->flag.precision--)
+	while (data->flag.precision > av->len &&
+			data->flag.precision--)
 		write_char(data, '0');
 }
 
@@ -79,8 +79,8 @@ void			pf_x(t_dt *data)
 		write_str(data, av.s, len);
 	if (data->flag.minus)
 	{
-		while (data->flag.min_width > av.len + data->flag.hash
-				&& data->flag.min_width--)
+		while (data->flag.min_width > av.len + data->flag.hash &&
+				data->flag.min_width--)
 			write_char(data, (data->flag.zero && !data->flag.hash) ? '0' : ' ');
 	}
 	if (av.s)

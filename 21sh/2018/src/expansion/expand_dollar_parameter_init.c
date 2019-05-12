@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 22:07:28 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 20:39:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/13 12:40:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 #include "expansion_is.h"
 #include "expansion_dollar.h"
 #include "expansion_errors.h"
+
+static int		dollar_parameter_end_digit(t_exp *param)
+{
+	return (ft_isdigit(param->buff[param->i]));
+}
 
 static int		dollar_parameter_end_name(t_exp *param)
 {
@@ -25,28 +30,13 @@ static int		dollar_parameter_end_brace(t_exp *param)
 	return (is_brace_end(param));
 }
 
-static t_end	get_func(int brace, char c)
+static t_end	get_func(int brace, int is_digit)
 {
 	if (brace)
 		return (dollar_parameter_end_brace);
-	if (is_special(c))
-		return (NULL);
-	if (ft_isdigit(c))
-		return (NULL);
-	if (is_valid_name(c))
-		return (dollar_parameter_end_name);
-	return (NULL);
-}
-
-static int		init_parameter(t_ret *parameter, t_exp *param)
-{
-	if (param_addchar(param->buff[param->i++], parameter)
-	|| ((parameter->brace = param->buff[param->i] == '{')
-		&& param_addchar(param->buff[param->i++], parameter))
-	|| (parameter->brace && (parameter->hash = param->buff[param->i] == '#')
-		&& param_addchar(param->buff[param->i++], parameter)))
-		return (ERR_MALLOC);
-	return (ERR_NONE);
+	if (is_digit)
+		return (dollar_parameter_end_digit);
+	return (dollar_parameter_end_name);
 }
 
 int				expand_dollar_parameter_init(t_ret *parameter, t_exp *param)
@@ -57,22 +47,22 @@ int				expand_dollar_parameter_init(t_ret *parameter, t_exp *param)
 
 	error = ERR_NONE;
 	ft_memset(&ret, 0, sizeof(ret));
-	parameter->head = param->buff + param->i;
-	if (init_parameter(parameter, param))
+	if (param_addchar(param->buff[param->i++], parameter))
 		return (ERR_MALLOC);
-	ret.brace = parameter->brace;
-	if ((end_func = get_func(parameter->brace, param->buff[param->i])))
-	{
-		if (parameter->brace && param->buff[param->i] == '$'
-		&& !ft_strchr("}:-=?+#%", param->buff[param->i + 1]))
-			error = ERR_SYNTAX;
-		else if ((error = expand_loop(&ret, param, end_func)) == ERR_NONE)
-			error = param_addstr(ret.word, parameter);
-	}
-	else if (((is_expand_null(parameter) && is_special(param->buff[param->i]))
-		|| ft_isdigit(param->buff[param->i]))
-	&& param_addchar(param->buff[param->i++], parameter))
-		error = ERR_MALLOC;
+	if ((parameter->brace = param->buff[param->i] == '{')
+		&& param_addchar(param->buff[param->i++], parameter))
+		return (ERR_MALLOC);
+	if ((parameter->hash = param->buff[param->i] == '#')
+		&& param_addchar(param->buff[param->i++], parameter))
+		return (ERR_MALLOC);
+	end_func = get_func(parameter->brace, ft_isdigit(param->buff[param->i]));
+	if ((error = expand_loop(&ret, param, end_func)))
+		return (error);
+	param_addstr(ret.word, parameter);
 	expand_free_t_ret(&ret, 0);
-	return (error);
+	if (is_expand_null(parameter)
+		&& is_special(param->buff[param->i])
+		&& param_addchar(param->buff[param->i++], parameter))
+		return (ERR_MALLOC);
+	return (ERR_NONE);
 }

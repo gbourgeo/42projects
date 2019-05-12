@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 03:54:40 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/26 18:33:39 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/04/15 20:38:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void		define_new_term(struct termios *save)
 	ft_memcpy(&termios, save, sizeof(termios));
 	termios.c_lflag &= ~(ICANON | ECHO | ISIG);
 	termios.c_cc[VMIN] = 1;
-	termios.c_cc[VTIME] = 1;
+	termios.c_cc[VTIME] = 0;
 	if ((tcsetattr(0, TCSANOW, &termios)) == -1)
 	{
 		ft_putendl("Fatal error: unable to set the new term attributes.");

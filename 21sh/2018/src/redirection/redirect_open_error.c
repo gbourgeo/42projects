@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 07:30:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/25 20:58:21 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:41:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 int				redirect_open_error(char *filename, t_s_env *e)
 {
 	ft_dprintf(STDERR_FILENO, "%s: ", e->progname);
-	if (e->filein)
-		ft_dprintf(STDERR_FILENO, "line %ld: ", e->filein);
+	if (e->interactive)
+		ft_dprintf(STDERR_FILENO, "line %ld: ", e->interactive);
 	if (access(filename, F_OK))
 		ft_dprintf(STDERR_FILENO, "no such file or directory: ");
 	else if (ft_strlen(filename) > NAME_MAX)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/16 14:16:30 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/23 11:25:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 23:33:30 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,15 @@ void		launch_rc(t_s_env *e, int fd)
 	char	*line;
 	size_t	save;
 
-	save = e->filein;
-	e->filein = 1;
+	save = e->interactive;
+	e->interactive = 1;
 	line = sh_get_file(fd);
 	if (line)
 	{
 		launch_new_cmd(&line, e);
 		ft_strdel(&line);
 	}
-	e->filein = save;
+	e->interactive = save;
 }
 
 static int	get_shell_rc(t_execute *exec)
@@ -64,7 +64,7 @@ void		get_rc(t_s_env *e, char *relative)
 	else
 		exec.cmd[1] = ft_strdup(relative);
 	builtin_source((t_execute*)&exec, e);
-	e->filein = e->ac != 1;
+	e->interactive = e->ac != 1;
 	free(exec.cmd[1]);
 	free(exec.cmd);
 }

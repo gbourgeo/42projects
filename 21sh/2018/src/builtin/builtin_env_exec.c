@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/07 01:15:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/28 17:04:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/15 19:51:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int		env_fork(t_e_opt *opt, t_s_env *e)
 	newe.public_env = opt->public_env;
 	newe.forked = 1;
 	if ((pid = fork()) > 0)
-		waitpid(pid, NULL, 0);
+		command_wait(pid, 0, e->ret);
 	else if (pid == 0)
 	{
 		launch_new_cmd(&opt->cmd, &newe);

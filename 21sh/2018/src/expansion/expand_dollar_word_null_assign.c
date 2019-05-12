@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/04 02:29:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 19:58:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/08 16:21:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,14 @@ static int		replace_env_value(t_ret *parameter, t_ret *word, t_exp *param)
 	size_t		len;
 
 	name = parameter->word + parameter->brace + parameter->hash + 1;
-	name[parameter->i - 2 - (parameter->action & COLON_ACTION)] = '\0';
 	if (!(ret = sh_getnenvaddr(name, param->e->public_env)))
 		if (!(ret = sh_getnenvaddr(name, param->e->private_env)))
 			if (!(ret = sh_newenv(&param->e->private_env)))
 				return (ERR_MALLOC);
 	save = *ret;
 	len = ft_strlen(name) + 2;
-	len += (word->word)
-		? ft_strlen(word->word) : ft_strlen(word->substitute);
+	len += (word->word) ?
+		ft_strlen(word->word) : ft_strlen(word->substitute);
 	if (!(*ret = ft_memalloc(len)))
 	{
 		*ret = save;
@@ -65,7 +64,7 @@ int				word_null_assign(t_ret *subs, t_ret *para, t_exp *param)
 	expand_free_t_ret(para, 0);
 	para->word = subs->substitute;
 	para->substitute = subs->word;
-	para->freeable = 1;
+	para->freeable = 0;
 	ft_memset(subs, 0, sizeof(*subs));
 	return (ERR_NONE);
 }

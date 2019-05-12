@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_copy.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rfontain <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 11:36:28 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/28 22:30:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:31:13 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,4 @@ void		ft_copy(t_line *line)
 			: right_arrow(line);
 		tmp_end -= 1;
 	}
-	if (line->slct_end != (int)line->index
-			&& line->slct_beg != (int)line->index)
-		line->slct_beg == (int)line->index ? left_arrow(line)
-			: right_arrow(line);
 }

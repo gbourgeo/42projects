@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 01:50:35 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/28 18:11:59 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/14 15:48:48 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void			set_complet(t_line *line, int set);
 
 int				check_is_file(char *buff, t_line *line);
 int				search_to_tmp(char *buff);
-void			set_new_glob(t_line *line, t_slst *tmp, int pos);
+void			set_new_glob(t_line *line, t_slst *tmp, char *ptr);
 
 void			put_branch(t_slct *select, t_cpl_e env, t_line *line,
 		int *car_ret);
@@ -63,8 +63,6 @@ void			put_tree_branch(t_tree *tree, t_cpl_e env, t_line *line);
 void			free_select(t_slct *select);
 int				get_select(t_line *line, t_tree *tern, t_cpl_e *env, t_slct
 		**select);
-
-int				deal_change(t_slct *select, t_tree *tern, t_cpl_e *env);
 
 void			change_buff(t_slct *select, t_cpl_e *env, t_line *line,
 		t_tree *tern);
@@ -86,7 +84,7 @@ t_tree			*set_tmp(char *buff, int glob);
 int				str_chrglob(char *str);
 char			*replace_tilde(const char *path, const char *replace);
 
-char			*find_start_pos(char *buff);
+char			*find_start_pos(char *buff, t_line *line);
 
 /*
 **	Tree creation

@@ -6,7 +6,7 @@
 /*   By: rfontain <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/29 22:59:17 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 14:42:43 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/24 17:12:10 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,12 @@ static void	deal_access(t_line *line, char *file)
 	char	*tmp;
 	char	*stmp;
 	char	*ptr;
-	char	*tilde;
 
 	if (!(stmp = sh_strrchr(line->curr->buff, ' ')))
 		return ;
 	else
 		stmp += 1;
-	if (!(tilde = sh_strrchr(line->curr->buff, ' ')))
-		tilde = line->curr->buff;
-	if ((ptr = sh_strrchr(stmp, '/')) && sh_strchr(tilde, '~'))
+	if ((ptr = ft_strrchr(stmp, '/')) && ft_strchr(line->curr->buff, '~'))
 	{
 		tmp = replace_tilde(stmp, getenv("HOME"));
 		stmp = ft_strndup(tmp, ft_strrchr(tmp, '/') - tmp + 1);

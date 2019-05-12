@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/15 23:01:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 18:33:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/25 17:52:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,12 @@
 #include "shell_env.h"
 #include "builtin_alias.h"
 #include "token.h"
-#include "shell.h"
-
-static void		feed_alias_tree(const char *key)
-{
-	t_line *line;
-
-	line = get_struct();
-	feed_tree((char *)key, -1, &line->tree[0], 0);
-}
 
 static int		alias_set_key_value(char *key, char *value, t_alias **alias)
 {
 	t_alias		*ptr;
 
 	ptr = *alias;
-	feed_alias_tree(key);
 	if (!ptr)
 		return (!(*alias = alias_new(key, value, *alias, *alias)));
 	while (ptr)

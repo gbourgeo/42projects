@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 05:59:37 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/25 23:20:33 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/02 16:37:28 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,11 @@ static int	get_paste(t_line *line, int *j)
 {
 	char	c;
 	char	tmp;
-	size_t	i;
+	int		i;
 
 	i = 0;
+	if (line->index > MAX_SHELL_LEN)
+		return (1);
 	tmp = line->curr->buff[line->index + 1];
 	line->curr->buff[line->index + 1] = line->curr->buff[line->index];
 	line->curr->buff[line->index] = line->copy[*j];
@@ -48,42 +50,31 @@ static void	erase_completion(t_line *line, int index_tmp)
 	line->index = index_tmp;
 }
 
-static void	handle_index(t_line *line)
-{
-	int		j;
-
-	j = line->index;
-	line->index = line->len;
-	while ((int)line->index > j)
-		left_arrow(line);
-	if (line->index == line->len
-			&& (line->len + line->lprompt) % line->nb_col == 0)
-	{
-		tputs(tgetstr("do", NULL), 1, ft_pchar);
-		tputs(tgetstr("cd", NULL), 1, ft_pchar);
-	}
-}
-
 void		ft_paste(t_line *line)
 {
 	int		index_tmp;
 	int		j;
 	int		len;
 
-	if (!line->copy || line->len + (len = ft_strlen(line->copy)) > MALLOC_MAX)
+	if (!line->copy)
 		return ;
 	j = 0;
 	index_tmp = line->index;
 	if (*line->e_cmpl & COMPLETION)
 		erase_completion(line, index_tmp);
 	*line->e_cmpl &= ~COMPLETION;
-	if ((line->len / MAX_SHELL_LEN) < (line->len + len) / MAX_SHELL_LEN)
-		if (get_buff_realloc(line, len))
-			return ;
+	if (line->len + (len = ft_strlen(line->copy)) > MAX_SHELL_LEN)
+		return ;
 	while (line->copy[j])
 		if (get_paste(line, &j))
 			break ;
 	line->len += len;
 	ft_putstr(&line->curr->buff[index_tmp]);
-	handle_index(line);
+	if (line->index != line->len)
+	{
+		j = line->index;
+		line->index = line->len;
+		while ((int)line->index > j)
+			left_arrow(line);
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/27 19:36:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 11:40:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:13:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ int				env_error(int err, char *c, t_e_opt *opt, t_s_env *e)
 	};
 
 	ft_dprintf(STDERR_FILENO, "%s: ", e->progname);
-	if (e->filein)
-		ft_dprintf(STDERR_FILENO, "line %ld: ", e->filein);
+	if (e->interactive)
+		ft_dprintf(STDERR_FILENO, "line %ld: ", e->interactive);
 	ft_dprintf(STDERR_FILENO, "env: %s", errors[err]);
 	if (c)
 		if (err == ERR_ILLEGAL_OPT || err == ERR_NEED_ARG)

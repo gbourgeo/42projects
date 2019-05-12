@@ -6,7 +6,7 @@
 /*   By: rfontain <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/07 03:41:24 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/23 14:06:44 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/11 16:52:57 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,19 +80,16 @@ static void		choose_tree(t_line *line)
 	else
 		deal_choose_tree(line, ptr);
 	if (!ptr)
-		set_new_glob(line, tmp, 0);
+		set_new_glob(line, tmp, line->curr->buff);
 	else
-		set_new_glob(line, tmp, ptr - line->curr->buff + 1);
+		set_new_glob(line, tmp, ptr + 1);
 }
 
 void			get_complet(t_line *line)
 {
 	if (!(*line->e_cmpl & COMPLETION)
-			&& line->curr->buff_tmp)
-	{
-		free(line->curr->buff_tmp);
-		line->curr->buff_tmp = NULL;
-	}
+			&& line->curr->buff_tmp[MAX_SHELL_LEN + 1])
+		ft_bzero(line->curr->buff_tmp, MAX_SHELL_LEN + 2);
 	if (!inprint(line->curr->buff))
 		return ;
 	choose_tree(line);

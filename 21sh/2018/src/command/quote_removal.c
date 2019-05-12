@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/07 00:07:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/28 16:22:29 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:47:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void		remove_back(char *str, char *quote, size_t *i)
 		ft_strcpy(str + *i, str + *i + 1);
 }
 
-void			check_str(char *str)
+static void		check_str(char *str)
 {
 	static t_q_removal	removal[] = {
 		{ '\'', remove_quote }, { '"', remove_quote }, { '\\', remove_back },

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 01:34:09 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 21:54:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 19:56:15 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,15 @@
 #include "shell_lib.h"
 #include "shell_term.h"
 
-char		*find_start_pos(char *buff)
+char		*find_start_pos(char *buff, t_line *line)
 {
 	int		i;
 
-	i = ft_strlen(buff) - 1;
+	i = line->len - 1;
 	while (i > 0)
 	{
-		if (ft_strchr("&|; /${", buff[i]) && buff[i - 1] != '\\')
-		{
-			if ((buff[i] == '$' && buff[i + 1] != '\'') || buff[i] != '$')
-				return (buff + i + 1);
-		}
+		if (ft_strchr("&|; /", buff[i]) && buff[i - 1] != '\\')
+			return (buff + i + 1);
 		i--;
 	}
 	return (buff);
@@ -39,7 +36,7 @@ static void	get_new_file(t_tree *tern, t_cpl_e env, t_line *line)
 	char	*ptr;
 	char	*tmp;
 
-	if (!*((ptr = find_start_pos(line->curr->buff))))
+	if (!*((ptr = find_start_pos(line->curr->buff, line))))
 		stercat(line->curr->buff_tmp, env.bru, line->curr->buff);
 	else if (!ft_strchr(ptr, '/'))
 	{
@@ -90,23 +87,15 @@ static void	get_new_buff(t_tree *tern, t_cpl_e env, t_line *line)
 
 static void	put_space(t_cpl_e env, int *car_ret)
 {
-	int		nb;
-
 	if (*car_ret < env.nb_col - 1)
 	{
-		nb = env.lenm - ft_strlen(env.bru) + 1;
-		while (nb--)
-			write(0, " ", 1);
-		// ft_putchars(' ', env.lenm - ft_strlen(env.bru) + 1);
+		ft_putchars(' ', env.lenm - ft_strlen(env.bru) + 1);
 		*car_ret += 1;
 	}
 	else
 	{
-		nb = env.lenm - ft_strlen(env.bru) + 1;
-		while (nb--)
-			write(0, " ", 1);
-		// ft_putchars(' ', env.lenm - ft_strlen(env.bru) + 1);
-		ft_putchar_fd('\n', 0);
+		ft_putchars(' ', env.lenm - ft_strlen(env.bru) + 1);
+		ft_putchar('\n');
 		*car_ret = 0;
 		*env.nb_ret += 1;
 	}

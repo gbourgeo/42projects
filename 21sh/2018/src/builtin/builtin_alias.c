@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/15 22:02:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 12:38:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:04:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ static int		alias_print_alias(char *cmd, t_alias *alias)
 	size_t		i;
 
 	i = 0;
-	if (ft_dprintf(STDOUT_FILENO, "%s %s='", cmd, alias->key) < 0)
-		return (ERR_WRITE_ERROR);
+	ft_dprintf(STDOUT_FILENO, "%s %s='", cmd, alias->key);
 	while (alias->value[i])
 	{
 		if (alias->value[i] == '\'')
@@ -35,14 +34,11 @@ static int		alias_print_alias(char *cmd, t_alias *alias)
 	return (ERR_OK);
 }
 
-static int		alias_print_all(char *cmd, t_alias *alias, t_s_env *e)
+static int		alias_print_all(char *cmd, t_alias *alias)
 {
-	int			error;
-
 	while (alias)
 	{
-		if ((error = alias_print_alias(cmd, alias)) != ERR_OK)
-			return (alias_error(error, cmd, "write error", e));
+		alias_print_alias(cmd, alias);
 		alias = alias->next;
 	}
 	return (ERR_OK);
@@ -73,7 +69,7 @@ int				builtin_alias(t_execute *exec, t_s_env *e)
 	ret = 0;
 	error = 0;
 	if (!exec->cmd[i])
-		return (alias_print_all(exec->cmd[0], e->alias_list, e));
+		return (alias_print_all(exec->cmd[0], e->alias_list));
 	while (exec->cmd[i])
 	{
 		if ((equal = ft_strchr(exec->cmd[i], '=')) == NULL
@@ -81,7 +77,7 @@ int				builtin_alias(t_execute *exec, t_s_env *e)
 			error = alias_print(exec->cmd, i, e);
 		else
 			error = alias_set(exec->cmd[i], &e->alias_list);
-		if (error && error != ERR_WRITE_ERROR)
+		if (error)
 		{
 			ret = alias_error(error, exec->cmd[0], exec->cmd[i], e);
 			error = 0;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 00:22:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 17:58:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/11 15:04:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ t_token			*handle_comment(t_param *param, t_call *token)
 	{
 		param->token->type = TOKEN;
 		param->token->id = COMMENT;
-		while (param->line[param->i + 1]
-		&& param->line[param->i + 1] != '\n')
+		while (param->line[param->i + 1] && param->line[param->i + 1] != '\n')
 			param->i++;
 	}
 	else if (param->token->type != TOKEN)

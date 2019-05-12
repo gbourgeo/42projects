@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/28 20:49:03 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 13:34:46 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/15 20:34:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 # include "struct.h"
 # include "shell_env.h"
 
-# define SHELL_NAME		"42sh"
-# define RC_NAME		".42shrc"
+# define SHELL_NAME		"21sh"
+# define RC_NAME		".21shrc"
 # define CANCEL			"\x3"
 # define EXIT			"\x4"
 # define GET_COMPLETION	"\x9"
@@ -48,8 +48,8 @@
 
 char			*get_line(int fd);
 void			free_tab(char ***tabl);
+int				get_tab_len(char **tabl);
 char			**ft_ralloc(char ***env, int len);
-void			get_tmp_buff(char **buff, char **buff_tmp, int to_free);
 
 void			ft_setenv(char ***env, char *new, int len);
 char			*get_env(char **env, char *to_get);
@@ -64,8 +64,6 @@ void			shell_loop(t_line *line, t_s_env *e);
 
 int				get_cursor_line(void);
 void			deal_scroll(t_line *line, int up, int nb_line);
-
-int				get_buff_realloc(t_line *line, int nb_read);
 
 /*
 **	Select, copy, cut and paste
@@ -96,8 +94,6 @@ void			free_all_tree(t_line *line);
 
 void			reset_put(t_tree *tern);
 void			deal_reset(t_tree **tree);
-
-void			get_tree_env(void);
 
 /*
 ** Globing

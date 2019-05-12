@@ -6,13 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/24 00:07:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 13:37:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 23:15:58 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/param.h>
 #include "libft.h"
-#include "ft_dprintf.h"
 #include "free_env.h"
 #include "shell_lib.h"
 #include "shell_env.h"
@@ -111,21 +110,12 @@ void			init_shell_env(t_s_env *e, int ac, char **av, char **env)
 	e->av = av;
 	e->progpath = get_path(av[0]);
 	e->progname = (ft_strrchr(av[0], '/')) ? ft_strrchr(av[0], '/') + 1 : av[0];
-	e->ret = 0;
-	e->interactive = isatty(STDIN_FILENO);
 	if (!e->progname || !*e->progname)
 		e->progname = SHELL_NAME;
 	e->public_env = collect_env(env, e);
-	sh_setenv("_", e->progname, &e->public_env);
 	e->public_env = check_env(e->public_env);
 	e->private_env = build_private_env();
-	if (!(e->exported_env = ft_memalloc(sizeof(char **))))
-		return ;
 	e->pid = getpid();
-	e->pgid = getpgrp();
-	init_fd(e);
-	init_job(e);
 	e->shell_loop = 1;
-	e->filein = ac != 1;
-	e->checkquote = 1;
+	e->interactive = ac != 1;
 }

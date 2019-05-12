@@ -6,7 +6,7 @@
 /*   By: rfontain <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/23 08:44:05 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/21 22:37:22 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/18 20:10:34 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,16 @@ t_line			*get_struct(void)
 
 void			free_buff(t_line *line)
 {
-	if (!line->curr)
-		return ;
-	if (line->curr->buff_tmp)
-		free(line->curr->buff_tmp);
-	if (line->curr->buff)
-		free(line->curr->buff);
-	free(line->curr);
+	t_buff	*tmp;
+
+	while (line->curr->prev)
+		line->curr = line->curr->prev;
+	while (line->curr)
+	{
+		tmp = line->curr->next;
+		free(line->curr);
+		line->curr = tmp;
+	}
 }
 
 static void		free_hist(t_hist *hist)

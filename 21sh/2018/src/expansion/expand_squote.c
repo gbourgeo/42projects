@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/26 00:17:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 13:56:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/14 23:24:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,6 @@ int				expand_squote(t_exp *param, t_ret *ret)
 		if (param->buff[param->i] == '\'')
 			quote_remove(&param->quote, SINGLE_QUOTE);
 	}
-	return ((error == ERR_NONE && param->i - i < param->buff_len)
-		? param_addchar(param->buff[param->i], ret) : error);
+	return ((error == ERR_NONE && param->i - i < param->buff_len) ?
+		param_addchar(param->buff[param->i], ret) : error);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/28 20:16:45 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 13:56:03 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/18 12:59:32 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static void	get_ptr_tree(t_tree *tree, char **ptr)
 		return ;
 	if (tree->value == '.')
 		if (!tree->left || !tree->right)
-			tree->left ? get_ptr_tree(tree->left, ptr)
-				: get_ptr_tree(tree->right, ptr);
+			tree->left ?
+				get_ptr_tree(tree->left, ptr) : get_ptr_tree(tree->right, ptr);
 	if (tree->left && tree->left->value != '.')
 		return ;
 	if (tree->right && tree->right->value != '.')
@@ -36,26 +36,15 @@ static void	get_ptr_tree(t_tree *tree, char **ptr)
 		get_ptr_tree(tree->tern_next, ptr);
 }
 
-static void	get_nb_slct(t_slct *select, int *nb, int *len)
+static void	get_nb_slct(t_slct *select, int *nb)
 {
-	t_tree	*tree;
-
 	if (select->next)
 	{
 		*nb += 1;
-		get_nb_slct(select->next, nb, len);
+		get_nb_slct(select->next, nb);
 	}
 	if (select->down)
-		get_nb_slct(select->down, nb, len);
-	else
-	{
-		tree = select->mln->tern_next;
-		while (tree->tern_next)
-		{
-			*len += 1;
-			tree = tree->tern_next;
-		}
-	}
+		get_nb_slct(select->down, nb);
 }
 
 static void	change_ptr(t_slct *select, char **ptr)
@@ -74,30 +63,17 @@ static void	change_ptr(t_slct *select, char **ptr)
 		get_ptr_tree(select->mln->tern_next, ptr);
 }
 
-static void	change_select(t_slct *select, int tmp, t_cpl_e *env)
-{
-	int		len;
-	t_line	*line;
-
-	line = get_struct();
-	len = 0;
-	get_nb_slct(select, &tmp, &len);
-	if (tmp == 1)
-	{
-		if ((len + line->len + line->lprompt) % line->nb_col
-				< (line->len + line->lprompt) % line->nb_col)
-			tputs(tgetstr("do", NULL), 1, ft_pchar);
-		change_ptr(select, &env->ptr);
-	}
-}
-
-int			deal_change(t_slct *select, t_tree *tern, t_cpl_e *env)
+static int	deal_change(t_slct *select, t_tree *tern, t_cpl_e *env)
 {
 	int		tmp;
 
 	tmp = 1;
 	if (select)
-		change_select(select, tmp, env);
+	{
+		get_nb_slct(select, &tmp);
+		if (tmp == 1)
+			change_ptr(select, &env->ptr);
+	}
 	else if (tern)
 	{
 		tmp = 0;
@@ -107,4 +83,18 @@ int			deal_change(t_slct *select, t_tree *tern, t_cpl_e *env)
 		get_ptr_tree(tern, &env->ptr);
 	}
 	return (0);
+}
+
+void		change_buff(t_slct *select, t_cpl_e *env, t_line *line,
+		t_tree *tern)
+{
+	char	*ptr;
+
+	ptr = sh_strrchr(line->curr->buff, ' ');
+	if (!ptr || !(env->ptr = sh_strrchr(ptr, '/')))
+		env->ptr = find_start_pos(line->curr->buff, line);
+	if (ft_strchr("&;|/ ", *env->ptr))
+		env->ptr += 1;
+	if (deal_change(select, tern, env))
+		return ;
 }

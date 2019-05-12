@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 05:27:28 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 12:31:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:02:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ enum
 {
 	ERR_OK,
 	ERR_MALLOC,
-	ERR_WRITE_ERROR,
 	ERR_NOT_FOUND,
 	ERR_INVALID_KEY
 };

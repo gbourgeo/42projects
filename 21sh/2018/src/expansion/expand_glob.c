@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/26 03:52:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 13:42:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/15 19:49:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ static t_slst	*get_exp_glob(t_ret *ret, char *ptr, char *tmp)
 	t_slst	*glob;
 
 	line = get_struct();
-	GET_TREE(line->tree, FILES) = create_file_tree(".", NULL, line->tree[1]);
 	if (GET_TREE(line->tree, TMP)
 		|| (GET_TREE(line->tree, TMP) = set_tmp(ptr, 1)))
 		glob = deal_globing(ptr, GET_TREE(line->tree, TMP));

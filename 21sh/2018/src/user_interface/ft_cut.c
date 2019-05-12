@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 11:37:00 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/25 22:12:51 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/03/14 16:19:26 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ void		ft_cut(t_line *line)
 	end = line->slct_end;
 	ft_copy(line);
 	cut_on_buff(line, beg, end);
-	line->len = ft_strlen(line->curr->buff);
 	line->slct_end = -1;
 	line->slct_beg = -1;
+	line->len = ft_strlen(line->curr->buff);
 	tputs(tgetstr("sc", NULL), 1, ft_pchar);
 	tputs(tgetstr("cd", NULL), 1, ft_pchar);
 	ft_putstr(&line->curr->buff[line->index]);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 04:42:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 20:44:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/10 20:39:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,42 +17,54 @@
 #include "expansion_errors.h"
 #include "expansion_special.h"
 
-static int		expand_argv(t_ret *para, t_exp *param)
+static int		expand_argc(t_ret *subs, t_ret *para, t_exp *param)
 {
-	char		*digits;
-	int			nb;
+	char		*nbr;
+	int			error;
 
-	digits = &para->word[para->brace + para->hash + 1];
-	nb = (para->brace) ? ft_atoi(digits) : *digits - '0';
-	if (param->e->filein)
-		nb++;
-	para->substitute = (nb >= 0 && nb < param->e->ac) ? param->e->av[nb] : NULL;
-	para->freeable = 0;
-	if (para->brace)
-		while (ft_isdigit(digits[para->i]))
-			para->i++;
+	nbr = ft_itoa(param->e->ac - 1);
+	error = param_addstr(nbr, subs);
+	if (nbr)
+		free(nbr);
+	if (error)
+		return (special_error(error, subs->word));
+	para->hash = 0;
+	para->freeable = 1;
+	para->substitute = subs->word;
 	return (ERR_NONE);
 }
 
-static int		expand_env(t_ret *para, t_exp *param)
+static int		expand_argv(t_ret *subs, t_ret *para, t_exp *param)
 {
-	char		*start;
-	char		*end;
-	char		c;
+	char		*word;
+	int			nb;
 
-	start = para->word + para->i;
-	end = para->word;
+	word = &para->word[para->brace + para->hash + 1];
 	if (para->brace)
-	{
-		while (end[para->i] && is_valid_name(end[para->i]))
-			para->i++;
-		c = end[para->i];
-		end[para->i] = '\0';
-	}
-	if (!(para->substitute = sh_getnenv(start, param->e->public_env)))
-		para->substitute = sh_getnenv(start, param->e->private_env);
+		while (*word)
+			if (!ft_isdigit(*word++))
+				return (ERR_SYNTAX);
+	word = &para->word[para->brace + para->hash + 1];
+	nb = ft_atoi(word);
+	subs->word = (nb < param->e->ac) ? param->e->av[nb] : NULL;
+	para->substitute = subs->word;
+	para->freeable = 0;
+	return (ERR_NONE);
+}
+
+static int		expand_env(t_ret *subs, t_ret *para, t_exp *param)
+{
+	char		*word;
+
+	word = &para->word[para->brace + para->hash + 1];
 	if (para->brace)
-		end[para->i] = c;
+		while (*word)
+			if (!is_valid_name(*word++))
+				return (ERR_SYNTAX);
+	word = &para->word[para->brace + para->hash + 1];
+	if (!(subs->word = sh_getnenv(word, param->e->public_env)))
+		subs->word = sh_getnenv(word, param->e->private_env);
+	para->substitute = subs->word;
 	para->freeable = 0;
 	return (ERR_NONE);
 }
@@ -61,26 +73,24 @@ int				expand_dollar_parameter_value(t_ret *parameter, t_exp *param)
 {
 	static t_dollar	dollar[] = {
 		{ is_special, expand_dollar_special },
-		{ ft_isdigit, expand_argv },
-		{ is_valid_name, expand_env },
+		{ ft_isdigit, expand_argv }, { is_valid_name, expand_env },
 	};
 	size_t			i;
+	t_ret			substitute;
 	char			*word;
 
 	i = 0;
-	parameter->i = 1 + parameter->brace + parameter->hash;
-	word = &parameter->word[parameter->i];
-	if (!word[0])
-	{
-		if (!parameter->hash)
-			return (ERR_SYNTAX);
-		return (special_argc(parameter, param));
-	}
+	ft_memset(&substitute, 0, sizeof(substitute));
+	word = &parameter->word[parameter->brace + parameter->hash + 1];
+	if (!*word && !parameter->hash)
+		return (ERR_SYNTAX);
+	if (is_expand_null(parameter))
+		return (expand_argc(&substitute, parameter, param));
 	while (i < sizeof(dollar) / sizeof(dollar[0]))
 	{
 		if (dollar[i].check(word[0]))
-			return (dollar[i].handler(parameter, param));
+			return (dollar[i].handler(&substitute, parameter, param));
 		i++;
 	}
-	return (ERR_SYNTAX);
+	return (special_error(ERR_SYNTAX, substitute.word));
 }

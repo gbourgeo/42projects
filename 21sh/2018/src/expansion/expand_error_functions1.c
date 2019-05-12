@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/14 22:09:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/25 16:01:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:59:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,8 @@ void			err_none_func(t_ret *ret, t_exp *par)
 
 void			err_syntax_func(t_ret *ret, t_exp *par)
 {
-	char		c;
-
-	c = par->buff[par->buff_len];
-	((char *)par->buff)[par->buff_len] = '\0';
 	(void)ret;
 	ft_dprintf(STDERR_FILENO, "%s: %s\n", par->buff, ERR_SYNTAX_STR);
-	((char *)par->buff)[par->buff_len] = c;
 }
 
 void			err_modifier_func(t_ret *ret, t_exp *par)

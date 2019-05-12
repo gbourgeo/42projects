@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/21 20:20:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/28 18:34:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/16 20:58:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ typedef struct	s_ret
 	char			*word;
 	size_t			w_len;
 	size_t			w_max;
-	const char		*head;
-	size_t			i;
 	int				brace;
 	int				hash;
 	char			*substitute;
@@ -65,7 +63,7 @@ void			expand_free_t_ret(t_ret *ret, int free_ret);
 
 int				expand_arithmetic(t_exp *param, t_ret *ret);
 int				expand_subshell(t_exp *param, t_ret *ret);
-int				expand_subshell_father(int pfd[2], pid_t pid, t_ret *ret);
+void			expand_subshell_father(int pfd[2], pid_t pid, t_ret *ret);
 
 void			debug_expansion(char *name, t_ret *ret);
 

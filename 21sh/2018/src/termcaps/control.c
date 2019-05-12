@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/22 04:46:41 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 12:39:05 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/15 19:46:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ void			deal_exit(t_line *line)
 		return ;
 	}
 	if (line->curr->buff[0])
+	{
+		get_complet(line);
 		return ;
+	}
 	term_restore(&line->save);
 	line->shell_loop = 0;
 }
@@ -47,12 +50,9 @@ static void		cancel_on_completion(t_line *line)
 	tputs(tgetstr("cr", NULL), 1, ft_pchar);
 	tputs(tgetstr("cd", NULL), 1, ft_pchar);
 	put_prompt(line->prompt, *line->ret);
-	get_tmp_buff(&line->curr->buff, &line->curr->buff_tmp, 1);
-	if (!line->curr->buff)
-	{
-		line->shell_loop = 0;
-		return ;
-	}
+	ft_bzero(line->curr->buff, MAX_SHELL_LEN);
+	ft_strcpy(line->curr->buff, line->curr->buff_tmp);
+	ft_bzero(line->curr->buff_tmp, MAX_SHELL_LEN + 2);
 	ft_putstr(line->curr->buff);
 	deal_reset(line->tree);
 	line->tmp[0] = 3;

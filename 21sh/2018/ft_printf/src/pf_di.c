@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:22:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 14:00:40 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/01/29 13:39:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ static void	pf_di_noc(t_dt *data, t_av *av)
 	}
 	while (len > av->len && len--)
 		write_char(data, '0');
-	if (!data->flag.point
-			|| (data->flag.point && (data->flag.precision > 0 || av->ui != 0)))
+	if (!data->flag.point ||
+		(data->flag.point && (data->flag.precision > 0 || av->ui != 0)))
 		write_str(data, av->s, av->len);
 	else if (data->flag.min_width)
 		write_char(data, ' ');

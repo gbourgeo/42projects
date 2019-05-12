@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/23 04:42:50 by rfontain          #+#    #+#             */
-/*   Updated: 2019/04/29 16:23:42 by rfontain         ###   ########.fr       */
+/*   Updated: 2019/04/16 18:21:14 by rfontain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,16 @@ static void	create_all_tree(t_line *line)
 		GET_TREE(line->tree, BIN) = create_bin_tree(*line->private_env);
 	GET_TREE(line->tree, FILES) = create_file_tree(".", NULL, NULL);
 	GET_TREE(line->tree, TMP) = NULL;
-	get_tree_env();
+	fill_tree_env(*line->public_env, &GET_TREE(line->tree, ENV));
+	fill_tree_env(*line->private_env, &GET_TREE(line->tree, ENV));
+	if (GET_TREE(line->tree, ENV))
+		set_psblty(GET_TREE(line->tree, ENV), 1);
 }
 
-int			init_line(char **env, t_line *line)
+void		init_line(char **env, t_line *line)
 {
-	if (!(line->e_cmpl = ft_memalloc(sizeof(t_st))))
-		return (1);
-	if (!(line->curr->buff = ft_memalloc(sizeof(char) * MAX_SHELL_LEN)))
-		return (1);
-	line->path = sh_getnenv("PATH", env);
+	line->e_cmpl = ft_memalloc(sizeof(t_st));
+	line->path = getenv("PATH");
 	line->term = getenv("TERM");
 	tgetent(NULL, line->term);
 	create_hist(&(line->hist), env);
@@ -50,7 +50,6 @@ int			init_line(char **env, t_line *line)
 	line->slct_beg = -1;
 	line->slct_end = -1;
 	line->shell_loop = 1;
-	return (0);
 }
 
 void		deal_key(t_line *line)
@@ -79,15 +78,15 @@ void		deal_key(t_line *line)
 		}
 }
 
-void		check_path(t_s_env *e)
+void		check_path(t_line *line, char **env)
 {
 	char	*path;
-	t_line	*line;
 
-	line = get_struct();
-	path = sh_getnenv("PATH", e->public_env);
-	free_tree(line->tree[0]);
-	line->tree[0] = create_bin_tree(e->public_env);
-	fill_alias_tree(e->alias_list, line);
-	line->path = path;
+	path = sh_getnenv("PATH", env);
+	if ((path && line->path && ft_strcmp(path, line->path) != 0) || !path)
+	{
+		free_tree(line->tree[0]);
+		line->tree[0] = create_bin_tree(env);
+		line->path = path;
+	}
 }

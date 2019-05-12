@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/17 16:20:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 21:25:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/15 04:02:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void			token_loop(t_param *param, int (*ft_end)(int c))
 			param->token = get_tokens(param, token);
 		param->i++;
 	}
+	debug_tokens(param->head);
 }
 
 t_token			*tokenise(char **line, t_s_env *e)
@@ -67,11 +68,10 @@ t_token			*tokenise(char **line, t_s_env *e)
 	if (!(param.token = new_token(*line, 0)))
 		return (token_error(ERR_MALLOC, &param));
 	param.line = *line;
+	param.i = 0;
 	param.head = param.token;
 	token_loop(&param, ft_isnull);
-	if (!e->filein)
+	if (!e->interactive)
 		*line = param.line;
-	free_hdoc(&param.hdoc);
-	debug_tokens(param.head);
 	return (param.head);
 }

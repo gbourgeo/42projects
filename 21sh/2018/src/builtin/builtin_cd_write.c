@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 11:01:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 13:48:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/04/06 22:15:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "shell_lib.h"
 #include "builtin_cd.h"
 
-int				cd_get_path(char *pwd, char *cmd)
+static int		cd_get_path(char *pwd, char *cmd)
 {
 	if (*cmd == '/')
 		ft_strncpy(pwd, cmd, MAXPATHLEN);
@@ -59,8 +59,8 @@ int				cd_write_in_pwd(t_execute *exec, t_s_env *e, size_t i)
 		return (cd_error(ret, exec->cmd[i], e));
 	if (*new_pwd && chdir(new_pwd) < 0)
 		return (cd_dir_error(new_pwd, exec->cmd[i], e));
-	if (exec->cmd[i - 1][0] == '-'
-	&& exec->cmd[i - 1][ft_strlen(exec->cmd[i - 1]) - 1] == 'P')
+	if (exec->cmd[i - 1][0] == '-' &&
+		exec->cmd[i - 1][ft_strlen(exec->cmd[i - 1]) - 1] == 'P')
 	{
 		if (getcwd(new_pwd, MAXPATHLEN) == NULL)
 			return (ERR_GETCWD);

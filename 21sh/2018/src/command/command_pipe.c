@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 06:58:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/29 16:55:08 by dbaffier         ###   ########.fr       */
+/*   Updated: 2019/04/15 19:48:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,41 +16,90 @@
 #include "command.h"
 #include "shell_lib.h"
 #include "shell_env.h"
-#include "job_control.h"
-#include "command_error.h"
 
-void		close_unexpected_fd(int *fds)
+static int		command_pipe_error(const char *err, t_s_env *e)
 {
-	if (fds[2] != STDIN_FILENO && fds[2] != STDOUT_FILENO
-			&& fds[2] != STDERR_FILENO)
-		if (fds[2] != -1)
-			close(fds[2]);
-	if (fds[3] != STDIN_FILENO && fds[3] != STDOUT_FILENO
-			&& fds[3] != STDERR_FILENO)
-		if (fds[3] != -1)
-			close(fds[3]);
-	if (fds[4] != STDIN_FILENO && fds[4] != STDOUT_FILENO
-			&& fds[4] != STDERR_FILENO)
-		if (fds[4] != -1)
-			close(fds[4]);
+	ft_dprintf(STDERR_FILENO, "%s: %s failed.\n", e->progname, err);
+	if (e->forked)
+		exit(EXIT_FAILURE);
+	return (1);
 }
 
-int			command_pipe_dup(t_jobs *job, t_process *p, t_s_env *e, int *fds)
+static int		command_pipe_left(void *cmd, t_s_env *e, int pfd[2], int *ppfd)
 {
-	fds[FD_STDERR] = p->fds[2];
-	if (p->next)
+	t_s_env		newe;
+
+	if (ppfd[0])
 	{
-		if (pipe(fds) < 0)
-			return (command_error(e->progname, 10, NULL, e));
-		fds[3] = fds[FD_PIPE_OUT];
+		dup2(ppfd[0], STDIN_FILENO);
+		close(ppfd[0]);
 	}
-	else
-		fds[3] = p->fds[1];
-	p->pipe[0] = fds[0];
-	p->pipe[1] = fds[1];
-	if (p->fds[0] == STDIN_FILENO)
-		p->fds[0] = fds[2];
-	if (p->fds[1] == STDOUT_FILENO)
-		p->fds[1] = fds[3];
-	return (command_check(job, p, e));
+	ft_memcpy(&newe, e, sizeof(newe));
+	newe.public_env = sh_tabdup((const char **)e->public_env);
+	newe.private_env = sh_tabdup((const char **)e->private_env);
+	newe.forked = 1;
+	close(pfd[0]);
+	dup2(pfd[1], STDOUT_FILENO);
+	close(pfd[1]);
+	command_parse(((t_pipeline *)cmd)->left, &newe);
+	close(STDOUT_FILENO);
+	sh_freetab(&newe.public_env);
+	sh_freetab(&newe.private_env);
+	exit(*newe.ret);
+}
+
+static int		command_pipe_right(void *cmd, t_s_env *e, int pfd[2])
+{
+	t_s_env		newe;
+
+	ft_memcpy(&newe, e, sizeof(newe));
+	newe.public_env = sh_tabdup((const char **)e->public_env);
+	newe.private_env = sh_tabdup((const char **)e->private_env);
+	newe.forked = 1;
+	close(pfd[1]);
+	dup2(pfd[0], STDIN_FILENO);
+	close(pfd[0]);
+	command_parse(((t_pipeline *)cmd)->right, &newe);
+	close(STDIN_FILENO);
+	sh_freetab(&newe.public_env);
+	sh_freetab(&newe.private_env);
+	exit(*newe.ret);
+}
+
+static int		command_last_pipe(int pfd[2], t_pipeline *cmd, t_s_env *e)
+{
+	pid_t		pid;
+
+	if ((pid = fork()) < 0)
+		return (command_pipe_error("fork()", e));
+	else if (pid == 0)
+		command_pipe_right(cmd, e, pfd);
+	close(pfd[0]);
+	command_wait(pid, 0, e->ret);
+	return (0);
+}
+
+int				command_pipe(void *cmd, t_s_env *e, int ppfd[2])
+{
+	pid_t		pid;
+	int			pfd[2];
+
+	if (pipe(pfd) < 0)
+		return (command_pipe_error("pipe()", e));
+	if ((pid = fork()) < 0)
+		return (command_pipe_error("fork()", e));
+	else if (pid == 0)
+		command_pipe_left(cmd, e, pfd, ppfd);
+	if (ppfd[0])
+		close(ppfd[0]);
+	close(pfd[1]);
+	if (*(int *)((t_pipeline *)cmd)->right == IS_A_PIPE)
+	{
+		if (command_pipe(((t_pipeline *)cmd)->right, e, pfd))
+			return (1);
+	}
+	else if (command_last_pipe(pfd, cmd, e))
+		return (1);
+	command_wait(pid, 0, NULL);
+	return (0);
 }

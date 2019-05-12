@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/19 17:42:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/18 15:27:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/20 20:50:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,9 @@ static int		expand_dollar_dquote(t_exp *param, t_ret *ret)
 
 static int		expand_escaped_character(t_exp *param, t_ret *ret)
 {
-	static char	table[] = {
-		0x07, 0x08, 0x00, 0x00, 0x1B, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x0A, 0x0A, 0x0A, 0x0A, 0x0D, 0x0A, 0x09, 0x00, 0x0B, 0x00, 0x00,
-		0x00, 0x00,
-	};
-	char		c;
-
-	if (param->buff[param->i + 1] >= 'a' && param->buff[param->i + 1] <= 'z'
-	&& (c = table[(int)param->buff[param->i + 1] - 'a']))
+	if (param->buff[param->i + 1] == 'n')
 	{
-		if (param_addchar(c, ret) != ERR_NONE)
+		if (param_addchar('\n', ret) != ERR_NONE)
 			return (ERR_MALLOC);
 		else
 			param->i++;
@@ -71,8 +63,6 @@ static int		expand_dollar_squote(t_exp *param, t_ret *ret)
 			return (ERR_MALLOC);
 		else
 			param->i++;
-	if (param_addchar(param->buff[param->i], ret))
-		return (ERR_MALLOC);
 	return (ERR_NONE);
 }
 

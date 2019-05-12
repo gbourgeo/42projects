@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/20 20:42:12 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/04/23 17:09:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/03/16 18:51:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ int			parse_operator(t_token **token, t_p_param *param, t_s_env *e)
 		if (!(*param->redir = ft_memalloc(sizeof(**param->redir))))
 			return (parse_error(ERR_MALLOC_FAILED, NULLTOKEN, e));
 	(*param->redir)->token = *token;
-	if ((*token)->next == NULL
-	|| ((*token)->id == DLESS_VALUE && (*token)->next->type == OPERATOR))
+	if ((*token)->next == NULL)
 		return (parse_error(ERR_UNEXPECTED_TOKEN, (*token)->next, e));
 	if (!((*param->redir)->arg = ft_memalloc(sizeof(*(*param->redir)->arg))))
 		return (parse_error(ERR_MALLOC_FAILED, NULLTOKEN, e));
