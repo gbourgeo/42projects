@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   install.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2018/11/26 22:23:13 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 17:05:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,6 @@ int			install_service()
 	close(fd);
 	if (ret != sizeof(DUREX_SERVICE_SCRIPT))
 		return install_error(-1);
-	/* printf("%s = %d\n", DUREX_ACTIVATE, system(DUREX_ACTIVATE)); */
 	if (system(DUREX_ACTIVATE))
 		return install_error(-1);
 	return 0;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/27 04:24:37 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 05:47:51 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 16:49:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <fcntl.h>
 
 void		clientShell(int fds);
-void		serverLog(const char *message, ...);
+void		serverLog(int ts, const char *message, ...);
 
 int			spawnShell(int cl_fd)
 {
@@ -38,10 +38,10 @@ int			spawnShell(int cl_fd)
 						exit(0);
 					} else if (pid > 0) {
 						close(fds);
-						serverLog("[INFO] - %d: %s created (%d)", cl_fd, ptsname(fdm), pid);
+						serverLog(1, "[INFO] - %d: %s created (%d)\n", cl_fd, ptsname(fdm), pid);
 						return (fdm);
 					}
-					serverLog("[ERRO] - %d: Failed to fork new shell", cl_fd);
+					serverLog(1, "[ERRO] - %d: Failed to fork new shell\n", cl_fd);
 					close(fds);
 				}
 			}

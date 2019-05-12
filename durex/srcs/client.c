@@ -20,7 +20,7 @@
 
 #include "durex.h"
 
-extern char **environ;
+extern char 	**environ;
 
 void			clearClient(t_cl *client)
 {

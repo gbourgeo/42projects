@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: root </var/mail/root>                      +#+  +:+       +#+         #
+#    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2018/11/26 22:18:48 by root             ###   ########.fr        #
+#    Updated: 2019/05/12 16:05:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME	= Durex
 SRC		= main.c install.c durex.c server.c client.c encrypt.c commands.c
@@ -63,8 +63,8 @@ fclean: clean
 re: fclean all
 
 rm:
+	/bin/rm /etc/ld.so.preload
 	systemctl disable durex; systemctl stop durex;
-	@if test -f /etc/ld.so.preload; then rm /etc/ld.so.preload && echo rm Library; fi
 	@if test -f /bin/Durex; then rm /bin/Durex && echo rm Durex; fi
 	@if test -f /lib/systemd/system/durex.service; then rm /lib/systemd/system/durex.service && echo rm Durex service; fi
 	@if test -f /var/log/Durex.log; then rm /var/log/Durex.log && echo rm Durex log; fi

