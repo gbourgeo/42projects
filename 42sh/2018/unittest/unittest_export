@@ -1,0 +1,146 @@
+echo "----------------------------------------------------------------------------------------"
+echo "                              TESTING EXPORT"
+echo "----------------------------------------------------------------------------------------"
+
+echo "----------------------------------------------------------------------------------------"
+echo "						Testing export with no arguments"
+echo "----------------------------------------------------------------------------------------"
+
+export 2>&1 > old_env
+
+echo "export :"
+export 2>&1 > new_env
+echo "ret : $? | diff with old env :"
+diff old_env new_env
+
+rm new_env
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing export with options"
+echo "----------------------------------------------------------------------------------------"
+
+echo "export -p :"
+export -p 2>&1 > new_env
+echo "ret : $? | diff with old_env"
+diff olde_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export -p ab cdef hijk lmop :"
+export -p ab cdef hijk lmop 2>&1 > new_env
+echo "ret : $? | diff with old_env"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export -p 42 ab 0 c :"
+export -p 42 ab 0 c 2>&1 > new_env
+echo "ret : $? | diff with old_env :"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export -_4242 :"
+export -_4242
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export -pppppppppppppp -iiiiiiiiiiiiiiiiiii :"
+export -pppppppppppppp -iiiiiiiiiiiiiiiiiii 2>&1
+echo "ret : $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing export with arguments"
+echo "----------------------------------------------------------------------------------------"
+
+echo "export kkkkkkk"
+export kkkkkkk
+echo "ret : $? :"
+echo "export 2>&1 > new_env"
+export 2>&1 > new_env
+echo "diff with old_env :"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export lakj lsakj lsakfjf d :"
+export lakj lsakj lsakfjf d
+echo "ret : $? :"
+echo "export 2>&1 > new_env"
+export 2>&1 > new_env
+echo "diff with old_env :"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export __213 :"
+export __213
+echo "ret : $?"
+echo "export 2>&1 > new_env"
+export 2>&1 > new_env
+echo "diff with old_env :"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export tsi= :"
+export tsi=
+echo "ret : $?"
+echo "export 2>&1 > new_env"
+export 2>&1 > new_env
+echo "diff with old_env :"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "uu=kjjj :"
+uu=kjjj
+echo "ret : $?"
+eeho "export | grep uu:"
+export | grep uu
+echo "set | grep uu:"
+set | gre uu
+echo "env | grep uu :"
+env | grep uu
+echo "export aa :"
+export aa
+echo "export | grep aa :"
+export | grep aa
+echo "set | grep aa :"
+set | grep aa
+echo "env | grep :"
+env
+echo "export 2>&1 > new_env"
+export 2>&1 > new_env
+echo "diff with old_env :"
+diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "export lala= :"
+export lala=
+echo "export | grep lala:"
+export | grep lala
+echo "set | grep lala :"
+set | grep lala
+echo "env | grep lala:"
+env | grep lala
+echo "export 2>&1 > new_env"
+export 2>&1 > new_env
+echo "diff with old_env :"
+diff old_env new_env
+rm new_env
+
+rm old_env
+echo "----------------------------------------------------------------------------------------"
+echo "                              EXITING EXPORT..."
+echo "----------------------------------------------------------------------------------------"

@@ -1,0 +1,146 @@
+echo "------------------------------------------------"
+echo "TESTING OPERATOR"
+echo "------------------------------------------------"
+
+echo "------------------------------------------------"
+echo "Testing && :"
+echo "------------------------------------------------"
+
+echo "ls && ls"
+ls && ls
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas && ls"
+ls existepas && ls
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls && ls existepas"
+ls && ls existepas
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "echo BEGIN && ls && ls existepas && echo END"
+echo BEGIN && ls && ls existepas && echo END
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "&& ls"
+echo "&& ls" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls &&"
+echo "ls &&" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ; && ls"
+echo "ls ; && ls" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ; ls &&"
+echo "ls ; ls &&" >| tmp
+./42sh tmp
+
+echo "------------------------------------------------"
+echo "Testing || :"
+echo "------------------------------------------------"
+
+echo "echo FIRST || echo SECOND"
+echo FIRST || echo SECOND
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas || echo SECOND"
+ls existepas || echo SECOND
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "echo FIRST || ls existepas"
+echo FIRST || ls existepas
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas || cd existepas || echo LAST"
+ls existepas || cd existepas || echo LAST
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "|| ls"
+echo "|| ls" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ||"
+echo "ls ||" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ; || ls"
+echo "ls ; || ls" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ; ls ||"
+echo "ls ; ls ||" >| tmp
+./42sh tmp
+
+echo "------------------------------------------------"
+echo "Testing && and || :"
+echo "------------------------------------------------"
+
+echo "echo FIRST && echo SECOND || echo THIRD"
+echo FIRST && echo SECOND || echo THIRD
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "echo FIRST && ls existepas || echo THIRD"
+echo FIRST && ls existepas || echo THIRD
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "echo FIRST || echo SECOND && echo THIRD"
+echo FIRST || echo SECOND && echo THIRD
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas || ls existepas && echo THIRD"
+ls existepas || ls existepas && echo THIRD
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls && ls ||"
+echo "ls && ls ||" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls || ls &&"
+echo "ls || ls &&" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls && || ls"
+echo "ls && || ls" >| tmp
+./42sh tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls || && ls"
+echo "ls || && ls" >| tmp
+./42sh tmp
+
+rm tmp
+echo "------------------------------------------------"
+echo "EXITING OPERATOR..."
+echo "------------------------------------------------"

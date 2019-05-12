@@ -1,0 +1,74 @@
+echo "------------------------------------------------"
+echo "TESTING UNSETENV"
+echo "------------------------------------------------"
+echo "(use csh to test it)"
+
+env > saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV"
+unsetenv
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV ONE NOT VALID ARGUMENT"
+echo "unsetenv path"
+unsetenv path
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV ONE NOT VALID ARGUMENT"
+echo "unsetenv ''"
+unsetenv ''
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV ONE VALID ARGUMENT"
+echo "unsetenv SHELL"
+unsetenv SHELL
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV MULTIPLE VALID ARGUMENT"
+echo "unsetenv SHLVL PWD OLDPWD"
+unsetenv SHLVL PWD OLDPWD
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV MULTIPLE NOT VALID ARGUMENT"
+echo "unsetenv toto tata tutu titi"
+unsetenv toto tata tutu titi
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "UNSETENV MULTIPLE VALID / NOT VALID ARGUMENT"
+echo "unsetenv LOGNAME toto tata tutu titi USER"
+unsetenv LOGNAME toto tata tutu titi USER
+echo "unsetenv ret: $?"
+env >| new_env
+diff new_env saved_env
+
+rm saved_env new_env
+
+echo "------------------------------------------------"
+echo "EXITING SETENV..."
+echo "------------------------------------------------"

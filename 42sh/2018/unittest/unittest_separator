@@ -1,0 +1,81 @@
+echo "------------------------------------------------"
+echo "TESTING SEPARATOR"
+echo "------------------------------------------------"
+
+echo "ls ; ls"
+ls ; ls
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas ; ls"
+ls existepas ; ls
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ; ls existepas"
+ls ; ls existepas
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls & ls"
+ls & ls
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas & ls"
+ls existepas & ls
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls & ls existepas"
+ls & ls existepas
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "& ls"
+echo "& ls" > tmp
+./42sh tmp
+echo "ret : $?"
+rm tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls &"
+ls &
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas &"
+ls existepas &
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls ;"
+ls ;
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "ls existepas ;"
+ls existepas ;
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "; ls"
+echo "; ls" > tmp
+./42sh tmp
+echo "ret : $?"
+
+rm tmp
+echo "------------------------------------------------"
+echo "EXITNG SEPARATOR..."
+echo "------------------------------------------------"
