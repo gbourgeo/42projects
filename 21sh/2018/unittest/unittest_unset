@@ -1,0 +1,97 @@
+echo "----------------------------------------------------------------------------------------"
+echo "                              TESTING UNSET"
+echo "----------------------------------------------------------------------------------------"
+
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing unset with arguments"
+echo "----------------------------------------------------------------------------------------"
+
+echo "unset $PWD :"
+unset $PWD
+echo "ret: $?"
+echo "env :"
+env
+echo "ret: $?"
+echo "set :"
+set
+echo "ret: $?"
+echo "export :"
+export
+echo "ret: $?"
+
+echo "dd=ff :"
+dd=ff
+echo "ret: $?"
+echo "unset dd :"
+unset dd
+echo "ret: $?"
+echo "env :"
+env
+echo "ret: $?"
+echo "set :"
+set
+echo "ret: $?"
+echo "export :"
+export
+echo "ret: $?"
+
+echo "export gg :"
+export gg
+echo "ret: $?"
+echo "unset dd :"
+unset dd
+echo "ret: $?"
+echo "env :"
+env
+echo "ret: $?"
+echo "set :"
+set
+echo "ret: $?"
+echo "export :"
+export
+echo "ret: $?"
+
+echo "setenv koko=kuku :"
+setenv koko=kuku
+echo "ret: $?"
+echo "unset dd :"
+unset dd
+echo "ret: $?"
+echo "env :"
+env
+echo "ret: $?"
+echo "set :"
+set
+echo "ret: $?"
+echo "export :"
+export
+echo "ret: $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                          Testing unset with invalid arguments"
+echo "----------------------------------------------------------------------------------------"
+
+echo "unset slkdfj sdkjfh sdkgjdlh :"
+unset slkdfj sdkjfh sdkgjdlh 
+echo "ret: $?"
+
+echo "unset 23423 :"
+unset 23423
+echo "ret: $?"
+
+echo "unset +++++%%%% :"
+unset +++++%%%%
+echo "ret: $?"
+
+echo "unset _ :"
+unset _
+echo "ret: $?"
+
+echo "set :"
+set
+echo "ret: $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              EXITING UNSET..."
+echo "----------------------------------------------------------------------------------------"

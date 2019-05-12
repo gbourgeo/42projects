@@ -1,0 +1,200 @@
+echo '***************************************************************'
+echo '                    EXPAND DOLLAR UNITTESTS                    '
+echo '***************************************************************'
+
+echo 'EXPAND DOLLAR WITH NO BRACE'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo $/$
+echo $\$
+echo $PATH $#PATH
+echo coucou-$SHLVL-coucou coucou-$#SHLVL-coucou
+echo "NOVAR->$NOTAGOODVAR !" "NOVAR->$#NOTAGOODVAR !"
+ls $PATH $#PATH
+ls "$PATH" "$#PATH"
+echo -e '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
+
+echo 'EXPAND DOLLAR SPECIAL CHARACTERS : @*#?-$!0'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo '$@'=$@
+echo 'ls $@ :'
+ls $@
+echo '"$@"'="$@"
+echo 'ls "abc$@def" :'
+ls "abc$@def"
+echo '$@@'=$@@
+echo '$*'=$*
+echo 'ls $* :'
+ls $*
+echo '"$*"'="$*"
+echo 'ls "abc$*def" :'
+ls "abc$*def"
+echo '$*bla'=$*bla
+echo '$#'=$#
+echo '$##'=$##
+echo '$?'=$?
+echo '$??'=$??
+echo '$-'=$-
+echo '$--'=$--
+echo '$$'=$$
+echo '$$$'=$$$
+echo '$!'=$!
+echo '$!!'=$!!
+echo '$0'=$0
+echo '$3'=$3
+echo '$9'=$9
+echo '$0000'=$0000
+echo '$0001'=$0001
+echo -e '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
+
+echo 'EXPAND DOLLAR PARAMETER ${...}'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo '${}'=${}
+echo '"${}"'="${}"
+echo '${ }'=${ }
+echo '"${ }"'="${ }"
+ls ${PATH} ${#PATH}
+ls "${PATH}" "${#PATH}"
+echo coucou-${SHLVL}-coucou coucou-${#SHLVL}-coucou
+echo "NOVAR->${NOTAGOODVAR}" "NOVAR->${#NOTAGOODVAR}"
+echo one"${NOTAGOODVAR}"two one"${#NOTAGOODVAR}"two
+
+echo '${@}'=${@}
+echo 'ls ${@} :'
+ls ${@}
+echo '"${@}"'="${@}"
+echo 'ls abc"${@}"def :'
+ls abc"${@}"def
+echo 'ls "abc${@}def" :'
+ls "abc${@}def"
+echo '${@@}'=${@@}
+echo '${*}'=${*}
+echo 'ls abc${*}def :'
+ls abc${*}def
+echo '"${*}"'="${*}"
+echo 'ls abc"${*}"def :'
+ls abc"${*}"def
+echo 'ls "abc${*}def" :'
+ls "abc${*}def"
+echo '${#}'=${#}
+echo '${##}'=${##}
+echo '${?}'=${?}
+echo '${??}'=${??}
+echo '${-}'=${-}
+echo '${--}'=${--}
+echo '${$}'=${$}
+echo '${$$}'=${$$}
+echo '${!}'=${!}
+echo '${!!}'=${!!}
+echo '${0}'=${0}
+echo '${2}'=${2}
+echo '${90}'=${90}
+echo '${00000}'=${00000}
+echo '${00001}'=${00001}
+echo -e '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
+
+echo 'EXPAND DOLLAR PARAMETER WITH MODIFIERS ${...:-...}'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
+NULLVAR=
+echo 'variable $NULLVAR set but NULL'
+echo 'variable $UNSET not set'
+# NON implemented math substitution ':'
+#echo LS-${PWD:7}-LS
+#echo LS-${PWD:$SHLVL+4}-LS
+#echo LS-${PWD:$OLDPWD}-LS
+#echo LS-${$PWD:$SHLVL}-LS
+#echo LS-${PWDS:$SHLVL}-LS
+
+echo
+echo 'TEST ${...:-...}'
+echo '--------------------------'
+echo LS-${PWD:-nah not now}-LS
+echo LS-${#PWD:-nah not now}-LS
+echo LS-${NULLVAR:-set but null}-LS
+echo LS-${NULLVAR:-$SHELL}-LS
+echo LS-${NULL:-just null}-LS
+echo LS-${NULL:-$SHELL}-LS
+
+echo
+echo 'TEST ${...-...}'
+echo '--------------------------'
+echo LS-${PWD-nah not now}-LS
+echo LS-${#PWD-nah not now}-LS
+echo LS-${NULLVAR-set but null}-LS
+echo LS-${NULLVAR-$SHELL}-LS
+echo LS-${NULL-just null}-LS
+echo LS-${NULL-$SHELL}-LS
+
+echo
+echo 'TEST ${...:=...}'
+echo '--------------------------'
+echo LS-${PWD:=nah not now}-LS
+echo LS-${#PWD:=nah not now}-LS
+echo '$NULLVAR='$NULLVAR
+echo LS-${NULLVAR:=set but null}-LS
+echo '$NULLVAR='$NULLVAR
+NULLVAR=
+echo '$NULLVAR='$NULLVAR
+echo LS-${NULLVAR:=$SHELL}-LS
+echo '$NULLVAR='$NULLVAR
+NULLVAR=
+echo '$NULL='$NULL
+echo LS-${NULL:=just null}-LS
+echo '$NULL='$NULL
+unset NULL
+echo '$NULL='$NULL
+echo LS-${NULL:=$SHELL}-LS
+echo '$NULL='$NULL
+unset NULL
+
+echo
+echo 'TEST ${...=...}'
+echo '--------------------------'
+echo LS-${PWD=nah not now}-LS
+echo LS-${#PWD=nah not now}-LS
+echo '$NULLVAR='$NULLVAR
+echo LS-${NULLVAR=set but null}-LS
+echo '$NULLVAR='$NULLVAR
+NULLVAR=
+echo '$NULLVAR='$NULLVAR
+echo LS-${NULLVAR=$SHELL}-LS
+echo '$NULLVAR='$NULLVAR
+NULLVAR=
+echo '$NULL='$NULL
+echo LS-${NULL=just null}-LS
+echo '$NULL='$NULL
+unset NULL
+echo '$NULL='$NULL
+echo LS-${NULL=$SHELL}-LS
+echo '$NULL='$NULL
+unset NULL
+
+echo
+echo 'TEST ${...:?...}'
+echo '--------------------------'
+echo LS-${PWD:?$SHLVL}-LS
+
+##
+### The next test will exit the shell because of their implementation
+##
+echo LS-${NULLVAR:?"Exiting like a pro !"}-LS
+#echo LS-${NULLVAR:?}-LS
+#echo LS-${NULL:?"Exiting like a pro !"}-LS
+#echo LS-${NULL:?}-LS
+
+echo
+echo 'TEST ${...?...}'
+echo '--------------------------'
+echo LS-${PWD?$SHLVL}-LS
+echo LS-${NULLVAR?"Put error, do not exit this..."}-LS
+
+##
+### The next test will exit the shell because of their implementation
+##
+#echo LS-${NULL?"Exiting like a pro !"}-LS
+#echo LS-${NULL?}-LS
+
+echo
+echo 'TEST ERRORS'
+echo '--------------------------'
+echo LS-${$PWD:-$SHLVL}-LS

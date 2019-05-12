@@ -1,0 +1,1032 @@
+
+echo "----------------------------------------------------------------------------------------"
+echo "									TESTING TYPE"
+echo "----------------------------------------------------------------------------------------"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing type with no arguments"
+echo "----------------------------------------------------------------------------------------"
+
+echo "type :"
+type
+echo "ret : $?"
+echo "echo type > type_test :"
+echo type > type_test
+echo "bash type_test 2>&1 > bash_res ; ./42sh type_test 2>&1 > 42sh_res"
+bash type_test 2>&1 > bash_res ; ./42sh type_test 2>&1 > 42sh_res
+echo "diff :"
+diff bash_res 42sh_res
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing type with arguments"
+echo "----------------------------------------------------------------------------------------"
+
+iecho "type ls :"
+type ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type echo :"
+type echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type cat  :"
+type cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type kill :"
+type kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type  kdsj :"
+type  kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type  cd :"
+type  cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type alias :"
+type alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type set :"
+type set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type  unset :"
+type  unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type  env :"
+type  env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type export :"
+type export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type ! :"
+type !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type ] :"
+type ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type [ :"
+type [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type { :"
+type {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type } :"
+type }
+echo "ret: $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing type with option"
+echo "----------------------------------------------------------------------------------------"
+
+echo "type -a ls"
+type -a ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a echo"
+type -a echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a cat"
+type -a cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a kill"
+type -a kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a kdsj"
+type -a kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a cd"
+type -a cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a alias"
+type -a alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a set"
+type -a set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a unset"
+type -a unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a env"
+type -a env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a export"
+type -a export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a !"
+type -a !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a ]"
+type -a ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a ["
+type -a [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a {"
+type -a {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -a }"
+type -a }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f ls"
+type -f ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f echo"
+type -f echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f cat"
+type -f cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f kill"
+type -f kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f kdsj"
+type -f kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f cd"
+type -f cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f alias"
+type -f alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f set"
+type -f set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f unset"
+type -f unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f env"
+type -f env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f export"
+type -f export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f !"
+type -f !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f ]"
+type -f ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f ["
+type -f [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f {"
+type -f {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -f }"
+type -f }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p echo"
+type -p echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p cat"
+type -p cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p kill"
+type -p kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p kdsj"
+type -p kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p cd"
+type -p cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p alias"
+type -p alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p set"
+type -p set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p unset"
+type -p unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p env"
+type -p env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p export"
+type -p export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p !"
+type -p !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p ]"
+type -p ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p ["
+type -p [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p {"
+type -p {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -p }"
+type -p }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t ls"
+type -t ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t echo"
+type -t echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t cat"
+type -t cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t kill"
+type -t kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t kdsj"
+type -t kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t cd"
+type -t cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t alias"
+type -t alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t set"
+type -t set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t unset"
+type -t unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t env"
+type -t env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t export"
+type -t export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t !"
+type -t !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t ]"
+type -t ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t ["
+type -t [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t {"
+type -t {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -t }"
+type -t }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P ls"
+type -P ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P echo"
+type -P echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P cat"
+type -P cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P kill"
+type -P kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P kdsj"
+type -P kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P cd"
+type -P cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P alias"
+type -P alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P set"
+type -P set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P unset"
+type -P unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P env"
+type -P env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P export"
+type -P export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P !"
+type -P !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P ]"
+type -P ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P ["
+type -P [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P {"
+type -P {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -P }"
+type -P }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap ls"
+type -ap ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap echo"
+type -ap echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap cat"
+type -ap cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap kill"
+type -ap kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap kdsj"
+type -ap kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap cd"
+type -ap cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap alias"
+type -ap alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap set"
+type -ap set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap unset"
+type -ap unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap env"
+type -ap env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap export"
+type -ap export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap !"
+type -ap !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap ]"
+type -ap ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap ["
+type -ap [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap {"
+type -ap {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -ap }"
+type -ap }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt ls"
+type -afpPt ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt echo"
+type -afpPt echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt cat"
+type -afpPt cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt kill"
+type -afpPt kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt kdsj"
+type -afpPt kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt cd"
+type -afpPt cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt alias"
+type -afpPt alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt set"
+type -afpPt set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt unset"
+type -afpPt unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt env"
+type -afpPt env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt export"
+type -afpPt export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt !"
+type -afpPt !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt ]"
+type -afpPt ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt ["
+type -afpPt [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt {"
+type -afpPt {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afpPt }"
+type -afpPt }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt echo"
+type -afPt echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt cat"
+type -afPt cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt kill"
+type -afPt kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt kdsj"
+type -afPt kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt cd"
+type -afPt cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt alias"
+type -afPt alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt set"
+type -afPt set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt unset"
+type -afPt unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt env"
+type -afPt env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt export"
+type -afPt export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt !"
+type -afPt !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt ]"
+type -afPt ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt ["
+type -afPt [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt {"
+type -afPt {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -afPt }"
+type -afPt }
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt ls"
+type -fpPt ls
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt echo"
+type -fpPt echo
+echo "ret: $?" 
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt cat"
+type -fpPt cat 
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt kill"
+type -fpPt kill
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt kdsj"
+type -fpPt kdsj
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt cd"
+type -fpPt cd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt alias"
+type -fpPt alias
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt set"
+type -fpPt set
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt unset"
+type -fpPt unset
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt env"
+type -fpPt env
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt export"
+type -fpPt export
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt !"
+type -fpPt !
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt ]"
+type -fpPt ]
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt ["
+type -fpPt [
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt {"
+type -fpPt {
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -fpPt }"
+type -fpPt }
+echo "ret: $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing type with invalid option"
+echo "----------------------------------------------------------------------------------------"
+
+echo "type -d :"
+type -d
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -da :"
+type -da
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -da lsdkf :"
+type -da lsdkf
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -da ls :"
+type -da ls
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type -da ls kdfj :"
+type -da ls kdfj
+echo "ret: $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              Testing type with invalid argument"
+echo "----------------------------------------------------------------------------------------"
+
+echo "type ksdjfsd :"
+type ksdjfsd
+echo "ret: $?"
+ 
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "type ksdjfsd ls kjdfgdf :"
+type ksdjfsd ls kjdfgdf
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+tyo "e ls ksdjfsd :"
+type ls ksdjfsd
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+tyo "e ksdjfsd ls :"
+type ksdjfsd ls
+echo "ret: $?"
+
+echo "----------------------------------------------------------------------------------------"
+echo "                              EXITING TYPE..."
+echo "----------------------------------------------------------------------------------------"

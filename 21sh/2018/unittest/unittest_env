@@ -1,0 +1,90 @@
+echo "------------------------------------------------"
+echo "TESTING ENV"
+echo "------------------------------------------------"
+
+ENV_ORIGIN=/tmp/env_original
+ENV_SAVE=/tmp/env_save
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "ENV NO ARGUMENTS"
+env
+echo "ret: $?"
+env > $ENV_ORIGIN
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "ENV OPTIONS"
+echo -e "\tERASE ENVIRONMENT: -i"
+env -i
+echo "ret: $?"
+echo -e "\tERASE ENVIRONMENT: -i ls"
+env -i ls
+echo "env -i ls (ret: $?)"
+
+echo -e "\tMODIFY PATH: -P"
+env -P
+echo "env -P (ret: $?)"
+echo -e "\tMODIFY PATH: -P /bin"
+echo -e "\t\$PATH: $PATH"
+env -P /bin
+echo "env -P /bin (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tMODIFY PATH: -P/bin"
+echo -e " \$PATH: $PATH"
+env -P/bin
+echo "env -P/bin (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tMODIFY PATH: -P /bin ls"
+echo -e " \$PATH: $PATH"
+env -P /bin ls
+echo "env -P /bin ls (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tMODIFY PATH: -P /bin env"
+echo -e " \$PATH: $PATH"
+env -P /bin env
+echo "env -P /bin env (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tUNSET VARIABLE: -u"
+env -u
+echo "env -u (ret: $?)"
+
+echo -e "\tUNSET VARIABLE: -uPATH"
+env -uPATH
+echo "env -uPATH (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tUNSET VARIABLE: -u PATH"
+env -u PATH
+echo "env -u PATH (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tUNSET VARIABLE: -u PATH ls"
+env -u PATH ls
+echo "env -u PATH ls (ret: $?)"
+echo -e " \$PATH: $PATH"
+
+echo -e "\tVERBOSE MODE: -v"
+env -v
+echo "env -v (ret: $?)"
+
+echo -e "\tVERBOSE MODE: -vvvvvvvvvvvv"
+env -vvvvvvvvvvvv
+echo "env -vvvvvvvvvvvv (ret: $?)"
+
+echo -e "\tVERBOSE MODE: -vi"
+env -vi
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "ENV ERRORS"
+env -Z
+echo "ret: $?"
+env > $ENV_SAVE
+diff $ENV_ORIGIN $ENV_SAVE
+
+rm -f $ENV_ORIGIN
+rm -f $ENV_SAVE
+echo OK

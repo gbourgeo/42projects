@@ -1,0 +1,288 @@
+echo "------------------------------------------------"
+echo "TESTING test"
+echo "------------------------------------------------"
+
+echo "Test with no arg :"
+test
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test arg1 :"
+test arg1
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test /dev :"
+test /dev
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test arg1 arg2:"
+test arg1 arg2
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test !"
+test !
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test ! arg1 :"
+test ! arg1
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test ! /dev :"
+test ! /dev
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test ! !"
+test ! !
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test arg1 arg2 arg3"
+test arg1 arg2 arg3
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test ! arg1 arg2 arg3"
+test ! arg1 arg2 arg3
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test arg1 arg2 arg3 arg4 arg5"
+test arg1 arg2 arg4 arg4 arg5
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test """
+test ""
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test "" "" :"
+test "" ""
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test "" "" "" :"
+test "" "" ""
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test "" "" "" "":"
+test "" "" "" ""
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -b no :"
+test -b no
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -b /dev/disk0 :"
+test -b /dev/disk0
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -c /dev/zero :"
+test -c /dev/zero
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -d /"
+test -d / 
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -d /dev/tty"
+test -d /dev/tty
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -e /etc"
+test -e /etc"
+echo "ret : $?"
+
+echo "test -e notexist"
+test -e notexist
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -f /System"
+test -f /System"
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -g /tmp/test1"
+mkdir /tmp/test1
+chmod 2775 /tmp/test1
+test -g /tmp/test1
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -p /tmp/test2"
+touch /tmp/test2
+mkfifo /tmp/test2
+test -p /tmp/test2
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -r /tmp/test3"
+touch /tmp/test3
+test -r /tmp/test3
+echo "echo : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -r /tmp/test4"
+touch /tmp/test4
+chmod u-r /tmp/test4
+test -r /tmp/test4
+echo "echo : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -L /dev/null"
+test -L /dev/null
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -z """
+test -z """
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -z lala"
+test -z lala
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test lala = lala"
+test lala = lala
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test lala = lalaa"
+test lala = lalaa
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test l = L"
+test l = L
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test lala != lala"
+test lala != lala
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test l != L"
+test l != L
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test +1 -eq 1"
+test +1 -eq 1
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test -1 -eq 1"
+test -1 -eq 1
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test +5 -ne 5"
+test +5 -ne 5
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test 134 -ne 1221"
+test 134 -ne 1221
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test 6 -ne 6"
+test 6 -ne 6
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test +5 -ge 5"
+test +5 -ge 5
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test +55 -ge -33"
+test +55 -ge -33
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test +5 -lt 5"
+test +5 -lt 5
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test 0 -lt 0"
+test 0 -lt 0
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test 223 -le 122"
+test 223 -le 122
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "test ! +5 -ne 5"
+test +5 -ne 5
+echo "ret: $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "------------------------------------------------"
+echo "EXITING TEST..."
+echo "------------------------------------------------"

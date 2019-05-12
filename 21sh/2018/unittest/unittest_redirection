@@ -1,0 +1,181 @@
+echo "------------------------------------------------"
+echo "TESTING REDIRECTION"
+echo "------------------------------------------------"
+
+echo -e "\n> NO ARG ( ls > )"
+echo "ls >" > tmp
+./42sh tmp
+rm tmp
+
+echo -e "\n> ARG ( ls > tmp )"
+ls > tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n> ARG ( ls -Z > tmp )"
+ls -Z > tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n>& NO ARG ( ls >& )"
+echo "ls >&" > tmp
+./42sh tmp
+rm tmp
+
+echo -e "\n>& ARG ( ls >& tmp )"
+ls >& tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n>& ARG ( ls 1>&2 tmp )"
+ls 1>&2 tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n>& ARG ( ls 1>&2 libft > tmp)"
+ls 1>&2 libft > tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n>& ARG ( ls libft > tmp 1>&2 )"
+ls libft > tmp 1>&2
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n>& ARG ( ls libft > tmp 1>&- )"
+ls libft > tmp 1>&-
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n>& ARG ( ls -Z libft > tmp 2>&- )"
+ls -Z libft > tmp 2>&-
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo -e "\n> ARG ( ls -Z >& tmp )"
+ls -Z >& tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "< NO ARG"
+echo "cat <" > tmp
+./42sh tmp
+rm tmp
+
+echo "< ARG ( cat < auteur )"
+cat < auteur
+
+echo "<& NO ARG"
+echo "cat <&" > tmp
+./42sh tmp
+rm tmp
+
+echo "<& ARG ( cat <& auteur )"
+cat <& auteur
+
+echo "<& ARG ( cat <&1 auteur )"
+cat <&1 auteur
+
+echo "<& ARG ( cat <&1- auteur )"
+cat <&1- auteur
+
+echo "<& ARG ( cat <&2 auteur )"
+cat <&2 auteur
+
+echo "<& ARG ( cat <&2- auteur )"
+cat <&2- auteur
+
+echo "<& ARG ( cat <&2- bru )"
+cat <&2- bru
+
+echo "<& ARG ( cat <&2-auteur )"
+cat <&2-auteur
+
+echo "<& ARG ( cat <&2-bru )"
+cat <&2-bru
+
+echo "<& ARG ( cat <&2auteur )"
+cat <&2auteur
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo ">> NO ARG"
+echo "ls >>" > tmp
+./42sh tmp
+rm tmp
+
+echo ">> ARG ( ls >> tmp )"
+ls >> tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo ">> ARG ( ls >> tmp ; cat auteur >> tmp )"
+ls >> tmp ; cat auteur >> tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo ">> ARG ( ls >>- )"
+ls >>-
+echo "ls:"
+ls
+rm -- -
+
+echo ">> ARG ( ls 2>>- tmp )"
+echo "ls:"
+ls
+ls 2>>- tmp
+
+echo ">> ARG ( ls >>- )"
+ls >>-
+
+echo ">> ARG ( ls >>- libft )"
+ls >>- libft
+echo "ls:"
+ls
+rm -- -
+
+echo ">> ARG ( ls 2>> tmp )"
+ls 2>> tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo ">> ARG ( ls -Z 2>> tmp )"
+ls -Z 2>> tmp
+echo "cat tmp :"
+cat tmp
+rm tmp
+
+echo ">>& NO ARG"
+echo "ls >>& libft" > tmp
+./42sh tmp
+rm tmp
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "<< NO ARG"
+echo "ls <<" > tmp
+./42sh tmp
+rm tmp
+
+echo "<<- NO ARG"
+echo "ls <<-" > tmp
+./42sh tmp
+rm tmp
+
+echo "------------------------------------------------"
+echo "EXITING REDIRECTION..."
+echo "------------------------------------------------"

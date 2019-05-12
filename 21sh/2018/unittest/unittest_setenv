@@ -1,0 +1,57 @@
+echo "------------------------------------------------"
+echo "TESTING SETENV"
+echo "------------------------------------------------"
+
+env
+env > old_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Simple setenv : setenv SALUT 'ca va' :"
+setenv SALUT 'ca va'
+echo "ret : $?"
+
+echo "Diff old_env/new_env:"
+env > new_env
+diff old_env new_env
+rm old_env new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Invalid name's first character : setenv 1PASSALUT 'dommage'"
+setenv 1PASSALUT 'dommage'
+echo "ret : $?"
+
+echo "Diff old_env/new_env:"
+env > new_env
+diff old_env new_env
+rm old_env new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Missing argument : setenv YAPAS :"
+setenv YAPAS
+echo "ret : $?"
+
+echo "Diff old_env/new_env:"
+env > new_env
+diff old_env new_env
+rm old_env new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Invalid variable name : setenv PAS%BON NONO :"
+setenv PAS%BON NONO
+echo "ret : $?"
+
+echo "Diff old_env/new_env:"
+env > new_env
+diff old_env new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+env
+rm old_env new_env
+
+echo "------------------------------------------------"
+echo "EXITING SETENV..."
+echo "------------------------------------------------"

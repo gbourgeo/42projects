@@ -1,0 +1,56 @@
+echo "------------------------------------------------"
+echo "TESTING SOURCE"
+echo "------------------------------------------------"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "CREATING TOTO"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "echo 'echo BEFORE ALIAS' > toto"
+echo 'echo BEFORE\ ALIAS' > toto
+echo "echo ls >> toto"
+echo ls >> toto
+echo "echo \"alias ls='ls -Gl'\" >> toto"
+echo "alias ls='ls -Gl'" >> toto
+echo "echo 'echo AFTER ALIAS' >> toto"
+echo 'echo AFTER\ ALIAS' >> toto
+echo "echo "ls" >> toto"
+echo "ls" >> toto
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Simple source : source toto"
+source toto
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Source with no argument : source"
+source
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Source a non-existent file : source exitepas"
+source existepas
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Source a directory : source src"
+source src
+echo "ret : $?"
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Source a file with no permission : chmod 000 toto ; source toto"
+chmod 000 toto ; source toto
+echo "ret : $?"
+chmod 777 toto
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+rm toto
+
+echo "------------------------------------------------"
+echo "EXITING SOURCE..."
+echo "------------------------------------------------"

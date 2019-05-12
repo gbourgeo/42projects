@@ -1,0 +1,83 @@
+echo "------------------------------------------------"
+echo "TESTING GLOBBING"
+echo "------------------------------------------------"
+
+echo "------------------------------------------------"
+echo "Testing star :"
+echo "------------------------------------------------"
+
+echo "Simple globbing : * :"
+echo *
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Globbing with directory : */ :"
+echo */
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Advanced globbing : */* :"
+echo */*
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Recursive globbing : **/**"
+echo **/**
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Path in globbing : src/*/*.c"
+echo src/*/*.c
+
+echo "------------------------------------------------"
+echo "Testing brackets :"
+echo "------------------------------------------------"
+
+echo "Simple brackets : [au]*"
+echo [au]*
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Interval in brackets : [a-u]*"
+echo [a-u]*
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Negation in brackets : [!au]*"
+echo [!au]*
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Negation interval in brackets : [!a-u]*"
+echo [!a-u]*
+
+echo "------------------------------------------------"
+echo "Testing question mark :"
+echo "------------------------------------------------"
+
+echo "Simple question mark : ?"
+echo ?
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Question mark with star : ?*?"
+echo ?*?
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Question mark with bracket : ?[nr]?"
+echo ?[nr]?
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "All pathern testing : [a-z]?r[!abcdef]*"
+echo [a-z]?[!m-t]*t
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "Error case : 25*"
+echo -n 25*
+
+echo "------------------------------------------------"
+echo "EXITING GLOBBING..."
+echo "------------------------------------------------"

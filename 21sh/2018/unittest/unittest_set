@@ -1,0 +1,56 @@
+echo "----------------------------------------------------------------------------------------"
+echo "                                       TESTING SET"
+echo "----------------------------------------------------------------------------------------"
+
+set > old_env
+
+echo "set :"
+set
+echo "ret : $? | diff :"
+set > new_env ; diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "set _42234 :"
+set _42234
+echo "ret : $? | diff :"
+set > new_env ; diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "set ++_=-=234 :"
+set ++_=-=234
+echo "ret: $?"
+echo "ret : $? | diff :"
+set > new_env ; diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "set dg=dfd :"
+set dg=dfd
+echo "ret : $? | diff :"
+set > new_env ; diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "set 409 rejflsdk fs sdfk sdlkgj fdlk :"
+set 409 rejflsdk fs sdfk sdlkgj fdlk
+echo "ret : $? | diff :"
+set > new_env ; diff old_env new_env
+rm new_env
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+echo "set :"
+set
+echo "ret : $? | diff :"
+set > new_env ; diff old_env new_env
+rm new_env old_env
+
+echo "----------------------------------------------------------------------------------------"
+echo "                                       EXITING SET..."
+echo "----------------------------------------------------------------------------------------"
