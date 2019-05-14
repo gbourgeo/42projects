@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/12 20:36:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/14 17:03:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,7 @@ void			ft_create_process_to_print_map(void)
 {
 	extern char	**environ;
 
-	e.pid = fork();
-	if (e.pid < 0)
+	if ((e.pid = fork()) < 0)
 		ft_exit(1, "mapper", 0);
 	else if (e.pid == 0)
 	{
