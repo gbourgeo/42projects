@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: root </var/mail/root>                      +#+  +:+       +#+         #
+#    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2018/09/20 08:17:06 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/05/28 17:34:51 by gbourgeo         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME = lemipc
 
@@ -39,7 +39,7 @@ LIBFT = libft/
 
 HEADERS = -I includes -I $(LIBFT)includes
 
-WWW = gcc -Wall -Werror -Wextra 
+WWW = gcc -Wall -Werror -Wextra -fsanitize=leak
 
 all: $(OBJ_D) $(NAME)
 
@@ -48,7 +48,7 @@ $(OBJ_D):
 	@make -C $(LIBFT)
 
 $(NAME): $(OBJ)
-	$(WWW) -o $@ $^ -L $(LIBFT) -lft -lncurses
+	gcc -o $@ $^ -L $(LIBFT) -lft -lncurses
 
 $(OBJ_D)%.o: $(SRC_D)%.c includes/lemipc.h
 	$(WWW) -o $@ -c $< $(HEADERS)

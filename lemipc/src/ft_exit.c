@@ -6,18 +6,18 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/12 20:53:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/28 16:55:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lemipc.h"
-#include "libft.h"
-#include "ft_fprintf.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/msg.h>
 #include <sys/sem.h>
 #include <sys/wait.h>
+#include "lemipc.h"
+#include "libft.h"
+#include "ft_fprintf.h"
 
 static int	ft_exit_game(void)
 {
@@ -94,6 +94,7 @@ static void	ft_exit_print_winner(int print_err, char *err)
 
 void		ft_exit(int print_err, char *err, int locked)
 {
+	init_signal(SIG_DFL);
 	if (!locked)
 		ft_lock(e.game.semid);
 	ft_exit_print_winner(print_err, err);

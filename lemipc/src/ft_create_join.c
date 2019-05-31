@@ -6,15 +6,15 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/12 20:33:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/28 17:15:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/sem.h>
+#include <sys/msg.h>
 #include "lemipc.h"
 #include "libft.h"
 #include "ft_printf.h"
-#include <sys/sem.h>
-#include <sys/msg.h>
 
 void				ft_create_game(t_game *game)
 {
@@ -38,7 +38,7 @@ void				ft_create_game(t_game *game)
 		ft_exit(1, "semget game IPC_CREAT", 0);
 	if (semctl(game->semid, 0, SETVAL, 0) < 0)
 		ft_exit(1, "semctl game SETVAL", 0);
-	game->msgqid = msgget(game->key, IPC_CREAT | SHM_R | SHM_W);
+	game->msgqid = msgget(game->key, LEMIPC_CREATE);
 	if (game->msgqid < 0)
 		ft_exit(1, "msgget game IPC_CREAT", 0);
 	if (msgctl(game->msgqid, IPC_STAT, &buf) < 0)

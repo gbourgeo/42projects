@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:21:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/12 20:33:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/28 16:57:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ static void			ft_usage(void)
 static void			init_program(int ac, const char *prog)
 {
 	ft_memset(&e, 0, sizeof(e));
-	e.prog = prog;
+	if (!(e.prog = ft_strrchr(prog, '/')))
+		e.prog = prog;
+	else
+		e.prog++;
 	if (ac != 2)
 		ft_usage();
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/14 17:03:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/05/28 17:33:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,19 +64,26 @@ static void		print_map(t_game *game)
 			"\e[1;34mWAITING FOR PLAYERS...\e[0m");
 }
 
-void			ft_create_process_to_print_map(void)
+static void		ft_init_map(void)
 {
 	extern char	**environ;
 
+	setsid();
+	init_signal(SIG_DFL);
+	ft_termcaps(environ, &e.term);
+	ft_termdo("cl");
+	ft_termdo("sc");
+	ft_printf("nb_players: %d\n", e.game.board->nb_players);
+}
+
+void			ft_create_process_to_print_map(void)
+{
 	if ((e.pid = fork()) < 0)
 		ft_exit(1, "mapper", 0);
 	else if (e.pid == 0)
 	{
-		setsid();
-		ft_termcaps(environ, &e.term);
-		ft_termdo("cl");
-		ft_termdo("sc");
-		ft_printf("nb_players: %d\n", e.game.board->nb_players);
+		// sleep(10);
+		ft_init_map();
 		while (e.game.board->nb_players)
 		{
 			ft_termdo("rc");
