@@ -23,13 +23,15 @@
 #  include <mach-o/loader.h>
 # endif
 
+# define OUTPUT_FILENAME	"woody"
+
 typedef struct	s_env
 {
 	const char	*progname;
 	char		banner[256];
 	uint64_t	banner_len;
 	int			fd;
-	off_t		file_size;
+	ssize_t		file_size;
 	void		*file;
 	uint32_t	key[4];
 	size_t		woody_datalen;
@@ -85,10 +87,10 @@ typedef struct					s_macho64
 
 int				ft_fatal(char *str, t_env *e);
 void			generate_new_key(uint32_t key[4]);
-void			get_elf_info(t_env *e);
+void			check_elf_info(t_env *e);
 void			pack_elf32(t_env *e);
 void			pack_elf64(t_env *e);
-void			get_macho_info(t_env *e);
+void			check_macho_info(t_env *e);
 void			pack_macho64(t_env *e);
 uint32_t		byteswap_32(uint32_t x);
 

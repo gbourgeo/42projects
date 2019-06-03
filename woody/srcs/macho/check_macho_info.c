@@ -29,7 +29,7 @@ static int				is_executable(uint32_t filetype)
 	return (filetype == MH_EXECUTE);
 }
 
-void					get_macho_info(t_env *e)
+void					check_macho_info(t_env *e)
 {
 	struct mach_header	*header;
 	uint32_t			magic;
@@ -42,6 +42,5 @@ void					get_macho_info(t_env *e)
 		ft_fatal("Invalid MACHO file architecture", e);
 	if (!is_executable(header->filetype))
 		ft_fatal("Unsupported MACHO file type", e);
-	generate_new_key(e->key);
 	pack_macho64(e);
 }

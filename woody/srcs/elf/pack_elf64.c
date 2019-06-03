@@ -86,7 +86,7 @@ static void		encrypt_text_section(t_env *e, t_elf64 *elf)
 
 static void		write_new_file(t_env *e, t_elf64 *elf)
 {
-	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
+	e->fd = open(OUTPUT_FILENAME, O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 
@@ -140,21 +140,27 @@ static void		write_add_padding(t_env *e, t_elf64 *elf)
 
 	while (padding < woody64_size + e->woody_datalen)
 		padding += getpagesize();
-	/* NOT NECESSARY AREA, but if removed, change the 2nd PT_LOAD offset to offset + padding */
-	for (size_t i = 0; i < elf->header->e_phnum; i++) {
-		if (elf->program[i].p_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
-			elf->program[i].p_offset += padding;
+	if (padding)
+	{
+		/* Change Program Header offest if padding */
+		for (size_t i = 0; i < elf->header->e_phnum; i++) {
+			if (elf->program[i].p_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
+				if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
+					ft_fatal("new Segment size too large. Risk of rewriting other Segment(s). Abort.", e);
+				elf->program[i].p_offset += padding;
+			}
 		}
-	}
-	for (size_t i = 0; i < elf->header->e_shnum; i++) {
-		if (elf->section[i].sh_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
-			elf->section[i].sh_offset += padding;
+
+		/* Change Section Header offest if padding */
+		for (size_t i = 0; i < elf->header->e_shnum; i++) {
+			if (elf->section[i].sh_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
+				elf->section[i].sh_offset += padding;
+			}
 		}
+		elf->header->e_shoff += padding;
+		elf->text_program->p_memsz += padding;
+		elf->text_program->p_filesz += padding;
 	}
-	elf->header->e_shoff += padding;
-	/* */
-	elf->text_program->p_memsz += padding;
-	elf->text_program->p_filesz += padding;
 	elf->text_program->p_flags = PF_R | PF_W | PF_X;
 
 	write(e->fd, ptr, e->off);

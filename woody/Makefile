@@ -27,13 +27,13 @@ OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 UNAME_S	:= $(shell uname -s)
 UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_S), Linux)
-SRC			+= get_elf_info.c pack_elf64.c pack_elf32.c
+SRC			+= check_elf_info.c pack_elf64.c pack_elf32.c
 SRC_S		= woody64.s encrypt64.s woody32.s encrypt32.s
 ASM			= nasm
 ASMFLAG		= -f elf64
 endif
 ifeq ($(UNAME_S), Darwin)
-SRC			+= get_macho_info.c pack_macho64.c ft_swap_bytes.c
+SRC			+= check_macho_info.c pack_macho64.c ft_swap_bytes.c
 SRC_S		= woody64.s encrypt64.s
 ASM			= ~/Downloads/nasm-2.11.02/nasm
 ASMFLAG		= -f macho64

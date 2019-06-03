@@ -128,7 +128,7 @@ void			file_info_64(void *file, int file_size)
 	ft_printf(CO2);
 	ft_printf("\nprogram header: (%d entries)\n", file_header->e_phnum);
 	ft_printf(CO3);
-	ft_printf("type\t\t flags\t offset\t\t vaddr\t\t paddr\t\t filesz\t\t memsz\t\t align\n");
+	ft_printf("type\t\t flags\t offset\t vaddr\t\t paddr\t\t filesz\t memsz\t align\n");
 	ft_printf(DEF);
 	char			*program_types[] = { "NULL", "LOAD", "DYNAMIC", "INTERP", "NOTE",
 										 "SHLIB", "PHDR", "TLS", "NUM", "LOOS", "GNU_EH_FRAME",
@@ -157,13 +157,13 @@ void			file_info_64(void *file, int file_size)
 		flags[3] = (phdr->p_flags & PF_MASKOS) ? 'O' : ' ';
 		flags[4] = (phdr->p_flags & PF_MASKPROC) ? 'P' : ' ';
 
-		ft_printf("%-15s\t %#-5s\t %.5p\t %.7p\t %.7p\t %.5p\t %.5p\t %.6p\n",
+		ft_printf("%-15s\t %#5s\t %#x\t %.6p\t %.6p\t %#x\t %#x\t %.6p\n",
 				  type, flags, phdr->p_offset, phdr->p_vaddr,
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
 
-//	print_hex((u_char *)file, file_size, 2);
+	// print_hex((u_char *)file, file_size, 2);// exit(0);
 
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
@@ -230,7 +230,8 @@ void			file_info_64(void *file, int file_size)
 						  type[ELF64_ST_TYPE(symbol->st_info)],
 						  visibility[ELF64_ST_VISIBILITY(symbol->st_other)],
 						  symbol->st_shndx,
-						  symbol->st_value, symbol->st_size,
+						  symbol->st_value,
+						  symbol->st_size,
 						  sname);
 				symbol_addr += shdr->sh_entsize;
 				symbol = (Elf64_Sym *)symbol_addr;
@@ -330,6 +331,7 @@ void			file_info_64(void *file, int file_size)
 		}
 	}
 */
+
 	/* Prints ALL sections */
 /*
 	for (size_t i = 0; i < file_header->e_shnum; i++) {
@@ -344,6 +346,8 @@ void			file_info_64(void *file, int file_size)
 //		}
 	}
 */
+	// print_hex((u_char *)file, file_size, 2);// exit(0);
+
 }
 
 void			file_info_32(void *file, int file_size)
@@ -376,7 +380,7 @@ void			file_info_32(void *file, int file_size)
 	ft_printf(CO3);
 	ft_printf("entry\t\t phoff\t shoff\t ehsize\t phentsize\t phnum\t shentsize\t shnum\t shstrndx\n");
 	ft_printf(DEF);
-	ft_printf("%p\t %#x\t %#x\t %#x\t %#x\t\t %#d\t %#x\t\t %#d\t %#x\n",
+	ft_printf("%.12p\t %#x\t %#x\t %#x\t %#x\t\t %#d\t %#x\t\t %#d\t %#x\n",
 			  file_header->e_entry, file_header->e_phoff,
 			  file_header->e_shoff, file_header->e_ehsize, file_header->e_phentsize,
 			  file_header->e_phnum, file_header->e_shentsize, file_header->e_shnum,
@@ -441,15 +445,15 @@ void			file_info_32(void *file, int file_size)
 				  shdr->sh_flags, shdr->sh_addr,
 				  shdr->sh_offset, shdr->sh_size, shdr->sh_link, shdr->sh_info,
 				  shdr->sh_addralign, shdr->sh_entsize);
-		if (ft_strcmp(name, ".text") == 0)
-			print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1);
+		// if (ft_strcmp(name, ".text") == 0)
+		// 	print_hex((u_char *)file_header + shdr->sh_offset, shdr->sh_size, 1);
 	}
-	for (size_t i = 0; i < file_header->e_phnum; i++) {
-		Elf32_Phdr *p = program_header_table + i;
-		if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
-			print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
-		}
-	}
+	// for (size_t i = 0; i < file_header->e_phnum; i++) {
+	// 	Elf32_Phdr *p = program_header_table + i;
+	// 	if (p->p_type == PT_LOAD && p->p_vaddr > 0x600000) {
+	// 		print_hex((u_char *)file_header + p->p_offset, p->p_memsz, 1);
+	// 	}
+	// }
 
 /*	
 	ft_printf(CO2);

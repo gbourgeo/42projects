@@ -25,5 +25,6 @@ int			ft_fatal(char *str, t_env *e)
 		close(e->fd);
 	if (e->file != NULL)
 		munmap(e->file, e->file_size);
+	remove(OUTPUT_FILENAME);
 	exit(1);
 }
