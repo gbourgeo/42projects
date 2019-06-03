@@ -6,7 +6,7 @@
 #    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/07/12 07:50:36 by root             ###   ########.fr        #
+#    Updated: 2019/06/04 00:48:21 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -35,7 +35,7 @@ endif
 ifeq ($(UNAME_S), Darwin)
 SRC			+= check_macho_info.c pack_macho64.c ft_swap_bytes.c
 SRC_S		= woody64.s encrypt64.s
-ASM			= ~/Downloads/nasm-2.11.02/nasm
+ASM			= nasm
 ASMFLAG		= -f macho64
 endif
 
