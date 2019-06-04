@@ -12,11 +12,11 @@ woody64_encrypt:
 	push rbx
 	and esi, -8
 	mov DWORD [rsp-4], esi
-	je woody64_end
+	je .end
 	mov r11, rdi
 	mov r14d, 0
 	mov r13, rdx
-woody64_loop:
+.loop:
 	mov r12d, r14d
 	add r12, r11
 	lea ebp, [r14+1]
@@ -63,7 +63,7 @@ woody64_loop:
 	mov r8d, DWORD [r13+8]
 	mov edi, DWORD [r13+12]
 	mov esi, 0
-woody64_encryption:
+.encryption:
 	sub esi, 1640531527
 	mov eax, edx
 	sal eax, 4
@@ -86,7 +86,7 @@ woody64_encryption:
 	xor eax, r15d
 	add edx, eax
 	cmp esi, -957401312
-	jne woody64_encryption
+	jne .encryption
 	mov eax, ecx
 	shr eax, 24
 	mov BYTE [r12], al
@@ -112,8 +112,8 @@ woody64_encryption:
 	mov BYTE [rax], dl
 	add r14d, 8
 	cmp DWORD [rsp-4], r14d
-	ja woody64_loop
-woody64_end:
+	ja .loop
+.end:
 	pop rbx
 	pop rbp
 	pop r12
