@@ -28,9 +28,11 @@ UNAME_S	:= $(shell uname -s)
 UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_S), Linux)
 SRC			+= check_elf_info.c pack_elf64.c pack_elf32.c
-SRC_S		= woody64.s encrypt64.s woody32.s encrypt32.s
+SRC_S		= woody64.s encrypt64.s
+#SRC_S		+= woody32.s encrypt32.s
 ASM			= nasm
 ASMFLAG		= -f elf64
+
 endif
 ifeq ($(UNAME_S), Darwin)
 SRC			+= check_macho_info.c pack_macho64.c ft_swap_bytes.c
@@ -60,7 +62,7 @@ $(OBJ_DIR)%.o: $(ELF_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
 
 $(OBJ_DIR)%.o: $(ELF_DIR)%.s
-	$(ASM) $(ASMFLAG) -o $@ -g $<
+	$(ASM) $(ASMFLAG) -o $@ $<
 endif
 
 ifeq ($(UNAME_S), Darwin)

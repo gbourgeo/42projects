@@ -101,19 +101,25 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 		write_in_padding(e, elf);
 	else
 		write_add_padding(e, elf);
+
+	close(e->fd);
+	e->fd = 0;
 }
 
 static void		write_in_padding(t_env *e, t_elf64 *elf)
 {
-	char		*ptr = (char *)e->file;
+	char		*ptr;
 	size_t		banner_size;
 
+	ptr = (char *)e->file;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 
 	elf->text_program->p_memsz += (woody64_size + e->woody_datalen);
 	elf->text_program->p_filesz += (woody64_size + e->woody_datalen);
 	elf->text_program->p_flags = PF_R | PF_W | PF_X;
 
+/* Had this line if you want to disassemble the infection with debuggers */
+	// elf->text_section->sh_size += woody64_size;
 	write(e->fd, ptr, e->off);
 	write(e->fd, &woody64_func, woody64_size);
 	write(e->fd, e->key, sizeof(e->key));
@@ -128,16 +134,17 @@ static void		write_in_padding(t_env *e, t_elf64 *elf)
 	}
 	e->off += (woody64_size + e->woody_datalen);
 	write(e->fd, ptr + e->off, e->file_size - e->off - 1);
-	close(e->fd);
-	e->fd = 0;
 }
 
 static void		write_add_padding(t_env *e, t_elf64 *elf)
 {
-	char		*ptr		= (char *)e->file;
-	size_t		banner_size	= (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
-	size_t		padding		= 0;
+	char		*ptr;
+	size_t		banner_size;
+	size_t		padding;
 
+	ptr = (char *)e->file;
+	banner_size	= (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
+	padding = 0;
 	while (padding < woody64_size + e->woody_datalen)
 		padding += getpagesize();
 	if (padding)
@@ -178,6 +185,4 @@ static void		write_add_padding(t_env *e, t_elf64 *elf)
 	while (padding-- > woody64_size + e->woody_datalen)
 		write(e->fd, "\0", 1);
 	write(e->fd, ptr + e->off, e->file_size - e->off - 1);
-	close(e->fd);
-	e->fd = 0;
 }

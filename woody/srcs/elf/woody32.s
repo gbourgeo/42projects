@@ -1,12 +1,11 @@
-	[BITS 32]
-
+[bits 32]
 	global woody32_func:function
 	global woody32_decrypt:function
 	global woody32_size:data
 	global woody32_keys:data
 
 	segment .text
-	woody32_size dd end - woody32_func
+	woody32_size dd woody32_data - woody32_func
 
 woody32_func:					; ELF 32 bits version
 	push 	edi
@@ -15,9 +14,31 @@ woody32_func:					; ELF 32 bits version
 	push 	eax
 	push 	ebx
 
+;	push	DWORD [banner32_size]
+;	nop
+;	jmp		banner32			;good addr
+;	mov		eax, woody32_data
+;	push	banner32			;wrong addr
+;	mov		eax, banner32		;wrong addr
+;	mov		eax, [banner32]		;wrong addr
+;	mov		eax, [abs banner32]		;wrong addr
+;	mov		eax, [fs:banner32]		;wrong addr
+;	mov		eax, [ds:banner32]		;wrong addr
+;	mov		eax, [rel banner32]		;wrong addr
+;	mov		eax, dword [banner32]		;wrong addr
+;	mov		eax, dword [abs banner32]		;wrong addr
+;	mov		eax, dword [fs:banner32]		;wrong addr
+;	mov		eax, dword [ds:banner32]		;wrong addr
+;	mov		eax, dword [rel banner32]		;wrong addr
+;	nop
+
 	mov 	edi, 1
-	;lea 	esi, [rel banner]
-	;mov 	edx, [rel banner_size]
+	push	DWORD banner32
+	push	DWORD [banner32_size]
+	pop		edx
+	pop		esi
+;	lea		esi, DWORD [banner32]
+;	mov 	edx, DWORD [banner32_size]
 	mov 	eax, 1
 	syscall
 
@@ -125,30 +146,31 @@ woody32_decrypt:
 	ret
 
 woody32_end:	
-	;mov 	esi, DWORD [rel text_size]
-	;lea 	edx, [rel woody32_keys]
-	;lea 	edi, [rel woody32_func]
-	;add 	edi, [rel text_vaddr]
+	mov 	esi, DWORD [text_size]
+	lea 	edx, [woody32_keys]
+	lea 	edi, [woody32_func]
+	add 	edi, [text_vaddr]
 	call 	woody32_decrypt
 
-	;lea 	ebx, [rel woody32_func]
-	;add 	ebx, [rel text_vaddr]
-	;mov 	[rel text_vaddr], ebx
-	;lea 	eax, [rel woody32_func]
-	;add 	eax, [rel jump_vaddr]
-	;mov 	[rel jump_vaddr], eax
+	lea 	ebx, [woody32_func]
+	add 	ebx, [text_vaddr]
+	mov 	[text_vaddr], ebx
+	lea 	eax, [woody32_func]
+	add 	eax, [jump_vaddr]
+	mov 	[jump_vaddr], eax
 
 	pop 	ebx
 	pop 	eax
 	pop 	edx
 	pop 	esi
 	pop 	edi
-	;push	DWORD [rel jump_vaddr]
+	push	DWORD [jump_vaddr]
 	ret
-end:
+
+woody32_data:
 	woody32_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dw 0x0
 	text_size dw 0x0
 	jump_vaddr dw 0x0
-	banner_size dw 0x0
-	banner db ""
+	banner32_size dw 0x0
+	banner32 db ""

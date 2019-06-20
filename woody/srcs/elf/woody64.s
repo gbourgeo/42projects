@@ -1,28 +1,29 @@
-	[BITS 64]
-
+DEFAULT REL
+[BITS 64]
 	global woody64_func:function
-	global woody64_decrypt:function
 	global woody64_size:data
 	global woody64_keys:data
 
 	segment .text
-	woody64_size dd end - woody64_func
-woody64_func:					; ELF version
+	woody64_size dd woody64_data - woody64_func
+
+woody64_func:					; ELF 64 bits version
 	push 	rdi
 	push 	rsi
 	push 	rdx
 	push 	rax
 	push 	rbx
 
-
 	mov 	rdi, 1
-	lea 	rsi, [rel banner]
-	mov 	rdx, [rel banner_size]
+	lea 	rsi, [banner64]
+	mov 	rdx, [banner64_size]
 	mov 	rax, 1
 	syscall
 
-	jmp 	woody64_end
-woody64_decrypt:
+	lea 	rsi, [woody64_data]
+
+	jmp 	.end
+.decrypt:
 	push r15
 	push r14
 	push r13
@@ -31,11 +32,11 @@ woody64_decrypt:
 	push rbx
 	and esi, -8
 	mov DWORD [rsp-4], esi
-	je .L8
+	je .decrypt_end
 	mov r11, rdi
 	mov r14d, 0
 	mov r13, rdx
-.L11:
+.decrypt_loop:
 	mov r12d, r14d
 	add r12, r11
 	lea ebp, [r14+1]
@@ -82,7 +83,7 @@ woody64_decrypt:
 	mov r8d, DWORD [r13+8]
 	mov edi, DWORD [r13+12]
 	mov esi, -957401312
-.L10:
+.decryption:
 	mov eax, ecx
 	sal eax, 4
 	add eax, r8d
@@ -104,7 +105,7 @@ woody64_decrypt:
 	xor eax, r15d
 	sub ecx, eax
 	add esi, 1640531527
-	jne .L10
+	jne .decryption
 	mov eax, ecx
 	shr eax, 24
 	mov BYTE [r12], al
@@ -130,8 +131,8 @@ woody64_decrypt:
 	mov BYTE [rax], dl
 	add r14d, 8
 	cmp DWORD [rsp-4], r14d
-	ja .L11
-.L8:
+	ja .decrypt_loop
+.decrypt_end:
 	pop rbx
 	pop rbp
 	pop r12
@@ -139,31 +140,32 @@ woody64_decrypt:
 	pop r14
 	pop r15
 	ret
-woody64_end:
-	mov 	rsi, QWORD [rel text_size]
-	lea 	rdx, [rel woody64_keys]
-	lea 	rdi, [rel woody64_func]
-	add 	rdi, [rel text_vaddr]
-	call 	woody64_decrypt
+.end:
+	mov 	rsi, QWORD [text_size]
+	lea 	rdx, [woody64_keys]
+	lea 	rdi, [woody64_func]
+	add 	rdi, [text_vaddr]
+	call 	.decrypt
 
-	lea 	rbx, [rel woody64_func]
-	add 	rbx, [rel text_vaddr]
-	mov 	[rel text_vaddr], rbx
-	lea 	rax, [rel woody64_func]
-	add 	rax, [rel jump_vaddr]
-	mov 	[rel jump_vaddr], rax
+	lea 	rbx, [woody64_func]
+	add 	rbx, [text_vaddr]
+	mov 	[text_vaddr], rbx
+	lea 	rax, [woody64_func]
+	add 	rax, [jump_vaddr]
+	mov 	[jump_vaddr], rax
 
 	pop 	rbx
 	pop 	rax
 	pop 	rdx
 	pop 	rsi
 	pop 	rdi
-	push	QWORD [rel jump_vaddr]
+	push	QWORD [jump_vaddr]
 	ret
-end:
+
+woody64_data:
 	woody64_keys dd 0x0, 0x0, 0x0, 0x0
 	text_vaddr dq 0x0
 	text_size dq 0x0
 	jump_vaddr dq 0x0
-	banner_size dq 0x0
-	banner db ""
+	banner64_size dq 0x0
+	banner64 db ""
