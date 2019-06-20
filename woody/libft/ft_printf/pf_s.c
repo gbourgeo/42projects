@@ -76,9 +76,9 @@ static void		pf_big_s(t_dt *data)
 	s = va_arg(data->ap, wchar_t *);
 	if (s == NULL)
 		s = L"(null)";
-	ft_wcharlen(s, len);
+	ft_wcharlen((int *)s, len);
 	if (data->flag.point && data->flag.precision < len[1])
-		find_precision(data, s, len);
+		find_precision(data, (int *)s, len);
 	if (!data->flag.minus)
 	{
 		while (data->flag.min_width > len[1] && data->flag.min_width--)
