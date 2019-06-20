@@ -163,7 +163,7 @@ void			file_info_64(void *file, int file_size)
 		ft_printf(DEF);
 	}
 
-	// print_hex((u_char *)file, file_size, 2);// exit(0);
+	// print_hex((u_char *)file, file_size, 2); exit(0);
 
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
@@ -423,6 +423,8 @@ void			file_info_32(void *file, int file_size)
 				  phdr->p_paddr, phdr->p_filesz, phdr->p_memsz, phdr->p_align);
 		ft_printf(DEF);
 	}
+
+//	print_hex((u_char *)file, file_size, 2); exit(0);
 
 	ft_printf(CO2);
 	ft_printf("\nsection header: (%d entries)\n", file_header->e_shnum);
