@@ -97,3 +97,12 @@ ifeq ($(UNAME_S), Linux)
 else ifeq ($(UNAME_S), Darwin)
 	$(WWW) -o hex Ressources/macho_file_info.c $(INCLUDE) $(LIBS)
 endif
+
+elf64:
+	gcc -m64 -o elf64 Ressources/sample.c
+
+elf32:
+	gcc -m32 -o elf32 Ressources/sample.c
+
+macho64:
+	gcc -m64 -o macho64 Ressources/sample.c
