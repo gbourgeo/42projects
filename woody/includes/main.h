@@ -19,6 +19,9 @@
 # include <sys/types.h>
 # ifdef __linux__
 #  include <elf.h>
+#  ifndef u_char
+#   define u_char unsigned char
+#  endif
 # elif __APPLE__
 #  include <mach-o/loader.h>
 # endif

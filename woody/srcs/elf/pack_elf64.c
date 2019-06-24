@@ -89,7 +89,6 @@ static void		write_new_file(t_env *e, t_elf64 *elf)
 	e->fd = open(OUTPUT_FILENAME, O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
-
 	e->off = elf->text_program->p_offset + elf->text_program->p_filesz;
 	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry) * (-1);
 	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr) * (-1);
@@ -142,6 +141,7 @@ static void		write_add_padding(t_env *e, t_elf64 *elf)
 	size_t		banner_size;
 	size_t		padding;
 
+printf("ADD PADDING\n");
 	ptr = (char *)e->file;
 	banner_size	= (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 	padding = 0;

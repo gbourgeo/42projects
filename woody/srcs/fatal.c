@@ -23,7 +23,7 @@ int			ft_fatal(char *str, t_env *e)
 		ft_fprintf(stderr, "%s\n", str);
 	if (e->fd > 0)
 		close(e->fd);
-	if (e->file != NULL)
+	if (e->file != MAP_FAILED)
 		munmap(e->file, e->file_size);
 	remove(OUTPUT_FILENAME);
 	exit(1);
