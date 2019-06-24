@@ -141,7 +141,6 @@ static void		write_add_padding(t_env *e, t_elf64 *elf)
 	size_t		banner_size;
 	size_t		padding;
 
-printf("ADD PADDING\n");
 	ptr = (char *)e->file;
 	banner_size	= (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 	padding = 0;
