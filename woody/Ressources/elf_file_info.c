@@ -369,7 +369,7 @@ void			file_info_32(void *file, int file_size)
 	ft_printf("addr\t\t size\t class\t encoding\t version OS/ABI\t\t ABIv\t padding\n");
 	ft_printf(DEF);
 	ft_printf("%p\t %#x\t %s\t %s\t %d\t %s\t %d\t %d\n", file, file_size,
-			  (file_header->e_ident[EI_CLASS] == 1) ? "32-bit" : "32-bit",
+			  (file_header->e_ident[EI_CLASS] == 1) ? "32-bit" : "64-bit",
 			  (file_header->e_ident[EI_DATA] == 1) ? "little-endian" : "big-endian",
 			  file_header->e_ident[EI_VERSION],
 			  (file_header->e_ident[EI_OSABI] == 0) ? "System V" : (file_header->e_ident[EI_OSABI] == 1) ? "HP-UX" : "Standalone",
