@@ -29,9 +29,9 @@ UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_S), Linux)
 SRC			+= check_elf_info.c pack_elf64.c pack_elf32.c
 SRC_S		= woody64.s encrypt64.s
-#SRC_S		+= woody32.s encrypt32.s
+SRC_S		+= woody32.s encrypt32.s
 ASM			= nasm
-ASMFLAG		= -f elf64
+ASMFLAG		= -f elf32
 
 endif
 ifeq ($(UNAME_S), Darwin)
@@ -44,7 +44,7 @@ endif
 LIB_DIR	= libft/
 LIB_HDR	= $(LIB_DIR)includes
 
-WWW 	= gcc
+WWW 	= gcc -m32
 FLAGS	= -Wall -Werror -Wextra
 INCLUDE	= -I$(HDR_DIR) -I$(LIB_HDR)
 LIBS	= -L$(LIB_DIR) -lft
@@ -90,6 +90,8 @@ fclean: clean
 	/bin/rm -f hex
 
 re: fclean all
+
+32: lib32
 
 hex: lib
 ifeq ($(UNAME_S), Linux)

@@ -1,6 +1,5 @@
-[bits 32]
+[BITS 32]
 	global woody32_func:function
-	global woody32_decrypt:function
 	global woody32_size:data
 	global woody32_keys:data
 
@@ -14,35 +13,25 @@ woody32_func:					; ELF 32 bits version
 	push 	eax
 	push 	ebx
 
-;	push	DWORD [banner32_size]
-;	nop
-;	jmp		banner32			;good addr
-;	mov		eax, woody32_data
-;	push	banner32			;wrong addr
-;	mov		eax, banner32		;wrong addr
-;	mov		eax, [banner32]		;wrong addr
-;	mov		eax, [abs banner32]		;wrong addr
-;	mov		eax, [fs:banner32]		;wrong addr
-;	mov		eax, [ds:banner32]		;wrong addr
-;	mov		eax, [rel banner32]		;wrong addr
-;	mov		eax, dword [banner32]		;wrong addr
-;	mov		eax, dword [abs banner32]		;wrong addr
-;	mov		eax, dword [fs:banner32]		;wrong addr
-;	mov		eax, dword [ds:banner32]		;wrong addr
-;	mov		eax, dword [rel banner32]		;wrong addr
-;	nop
-
-	mov 	edi, 1
-	push	DWORD banner32
-	push	DWORD [banner32_size]
-	pop		edx
-	pop		esi
-;	lea		esi, DWORD [banner32]
-;	mov 	edx, DWORD [banner32_size]
-	mov 	eax, 1
-	syscall
+	; Compute banner32 address based on eip
+	call	.get_eip
+	mov		ecx, eax			
+	mov		edx, banner32
+	sub		edx, woody32_func
+	add		ecx, edx
+	sub		ecx, 0x2
+	; Load banner32_size
+	mov 	edx, DWORD [ecx - 4]
+	; Write on STDOUT (1)
+	mov		ebx, 1
+	; Syscall write (4)
+	mov 	eax, 4
+	int		0x80
 
 	jmp 	woody32_end
+.get_eip:
+	mov		eax, [esp]
+	ret
 woody32_decrypt:
 	push ebp
 	push edi
@@ -145,11 +134,17 @@ woody32_decrypt:
 	pop ebp
 	ret
 
-woody32_end:	
-	mov 	esi, DWORD [text_size]
-	lea 	edx, [woody32_keys]
-	lea 	edi, [woody32_func]
-	add 	edi, [text_vaddr]
+woody32_end:
+	; ECX contains the banner32 address
+	; Put [text_size] into esi
+	mov 	esi, DWORD [ecx - 12]
+	; Put [woody32_keys] address into edx
+	mov		edx, ecx
+	sub		edx, 32
+;	lea 	edx, [woody32_keys]
+;	lea 	edi, [woody32_func]
+;	add 	edi, [text_vaddr]
+mov eax, [banner32]
 	call 	woody32_decrypt
 
 	lea 	ebx, [woody32_func]

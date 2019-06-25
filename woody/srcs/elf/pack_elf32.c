@@ -14,9 +14,9 @@
 #include "libft.h"
 #include "main.h"
 
-extern uint32_t woody64_size;
-void			woody64_func(void);
-void			woody64_encrypt(u_char *data, size_t len, const uint32_t *key);
+extern uint32_t woody32_size;
+void			woody32_func(void);
+void			woody32_encrypt(u_char *data, size_t len, const uint32_t *key);
 
 static void		encrypt_text_section(t_env *e, t_elf32 *elf);
 static void		write_new_file(t_env *e, t_elf32 *elf);
@@ -81,7 +81,7 @@ static void		encrypt_text_section(t_env *e, t_elf32 *elf)
 		ft_fatal("Program header containing section \".text\" not found.", e);
 /* Encrypt the .text section */
 	text = (u_char *)(e->file + elf->text_section->sh_offset);
-	woody64_encrypt(text, elf->text_section->sh_size, e->key);
+	woody32_encrypt(text, elf->text_section->sh_size, e->key);
 }
 
 static void		write_new_file(t_env *e, t_elf32 *elf)
@@ -97,7 +97,7 @@ static void		write_new_file(t_env *e, t_elf32 *elf)
 
 /* Check if we have space to write our code between the 2 PT_LOAD segment */
 	Elf32_Phdr *next = elf->text_program + 1;
-	if (next->p_offset - (elf->text_program->p_offset + elf->text_program->p_filesz) > woody64_size + e->woody_datalen)
+	if (next->p_offset - (elf->text_program->p_offset + elf->text_program->p_filesz) > woody32_size + e->woody_datalen)
 		write_in_padding(e, elf);
 	else
 		write_add_padding(e, elf);
@@ -114,14 +114,14 @@ static void		write_in_padding(t_env *e, t_elf32 *elf)
 	ptr = (char *)e->file;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 
-	elf->text_program->p_memsz += (woody64_size + e->woody_datalen);
-	elf->text_program->p_filesz += (woody64_size + e->woody_datalen);
+	elf->text_program->p_memsz += (woody32_size + e->woody_datalen);
+	elf->text_program->p_filesz += (woody32_size + e->woody_datalen);
 	elf->text_program->p_flags = PF_R | PF_W | PF_X;
 
 /* Had this line if you want to disassemble the infection with debuggers */
-	elf->text_section->sh_size += woody64_size;
+	elf->text_section->sh_size += woody32_size;
 	write(e->fd, ptr, e->off);
-	write(e->fd, &woody64_func, woody64_size);
+	write(e->fd, &woody32_func, woody32_size);
 	write(e->fd, e->key, sizeof(e->key));
 	write(e->fd, &elf->text_entry, sizeof(elf->text_entry));
 	write(e->fd, &elf->text_crypted_size, sizeof(elf->text_crypted_size));
@@ -132,7 +132,7 @@ static void		write_in_padding(t_env *e, t_elf32 *elf)
 		write(e->fd, e->banner, banner_size - 1);
 		write(e->fd, "\n", 1);
 	}
-	e->off += (woody64_size + e->woody_datalen - 4);
+	e->off += (woody32_size + e->woody_datalen);
 	write(e->fd, ptr + e->off, e->file_size - e->off - 1);
 }
 
@@ -142,29 +142,27 @@ static void		write_add_padding(t_env *e, t_elf32 *elf)
 	size_t		banner_size	= (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
 	size_t		padding		= 0;
 
-	while (padding < woody64_size + e->woody_datalen)
+	while (padding < woody32_size + e->woody_datalen)
 		padding += getpagesize();
-	if (padding) {
-		for (size_t i = 0; i < elf->header->e_phnum; i++) {
-			if (elf->program[i].p_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
-				if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
-					ft_fatal("new Segment size too large. Risk of rewriting other Segment(s). Abort.", e);
-				elf->program[i].p_offset += padding;
-			}
+	for (size_t i = 0; i < elf->header->e_phnum; i++) {
+		if (elf->program[i].p_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
+			if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
+				ft_fatal("new Segment size too large. Risk of rewriting other Segment(s). Abort.", e);
+			elf->program[i].p_offset += padding;
 		}
-		for (size_t i = 0; i < elf->header->e_shnum; i++) {
-			if (elf->section[i].sh_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
-				elf->section[i].sh_offset += padding;
-			}
-		}
-		elf->header->e_shoff += padding;
-		elf->text_program->p_memsz += padding;
-		elf->text_program->p_filesz += padding;
 	}
+	for (size_t i = 0; i < elf->header->e_shnum; i++) {
+		if (elf->section[i].sh_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
+			elf->section[i].sh_offset += padding;
+		}
+	}
+	elf->header->e_shoff += padding;
+	elf->text_program->p_memsz += (woody32_size + e->woody_datalen);
+	elf->text_program->p_filesz += (woody32_size + e->woody_datalen);
 	elf->text_program->p_flags = PF_R | PF_W | PF_X;
 
 	write(e->fd, ptr, e->off);
-	write(e->fd, &woody64_func, woody64_size);
+	write(e->fd, &woody32_func, woody32_size);
 	write(e->fd, e->key, sizeof(e->key));
 	write(e->fd, &elf->text_entry, sizeof(elf->text_entry));
 	write(e->fd, &elf->text_crypted_size, sizeof(elf->text_crypted_size));
@@ -175,7 +173,7 @@ static void		write_add_padding(t_env *e, t_elf32 *elf)
 		write(e->fd, e->banner, banner_size - 1);
 		write(e->fd, "\n", 1);
 	}
-	while (padding-- > woody64_size + e->woody_datalen)
+	while (padding-- > woody32_size + e->woody_datalen)
 		write(e->fd, "\0", 1);
 	write(e->fd, ptr + e->off, e->file_size - e->off - 1);
 }

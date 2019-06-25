@@ -20,8 +20,6 @@ woody64_func:					; ELF 64 bits version
 	mov 	rax, 1
 	syscall
 
-	lea 	rsi, [woody64_data]
-
 	jmp 	.end
 .decrypt:
 	push r15
