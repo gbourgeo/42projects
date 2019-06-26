@@ -51,7 +51,7 @@ OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(DPRINTF_SRC:.c=.o))
 OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(SPRINTF_SRC:.c=.o))
 OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(SNPRINTF_SRC:.c=.o))
 
-WWW	= gcc -m32 -Wall -Werror -Wextra
+WWW	= gcc $(ARCH) -Wall -Werror -Wextra
 
 INCLUDES = -I includes/
 

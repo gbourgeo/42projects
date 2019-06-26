@@ -31,8 +31,11 @@ SRC			+= check_elf_info.c pack_elf64.c pack_elf32.c
 SRC_S		= woody64.s encrypt64.s
 SRC_S		+= woody32.s encrypt32.s
 ASM			= nasm
+ifeq ($(ARCH), -m32)
 ASMFLAG		= -f elf32
-
+else
+ASMFLAG		= -f elf64
+endif
 endif
 ifeq ($(UNAME_S), Darwin)
 SRC			+= check_macho_info.c pack_macho64.c ft_swap_bytes.c
@@ -44,7 +47,7 @@ endif
 LIB_DIR	= libft/
 LIB_HDR	= $(LIB_DIR)includes
 
-WWW 	= gcc -m32
+WWW 	= gcc $(ARCH)
 FLAGS	= -Wall -Werror -Wextra
 INCLUDE	= -I$(HDR_DIR) -I$(LIB_HDR)
 LIBS	= -L$(LIB_DIR) -lft
@@ -76,7 +79,7 @@ endif
 .PHONY: lib clean fclean re
 
 lib:
-	@make -C $(LIB_DIR)
+	@make ARCH=$(ARCH) -C $(LIB_DIR)
 	@mkdir -p $(OBJ_DIR)
 
 clean:
@@ -91,11 +94,9 @@ fclean: clean
 
 re: fclean all
 
-32: lib32
-
 hex: lib
 ifeq ($(UNAME_S), Linux)
-	$(WWW) -o hex Ressources/elf_file_info.c $(INCLUDE) $(LIBS)
+	$(WWW) $(ARCH) -o hex Ressources/elf_file_info.c $(INCLUDE) $(LIBS)
 else ifeq ($(UNAME_S), Darwin)
 	$(WWW) -o hex Ressources/macho_file_info.c $(INCLUDE) $(LIBS)
 endif
