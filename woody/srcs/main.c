@@ -62,7 +62,7 @@ int				main(int ac, char **av)
 	check_elf_info(&e);
 	if (((Elf64_Ehdr *)e.file)->e_ident[EI_CLASS] == ELFCLASS32)
 		pack_elf32(&e);
-	if (((Elf64_Ehdr *)e.file)->e_ident[EI_CLASS] == ELFCLASS64)
+	else if (((Elf64_Ehdr *)e.file)->e_ident[EI_CLASS] == ELFCLASS64)
 		pack_elf64(&e);
 #elif __APPLE__
 	check_macho_info(&e);

@@ -81,6 +81,7 @@ static void		encrypt_text_section(t_env *e, t_elf32 *elf)
 		ft_fatal("Program header containing section \".text\" not found.", e);
 /* Encrypt the .text section */
 	text = (u_char *)(e->file + elf->text_section->sh_offset);
+printf("ENCRYPTING [%p] %#x\n", (void *)((char *)text -  (char *)elf->header), elf->text_section->sh_size);
 	woody32_encrypt(text, elf->text_section->sh_size, e->key);
 }
 
@@ -92,7 +93,8 @@ static void		write_new_file(t_env *e, t_elf32 *elf)
 
 	e->off = elf->text_program->p_offset + elf->text_program->p_filesz;
 	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry) * (-1);
-	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr) * (-1);
+	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr +
+	woody32_size + sizeof(size_t) + sizeof(e->key) + sizeof(elf->text_entry) + sizeof(elf->text_crypted_size) + sizeof(elf->old_entry)) * (-1);
 	elf->header->e_entry = elf->text_program->p_vaddr + elf->text_program->p_memsz;
 
 /* Check if we have space to write our code between the 2 PT_LOAD segment */

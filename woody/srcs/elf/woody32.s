@@ -1,33 +1,32 @@
-[BITS 32]
+	[BITS 32]
+
+	section .text
 	global woody32_func:function
 	global woody32_size:data
 	global woody32_keys:data
-
-	segment .text
 	woody32_size dd woody32_data - woody32_func
 
 woody32_func:					; ELF 32 bits version
 	push 	edi
 	push 	esi
-	push 	edx
 	push 	eax
 	push 	ebx
+	push 	edx
 
-	; Compute banner32 address based on eip
+; Compute banner32 address based on eip
 	call	.get_eip
 	mov		ecx, eax			
 	mov		edx, banner32
 	sub		edx, woody32_func
 	add		ecx, edx
 	sub		ecx, 0x2
-	; Load banner32_size
+; Load banner32_size
 	mov 	edx, DWORD [ecx - 4]
-	; Write on STDOUT (1)
+; Write on STDOUT (1)
 	mov		ebx, 1
-	; Syscall write (4)
+; Syscall write (4)
 	mov 	eax, 4
 	int		0x80
-
 	jmp 	woody32_end
 
 .get_eip:
@@ -39,8 +38,8 @@ woody32_decrypt:
 	push    edi
 	push    esi
 	push    ebx
-
 	sub     esp, 20
+
 	mov     eax, DWORD [esp + 44]
 	and     eax, -8
 	mov     DWORD [esp + 16], eax
@@ -138,16 +137,12 @@ woody32_decrypt:
 
 woody32_end:
 ; ECX contains the banner32 address
-; Put [text_size] into esi
-	mov 	esi, DWORD [ecx - 12]
-; Put [woody32_keys] address into edx
-	mov		edx, ecx
+	mov 	esi, DWORD [ecx - 12]		; Put [text_size] into esi
+	mov		edx, ecx					; Put [woody32_keys] address into edx
 	sub		edx, 32
-; Put [woody32_func] address into edi
-	mov		edi, edx
-	sub		edi, 0x1a1
-; Add [text_vaddr] offset to it
-	add		edi, [ecx - 16]
+	mov		edi, edx					; Put [woody32_func] address into edi
+	add		edi, [ecx - 16]				; Add [text_vaddr] offset to it
+	add		edi, 32
 
 	add		esp, 12
 	push	edx
@@ -155,23 +150,18 @@ woody32_end:
 	push	edi
 	call 	woody32_decrypt
 
-;	lea 	ebx, [woody32_func]
-;	add 	ebx, [text_vaddr]
-;	mov 	[text_vaddr], ebx
+	mov		ebx, DWORD [esp + 8]		; Get [jump_vaddr] address
+	add		ebx, 24
+	mov		ecx, DWORD [esp + 16]		; Move [woody32_func] address into EBX
+	add		ecx, [ebx]
+;	mov		DWORD [esp + 20], ecx
 
-; Get [jump_vaddr] address
-	add		[esp + 8], 24
-; Move [woody32_func] address into EBX
-	mov		ebx, [esp + 16]
-	add		ebx, [ecx]
-	mov		[ecx], ebx
-
+	pop 	edx
 	pop 	ebx
 	pop 	eax
-	pop 	edx
 	pop 	esi
 	pop 	edi
-	push	DWORD [ecx]
+	push	ecx
 ;mov eax, [banner32]
 	ret
 
