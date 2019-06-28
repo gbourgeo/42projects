@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pack_elf32.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 15:41:56 by root              #+#    #+#             */
-/*   Updated: 2018/06/30 22:21:29 by root             ###   ########.fr       */
+/*   Updated: 2019/06/28 17:29:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ static void		encrypt_text_section(t_env *e, t_elf32 *elf)
 	}
 	if (elf->text_section == NULL)
 		ft_fatal("Section \".text\" not found.", e);
-	elf->text_crypted_size = elf->text_section->sh_size;
 /* Find the .text segment */
 	elf->text_program = NULL;
 	vaddr = 0;
@@ -81,20 +80,23 @@ static void		encrypt_text_section(t_env *e, t_elf32 *elf)
 		ft_fatal("Program header containing section \".text\" not found.", e);
 /* Encrypt the .text section */
 	text = (u_char *)(e->file + elf->text_section->sh_offset);
-printf("ENCRYPTING [%p] %#x\n", (void *)((char *)text -  (char *)elf->header), elf->text_section->sh_size);
 	woody32_encrypt(text, elf->text_section->sh_size, e->key);
 }
 
 static void		write_new_file(t_env *e, t_elf32 *elf)
 {
+	size_t		woody_size;
+
+	woody_size = woody32_size + sizeof(size_t) + sizeof(e->key) + sizeof(elf->text_entry) + sizeof(elf->text_crypted_size) + sizeof(elf->old_entry);
 	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 
-	e->off = elf->text_program->p_offset + elf->text_program->p_filesz;
-	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry) * (-1);
-	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr +
-	woody32_size + sizeof(size_t) + sizeof(e->key) + sizeof(elf->text_entry) + sizeof(elf->text_crypted_size) + sizeof(elf->old_entry)) * (-1);
+
+	e->off = elf->text_program->p_offset + elf->text_program->p_memsz;
+	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry + woody_size) * (-1);
+	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr + woody_size) * (-1);
+	elf->text_crypted_size = elf->text_section->sh_size;
 	elf->header->e_entry = elf->text_program->p_vaddr + elf->text_program->p_memsz;
 
 /* Check if we have space to write our code between the 2 PT_LOAD segment */
@@ -111,7 +113,7 @@ static void		write_new_file(t_env *e, t_elf32 *elf)
 static void		write_in_padding(t_env *e, t_elf32 *elf)
 {
 	char		*ptr;
-	uint32_t			banner_size;
+	uint32_t	banner_size;
 
 	ptr = (char *)e->file;
 	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
