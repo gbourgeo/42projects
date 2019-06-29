@@ -146,7 +146,7 @@ static void		write_add_padding(t_env *e, t_elf64 *elf)
 	padding = 0;
 	while (padding < woody64_size + e->woody_datalen)
 		padding += getpagesize();
-	/* Change Program Header offest if padding */
+	/* Change Program Header offest */
 	for (size_t i = 0; i < elf->header->e_phnum; i++) {
 		if (elf->program[i].p_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
 			if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
@@ -154,8 +154,7 @@ static void		write_add_padding(t_env *e, t_elf64 *elf)
 			elf->program[i].p_offset += padding;
 		}
 	}
-
-	/* Change Section Header offest if padding */
+	/* Change Section Header offest */
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
 		if (elf->section[i].sh_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
 			elf->section[i].sh_offset += padding;

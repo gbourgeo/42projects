@@ -142,21 +142,28 @@ static void		write_in_padding(t_env *e, t_elf32 *elf)
 
 static void		write_add_padding(t_env *e, t_elf32 *elf)
 {
-	char		*ptr		= (char *)e->file;
-	size_t		banner_size	= (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
-	size_t		padding		= 0;
+	char		*ptr;
+	size_t		banner_size;
+	size_t		padding;
 
+	ptr = (char *)e->file;
+	banner_size = (e->banner && *e->banner) ? ft_strlen(e->banner) + 1 : 0;
+	padding = 0;
 	while (padding < woody32_size + e->woody_datalen)
 		padding += getpagesize();
+	/* Change Program Header offest */
 	for (size_t i = 0; i < elf->header->e_phnum; i++) {
-		if (elf->program[i].p_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
+		if (elf->program[i].p_offset > elf->text_program->p_offset + elf->text_program->p_filesz) {
 			if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
-				ft_fatal("new Segment size too large. Risk of rewriting other Segment(s). Abort.", e);
+				ft_fatal("new Segment size too large. Risk of rewriting other Segment(s) in memory. Abort.", e);
 			elf->program[i].p_offset += padding;
+printf("ADD PADDING %u off:%#x v_addr:%#x p_addr:%#x\n", padding, elf->program[i].p_offset, elf->program[i].p_vaddr, elf->program[i].p_paddr);
 		}
 	}
+	/* Change Section Header offest */
 	for (size_t i = 0; i < elf->header->e_shnum; i++) {
-		if (elf->section[i].sh_offset >= elf->text_program->p_offset + elf->text_program->p_filesz) {
+		if (elf->section[i].sh_addr > elf->text_section->sh_addr + elf->text_section->sh_size
+		|| elf->section[i].sh_offset > elf->text_section->sh_offset + elf->text_section->sh_size) {
 			elf->section[i].sh_offset += padding;
 		}
 	}

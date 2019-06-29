@@ -15,7 +15,7 @@ woody32_func:						; ELF 32 bits version
 	push	edx
 
 	call	.get_eip				; Get [banner32] address based on eip
-	mov		ecx, eax			
+	mov		ecx, eax
 	mov		edx, banner32
 	sub		edx, woody32_func
 	add		ecx, edx
@@ -149,7 +149,6 @@ woody32_end:
 	pop		edx
 	pop		ecx
 	pop		ebx
-;mov eax, [banner32]
 
 	mov		ebx, edi
 	sub		ebx, 8
@@ -161,7 +160,6 @@ woody32_end:
 	pop		eax
 	pop		esi
 	mov		[esp], edi
-;mov eax, [banner32]
 	ret
 
 woody32_data:
