@@ -88,9 +88,11 @@ clean:
 
 fclean: clean
 	@make -C $(LIB_DIR) fclean
-	/bin/rm -f woody
 	/bin/rm -f $(NAME)
+	/bin/rm -f woody
 	/bin/rm -f hex
+	/bin/rm -f elf32
+	/bin/rm -f elf64
 
 re: fclean all
 
@@ -103,9 +105,11 @@ endif
 
 elf64:
 	gcc -m64 -o elf64 Ressources/sample.c
+	@make
 
 elf32:
 	gcc -m32 -o elf32 Ressources/sample.c
+	@make ARCH=-m32
 
 macho64:
 	gcc -m64 -o macho64 Ressources/sample.c

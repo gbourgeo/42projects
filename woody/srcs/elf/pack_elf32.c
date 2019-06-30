@@ -95,7 +95,7 @@ static void		write_new_file(t_env *e, t_elf32 *elf)
 
 	e->off = elf->text_program->p_offset + elf->text_program->p_memsz;
 	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry + woody_size) * (-1);
-	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr + woody_size) * (-1);
+	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr) * (-1);
 	elf->text_crypted_size = elf->text_section->sh_size;
 	elf->header->e_entry = elf->text_program->p_vaddr + elf->text_program->p_memsz;
 
@@ -123,7 +123,7 @@ static void		write_in_padding(t_env *e, t_elf32 *elf)
 	elf->text_program->p_flags = PF_R | PF_W | PF_X;
 
 /* Had this line if you want to disassemble the infection with debuggers */
-	elf->text_section->sh_size += woody32_size;
+	// elf->text_section->sh_size += woody32_size;
 	write(e->fd, ptr, e->off);
 	write(e->fd, &woody32_func, woody32_size);
 	write(e->fd, e->key, sizeof(e->key));
@@ -157,7 +157,7 @@ static void		write_add_padding(t_env *e, t_elf32 *elf)
 			if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
 				ft_fatal("new Segment size too large. Risk of rewriting other Segment(s) in memory. Abort.", e);
 			elf->program[i].p_offset += padding;
-printf("ADD PADDING %u off:%#x v_addr:%#x p_addr:%#x\n", padding, elf->program[i].p_offset, elf->program[i].p_vaddr, elf->program[i].p_paddr);
+// printf("ADD PADDING %u off:%#x v_addr:%#x p_addr:%#x\n", padding, elf->program[i].p_offset, elf->program[i].p_vaddr, elf->program[i].p_paddr);
 		}
 	}
 	/* Change Section Header offest */
@@ -168,6 +168,7 @@ printf("ADD PADDING %u off:%#x v_addr:%#x p_addr:%#x\n", padding, elf->program[i
 		}
 	}
 	elf->header->e_shoff += padding;
+
 	elf->text_program->p_memsz += (woody32_size + e->woody_datalen);
 	elf->text_program->p_filesz += (woody32_size + e->woody_datalen);
 	elf->text_program->p_flags = PF_R | PF_W | PF_X;

@@ -1,5 +1,6 @@
 DEFAULT REL
 [BITS 64]
+
 	global woody64_func:function
 	global woody64_size:data
 	global woody64_keys:data
@@ -81,7 +82,7 @@ woody64_func:					; ELF 64 bits version
 	mov r8d, DWORD [r13+8]
 	mov edi, DWORD [r13+12]
 	mov esi, -957401312
-.decryption:
+.decrypt_algorithm:
 	mov eax, ecx
 	sal eax, 4
 	add eax, r8d
@@ -103,7 +104,7 @@ woody64_func:					; ELF 64 bits version
 	xor eax, r15d
 	sub ecx, eax
 	add esi, 1640531527
-	jne .decryption
+	jne .decrypt_algorithm
 	mov eax, ecx
 	shr eax, 24
 	mov BYTE [r12], al
