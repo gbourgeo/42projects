@@ -10,7 +10,7 @@ s’exécute. Ainsi, le chiffrement et la compression du packer permettent de co
 simplement ces mesures en obfusquant le contenu de l’exécutable jusqu’à son exécution.
 
 • L’exécutable se nomme woody_woodpacker.
-• L’exécutable prend en paramètre un fichier binaire (ELF 64 bits uniquement).
+• L’exécutable prend en paramètre un fichier binaire (ELF 64 bits par defaut).
 • L’exécutable créé un second exécutable, woody, à la fin de son exécution.
 • L’algorithme choisit: TEA (Tiny Encryption Algorythm).
 • La clé tient sur 128 bits et sera imprimé sur la sortie standard.
@@ -18,5 +18,6 @@ simplement ces mesures en obfusquant le contenu de l’exécutable jusqu’à so
 BOnus:
 
 • Texte inséré paramétrable en second argument de l'éxecutable.
+• Support du format elf32 (32 Bits).
 • Support du format Mach-O (64 Bits).
 • Optimisation de l'algorithme utilisé via de l'assembleur.
