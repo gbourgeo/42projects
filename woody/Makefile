@@ -11,6 +11,11 @@
 #******************************************************************************#
 
 NAME 	= woody_woodpacker
+ARCH	=
+ifeq ($(BIT32), 1)
+NAME	= woody_woodpacker32
+ARCH	= -m32
+endif
 
 SRC_DIR	= srcs/
 SRC		= main.c fatal.c key_generator.c
@@ -26,17 +31,18 @@ OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 
 UNAME_S	:= $(shell uname -s)
 UNAME_M := $(shell uname -m)
+
 ifeq ($(UNAME_S), Linux)
 SRC			+= check_elf_info.c pack_elf64.c pack_elf32.c
 SRC_S		= woody64.s encrypt64.s
 SRC_S		+= woody32.s encrypt32.s
 ASM			= nasm
-ifeq ($(ARCH), -m32)
-ASMFLAG		= -f elf32
-else
 ASMFLAG		= -f elf64
+ifeq ($(BIT32), 1)
+ASMFLAG		= -f elf32
 endif
 endif
+
 ifeq ($(UNAME_S), Darwin)
 SRC			+= check_macho_info.c pack_macho64.c ft_swap_bytes.c
 SRC_S		= woody64.s encrypt64.s
@@ -89,10 +95,12 @@ clean:
 fclean: clean
 	@make -C $(LIB_DIR) fclean
 	/bin/rm -f $(NAME)
+	/bin/rm -f $(NAME)32
 	/bin/rm -f woody
 	/bin/rm -f hex
 	/bin/rm -f elf32
 	/bin/rm -f elf64
+	/bin/rm -f macho64
 
 re: fclean all
 
@@ -105,11 +113,9 @@ endif
 
 elf64:
 	gcc -m64 -o elf64 Ressources/sample.c
-	@make
 
 elf32:
 	gcc -m32 -o elf32 Ressources/sample.c
-	@make ARCH=-m32
 
 macho64:
 	gcc -m64 -o macho64 Ressources/sample.c
