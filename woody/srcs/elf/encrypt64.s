@@ -12,6 +12,7 @@ woody64_encrypt:
 	push rcx
 	push rbx
 	push rax
+
 	and esi, -8
 	mov DWORD [rsp - 4], esi
 	je .end

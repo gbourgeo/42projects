@@ -57,15 +57,17 @@ int				main(int ac, char **av)
 	ft_strncpy(e.banner, (av[2]) ? av[2] : "....WOODY....", 255);
 	e.banner_len = ft_strlen(e.banner) + 1;
 	map_file(av[1], &e);
-	generate_new_key(e.key);
 #ifdef __linux__
 	check_elf_info(&e);
+	generate_new_key(e.key);
 	if (((Elf64_Ehdr *)e.file)->e_ident[EI_CLASS] == ELFCLASS32)
 		pack_elf32(&e);
 	else if (((Elf64_Ehdr *)e.file)->e_ident[EI_CLASS] == ELFCLASS64)
 		pack_elf64(&e);
 #elif __APPLE__
 	check_macho_info(&e);
+	generate_new_key(e.key);
+	pack_macho64(&e);
 #endif
 	if (munmap(e.file, e.file_size) == -1)
 		ft_fatal(NULL, &e);

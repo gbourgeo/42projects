@@ -64,8 +64,13 @@ static void		check_header(t_env *e)
 		ft_fatal("Invalid ELF magic.", e);
 	if (hdr->e_ident[EI_VERSION] != EV_CURRENT)
 		ft_fatal("Unsupported ELF version.", e);
-	if (hdr->e_ident[EI_CLASS] != ELFCLASS64 && hdr->e_ident[EI_CLASS] != ELFCLASS32)
-		ft_fatal("Unsupported ELF Class.", e);
+	if (ft_strcmp(&e->progname[ft_strlen(e->progname) - 2], "32") == 0)
+	{
+		if (hdr->e_ident[EI_CLASS] != ELFCLASS32)
+			ft_fatal("Unsupported ELF Class (32 bit only).", e);
+	}
+	else if (hdr->e_ident[EI_CLASS] != ELFCLASS64)
+		ft_fatal("Unsupported ELF Class (64 bit only).", e);
 	if (hdr->e_ident[EI_DATA] == ELFDATANONE)
 		ft_fatal("Unsupported ELF Byte order.", e);
 	if (hdr->e_type != ET_EXEC && hdr->e_type != ET_DYN)

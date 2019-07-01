@@ -85,16 +85,13 @@ static void		encrypt_text_section(t_env *e, t_elf32 *elf)
 
 static void		write_new_file(t_env *e, t_elf32 *elf)
 {
-	size_t		woody_size;
-
-	woody_size = woody32_size + sizeof(size_t) + sizeof(e->key) + sizeof(elf->text_entry) + sizeof(elf->text_crypted_size) + sizeof(elf->old_entry);
 	e->fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 00755);
 	if (e->fd == -1)
 		ft_fatal(NULL, e);
 
 
 	e->off = elf->text_program->p_offset + elf->text_program->p_memsz;
-	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry + woody_size) * (-1);
+	elf->old_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->header->e_entry) * (-1);
 	elf->text_entry = (elf->text_program->p_vaddr + elf->text_program->p_memsz - elf->text_section->sh_addr) * (-1);
 	elf->text_crypted_size = elf->text_section->sh_size;
 	elf->header->e_entry = elf->text_program->p_vaddr + elf->text_program->p_memsz;
@@ -154,7 +151,7 @@ static void		write_add_padding(t_env *e, t_elf32 *elf)
 	/* Change Program Header offest */
 	for (size_t i = 0; i < elf->header->e_phnum; i++) {
 		if (elf->program[i].p_offset > elf->text_program->p_offset + elf->text_program->p_filesz) {
-			if (elf->text_program->p_vaddr + elf->text_program->p_memsz >= elf->program[i].p_vaddr)
+			if (elf->program[i].p_offset + padding >= elf->program[i].p_vaddr)
 				ft_fatal("new Segment size too large. Risk of rewriting other Segment(s) in memory. Abort.", e);
 			elf->program[i].p_offset += padding;
 // printf("ADD PADDING %u off:%#x v_addr:%#x p_addr:%#x\n", padding, elf->program[i].p_offset, elf->program[i].p_vaddr, elf->program[i].p_paddr);

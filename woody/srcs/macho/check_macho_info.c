@@ -42,5 +42,4 @@ void					check_macho_info(t_env *e)
 		ft_fatal("Invalid MACHO file architecture", e);
 	if (!is_executable(header->filetype))
 		ft_fatal("Unsupported MACHO file type", e);
-	pack_macho64(e);
 }

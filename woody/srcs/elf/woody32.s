@@ -130,27 +130,18 @@ woody32_func:						; ELF 32 bits version
 	add		ecx, 20					; Go to [text_size] address
 	push	DWORD [ecx]
 	sub		ecx, 4					; Go to [text_vaddr] address
-	add		ecx, DWORD [esp + 7]
-	push	DWORD [ecx]
-mov eax,[banner32]
-	; mov		edi, ecx				; Save [banner32] address into EDI
-	; mov		ecx, DWORD [edi - 12]	; Put [text_size] value into ECX
-	; mov		edx, edi				; Put [woody32_keys] address into EDX
-	; sub		edx, 32
-	; mov		ebx, edi				; Put [banner32] address into EBX
-	; add		ebx, DWORD [edi - 16]	; Put [text_vaddr] address to it
-
-	; push	edx
-	; push	ecx
-	; push	ebx
+	mov		ebx, DWORD [esp + 24]	; Get [woody32_func] address
+	add		ebx, [ecx]				; Get [.text] address
+	push	ebx
 	call	.decrypt
-	; pop		edx
-	; pop		ecx
-	; pop		ebx
+	pop		ebx						; Get [.text] address
+	pop		ecx						; Get [text_vaddr] address
+	pop		ecx						; Get [woody32_keys] address
 
-	mov		ebx, edi				; Get [banner32] address
-	sub		ebx, 8					; Go to [jump_vaddr] address
-	add		edi, DWORD [ebx]		; Add it to [banner32] address to get the old entry point value
+	mov		ebx, DWORD [esp + 16]	; Get [woody32_func] address
+	add		ecx, 24					; Go to [jump_vaddr] address
+	add		ebx, [ecx]				; Get old entry point
+	mov		edi, ebx
 
 	pop		edx
 	pop		ecx
