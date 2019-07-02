@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2019/05/28 17:34:51 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/07/02 10:31:22 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ LIBFT = libft/
 
 HEADERS = -I includes -I $(LIBFT)includes
 
-WWW = gcc -Wall -Werror -Wextra -fsanitize=leak
+WWW = gcc -Wall -Werror -Wextra
 
 all: $(OBJ_D) $(NAME)
 
