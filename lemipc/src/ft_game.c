@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/12 21:09:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/06 23:55:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,13 @@ void			ft_launch_game(void)
 	while (check_who_wins(e.teams.board, e.game.board))
 	{
 		ft_lock(e.game.semid);
+		sleep(1);
 		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
 			ft_exit(0, "You got surrounded !!!", 1);
 		if (e.game.board->game_in_process)
 			ft_strategy(e.players, e.team, &e.game);
-		sleep(1);
 		ft_unlock(e.game.semid);
+		sleep(1);
 	}
 	ft_exit(2, NULL, 0);
 }
