@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
+#    By: naminei <naminei@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/19 00:05:16 by root              #+#    #+#              #
-#    Updated: 2019/07/02 10:31:22 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/07/07 14:38:37 by naminei          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,11 +16,13 @@ SRC_D = src/
 
 SRC = main.c 			\
 	ft_atoull.c			\
-	ft_create_join.c 	\
+	ft_create.c			\
 	ft_exit.c 			\
+	ft_exit_child.c 	\
 	ft_game.c			\
 	ft_getenv.c			\
 	ft_init.c			\
+	ft_join.c			\
 	ft_move.c			\
 	ft_msg.c 			\
 	ft_players.c		\

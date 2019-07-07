@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_sem.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:35:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/06 21:36:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 15:07:34 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,14 @@ void				ft_lock(void *shm)
 		return ;
 	// ft_memset(sem, 0, sizeof(*sem));
 	sem[0].sem_num = 0;
-	sem[0].sem_op = 0;
+	sem[0].sem_op = -1;
 	sem[0].sem_flg = 0;
 	sem[1].sem_num = 0;
-	sem[1].sem_op = 1;
+	sem[1].sem_op = -1;
 	sem[1].sem_flg = 0;
-printf("LOCKING...\n");
-	if (semop(shared->semid, sem, 2))
+	if (semop(shared->semid, sem, 1))
 		ft_exit(1, "semop (lock)");
 	shared->locked = 1;
-printf("LOCKED !\n");
 }
 
 void				ft_unlock(void *shm)
@@ -49,11 +47,9 @@ void				ft_unlock(void *shm)
 		return ;
 	ft_memset(&sem, 0, sizeof(sem));
 	sem.sem_num = 0;
-	sem.sem_op = -1;
+	sem.sem_op = 1;
 	sem.sem_flg = 0;
-write(1, "UNLOCKING...\n", 13);
 	if (semop(shared->semid, &sem, 1))
 		ft_exit(1, "semop (unlock)");
 	shared->locked = 0;
-write(1, "UNLOCKED !\n", 11);
 }

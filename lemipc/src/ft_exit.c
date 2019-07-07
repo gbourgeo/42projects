@@ -3,14 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/28 16:55:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 12:55:21 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/msg.h>
 #include <sys/sem.h>
@@ -18,6 +17,22 @@
 #include "lemipc.h"
 #include "libft.h"
 #include "ft_fprintf.h"
+
+static void	ft_clear_game(void)
+{
+	if (shmctl(e.game.shmid, IPC_RMID, NULL))
+		perror("shmctl");
+	e.game.shmid = -1;
+	if (shmdt(e.game.board))
+		perror("shmdt");
+	e.game.board = (void *)-1;
+	if (e.game.semid != -1 && semctl(e.game.semid, 0, IPC_RMID))
+		perror("semctl");
+	e.game.semid = -1;
+	if (e.game.msgqid != -1 && msgctl(e.game.msgqid, IPC_RMID, NULL))
+		perror("msgctl");
+	e.game.msgqid = -1;
+}
 
 static int	ft_exit_game(void)
 {
@@ -31,18 +46,7 @@ static int	ft_exit_game(void)
 		}
 		else if (e.game.board->nb_players == 0)
 		{
-			if (shmctl(e.game.shmid, IPC_RMID, NULL))
-				perror("shmctl");
-			e.game.shmid = -1;
-			if (shmdt(e.game.board))
-				perror("shmdt");
-			e.game.board = (void *)-1;
-			if (e.game.semid != -1 && semctl(e.game.semid, 0, IPC_RMID))
-				perror("semctl");
-			e.game.semid = -1;
-			if (e.game.msgqid != -1 && msgctl(e.game.msgqid, IPC_RMID, NULL))
-				perror("msgctl");
-			e.game.msgqid = -1;
+			ft_clear_game();
 			return (1);
 		}
 		if (shmdt(e.game.board))
@@ -80,7 +84,7 @@ static void	ft_exit_team(int rm_all)
 	}
 }
 
-static void	ft_exit_print_winner(int print_err, char *err)
+void		ft_exit_print_winner(int print_err, char *err)
 {
 	ft_fprintf(stderr, "%s: ", e.prog);
 	if (print_err == 0)
@@ -124,21 +128,4 @@ void		ft_exit(int print_err, char *err)
 		waitpid(e.pid, NULL, 0);
 	ft_memset(&e, 0, sizeof(e));
 	exit(print_err % 2);
-}
-
-void		ft_exit_child(int print_err, char *err)
-{
-	ft_exit_print_winner(print_err, err);
-	ft_restore_term(&e.term);
-	if (e.game.board != (void *)-1)
-	{
-		shmdt(e.game.board);
-		e.game.board = (void *)-1;
-	}
-	if (e.teams.board != (void *)-1)
-	{
-		shmdt(e.teams.board);
-		e.teams.board = (void *)-1;
-	}
-	exit(1);
 }

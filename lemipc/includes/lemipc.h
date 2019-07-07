@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lemipc.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/28 17:12:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 12:52:33 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ t_uid				*ft_join_team(const char *name, t_team *team);
 
 void				ft_exit(int print_err, char *err);
 void				ft_exit_child(int print_err, char *err);
+void				ft_exit_print_winner(int print_err, char *err);
 
 void				ft_termcaps(char **env, struct termios *oldterm);
 void				ft_restore_term(struct termios *oldterm);

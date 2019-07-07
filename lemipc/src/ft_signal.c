@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signal.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/28 17:02:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 13:08:01 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,13 @@
 ** SIGSTOP generates an error.
 */
 
-#include <unistd.h>
 #include <signal.h>
 #include "lemipc.h"
-#ifdef linux__
-# define NSIG _NSIG
-#endif
-#include<stdlib.h>
+#include "libft.h"
+
 void			game_signal_catcher(int sig)
 {
-	char		*err;
+	char		err[32];
 	static char	*signals[] = {
 		"0", "SIGUP", "SIGINT", "SIGQUIT", "SIGILL",
 		"SIGTRAP", "SIGABRT", "SIGPOLL/SIGEMT",
@@ -36,8 +33,12 @@ void			game_signal_catcher(int sig)
 		"SIGWINCH", "SIGINFO", "SIGUSR1", "SIGUSR2",
 	};
 
-	err = (sig >= 0 && sig < NSIG) ? signals[sig] : "Unknown signal error";
-	write(2, "\n", 1);
+	ft_strcpy(err, "signal received: ");
+	if (sig >= 0 && sig < NSIG)
+		ft_strcat(err, signals[sig]);
+	else
+		ft_strcat(err, "Unknown");
+	ft_putchar('\n');
 	ft_exit(0, err);
 }
 
