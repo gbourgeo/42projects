@@ -21,7 +21,7 @@ void		init_game(const char *prog, t_game *game)
 {
 	game->key = ftok(prog, 'G');
 	if (game->key == -1)
-		ft_exit(1, "ftok", 0);
+		ft_exit(1, "ftok");
 	game->size = sizeof(*game->board) +
 		(MAP_WIDTH * MAP_HEIGTH * sizeof(*game->map));
 	game->shmid = shmget(game->key, 0, SHM_R | SHM_W);
@@ -35,7 +35,7 @@ void		init_team(const char *prog, t_team *teams)
 {
 	teams->key = ftok(prog, 'B');
 	if (teams->key == -1)
-		ft_exit(1, "ftok", 0);
+		ft_exit(1, "ftok");
 	teams->size = sizeof(size_t) + sizeof(*e.team) * MAX_TEAMS;
 	teams->shmid = shmget(teams->key, 0, SHM_R | SHM_W);
 	teams->semid = semget(teams->key, 1, SHM_R | SHM_W);

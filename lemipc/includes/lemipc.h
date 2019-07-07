@@ -15,7 +15,7 @@
 
 # include <sys/shm.h>
 
-# ifdef __linux__
+# ifdef linux__
 #  include <termios.h>
 # else
 #  include <term.h>
@@ -73,7 +73,10 @@ typedef struct		s_team
 	size_t			size;
 	int				shmid;
 	int				semid;
+	int				msqid_unused;
 	void			*board;
+	void			*map_unused;
+	int				locked;
 }					t_team;
 
 typedef struct		s_board
@@ -95,6 +98,7 @@ typedef struct		s_game
 	int				msgqid;
 	t_board			*board;
 	ULL				*map;
+	int				locked;
 }					t_game;
 
 typedef struct		s_env
@@ -123,7 +127,7 @@ void				ft_create_process_to_print_map(void);
 void				ft_join_game(t_game *game);
 t_uid				*ft_join_team(const char *name, t_team *team);
 
-void				ft_exit(int print_err, char *err, int locked);
+void				ft_exit(int print_err, char *err);
 void				ft_exit_child(int print_err, char *err);
 
 void				ft_termcaps(char **env, struct termios *oldterm);
@@ -132,8 +136,8 @@ void				ft_termdo(char *doit);
 
 void				game_signal_catcher(int sig);
 
-void				ft_lock(int semid);
-void				ft_unlock(int semid);
+void				ft_lock(void *shm);
+void				ft_unlock(void *shm);
 
 void				ft_wait_players(void);
 void				ft_launch_game(void);

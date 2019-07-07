@@ -31,13 +31,17 @@ SRC = main.c 			\
 	ft_termcaps.c 		\
 	ft_wait_players.c
 
+INC_D = includes/
+
+DEPS = $(INC_D)lemipc.h
+
 OBJ_D = obj/
 
 OBJ = $(addprefix $(OBJ_D), $(SRC:.c=.o))
 
 LIBFT = libft/
 
-HEADERS = -I includes -I $(LIBFT)includes
+HEADERS = -I $(INC_D) -I $(LIBFT)includes
 
 WWW = gcc -Wall -Werror -Wextra
 
@@ -50,7 +54,7 @@ $(OBJ_D):
 $(NAME): $(OBJ)
 	gcc -o $@ $^ -L $(LIBFT) -lft -lncurses
 
-$(OBJ_D)%.o: $(SRC_D)%.c includes/lemipc.h
+$(OBJ_D)%.o: $(SRC_D)%.c $(DEPS)
 	$(WWW) -o $@ -c $< $(HEADERS)
 
 .PHONY: clean fclean re

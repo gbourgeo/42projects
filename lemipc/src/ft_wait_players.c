@@ -25,10 +25,10 @@ static void		ft_place_player(void)
 		e.y = MY_RAND(rand()) % MAP_HEIGTH;
 		if (*(e.game.map + GET_POS(e.x, e.y)) != MAP_0)
 			continue ;
-		ft_lock(e.game.semid);
+		ft_lock(&e.game);
 		*(e.game.map + GET_POS(e.x, e.y)) = e.team->uid;
 		e.game.board->players_ready++;
-		ft_unlock(e.game.semid);
+		ft_unlock(&e.game);
 		break ;
 	}
 }
@@ -51,9 +51,9 @@ static void		ft_start(t_team *teams, t_board *board, ULL max)
 	}
 	if (board->nb_players != board->players_ready)
 		return ;
-	ft_lock(e.game.semid);
+	ft_lock(&e.game);
 	e.game.board->game_in_process = 1;
-	ft_unlock(e.game.semid);
+	ft_unlock(&e.game);
 }
 
 static void		ft_check_even_teams(void)

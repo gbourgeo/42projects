@@ -12,16 +12,18 @@
 
 #include <sys/sem.h>
 #include "libft.h"
+#include "lemipc.h"
 
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
-void				ft_lock(int semid)
+void				ft_lock(void *shm)
 {
+	t_game			*shared;
 	struct sembuf	sem[2];
-	int				err;
 
-	if (semid == -1)
+	shared = (t_game *)shm;
+	if (shared->semid == -1 || shared->locked != 0)
 		return ;
 	// ft_memset(sem, 0, sizeof(*sem));
 	sem[0].sem_num = 0;
@@ -31,25 +33,27 @@ void				ft_lock(int semid)
 	sem[1].sem_op = 1;
 	sem[1].sem_flg = 0;
 printf("LOCKING...\n");
-	if ((err = semop(semid, sem, 2)) != 0)
-	{
-		printf("ERROR: %d %d\n", err, errno);
-		perror("semop");
-	}
+	if (semop(shared->semid, sem, 2))
+		ft_exit(1, "semop (lock)");
+	shared->locked = 1;
 printf("LOCKED !\n");
 }
 
-void				ft_unlock(int semid)
+void				ft_unlock(void *shm)
 {
+	t_game			*shared;
 	struct sembuf	sem;
 
-	if (semid == -1)
+	shared = (t_game *)shm;
+	if (shared->semid == -1 || shared->locked == 0)
 		return ;
 	ft_memset(&sem, 0, sizeof(sem));
 	sem.sem_num = 0;
 	sem.sem_op = -1;
 	sem.sem_flg = 0;
 write(1, "UNLOCKING...\n", 13);
-	semop(semid, &sem, 1);
+	if (semop(shared->semid, &sem, 1))
+		ft_exit(1, "semop (unlock)");
+	shared->locked = 0;
 write(1, "UNLOCKED !\n", 11);
 }

@@ -27,21 +27,27 @@ static int	ft_exit_game(void)
 		{
 			if (shmctl(e.game.shmid, IPC_RMID, NULL))
 				perror("shmctl");
+			e.game.shmid = -1;
 		}
 		else if (e.game.board->nb_players == 0)
 		{
 			if (shmctl(e.game.shmid, IPC_RMID, NULL))
 				perror("shmctl");
+			e.game.shmid = -1;
 			if (shmdt(e.game.board))
 				perror("shmdt");
+			e.game.board = (void *)-1;
 			if (e.game.semid != -1 && semctl(e.game.semid, 0, IPC_RMID))
 				perror("semctl");
+			e.game.semid = -1;
 			if (e.game.msgqid != -1 && msgctl(e.game.msgqid, IPC_RMID, NULL))
 				perror("msgctl");
+			e.game.msgqid = -1;
 			return (1);
 		}
 		if (shmdt(e.game.board))
 			perror("shmdt");
+		e.game.board = (void *)-1;
 	}
 	return (0);
 }
@@ -54,17 +60,21 @@ static void	ft_exit_team(int rm_all)
 		{
 			if (shmctl(e.teams.shmid, IPC_RMID, NULL))
 				perror("shmctl");
+			e.teams.shmid = -1;
 		}
 		else
 		{
 			if (shmdt(e.teams.board))
 				perror("shmdt");
+			e.teams.board = (void *)-1;
 			if (rm_all)
 			{
 				if (shmctl(e.teams.shmid, IPC_RMID, NULL))
 					perror("shmctl");
+				e.teams.shmid = -1;
 				if (e.teams.semid != -1 && semctl(e.teams.semid, 0, IPC_RMID))
 					perror("semctl");
+				e.teams.semid = -1;
 			}
 		}
 	}
@@ -92,17 +102,16 @@ static void	ft_exit_print_winner(int print_err, char *err)
 	}
 }
 
-void		ft_exit(int print_err, char *err, int locked)
+void		ft_exit(int print_err, char *err)
 {
 	init_signal(SIG_DFL);
-	if (!locked)
-		ft_lock(e.game.semid);
+	ft_lock(&e.game);
 	ft_exit_print_winner(print_err, err);
 	if (e.teams.board != (void *)-1 && e.team)
 	{
-		ft_lock(e.teams.semid);
+		ft_lock(&e.teams);
 		e.team->total--;
-		ft_unlock(e.teams.semid);
+		ft_unlock(&e.teams);
 	}
 	if (e.game.board != (void *)-1)
 	{
@@ -110,7 +119,7 @@ void		ft_exit(int print_err, char *err, int locked)
 		e.game.board->nb_players--;
 	}
 	ft_exit_team(ft_exit_game());
-	ft_unlock(e.game.semid);
+	ft_unlock(&e.game);
 	if (e.pid)
 		waitpid(e.pid, NULL, 0);
 	ft_memset(&e, 0, sizeof(e));
@@ -122,8 +131,14 @@ void		ft_exit_child(int print_err, char *err)
 	ft_exit_print_winner(print_err, err);
 	ft_restore_term(&e.term);
 	if (e.game.board != (void *)-1)
+	{
 		shmdt(e.game.board);
+		e.game.board = (void *)-1;
+	}
 	if (e.teams.board != (void *)-1)
+	{
 		shmdt(e.teams.board);
+		e.teams.board = (void *)-1;
+	}
 	exit(1);
 }

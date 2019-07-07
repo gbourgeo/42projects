@@ -70,14 +70,14 @@ void			ft_launch_game(void)
 {
 	while (check_who_wins(e.teams.board, e.game.board))
 	{
-		ft_lock(e.game.semid);
+		ft_lock(&e.game);
 		sleep(1);
 		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
-			ft_exit(0, "You got surrounded !!!", 1);
+			ft_exit(0, "I am surrounded, god !!!");
 		if (e.game.board->game_in_process)
 			ft_strategy(e.players, e.team, &e.game);
-		ft_unlock(e.game.semid);
+		ft_unlock(&e.game);
 		sleep(1);
 	}
-	ft_exit(2, NULL, 0);
+	ft_exit(2, NULL);
 }

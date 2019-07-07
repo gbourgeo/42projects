@@ -20,7 +20,7 @@ static t_player	*ft_new_player(t_player *next)
 
 	if ((ret = malloc(sizeof(*ret))) == NULL)
 	{
-		ft_exit(1, "malloc", 0);
+		ft_exit(1, "malloc");
 		return (NULL);
 	}
 	ft_memset(ret, 0, sizeof(*ret));

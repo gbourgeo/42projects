@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <signal.h>
 #include "ft_printf.h"
 #include "libft.h"
 #include "lemipc.h"
@@ -79,10 +80,9 @@ static void		ft_init_map(void)
 void			ft_create_process_to_print_map(void)
 {
 	if ((e.pid = fork()) < 0)
-		ft_exit(1, "mapper", 0);
+		ft_exit(1, "mapper");
 	else if (e.pid == 0)
 	{
-		// sleep(10);
 		ft_init_map();
 		while (e.game.board->nb_players)
 		{

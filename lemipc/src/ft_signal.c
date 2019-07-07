@@ -18,7 +18,10 @@
 #include <unistd.h>
 #include <signal.h>
 #include "lemipc.h"
-
+#ifdef linux__
+# define NSIG _NSIG
+#endif
+#include<stdlib.h>
 void			game_signal_catcher(int sig)
 {
 	char		*err;
@@ -35,7 +38,7 @@ void			game_signal_catcher(int sig)
 
 	err = (sig >= 0 && sig < NSIG) ? signals[sig] : "Unknown signal error";
 	write(2, "\n", 1);
-	ft_exit(0, err, 0);
+	ft_exit(0, err);
 }
 
 void			init_signal(void (*signal_catcher)(int))
