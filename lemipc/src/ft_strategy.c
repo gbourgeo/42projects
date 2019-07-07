@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 04:11:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 20:39:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 21:07:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,12 @@ static void		ft_get_target(t_player *players, t_game *game, t_player *target)
 		}
 		i++;
 	}
+	printf("New target located at %lld:%lld\n", target->x, target->y);
+}
+
+static int		ft_target_moved(t_player *target, t_game *game)
+{
+	return (game->map[GET_POS(target->x, target->y)] == target->team);
 }
 
 void			ft_strategy(t_player *players, t_uid *team, t_game *game)
@@ -47,7 +53,7 @@ void			ft_strategy(t_player *players, t_uid *team, t_game *game)
 	t_player	target;
 
 	ft_memset(&target, 0, sizeof(target));
-	if (!ft_rcvmsg(team->uid, &target, game))
+	if (!ft_rcvmsg(team->uid, &target, game) || !ft_target_moved(&target, game))
 		ft_get_target(players, game, &target);
 	ft_move_to_target(&target, game);
 	ft_sendmsg(team->uid, &target, game);

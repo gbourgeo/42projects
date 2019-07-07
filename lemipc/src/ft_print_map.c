@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/28 17:33:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 21:23:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ static void		print_info(t_game *game, t_team *teams)
 
 	size = 0;
 	team = (t_uid *)((size_t *)teams->board + 1);
-	ft_printf("Players connected: %llu\n", game->board->nb_players);
-	ft_printf("Number of teams  : %ld\n", *(size_t *)teams->board);
-	ft_printf("Team Name | Team ID | Total Members\n");
+	ft_printf("Players connected: %llu", game->board->nb_players);
+	ft_printf("\t\tNumber of teams: %ld\n", *(size_t *)teams->board);
+	ft_printf("\nTeam Name | Team ID | Total Members\n");
 	while (size < *(size_t *)teams->board)
 	{
 		if ((team + size)->total)
@@ -38,6 +38,22 @@ static void		print_info(t_game *game, t_team *teams)
 	ft_putchar('\n');
 }
 
+static void		print_map_header(void)
+{
+	ULL			i;
+
+	i = 0;
+	while (i <= MAP_WIDTH)
+	{
+		ft_printf(" ");
+		i += 10;
+	}
+	i = 0;
+	while (i++ < MAP_WIDTH)
+		ft_printf(" %2lld", i);
+	ft_printf("\n");
+}
+
 static void		print_map(t_game *game)
 {
 	ULL			*map;
@@ -46,8 +62,10 @@ static void		print_map(t_game *game)
 
 	map = game->map;
 	i = 0;
+	print_map_header();
 	while (i < MAP_HEIGTH)
 	{
+		ft_printf("%2lld ", i + 1);
 		j = 0;
 		while (j < MAP_WIDTH)
 		{
@@ -59,10 +77,8 @@ static void		print_map(t_game *game)
 		ft_putchar('\n');
 		i++;
 	}
-	ft_putchar('\n');
-	ft_printf("%s\n", (game->board->game_in_process) ?
-			"\e[1;32mGAME IN PROGRESS\e[0m" :
-			"\e[1;34mWAITING FOR PLAYERS...\e[0m");
+	if (!game->board->game_in_process)
+		ft_printf("\n\e[1;34mWAITING FOR PLAYERS...\e[0m\n");
 }
 
 static void		ft_init_map(void)
@@ -72,6 +88,7 @@ static void		ft_init_map(void)
 	setsid();
 	init_signal(SIG_DFL);
 	ft_termcaps(environ, &e.term);
+	ft_termdo("vi");
 	ft_termdo("cl");
 	ft_termdo("sc");
 	ft_printf("nb_players: %d\n", e.game.board->nb_players);
