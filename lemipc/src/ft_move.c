@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_move.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 09:01:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 20:40:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,4 +90,5 @@ void		ft_move_to_target(t_player *target, t_game *game)
 		else
 			move_verticaly(0, target, game->map);
 	}
+	printf("New position: (%lld %lld)\n", e.x, e.y);
 }

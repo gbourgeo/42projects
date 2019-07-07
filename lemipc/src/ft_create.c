@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_create.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 14:42:55 by naminei          ###   ########.fr       */
+/*   Updated: 2019/07/07 20:30:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static void			ft_init_gboard(t_game *game)
 
 void				ft_create_game(t_game *game)
 {
-	struct msqid_ds	buf;
 	struct sembuf	semops;
 
 	ft_printf("Creating game...\n");
@@ -52,8 +51,6 @@ void				ft_create_game(t_game *game)
 	game->msgqid = msgget(game->key, LEMIPC_CREATE);
 	if (game->msgqid < 0)
 		ft_exit(1, "msgget game IPC_CREAT");
-	if (msgctl(game->msgqid, IPC_STAT, &buf) < 0)
-		ft_exit(1, "msgctl game IPC_STAT");
 }
 
 static void			ft_init_tboard(t_team *teams)

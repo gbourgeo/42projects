@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/22 13:37:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/05/12 20:16:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 20:37:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ void				ft_sendmsg(ULL uid, t_player *target, t_game *game)
 		if (errno != EAGAIN)
 			perror("msgsnd");
 	}
+	printf("Message sent: ally (%lld %lld) ennemy (%lld %lld)\n",
+		snd.msg.ally.x, snd.msg.ally.y,
+		snd.msg.ennemy.x, snd.msg.ennemy.y);
 }
 
 int					ft_rcvmsg(ULL uid, t_player *target, t_game *game)
@@ -44,6 +47,9 @@ int					ft_rcvmsg(ULL uid, t_player *target, t_game *game)
 			perror("msgrcv");
 		return (0);
 	}
+	printf("Message received: ally (%lld %lld) ennemy (%lld %lld)\n",
+		rcv.msg.ally.x, rcv.msg.ally.y,
+		rcv.msg.ennemy.x, rcv.msg.ennemy.y);
 	ft_memcpy(target, &rcv.msg.ennemy, sizeof(*target));
 	return (1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strategy.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 04:11:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/25 04:11:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/07 20:39:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ft_printf.h"
 #include <time.h>
 
-static void		ft_target(t_player *players, t_game *game, t_player *target)
+static void		ft_get_target(t_player *players, t_game *game, t_player *target)
 {
 	ULL			i;
 	ULL			length;
@@ -48,9 +48,7 @@ void			ft_strategy(t_player *players, t_uid *team, t_game *game)
 
 	ft_memset(&target, 0, sizeof(target));
 	if (!ft_rcvmsg(team->uid, &target, game))
-	{
-		ft_target(players, game, &target);
-		ft_sendmsg(team->uid, &target, game);
-	}
+		ft_get_target(players, game, &target);
 	ft_move_to_target(&target, game);
+	ft_sendmsg(team->uid, &target, game);
 }
