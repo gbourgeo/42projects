@@ -6,15 +6,15 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 02:09:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 20:30:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/08 17:18:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/sem.h>
 #include <sys/msg.h>
-#include "lemipc.h"
 #include "libft.h"
 #include "ft_printf.h"
+#include "lemipc.h"
 
 static void			ft_init_gboard(t_game *game)
 {

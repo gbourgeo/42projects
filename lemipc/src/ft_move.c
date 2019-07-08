@@ -6,12 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 19:47:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 20:40:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/08 17:18:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "lemipc.h"
-#include <stdio.h>
 
 static int	can_i_move(t_game *game)
 {
@@ -90,5 +90,5 @@ void		ft_move_to_target(t_player *target, t_game *game)
 		else
 			move_verticaly(0, target, game->map);
 	}
-	printf("New position: (%lld %lld)\n", e.x, e.y);
+	ft_printf("New position: (%lld %lld)\n", e.x + 1, e.y + 1);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/29 23:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 21:23:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/08 17:36:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,9 @@ static void		print_map(t_game *game)
 		ft_putchar('\n');
 		i++;
 	}
+	ft_printf("\n");
 	if (!game->board->game_in_process)
-		ft_printf("\n\e[1;34mWAITING FOR PLAYERS...\e[0m\n");
+		ft_printf("\e[1;34mWAITING FOR PLAYERS...\e[0m\n");
 }
 
 static void		ft_init_map(void)
@@ -104,7 +105,6 @@ void			ft_create_process_to_print_map(void)
 		while (e.game.board->nb_players)
 		{
 			ft_termdo("rc");
-			ft_termdo("cd");
 			if (e.game.board != (void *)-1 && e.teams.board != (void *)-1)
 				print_info(&e.game, &e.teams);
 			if (e.game.board != (void *)-1)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 21:12:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/08 17:30:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,14 +68,25 @@ static int		check_who_wins(t_uid *teams, t_board *game)
 
 void			ft_launch_game(void)
 {
+	extern char	**environ;
+
+	ft_termcaps(environ, &e.term);
+	if (e.pid == 0)
+		ft_termdo("cl");
+	if (e.pid == 0)
+		ft_termdo("sc");
 	while (check_who_wins(e.teams.board, e.game.board))
 	{
 		ft_lock(&e.game);
-		sleep(1);
+		if (e.pid == 0)
+			ft_termdo("rc");
+		if (e.pid == 0)
+			ft_termdo("cd");
 		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
 			ft_exit(0, "I am surrounded, for the love of... ARGHH !!!");
 		if (e.game.board->game_in_process)
 			ft_strategy(e.players, e.team, &e.game);
+		sleep(1);
 		ft_unlock(&e.game);
 		sleep(e.game.board->nb_players - 1);
 	}
