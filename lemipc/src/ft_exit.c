@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:13:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 12:55:21 by naminei          ###   ########.fr       */
+/*   Updated: 2019/07/08 17:19:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include <sys/msg.h>
 #include <sys/sem.h>
 #include <sys/wait.h>
-#include "lemipc.h"
+#include <stdlib.h>
 #include "libft.h"
 #include "ft_fprintf.h"
+#include "lemipc.h"
 
 static void	ft_clear_game(void)
 {

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 04:11:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 21:07:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/08 17:37:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void		ft_get_target(t_player *players, t_game *game, t_player *target)
 		}
 		i++;
 	}
-	printf("New target located at %lld:%lld\n", target->x, target->y);
+	ft_printf("New target located: %lld %lld\n", target->x + 1, target->y + 1);
 }
 
 static int		ft_target_moved(t_player *target, t_game *game)

@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_init.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/21 08:59:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 13:19:36 by naminei          ###   ########.fr       */
+/*   Updated: 2019/07/08 17:20:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lemipc.h"
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/msg.h>
+#include "lemipc.h"
 
 void		init_game(const char *prog, t_game *game)
 {

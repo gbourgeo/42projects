@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signal.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:14:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 13:08:01 by naminei          ###   ########.fr       */
+/*   Updated: 2019/07/08 17:20:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 */
 
 #include <signal.h>
-#include "lemipc.h"
 #include "libft.h"
+#include "lemipc.h"
 
 void			game_signal_catcher(int sig)
 {
