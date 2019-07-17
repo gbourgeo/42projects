@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/20 18:41:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2018/04/11 04:57:07 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/07/17 13:20:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME = libft.a
 
@@ -41,6 +41,7 @@ FPRINTF_SRC = ft_fprintf.c ft_fprintf_write.c
 DPRINTF_SRC = ft_dprintf.c ft_dprintf_write.c
 SPRINTF_SRC = ft_sprintf.c ft_sprintf_write.c
 SNPRINTF_SRC = ft_snprintf.c ft_snprintf_write.c
+VPRINTF_SRC = ft_vprintf.c ft_vprintf_write.c
 
 OBJ_DIR = obj/
 OBJ_SRC	= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
@@ -50,6 +51,7 @@ OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(FPRINTF_SRC:.c=.o))
 OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(DPRINTF_SRC:.c=.o))
 OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(SPRINTF_SRC:.c=.o))
 OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(SNPRINTF_SRC:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(VPRINTF_SRC:.c=.o))
 
 WWW	= gcc -Wall -Werror -Wextra
 
