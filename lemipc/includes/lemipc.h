@@ -6,7 +6,7 @@
 /*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 23:20:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 12:52:33 by naminei          ###   ########.fr       */
+/*   Updated: 2019/07/08 15:36:43 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void				ft_termdo(char *doit);
 
 void				game_signal_catcher(int sig);
 
-void				ft_lock(void *shm);
+int					ft_lock(void *shm);
 void				ft_unlock(void *shm);
 
 void				ft_wait_players(void);

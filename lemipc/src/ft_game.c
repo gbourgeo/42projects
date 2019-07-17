@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_game.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 13:16:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/07 21:12:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/08 15:36:49 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,14 +70,16 @@ void			ft_launch_game(void)
 {
 	while (check_who_wins(e.teams.board, e.game.board))
 	{
-		ft_lock(&e.game);
-		sleep(1);
 		if (ft_check_if_surrounded(e.game.map, e.team->uid, 0, 0) > 1)
 			ft_exit(0, "I am surrounded, for the love of... ARGHH !!!");
-		if (e.game.board->game_in_process)
-			ft_strategy(e.players, e.team, &e.game);
-		ft_unlock(&e.game);
-		sleep(e.game.board->nb_players - 1);
+		if (ft_lock(&e.game))
+		{
+			sleep(1);
+			if (e.game.board->game_in_process)
+				ft_strategy(e.players, e.team, &e.game);
+			ft_unlock(&e.game);
+			sleep(e.game.board->nb_players - 1);
+		}
 	}
 	ft_exit(2, NULL);
 }
