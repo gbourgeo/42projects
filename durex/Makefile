@@ -63,7 +63,7 @@ fclean: clean
 re: fclean all
 
 rm:
-	/bin/rm /etc/ld.so.preload
+	/bin/rm -f /etc/ld.so.preload
 	systemctl disable durex; systemctl stop durex;
 	@if test -f /bin/Durex; then rm /bin/Durex && echo rm Durex; fi
 	@if test -f /lib/systemd/system/durex.service; then rm /lib/systemd/system/durex.service && echo rm Durex service; fi

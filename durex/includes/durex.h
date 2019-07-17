@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2019/05/12 17:50:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/15 21:17:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ typedef struct	s_cmd
 }				t_cmd;
 
 void			print_usr_name();
-int				install_library();
+int				create_library();
 
 int				openServer(const char *addr, const char *port);
 void			serverAcceptConnections();

