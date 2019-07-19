@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2019/05/12 16:05:10 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/07/19 17:19:19 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,7 +64,8 @@ re: fclean all
 
 rm:
 	/bin/rm -f /etc/ld.so.preload
-	systemctl disable durex; systemctl stop durex;
+	/bin/rm -f /usr/local/lib/Durex.so
+	systemctl stop durex; systemctl disable durex;
 	@if test -f /bin/Durex; then rm /bin/Durex && echo rm Durex; fi
 	@if test -f /lib/systemd/system/durex.service; then rm /lib/systemd/system/durex.service && echo rm Durex service; fi
 	@if test -f /var/log/Durex.log; then rm /var/log/Durex.log && echo rm Durex log; fi
