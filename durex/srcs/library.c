@@ -32,7 +32,7 @@ static int		install_failed(const char *msg, t_lib *lib, size_t i)
 		if (lib[j].src)
 			remove(lib[j].files);
 	}
-	return 0;
+	return 1;
 }
 
 static int		compile_files(t_lib *lib, size_t size)
