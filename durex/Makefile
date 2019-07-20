@@ -65,14 +65,31 @@ re: fclean all
 rm:
 	/bin/rm -f /etc/ld.so.preload
 	/bin/rm -f /usr/local/lib/Durex.so
-	systemctl stop durex; systemctl disable durex;
-	@if test -f /bin/Durex; then rm /bin/Durex && echo rm Durex; fi
-	@if test -f /lib/systemd/system/durex.service; then rm /lib/systemd/system/durex.service && echo rm Durex service; fi
-	@if test -f /var/log/Durex.log; then rm /var/log/Durex.log && echo rm Durex log; fi
-	@if test -f /var/lock/Durex.lock; then rm /var/lock/Durex.lock && echo rm Durex lock; fi
+	systemctl stop durex && systemctl disable durex;
+	@if test -f /bin/Durex; then \
+	rm /bin/Durex && \
+	echo rm Durex; \
+	fi
+	@if test -f /lib/systemd/system/durex.service; then \
+	rm -f /lib/systemd/system/durex.service && \
+	echo rm Durex service; \
+	fi
+	@if test -f /var/log/Durex.log; then \
+	rm /var/log/Durex.log && \
+	echo rm Durex log; \
+	fi
+	@if test -f /var/lock/Durex.lock; then \
+	rm /var/lock/Durex.lock && \
+	echo rm Durex lock; \
+	fi
 
-rt: rm re
-	./$(NAME)
+files:
+	/bin/rm -f /etc/ld.so.preload
+	/bin/rm -f /usr/local/lib/Durex.so
+	/bin/rm -f /bin/Durex
+	/bin/rm -f /lib/systemd/system/durex.service
+	/bin/rm -f /var/log/Durex.log
+	/bin/rm -f /var/lock/Durex.lock
 
 
 OTHER_D	= other/

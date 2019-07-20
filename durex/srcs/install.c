@@ -26,7 +26,7 @@ static int		install_error(int fd)
 	if (fd != -1)
 		close(fd);
 	remove(DUREX_BINARY_FILE);
-	remove(DUREX_SERVICE_FILE);
+	// remove(DUREX_SERVICE_FILE);
 	return 1;
 }
 

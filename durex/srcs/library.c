@@ -120,7 +120,7 @@ static int		compile_library(t_lib *lib, size_t size)
 	} else {
 		return install_failed(strerror(errno), lib, size);
 	}
-	serverLog(0, "OK\n");
+	serverLog(0, "Ok\n");
 	return 1;
 }
 

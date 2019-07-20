@@ -153,4 +153,6 @@ void			quitClearlyDaemon()
 	flock(e.lock, LOCK_UN);
 	close(e.lock);
 	remove(DUREX_LOCK_FILE);
+	remove(DUREX_PRELOAD);
+	remove(DUREX_PROCESSHIDER_LIB);
 }
