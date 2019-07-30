@@ -1,6 +1,6 @@
 # 42SH
 
-*Intermediate shell*
+*Advanced shell*
 
 This project is an introduction to command interpreter, lexical, syntactic and semantic rules
 
