@@ -21,5 +21,7 @@ obviously, new features :
 
 ## AUTHORS
 
-- [Remy FONTAINE](https://github.com/remyft)
-- [Gilles BOURGEOIS](https://github.com/gbourgeo)
+- **:rocket:** [Rémy FONTAINE](https://github.com/remyft)
+- :sparkling_heart: [Dorian BAFFIER](https://github.com/dbaffier) :sparkling_heart:
+- :princess: [Tsitsi SADAGHASHVILI](https://github.com/tsitsi314) 
+- :fire: [Gilles BOURGEOIS](https://github.com/gbourgeo) 
