@@ -1,6 +1,6 @@
 # 21SH
 
-*Simple shell*
+*Intermediate shell*
 
 This project is an introduction to command interpreter, lexical, syntactic and semantic rules
 
