@@ -19,11 +19,12 @@ obviously, new features :
 - Use the left and right arrow to move the cursor on the command line.
 - Edit the line where the cursor is.
 - Use the up and down arrows to navigate the command history.
-- Alt + ? : Cut the line from the cursor position.
-- Alt + ? : Copy the line from the cursor position.
-- Alt + ? : Paste at the cursor position.
-- Alt + ? : Move by 'words' to the left.
-- Alt + ? : Move by 'words' to the right.
+- Shift + LEFT | RIGHT : Select character(s) from command line at cursor position.
+- Alt + X : Cut the selected characters from the command line.
+- Alt + C : Copy the selected characters from the command line.
+- Alt + V : Paste at cursor position.
+- Alt + LEFT  : Move by 'words' to the left.
+- Alt + RIGHT : Move by 'words' to the right.
 - HOME    : Goes to the begining of the line.
 - END     : Goes to the end of the line.
 
