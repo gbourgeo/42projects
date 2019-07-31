@@ -1,32 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_vprintf.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/03 22:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/21 17:41:16 by marvin           ###   ########.fr       */
+/*   Created: 2019/07/17 13:13:33 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/07/17 13:21:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# define BUFF_SIZE 8
+#ifndef FT_VPRINTF_H
+# define FT_VPRINTF_H
 
-# include "libft.h"
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <unistd.h>
+# include "ft_base_printf.h"
 
-typedef struct		s_gnl
-{
-	int				fd;
-	char			*copy;
-	struct s_gnl	*next;
-	struct s_gnl	*prev;
-}					t_gnl;
-
-int					get_next_line(int const fd, char **line);
+int				ft_vprintf(const char *format, va_list ap);
+void			ft_vprintf_write(t_dt *data);
 
 #endif

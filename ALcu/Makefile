@@ -6,44 +6,51 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/03/09 16:39:59 by gbourgeo          #+#    #+#              #
-#    Updated: 2014/03/10 06:14:35 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/07/31 19:30:56 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= puissance4
 
-SRC		= main.c	\
+SRC_D	= srcs/
+SRC		= main.c				\
 		ft_check_for_a_winner.c	\
-		ft_player_moves.c	\
-		ft_computer_moves.c	\
-		ft_ingame_checks.c	\
-		checkarg.c	\
-		ft_play.c	\
+		ft_ingame_checks.c		\
+		ft_moves.c				\
+		ft_play.c				\
+		ft_print_board.c		\
+		checkarg.c				\
 		error.c
 
-OBJ		= $(SRC:.c=.o)
+INC_D	= includes/
 
+OBJ_D	= objs/
+OBJ		= $(addprefix $(OBJ_D), $(SRC:.c=.o))
+
+CC		= gcc
 FLAGS	= -Wall -Werror -Wextra
 
 LIBFT	= libft/
-
-LIBFT_H	= libft/includes/
+INCLUDES	= -I$(INC_D) -I$(LIBFT)includes/
+LIBRARIES	= -L$(LIBFT) -lft
 
 .PHONY: clean fclean re all
 
-all: $(NAME)
+all: preface $(NAME)
+
+preface:
+	@make -C $(LIBFT)
+	@mkdir -p objs
 
 $(NAME): $(OBJ)
-	make -C $(LIBFT)
-	gcc -o $(NAME) $(OBJ) -L $(LIBFT) -lft -O3
+	$(CC) -o $@ $^ $(LIBRARIES)
 
-%.o: %.c
-	@echo -n .
-	gcc $(FLAGS) -c $(SRC) -I $(LIBFT_H)
+$(OBJ_D)%.o: $(SRC_D)%.c
+	$(CC) $(FLAGS) -o $@ -c $< $(INCLUDES)
 
 clean:
 	make -C $(LIBFT) clean
-	rm -f $(OBJ)
+	rm -rf $(OBJ_D)
 
 fclean: clean
 	make -C $(LIBFT) fclean

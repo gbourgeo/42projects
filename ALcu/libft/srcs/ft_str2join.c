@@ -1,32 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_str2join.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/03 22:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/21 17:41:16 by marvin           ###   ########.fr       */
+/*   Created: 2014/02/23 05:43:22 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/04/21 18:03:19 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# define BUFF_SIZE 8
+#include "libft.h"
 
-# include "libft.h"
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <unistd.h>
-
-typedef struct		s_gnl
+char		*ft_str2join(char const *s1, char const *s2, char const *s3)
 {
-	int				fd;
-	char			*copy;
-	struct s_gnl	*next;
-	struct s_gnl	*prev;
-}					t_gnl;
+	int		len;
+	char	*p;
 
-int					get_next_line(int const fd, char **line);
-
-#endif
+	p = NULL;
+	len = ft_strlen(s1) + ft_strlen(s2) + ft_strlen(s3);
+	if ((p = (char*)malloc(sizeof(*p) * (len + 1))) != NULL)
+	{
+		len = 0;
+		if (s1)
+		{
+			while (s1[len])
+			{
+				p[len] = s1[len];
+				++len;
+			}
+		}
+		p[len] = '\0';
+		p = ft_strcat(p, s2);
+		p = ft_strcat(p, s3);
+	}
+	return (p);
+}

@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/03 22:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/21 17:41:16 by marvin           ###   ########.fr       */
+/*   Created: 2013/11/23 21:55:10 by gbourgeo          #+#    #+#             */
+/*   Updated: 2014/03/27 19:23:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# define BUFF_SIZE 8
+#include <string.h>
 
-# include "libft.h"
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <unistd.h>
-
-typedef struct		s_gnl
+void			*ft_memchr(const void *s, int c, size_t n)
 {
-	int				fd;
-	char			*copy;
-	struct s_gnl	*next;
-	struct s_gnl	*prev;
-}					t_gnl;
+	size_t		i;
 
-int					get_next_line(int const fd, char **line);
-
-#endif
+	i = 0;
+	if (n && s != NULL)
+	{
+		while (i < n)
+		{
+			if ((unsigned char)c == ((unsigned char *)s)[i])
+				return ((void *)(s + i));
+			++i;
+		}
+	}
+	return (NULL);
+}

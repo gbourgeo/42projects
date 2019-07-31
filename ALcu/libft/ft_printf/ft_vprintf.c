@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_vprintf.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/03 22:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/04/21 17:41:16 by marvin           ###   ########.fr       */
+/*   Created: 2019/07/17 13:05:53 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/07/17 13:18:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# define BUFF_SIZE 8
+#include <unistd.h>
+#include "libft.h"
+#include "ft_vprintf.h"
 
-# include "libft.h"
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <unistd.h>
-
-typedef struct		s_gnl
+int				ft_vprintf(const char *format, va_list ap)
 {
-	int				fd;
-	char			*copy;
-	struct s_gnl	*next;
-	struct s_gnl	*prev;
-}					t_gnl;
+	t_dt		data;
+	int			ret;
 
-int					get_next_line(int const fd, char **line);
-
-#endif
+	ft_memset(&data, 0, sizeof(data));
+	data.fd = STDOUT_FILENO;
+	data.tail = (char *)format;
+	data.writeto = ft_vprintf_write;
+	va_copy(data.ap, ap);
+	ret = pf_routine(&data);
+	va_end(data.ap);
+	return (ret);
+}
