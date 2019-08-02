@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   alcu.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/09 16:05:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/08/02 11:03:42 by naminei          ###   ########.fr       */
+/*   Updated: 2019/08/02 22:42:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 # include <termcap.h>
 # include "libft.h"
 
-# define PLAYER 0
-# define COMPUT 1
-# define EMPTY ' '
+# define PLAYER			0
+# define COMPUT			1
+# define EMPTY			' '
 # define NUMBER_TO_WIN	4
 
 typedef struct	s_env
@@ -40,6 +40,6 @@ int				ft_check_for_a_winner(int turns, t_env *e);
 void			ft_print_board(t_env *e);
 
 int				ft_tputs(char *str);
-int             ft_tgetent(char *term);
+int				ft_tgetent(char *term);
 
 #endif

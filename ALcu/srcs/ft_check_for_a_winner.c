@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/10 05:58:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/31 20:18:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/07/31 21:03:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int	ft_check_verticaly(int lin, int col, t_env *e)
 	int		p;
 
 	p = 0;
-	while (lin >= 0
+	while (lin > 0
 			&& e->board[lin][col] == e->board[lin - 1][col])
 	{
 		p++;
@@ -45,7 +45,7 @@ static int	ft_check_diagonaly(int lin, int col, t_env *e)
 	int		p;
 
 	p = 0;
-	while (col < e->y && lin >= 0
+	while (col < e->y && lin > 0
 			&& e->board[lin][col] == e->board[lin - 1][col + 1])
 	{
 		p++;
