@@ -1,3 +1,4 @@
+.gitignore
 obj
 *.o
 *.a
