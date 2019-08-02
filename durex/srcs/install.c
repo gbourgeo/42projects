@@ -26,7 +26,9 @@ static int		install_error(int fd)
 	if (fd != -1)
 		close(fd);
 	remove(DUREX_BINARY_FILE);
-	// remove(DUREX_SERVICE_FILE);
+	remove(DUREX_CONF_FILE);
+	remove(DUREX_INIT_FILE);
+	remove(DUREX_SERVICE_FILE);
 	return 1;
 }
 
@@ -101,6 +103,38 @@ int			install_binary()
 	return 0;
 }
 
+int			install_conf()
+{
+	int		fd;
+	size_t	ret;
+
+	fd = open(DUREX_CONF_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	if (fd < 0)
+		return install_error(-1);
+	ret = write(fd, DUREX_CONF_SCRIPT, sizeof(DUREX_CONF_SCRIPT));
+	close(fd);
+	if (ret != sizeof(DUREX_CONF_SCRIPT))
+		return install_error(-1);
+	return 0;
+}
+
+int			install_init()
+{
+	int		fd;
+	size_t	ret;
+
+	fd = open(DUREX_INIT_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0755);
+	if (fd < 0)
+		return install_error(-1);
+	ret = write(fd, DUREX_INIT_SCRIPT, sizeof(DUREX_INIT_SCRIPT));
+	close(fd);
+	if (ret != sizeof(DUREX_INIT_SCRIPT))
+		return install_error(-1);
+	if (system("update-rc.d durex.sh defaults"))
+		return install_error(-1);
+	return 0;
+}
+
 int			install_service()
 {
 	int		fd;
@@ -113,7 +147,7 @@ int			install_service()
 	close(fd);
 	if (ret != sizeof(DUREX_SERVICE_SCRIPT))
 		return install_error(-1);
-	if (system(DUREX_ACTIVATE))
+	if (system("systemctl daemon-reload && systemctl enable durex && systemctl start durex"))
 		return install_error(-1);
 	return 0;
 }

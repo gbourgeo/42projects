@@ -65,14 +65,26 @@ re: fclean all
 rm:
 	/bin/rm -f /etc/ld.so.preload
 	/bin/rm -f /usr/local/lib/Durex.so
-	systemctl stop durex && systemctl disable durex;
-	@if test -f /bin/Durex; then \
-	rm /bin/Durex && \
-	echo rm Durex; \
+	@if test -f /etc/init.d/durex.sh; then \
+	update-rc.d -f durex.sh remove \
+	&& echo durex.sh removed; \
 	fi
+	/bin/rm -f /etc/init.d/durex.sh
+	/bin/rm -f /etc/init/durex.conf
+	@if test -f /etc/systemd/system/durex.service; then \
+	systemctl stop durex \
+	&& systemctl disable durex \
+	&& echo durex.sevice disabled; \
+	fi
+	/bin/rm -f /etc/systemd/system/durex.service
 	@if test -f /lib/systemd/system/durex.service; then \
 	rm -f /lib/systemd/system/durex.service && \
 	echo rm Durex service; \
+	fi
+	/bin/rm -f /lib/systemd/system/durex.service
+	@if test -f /bin/Durex; then \
+	rm /bin/Durex && \
+	echo rm Durex; \
 	fi
 	@if test -f /var/log/Durex.log; then \
 	rm /var/log/Durex.log && \
@@ -87,7 +99,6 @@ files:
 	/bin/rm -f /etc/ld.so.preload
 	/bin/rm -f /usr/local/lib/Durex.so
 	/bin/rm -f /bin/Durex
-	/bin/rm -f /lib/systemd/system/durex.service
 	/bin/rm -f /var/log/Durex.log
 	/bin/rm -f /var/lock/Durex.lock
 
