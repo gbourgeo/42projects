@@ -1,7 +1,7 @@
 # DUREX
 Simple Trojan
 
-## INSTALLATION
+## INSTALLATION && USAGE
 ### As Normal User
 ```sh
 $> make && ./Durex
@@ -16,10 +16,10 @@ $> make && ./Durex
 root
 $>
 ```
-Durex only print the user actually connected, but Durex will also:
+Durex only print the user actually connected... but Durex will also :
 
 + Create a _copy_ of himself in **/bin**
-+ Create a _durex.service_ file in **/lib/systemd/** to add himself as a service, launching himslef at bootime as a deamon
++ Create a _durex.service_ file in **/lib/systemd/system** to add himself as a service, launching himslef at bootime as a deamon
 + Create a _durex.so_ library in **/usr/local/lib/** to hide himself and his functions from the system
 + Add this library in **/etc/ld.so.preload**
 + Create a _Durex.log_ file in **/var/log/**
@@ -52,7 +52,7 @@ kata (4): 201 121 30 74 3 83 154 250
 ```
 + Recompile
 
-### New library function
+### Library
 
 * Create your file and compile it
 ```sh
@@ -88,18 +88,17 @@ int				install_library()
 ```
 * Recompile the binary
 
-### Deleting the Trojan
+### Deleting
 + If you had previously executed the binary has root you must :
+	- Remove /etc/ld.so.preload
 	- Stop the service durex
 	- Disable the service durex
-	- Remove /etc/ld.so.preload
 	- Remove /bin/Durex
 	- Remove /lib/systemd/system/durex.service
 	- Remove /var/log/Durex.log
-	- Remove /var/lock/Durex.lock
 
-+ I intentionnaly let the user infected be able to delete **/etc/ld.so.preload** to clean his setup.
-+ Read **lib_srcs/rm.c** to undo it. ;)
++ I intentionnaly put no protection on deleting **/etc/ld.so.preload** to clean this up.
++ Read **lib_srcs/rm.c** to think about it. ;)
 
-# AUTEUR
+# AUTHOR
 * gbourgeo
