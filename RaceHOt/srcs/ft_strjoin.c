@@ -6,15 +6,23 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/14 22:57:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 13:05:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/02 22:58:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
-static int	count_lenght(const char *str);
+static int	count_lenght(const char *str)
+{
+	int		i;
 
-char		*ft_strjoin(char const *s1, char const*s2)
+	i = 0;
+	while (str[i])
+		++i;
+	return (i);
+}
+
+char		*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*p;
 	size_t	len;
@@ -40,14 +48,4 @@ char		*ft_strjoin(char const *s1, char const*s2)
 	}
 	p[i + j] = '\0';
 	return (p);
-}
-
-static int	count_lenght(const char *str)
-{
-	int		i;
-
-	i = 0;
-	while (str[i])
-		++i;
-	return (i);
 }

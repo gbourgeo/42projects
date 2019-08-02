@@ -1,31 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hotrace.h                                          :+:      :+:    :+:   */
+/*   ft_search_node.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/14 22:23:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 10:50:36 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/15 04:43:15 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/08/02 22:59:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		HOTRACE_H
-# define	HOTRACE_H
+#include "ft_search_node.h"
 
-#include <stdlib.h>
-
-typedef struct		s_list
+int			ft_search_node(t_list *tree, char *key)
 {
-	char			*keyw;
-	char			*value;
-	struct s_list	*left;
-	struct s_list	*right;
-}					t_list;
-
-int			get_next_line(int const fd, char ** line);
-t_list		*ft_add_node(t_list **tree, char *key, char *value);
-int			ft_search_node(t_list *tree, char *key);
-void		ft_putstr(const char *str);
-
-#endif		/* HOTRACE_H */
+	while (tree)
+	{
+		if (ft_strcmp(key, tree->keyw) == 0)
+		{
+			ft_putstr(tree->value);
+			ft_putstr("\n");
+			return (0);
+		}
+		if (ft_strcmp(key, tree->keyw) > 0)
+			tree = tree->left;
+		else
+			tree = tree->right;
+	}
+	ft_putstr(key);
+	ft_putstr(": Not found.\n");
+	return (0);
+}

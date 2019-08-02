@@ -1,33 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_search_node.c                                :+:      :+:    :+:      */
+/*   ft_search_node.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/15 04:43:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 11:56:55 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/15 05:39:00 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/08/02 23:01:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_search_node.h"
+#ifndef FT_SEARCH_NODE_H
+# define FT_SEARCH_NODE_H
 
-int			ft_search_node(t_list *tree, char *key)
+typedef struct		s_list
 {
-	while (tree)
-	{
-		if (ft_strcmp(key, tree->keyw) == 0)
-		{
-			ft_putstr(tree->value);
-			ft_putstr("\n");
-			return (0);
-		}
-		if (ft_strcmp(key, tree->keyw) > 0)
-			tree = tree->left;
-		else
-			tree = tree->right;
-	}
-	ft_putstr(key);
-	ft_putstr(": Not found.\n");
-	return (0);
-}
+	char			*keyw;
+	char			*value;
+	struct s_list	*left;
+	struct s_list	*right;
+}					t_list;
+
+int					ft_search_node(t_list *result, char *key);
+void				ft_putstr(char const *str);
+int					ft_strcmp(const char *s1, const char *s2);
+
+#endif

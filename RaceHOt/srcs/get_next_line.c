@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/03 23:26:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 13:13:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/02 23:00:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int				get_next_line(int const fd, char ** line)
+int				get_next_line(int const fd, char **line)
 {
 	static size_t	i = 0;
 	static char		*tmp = NULL;
@@ -21,7 +21,8 @@ int				get_next_line(int const fd, char ** line)
 		return (-1);
 	else if (tmp == NULL)
 	{
-		if (!(tmp = ft_memalloc(1)) || !(tmp = create_tmp(fd, tmp)))
+		if (!(tmp = ft_memalloc(1))
+		|| !(tmp = create_tmp(fd, tmp)))
 			return (-1);
 	}
 	if (tmp[i] != '\0')

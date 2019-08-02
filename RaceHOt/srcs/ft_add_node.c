@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/14 23:49:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 20:25:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/02 22:58:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int			ft_add_node(t_list **tree, char *key, char *value)
 		*tree = node;
 	return (0);
 }
+
 static int	find_null_node(t_list *tmp, t_list *node)
 {
 	t_list		*tmp2;

@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/14 22:21:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 20:36:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/02 22:59:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hotrace.h"
 
-void	destroy_tree(t_list *tree)
+void			destroy_tree(t_list *tree)
 {
 	if (tree->left != NULL)
 	{

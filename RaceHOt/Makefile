@@ -1,4 +1,4 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
@@ -6,29 +6,36 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/15 05:31:47 by gbourgeo          #+#    #+#              #
-#    Updated: 2013/12/15 21:03:20 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/02 22:56:36 by gbourgeo         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
-NAME = hotrace
+NAME	= hotrace
 
-SRC = hotrace.c ft_add_node.c ft_search_node.c ft_memalloc.c ft_putstr.c \
-	ft_strjoin.c ft_strcmp.c get_next_line.c
+SRC_D	= srcs/
+SRC		= hotrace.c ft_add_node.c ft_search_node.c ft_memalloc.c ft_putstr.c \
+		ft_strjoin.c ft_strcmp.c get_next_line.c
+OBJ_D	= objs/
+OBJ		= $(addprefix $(OBJ_D), $(SRC:.c=.o))
+INC_D	= includes/
+CC		= gcc
+CFLAGS	= -Wall -Werror -Wextra
 
-OBJ = $(SRC:.c=.o)
+all: begin $(NAME)
 
-WWW = -Wall -Werror -Wextra -O3
+begin:
+	@mkdir -p $(OBJ_D)
 
-all: $(NAME)
+$(NAME): $(OBJ)
+	$(CC) -o $@ $^
 
-$(NAME):
-	gcc $(WWW) -c $(SRC)
-	gcc -o $(NAME) $(OBJ)
+$(OBJ_D)%.o: $(SRC_D)%.c
+	$(CC) $(CFLAGS) -o $@ -c $< -I $(INC_D)
 
 clean:
-	rm -f $(OBJ)
+	/bin/rm -rf $(OBJ_D)
 
 fclean: clean
-	rm -f $(NAME)
+	/bin/rm -f $(NAME)
 
 re: fclean all

@@ -1,17 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_search_node.h                                   :+:      :+:    :+:   */
+/*   ft_add_node.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/12/15 05:39:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/15 11:56:14 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/15 02:11:26 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/08/02 23:01:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		FT_SEARCH_NODE_H
-# define	FT_SEARCH_NODE_H
+#ifndef FT_ADD_NODE_H
+# define FT_ADD_NODE_H
+
+# include <stdlib.h>
 
 typedef struct		s_list
 {
@@ -21,8 +23,10 @@ typedef struct		s_list
 	struct s_list	*right;
 }					t_list;
 
-int			ft_search_node(t_list *result, char *key);
-void		ft_putstr(char const *str);
-int			ft_strcmp(const char *s1, const char *s2);
+int					ft_add_node(t_list **tree, char *key, char *value);
+static int			find_null_node(t_list *tmp, t_list *node);
+int					ft_strcmp(const char *s1, const char *s2);
+char				*ft_strdup(const char *s1);
+void				ft_putstr(const char *str);
 
-#endif		/* FT_SEARCH_NODE_H */
+#endif
