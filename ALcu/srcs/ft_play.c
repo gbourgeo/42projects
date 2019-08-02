@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_play.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/09 19:49:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/07/31 19:37:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/02 11:19:04 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,17 @@ void			ft_play_game(t_env *e)
 	turns = 0;
 	srand(time(NULL));
 	first = rand() % 2;
+	if (ft_tgetent(getenv("TERM")))
+		return ;
+	ft_tputs("cl");
+	ft_tputs("sc");
 	while (turns < e->x * e->y)
 	{
 		ft_print_info(e, first);
 		first = ft_moves(e, first);
 		turns = ft_check_for_a_winner(turns + 1, e);
+		ft_tputs("rc");
+		ft_tputs("cd");
 	}
 	ft_print_board(e);
 	if (first == PLAYER)

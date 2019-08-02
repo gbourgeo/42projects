@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
+#    By: naminei <naminei@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/03/09 16:39:59 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/07/31 19:30:56 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/02 10:40:05 by naminei          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME	= puissance4
 
@@ -19,6 +19,7 @@ SRC		= main.c				\
 		ft_moves.c				\
 		ft_play.c				\
 		ft_print_board.c		\
+		ft_termcaps.c			\
 		checkarg.c				\
 		error.c
 
@@ -32,7 +33,7 @@ FLAGS	= -Wall -Werror -Wextra
 
 LIBFT	= libft/
 INCLUDES	= -I$(INC_D) -I$(LIBFT)includes/
-LIBRARIES	= -L$(LIBFT) -lft
+LIBRARIES	= -L$(LIBFT) -lft -lncurses
 
 .PHONY: clean fclean re all
 
