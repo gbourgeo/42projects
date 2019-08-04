@@ -1,4 +1,6 @@
-#include <X11/XKBlib.h>
+#ifdef X11
+# include <X11/XKBlib.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -9,6 +11,7 @@
 #include <string.h>
 #include <errno.h>
 
+#ifdef X11
 int			get_keystate(int keybit, int socket)
 {
   Display	*display;
@@ -28,8 +31,8 @@ int			get_keystate(int keybit, int socket)
 	XCloseDisplay(display);
 	return (state & keybit);
 }
-
-int			get_keystate2(int keybit, int socket)
+#else
+int			get_keystate(int keybit, int socket)
 {
 	int		fd;
 	char	state;
@@ -47,3 +50,4 @@ int			get_keystate2(int keybit, int socket)
 	dprintf(socket, "state is %d\n", state);
 	return (state & keybit);
 }
+#endif

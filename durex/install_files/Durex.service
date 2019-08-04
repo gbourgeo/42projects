@@ -5,11 +5,16 @@ Wants=network-online.target
 StartLimitIntervalSec=0
 
 [Service]
-Type=forking
-PIDFile=/var/lock/durex.lock
-ExecStart=+/bin/Durex
-Restart=always
+Type=simple
+ExecStart=/bin/Durex
+Restart=on-failure
 RestartSec=1
+WorkingDirectory=/
+UMask=0
+StandardInput=null
+StandardOutput=null
+StandardError=null
+KillMode=mixed
 
 [Install]
 WantedBy=multi-user.target

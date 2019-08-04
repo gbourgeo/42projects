@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:19:03 by root              #+#    #+#             */
-/*   Updated: 2019/05/12 18:08:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/03 06:52:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,6 @@ void				serverReadClient(t_cl *client)
 	int				ret;
 
 	ret = read(client->fd, buff, SERVER_CLIENT_BUFF);
-	// serverLog(1, "Client read = %d\n", ret);
 	if (ret <= 0)
 		return serverQuitClient(client, NULL);
 	buff[ret] = '\0';

