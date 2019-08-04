@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2019/08/04 05:11:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/04 06:05:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,27 +40,6 @@ static void			clearStructure()
 		e.server.client[i].id = i + 1;
 	}
 }
-
-// static int			createDaemon()
-// {
-// 	int				fd;
-// 	pid_t			pid;
-
-// 	pid = fork();
-// 	if (pid == 0) {
-// 		if (setsid() < 0)
-// 			exit(1);
-// 		pid = fork();
-// 		if (pid == 0) {
-// 			fd = 0;
-// 			while (fd < _NSIG)
-// 				signal(fd++, &durexSigHandler);
-// 			return 1;
-// 		}
-// 		exit(0);
-// 	}
-// 	return 0;
-// }
 
 static int			launch_program()
 {

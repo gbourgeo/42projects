@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2019/08/04 05:55:08 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/04 06:01:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,33 +66,25 @@ re: fclean all
 
 rm:
 	/bin/rm -f /etc/ld.so.preload
-	/bin/rm -f /usr/local/lib/Durex.so
-	@if test -f /lib/systemd/system/Durex.service; then \
-	systemctl stop Durex && \
-	systemctl disable Durex && \
-	/bin/rm /lib/systemd/system/Durex.service && \
-	echo rm Durex service; \
+	/bin/rm -f /usr/local/lib/$(NAME).so
+	@if test -f /lib/systemd/system/$(NAME).service; then \
+	systemctl stop $(NAME) && \
+	systemctl disable $(NAME) && \
+	/bin/rm /lib/systemd/system/$(NAME).service && \
+	echo rm $(NAME) service; \
 	fi
-	@if test -f /bin/Durex; then \
-	rm /bin/Durex && \
-	echo rm Durex; \
+	@if test -f /bin/$(NAME); then \
+	rm /bin/$(NAME) && \
+	echo rm $(NAME); \
 	fi
-	@if test -f /var/lock/Durex.lock; then \
-	rm /var/lock/Durex.lock && \
-	echo rm Durex lock; \
+	@if test -f /var/lock/$(NAME).lock; then \
+	rm /var/lock/$(NAME).lock && \
+	echo rm $(NAME) lock; \
 	fi
-	@if test -f /var/log/Durex.log; then \
-	/bin/rm /var/log/Durex.log && \
-	echo rm Durex log; \
+	@if test -f /var/log/$(NAME).log; then \
+	/bin/rm /var/log/$(NAME).log && \
+	echo rm $(NAME) log; \
 	fi
-
-files:
-	/bin/rm -f /etc/ld.so.preload
-	/bin/rm -f /usr/local/lib/Durex.so
-	/bin/rm -f /bin/Durex
-	/bin/rm -f /var/log/Durex.log
-	/bin/rm -f /var/lock/Durex.lock
-
 
 OTHER_D	= other/
 
