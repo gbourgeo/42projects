@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 03:49:03 by root              #+#    #+#             */
-/*   Updated: 2018/08/28 06:30:05 by root             ###   ########.fr       */
+/*   Updated: 2019/08/04 20:52:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-
 #include "durex.h"
-
-extern char 	**environ;
 
 void			clearClient(t_cl *client)
 {

