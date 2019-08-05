@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/01/12 20:15:31 by root              #+#    #+#              #
-#    Updated: 2019/08/05 00:19:26 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/06 00:36:14 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,8 @@ SRC		= main.c					\
 		server_connect_shell.c		\
 		server_help.c				\
 		server_keylogger.c			\
+		server_log.c				\
+		server_clear_log.c			\
 		server_print_logs.c			\
 		server_quit_client.c		\
 		server_quit_client_shell.c	\

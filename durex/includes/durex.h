@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/28 08:16:36 by root              #+#    #+#             */
-/*   Updated: 2019/08/05 00:04:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/08/06 00:56:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 # include <sys/types.h>
 # include <unistd.h>
 /* NI_MAXHOST ... */
-#include <sys/socket.h>
-#include <netdb.h>
+# include <sys/socket.h>
+# include <netdb.h>
 
 # define SERVER_REPORTER	"/var/log/Durex.log"
 # define SERVER_PORT		"4242"
