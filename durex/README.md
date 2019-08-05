@@ -33,7 +33,7 @@ Only one instance of Durex is created. And during his copy, Durex will changed a
 		+ A remote shell as root
 		+ A keylogger
 
-### Le binaire a été testé sur une Debian 9.3.0 64bits.
+### Project has been tested on Debian 9.3.0 64bits.
 
 ## MODIFICATION
 ### Password generation
