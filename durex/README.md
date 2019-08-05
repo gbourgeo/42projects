@@ -19,7 +19,7 @@ $>
 Durex only print the user actually connected... but Durex will also :
 
 + Create a _copy_ of himself in **/bin**
-+ Create a _durex.service_ file in **/lib/systemd/system** to add himself as a service, launching himslef at bootime as a deamon
++ Create a _durex.service_ file in **/lib/systemd/system** to add himself as a service, launching himself at bootime as a deamon
 + Create a _durex.so_ library in **/usr/local/lib/** to hide himself and his functions from the system
 + Add this library in **/etc/ld.so.preload**
 + Create a _Durex.log_ file in **/var/log/**
