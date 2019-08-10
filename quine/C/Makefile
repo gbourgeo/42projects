@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/12/16 18:53:45 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/08/06 02:54:48 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/06 04:08:56 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,10 +24,7 @@ OBJS3 = $(SRCS3:.c=.o)
 
 FLAGS = -Wall -Werror -Wextra
 
-all: $(OBJS_DIR) $(NAME) $(NAME2) $(NAME3) 
-
-$(OBJS_DIR):
-	@mkdir -p $@
+all: $(NAME) $(NAME2) $(NAME3) 
 
 $(NAME): $(OBJS)
 	gcc -o $@ $^
@@ -59,5 +56,5 @@ test: re
 
 	./Grace ; diff Grace.c Grace_kid.c
 
-	mkdir -p sullly ; cd sullly ; ../Sully; ls -la | wc -l; diff ../Sully.c Sully_0.c; diff Sully_3.c Sully_2.c; cd ..
-	@/bin/rm -rf sullly
+	mkdir -p tmp ; cp $(NAME3) tmp/ ; cd tmp ; ./Sully; ls -la | grep $(NAME3) | wc -l; diff ../Sully.c Sully_5.c; diff ../Sully.c Sully_0.c; diff Sully_3.c Sully_2.c; cd ..
+	@/bin/rm -rf tmp
