@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/12/16 18:53:45 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/08/06 04:08:56 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/08/11 04:27:32 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,6 +55,7 @@ test: re
 	@/bin/rm in out
 
 	./Grace ; diff Grace.c Grace_kid.c
+	@/bin/rm -f Grace_kid.c
 
 	mkdir -p tmp ; cp $(NAME3) tmp/ ; cd tmp ; ./Sully; ls -la | grep $(NAME3) | wc -l; diff ../Sully.c Sully_5.c; diff ../Sully.c Sully_0.c; diff Sully_3.c Sully_2.c; cd ..
 	@/bin/rm -rf tmp
