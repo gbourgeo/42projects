@@ -149,7 +149,7 @@ if [ $strings_test != "5" ] || [ $strings_test2 != "5" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed ! (/bin/bash -c ls)"
-	echo "Expected: 2"
+	echo "Expected: 5"
 	echo "Got     : " $strings_test
 	echo "Got2    : " $strings_test2
 	echo "\e[0m"
@@ -183,12 +183,12 @@ then
 fi
 echo "\e[32;1mOK !\e[0m"
 
+echo -n "Test 5: The Propagation... "
 rm -rf /tmp/test/ /tmp/test2/
 mkdir -p /tmp/test/ /tmp/test2/
 cp Ressources/elf64 /tmp/test/.
 ./Famine
 
-echo -n "Test 5: The Propagation... "
 cp Ressources/elf64 /tmp/test2/.
 cp Ressources/elf32 /tmp/test/.
 cp Ressources/elf32 /tmp/test2/.
@@ -208,7 +208,10 @@ cp /bin/bash /tmp/test/.
 cp /bin/bash /tmp/test2/.
 cp /bin/cat /tmp/test/.
 cp /bin/cat /tmp/test2/.
-/tmp/test/elf64 1>/dev/null
+
+/tmp/test/elf64 1>&-
+
+echo -n "0"
 expected=$(./Ressources/elf64)
 got=$(/tmp/test/elf64)
 got2=$(/tmp/test2/elf64)
@@ -222,6 +225,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "1"
 expected=$(./Ressources/elf32)
 got=$(/tmp/test/elf32)
 got2=$(/tmp/test2/elf32)
@@ -235,6 +239,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "2"
 expected=$(cat auteur)
 got=$(cat /tmp/test/auteur)
 got2=$(cat /tmp/test2/auteur)
@@ -248,6 +253,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "3"
 expected=$(cat Makefile)
 got=$(cat /tmp/test/Makefile)
 got2=$(cat /tmp/test2/Makefile)
@@ -261,6 +267,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "4"
 expected=$(/bin/echo COUCOU LES ZAMIS)
 got=$(/tmp/test/echo COUCOU LES ZAMIS)
 got2=$(/tmp/test2/echo COUCOU LES ZAMIS)
@@ -274,6 +281,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "5"
 expected=$(/bin/ls)
 got=$(/tmp/test/ls)
 got2=$(/tmp/test2/ls)
@@ -287,6 +295,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "6"
 expected=$(/bin/date)
 got=$(/tmp/test/date)
 got2=$(/tmp/test2/date)
@@ -300,6 +309,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "7"
 expected=$(/bin/bash -c ls)
 got=$(/tmp/test/bash -c ls)
 got2=$(/tmp/test2/bash -c ls)
@@ -313,6 +323,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "8"
 expected=$(/bin/cat /tmp/test/auteur)
 got=$(/tmp/test/cat /tmp/test/auteur)
 got2=$(/tmp/test2/cat /tmp/test/auteur)
@@ -326,6 +337,7 @@ then
 	echo "\e[0m"
 	exit
 fi
+echo -n "9"
 strings_test=$(strings /tmp/test/* | grep "Famine " | wc -l)
 strings_test2=$(strings /tmp/test2/* | grep "Famine " | wc -l)
 if [ $strings_test != "6" ] || [ $strings_test2 != "6" ]

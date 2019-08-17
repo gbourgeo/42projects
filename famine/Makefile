@@ -12,18 +12,18 @@
 
 NAME	= Famine
 
-SRC_DIR	= srcs
+SRC_DIR	= srcs/
 SRC		= main.c
 
-ELF_DIR	= $(SRC_DIR)/elf
+ELF_DIR	= $(SRC_DIR)elf/
 SRC_S	= famine64.s
 
-OBJ_DIR	=	obj/
+OBJ_DIR	= obj/
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ_S	= $(addprefix $(OBJ_DIR), $(SRC_S:.s=.o))
 
-WWW		= gcc
-FLAGS	= -Wall -Werror -Wextra
+CC		= gcc
+CFLAGS	= -Wall -Werror -Wextra
 
 ASM		= nasm
 ASMFLAG	= -f elf64
@@ -34,12 +34,12 @@ $(OBJ_DIR):
 	@mkdir -p $@
 
 $(NAME): $(OBJ) $(OBJ_S)
-	$(WWW) -o $@ $^
+	$(CC) -o $@ $^
 
-$(OBJ_DIR)%.o: $(SRC_DIR)/%.c
-	$(WWW) $(FLAGS) -o $@ -c $<
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OBJ_DIR)%.o: $(ELF_DIR)/%.s
+$(OBJ_DIR)%.o: $(ELF_DIR)%.s
 	$(ASM) $(ASMFLAG) -o $@ $<
 
 clean:
@@ -51,3 +51,6 @@ fclean: clean
 	@echo $(NAME) erased...
 
 re: fclean all
+
+new: all
+	$(CC) -o $@ Ressources/famine.c $(OBJ_DIR)famine64.o

