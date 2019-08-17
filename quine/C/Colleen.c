@@ -4,14 +4,14 @@
 */
 static void print(char *str)
 {
-	printf(str, 10, 10, 9,10, 10, 10, 10, 9,10, 10, 10, 10, 9,10, 9,10, 9,10, 9,34,str,34, 10, 9,10, 9,10, 10);
+	printf(str,10,9,34,str);
 }
 int main(void)
 {
 	/*
 	  This is what we call a quine.
 	*/
-	char *str = "#include <stdio.h>%c/*%c%cThis program prints its own code source.%c*/%cstatic void print(char *str)%c{%c%cprintf(str, 10, 10, 9,10, 10, 10, 10, 9,10, 10, 10, 10, 9,10, 9,10, 9,10, 9,34,str,34, 10, 9,10, 9,10, 10);%c}%cint main(void)%c{%c%c/*%c%c  This is what we call a quine.%c%c*/%c%cchar *str = %c%s%c;%c%cprint(str);%c%creturn (0);%c}%c";
+	char *str = "#include <stdio.h>%1$c/*%1$c%2$cThis program prints its own code source.%1$c*/%1$cstatic void print(char *str)%1$c{%1$c%2$cprintf(str,10,9,34,str);%1$c}%1$cint main(void)%1$c{%1$c%2$c/*%1$c%2$c  This is what we call a quine.%1$c%2$c*/%1$c%2$cchar *str = %3$c%s%3$c;%1$c%2$cprint(str);%1$c%2$creturn (0);%1$c}%1$c";
 	print(str);
 	return (0);
 }

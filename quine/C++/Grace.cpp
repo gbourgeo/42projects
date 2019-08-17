@@ -1,24 +1,18 @@
+/*
+  This program will print its code source in a file only using macros.
+*/
 #include <iostream>
 #include <fstream>
-int main(){
-	std::ofstream f("Grace_kid.cpp",std::ofstream::out|std::ofstream::trunc);
-	if (!f.is_open()) return -1;
-	std::string c=R"(#include <iostream>
+#define OPEN std::ofstream f("Grace_kid.cpp",std::ofstream::out|std::ofstream::trunc);
+#define WRITE f << c << " std::string c=R\"(" << c << ")\";" << " std::string d=R\"(" << d << ")\";" << d;
+#define MAIN int main(){ OPEN if (!f.is_open()) return -1; std::string c=R"(/*
+  This program will print its code source in a file only using macros.
+*/
+#include <iostream>
 #include <fstream>
-int main(){
-	std::ofstream f("Grace_kid.cpp",std::ofstream::out|std::ofstream::trunc);
-	if (!f.is_open()) return -1;
-)";
-	std::string d=R"(
-	f << c
-	  << "	std::string c=R\"(" << c << ")\";\n"
-	  << "	std::string d=R\"(" << d << ")\";\n"
-	  << d;
-}
-)";
-
-	f << c
-	  << "	std::string c=R\"(" << c << ")\";\n"
-	  << "	std::string d=R\"(" << d << ")\";\n"
-	  << d;
-}
+#define OPEN std::ofstream f("Grace_kid.cpp",std::ofstream::out|std::ofstream::trunc);
+#define WRITE f << c << " std::string c=R\"(" << c << ")\";" << " std::string d=R\"(" << d << ")\";" << d;
+#define MAIN int main(){ OPEN if (!f.is_open()) return -1;)"; std::string d=R"( WRITE }
+MAIN
+)"; WRITE }
+MAIN
