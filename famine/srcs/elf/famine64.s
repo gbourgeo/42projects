@@ -296,10 +296,36 @@ get_dat_elf_end:
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 check_file:
+	push	rbp
+	mov		rbp, rsp
+
 	xor		rax, rax
+	cmp		rdi, 0x3f				; size < sizeof(Elf64_Ehdr)
+	ja		check_end
+	cmp		BYTE [rsi], 0x7f		; ->e_ident[0] != 0x7f
+	jne		check_end
+	cmp		BYTE [rsi + 1], 'E'		; ->e_ident[1] != 'E'
+	jne		check_end
+	cmp		BYTE [rsi + 2], 'L'		; ->e_ident[2] != 'L'
+	jne		check_end
+	cmp		BYTE [rsi + 3], 'F'		; ->e_ident[3] != 'F'
+	jne		check_end
+	cmp		BYTE [rsi + 4], 2		; ->e_ident[EI_CLASS] != ELFCLASS64
+	jne		check_end
+	cmp		BYTE [rsi + 5], 0		; ->e_ident[EI_DATA] == ELFDATANONE
+	je		check_end
+	cmp		BYTE [rsi + 6], 1		; ->e_ident[EI_VERSION] != EV_CURRENT
+	jne		check_end
+	movzx	edx, BYTE [rsi + 16]	; ->e_type != ET_EXEC && ->e_type != ET_DYN
+	sub		edx, 2
+	cmp		dl, 1
+	ja		check_end
+	cmp		BYTE [rsi + ], 
+	jne		check_end
 
 	mov		rax, 1
 check_end:
+	pop		rbp
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
