@@ -252,7 +252,12 @@ read_loop_end:
 	syscall
 
 	cmp		DWORD [rsp - 8], 0			; ret != 0
-	jne		close_file
+	jne		munmap_file
+	mov		rsi, QWORD [rsp + 8]
+	mov		edi, DWORD [rsp + 4]
+	call	check_file
+	cmp		rax, 1
+	jne		munmap_file
 	mov		rdx, QWORD [rsp + 8]		; void *data
 	mov		esi, DWORD [rsp + 4]		; int size
 	lea		rdi, [rsp + 16]				; char *path
@@ -283,6 +288,18 @@ get_dat_elf_end:
 	pop		rdx
 	pop		rcx
 	pop		rax
+	ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                            ;;
+;;              void check_file(int size, char *data)                         ;;
+;;                                                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+check_file:
+	xor		rax, rax
+
+	mov		rax, 1
+check_end:
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
