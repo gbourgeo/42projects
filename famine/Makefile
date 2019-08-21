@@ -53,4 +53,4 @@ fclean: clean
 re: fclean all
 
 new: all
-	$(CC) -o $@ Ressources/famine.c $(OBJ_DIR)famine64.o
+	$(CC) -o $@ Ressources/famine.c $(OBJ_DIR)famine64.o -O3
