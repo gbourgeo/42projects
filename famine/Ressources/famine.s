@@ -227,7 +227,7 @@ Disassembly of section .text:
      8ed:	movzx  eax,WORD PTR [rdx+0x3e]      ; data->e_shstrndx
      8f1:	shl    rax,0x6
      8f5:	test   r13,r13
-     8f8:	mov    r14,QWORD PTR [rbp+rax*1+0x18]   ; section[i].sh_offset
+     8f8:	mov    r14,QWORD PTR [rbp+rax*1+0x18]   ; section[idx].sh_offset
      8fd:	je     9a6 <pack_dat_elf+0xe6>      ; return
      903:	lea    r15,[rip+0x121a]        # 1b24 <_IO_stdin_used+0x4>
      90a:	mov    r12,rbp

