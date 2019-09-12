@@ -5,23 +5,6 @@ make re
 rm -rf /tmp/test/ /tmp/test2/
 mkdir -p /tmp/test/ /tmp/test2/
 
-gcc -o Ressources/elf64 -m64 Ressources/sample2.c
-cp Ressources/elf64 /tmp/test/.
-cp Ressources/elf64 /tmp/test2/.
-echo -n "Test 1: The Infection (with args)... "
-./Famine
-expected="HELLO"
-got=$(/tmp/test/elf64 HELLO)
-if [ "$expected" != "$got" ]
-then
-	echo -n "\e[31;1m"
-	echo "Failed !"
-	echo "Expected: " $expected
-	echo "Got     : " $got
-	echo "\e[0m"
-	exit
-fi
-
 gcc -o Ressources/elf64 -m64 Ressources/sample.c
 cp Ressources/elf64 /tmp/test/.
 cp Ressources/elf64 /tmp/test2/.
@@ -29,15 +12,15 @@ cp Ressources/elf64 /tmp/test2/.
 echo -n "Test 1: The Infection... "
 ./Famine
 expected="Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx"
-strings_test=$(strings /tmp/test/* | grep Famine)
-strings_test2=$(strings /tmp/test2/* | grep Famine)
-if [ "$strings_test" != "$expected" ] || [ "$strings_test2" != "$expected" ]
+got=$(strings /tmp/test/* | grep Famine)
+got2=$(strings /tmp/test2/* | grep Famine)
+if [ "$got" != "$expected" ] || [ "$got2" != "$expected" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed !"
 	echo "Expected: " $expected
-	echo "Got     : " $strings_test
-	echo "Got2    : " $strings_test2
+	echo "Got     : " $got
+	echo "Got2    : " $got2
 	echo "\e[0m"
 	exit
 fi
@@ -54,18 +37,34 @@ then
 	echo "\e[0m"
 	exit
 fi
+
+gcc -o Ressources/args -m64 Ressources/sample2.c
+cp Ressources/args /tmp/test/elf64
+cp Ressources/args /tmp/test2/elf64
+./Famine
+expected="HELLO"
+got=$(/tmp/test/elf64 $expected)
+if [ "$expected" != "$got" ]
+then
+	echo -n "\e[31;1m"
+	echo "Failed !"
+	echo "Expected: " $expected
+	echo "Got     : " $got
+	echo "\e[0m"
+	exit
+fi
 echo "\e[32;1mOK !\e[0m"
 
 echo -n "Test 2: No Re-infection... "
 ./Famine
-strings_test=$(strings /tmp/test/* | grep Famine | wc -l)
-strings_test2=$(strings /tmp/test2/* | grep Famine | wc -l)
-if [ $strings_test != "1" ] || [ $strings_test2 != "1" ]
+got=$(strings /tmp/test/* | grep Famine | wc -l)
+got2=$(strings /tmp/test2/* | grep Famine | wc -l)
+if [ $got != "1" ] || [ $got2 != "1" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed !"
 	echo "Expected: 1"
-	echo "Got     : $strings_test"
+	echo "Got     : $got"
 	echo "\e[0m"
 	exit
 fi
@@ -78,14 +77,14 @@ cp Ressources/elf32 /tmp/test2/.
 cp auteur /tmp/test/.
 cp auteur /tmp/test2/.
 ./Famine
-strings_test=$(strings /tmp/test/* | grep Famine | wc -l)
-strings_test2=$(strings /tmp/test2/* | grep Famine | wc -l)
-if [ $strings_test != "1" ] || [ $strings_test2 != "1" ]
+got=$(strings /tmp/test/* | grep Famine | wc -l)
+got2=$(strings /tmp/test2/* | grep Famine | wc -l)
+if [ $got != "1" ] || [ $got2 != "1" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed !"
 	echo "Expected: 1"
-	echo "Got     : $strings_test"
+	echo "Got     : $got"
 	echo "\e[0m"
 	exit
 fi
@@ -159,21 +158,22 @@ fi
 cp /bin/bash /tmp/test/.
 cp /bin/bash /tmp/test2/.
 ./Famine
-strings_test=$(strings /tmp/test/* | grep Famine | wc -l)
-strings_test2=$(strings /tmp/test2/* | grep Famine | wc -l)
-expected=$(/bin/bash -c ls)
-got=$(/tmp/test/bash -c ls)
-got2=$(/tmp/test2/bash -c ls)
-if [ $strings_test != "5" ] || [ $strings_test2 != "5" ]
+got=$(strings /tmp/test/* | grep Famine | wc -l)
+got2=$(strings /tmp/test2/* | grep Famine | wc -l)
+if [ "$got" != "5" ] || [ "$got2" != "5" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed ! (/bin/bash -c ls)"
 	echo "Expected: 5"
-	echo "Got     : " $strings_test
-	echo "Got2    : " $strings_test2
+	echo "Got     : " $got
+	echo "Got2    : " $got2
 	echo "\e[0m"
 	exit
-elif [ "$expected" != "$got" ] || [ "$expected" != "$got2" ]
+fi
+expected=$(/bin/bash -c ls)
+got=$(/tmp/test/bash -c ls)
+got2=$(/tmp/test2/bash -c ls)
+if [ "$expected" != "$got" ] || [ "$expected" != "$got2" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed ! (/bin/bash -c ls)"
@@ -357,15 +357,15 @@ then
 	exit
 fi
 echo -n "9"
-strings_test=$(strings /tmp/test/* | grep "Famine " | wc -l)
-strings_test2=$(strings /tmp/test2/* | grep "Famine " | wc -l)
-if [ $strings_test != "6" ] || [ $strings_test2 != "6" ]
+got=$(strings /tmp/test/* | grep "Famine " | wc -l)
+got2=$(strings /tmp/test2/* | grep "Famine " | wc -l)
+if [ $got != "6" ] || [ $got2 != "6" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed !"
 	echo "Expected: 6"
-	echo "Got     : " $strings_test
-	echo "Got2    : " $strings_test2
+	echo "Got     : " $got
+	echo "Got2    : " $got2
 	echo "\e[0m"
 	exit
 fi
@@ -384,15 +384,15 @@ echo -n "Test 6: No-reinfection v2... "
 /tmp/test/echo toto 1>/dev/null
 /tmp/test/bash -c ls 1>/dev/null
 ./Famine
-strings_test=$(strings /tmp/test/* | grep "Famine " | wc -l)
-strings_test2=$(strings /tmp/test2/* | grep "Famine " | wc -l)
-if [ $strings_test != "6" ] || [ $strings_test2 != "6" ]
+got=$(strings /tmp/test/* | grep "Famine " | wc -l)
+got2=$(strings /tmp/test2/* | grep "Famine " | wc -l)
+if [ $got != "6" ] || [ $got2 != "6" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed !"
 	echo "Expected: 6"
-	echo "Got     : " $strings_test
-	echo "Got2    : " $strings_test2
+	echo "Got     : " $got
+	echo "Got2    : " $got2
 	echo "\e[0m"
 	exit
 fi
