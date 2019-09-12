@@ -5,20 +5,39 @@ make re
 rm -rf /tmp/test/ /tmp/test2/
 mkdir -p /tmp/test/ /tmp/test2/
 
+gcc -o Ressources/elf64 -m64 Ressources/sample2.c
+cp Ressources/elf64 /tmp/test/.
+cp Ressources/elf64 /tmp/test2/.
+echo -n "Test 1: The Infection (with args)... "
+./Famine
+expected="HELLO"
+got=$(/tmp/test/elf64 HELLO)
+if [ "$expected" != "$got" ]
+then
+	echo -n "\e[31;1m"
+	echo "Failed !"
+	echo "Expected: " $expected
+	echo "Got     : " $got
+	echo "\e[0m"
+	exit
+fi
+
 gcc -o Ressources/elf64 -m64 Ressources/sample.c
 cp Ressources/elf64 /tmp/test/.
 cp Ressources/elf64 /tmp/test2/.
 
 echo -n "Test 1: The Infection... "
 ./Famine
-strings_test=$(strings /tmp/test/* | grep Famine | wc -l)
-strings_test2=$(strings /tmp/test2/* | grep Famine | wc -l)
-if [ $strings_test != "1" ] || [ $strings_test2 != "1" ]
+expected="Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx"
+strings_test=$(strings /tmp/test/* | grep Famine)
+strings_test2=$(strings /tmp/test2/* | grep Famine)
+if [ "$strings_test" != "$expected" ] || [ "$strings_test2" != "$expected" ]
 then
 	echo -n "\e[31;1m"
 	echo "Failed !"
-	echo "Expected: 1"
-	echo "Got     : $strings_test"
+	echo "Expected: " $expected
+	echo "Got     : " $strings_test
+	echo "Got2    : " $strings_test2
 	echo "\e[0m"
 	exit
 fi
