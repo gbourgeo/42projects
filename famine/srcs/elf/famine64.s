@@ -11,8 +11,6 @@
 	%define SYS_GETDENTS64	217
 	%define MAKE_EXECUTABLE_DEBUGGABLE
 	global famine64_func:function
-	global famine64_size:data
-	global famine64_signature:data
 
 	segment .text
 
