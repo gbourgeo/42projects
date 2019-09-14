@@ -1,17 +1,52 @@
 # FAMINE
-*Ce projet consiste à coder votre premier virus.*
+*This project consist of creating a simple virus.*
 
-## The Program
-Famine est un binaire qui modifie un ou plusieurs autre(s) binaire(s) pour y appliquer
-des fonctionnalités supplémentaires, sans altérer le comportement initial du-dit binaire.
-Pour le coup, on se limite à ajouter une "signature" à ce binaire et rien d’autre.
-Famine applique cette "signature" à tous les binaires présents dans un dossier
-temporaire spécifique.
+### The Program
+Famine is a binary that modifies one or more other binary (s) to apply it additional functionalities, without altering the initial behavior of said binary.
 
-## SPECIFICITIES
-- L’exécutable se nomme Famine.
-- L’exécutable est codé en assembleur et en C.
-- L’exécutable ne va rien afficher sur la sortie standard ni d’erreur.
-- L’exécutable agit sur les dossiers /tmp/test et /tmp/test2.
-- Une seule infection sur les binaires est possible.
-- Les infections se font sur des binaires 64 bits.
+### Specifications
+- The executable applies his "signature" to all binaries present in specific folders temporary.
+- The "signature" have the form:
+```
+Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx
+```
+- Specific folders are '/tmp/test/' and '/tmp/test2/'.
+- No output is done, at all.
+- Only ONE infection is done on binaries.
+
+- The program has been made on:
+```
+Linux debian 4.9.0.9-amd64 #1 SMP Debian 4.9.168-1+deb9u5 (2019-08-11) x86_64 GNU/Linux
+```
+- Works only on 64 bit system.
+
+### Usage
+```sh
+$> git clone https://github.com/gbourgeo/42Projects
+$> make -C 42Projects/famine
+```
+
+### How It Works
+1. The program loop through all the directories contained in the `dir_all` variable.
+2. The program then open each files in the given directories.
+3. If the file is not an ELF 64bit executable, it goes to the next one.
+4. If it is, the program check the executable headers sanity.
+5. It checks if the executable is already infected.
+6. If it isn't the program follow this logic:
+  - Get the Segment containing the ".text" section, otherwise, get the Segment of the executable entry point.
+  - Check if the executable is already infected.
+  - Save the old entry point to execute it at the end of this routine.
+  - Write the new entry point.
+  - Check if we have space to write our code at the end of the ".text" segment.
+  - If not, change the offset of the section following the ".text" section (or the entry point section)
+            and the offset of the following segments.
+  - Finally, rewrite the binary.
+  
+If you are more comfortable with C, there is the C code of the assembler in the folder Ressources.
+
+### Credits
+Gilles BOURGEOIS
+
+### :warning: WARNING :warning:
+- A computer virus is a self-replicating automaton with a non-malicious base, but today often added malicious code (so classified as malicious software), designed to spread to other computers by inserting in software the legitimate, called "hosts". It can more or less disrupt the functioning of the infected computer. It can spread by any means of data exchange such as computer networks and CD-ROMs, USB keys, etc.
+- This code is for pedagogical use only, I disclaim all responsibility when its use for malicious purposes.
