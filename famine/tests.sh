@@ -369,7 +369,7 @@ then
 	echo "\e[0m"
 	exit
 fi
-echo "\e[32;1mOK !\e[0m"
+echo "\e[32;1m OK !\e[0m"
 
 echo -n "Test 6: No-reinfection v2... "
 ./Famine
@@ -399,4 +399,6 @@ fi
 echo "\e[32;1mOK !\e[0m"
 
 rm -rf /tmp/test /tmp/test2
+rm Ressources/args Ressources/elf32 ressources/elf64
+make fclean
 exit
