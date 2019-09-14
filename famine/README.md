@@ -31,16 +31,14 @@ $> make -C 42Projects/famine
 2. The program then open each files in the given directories.
 3. If the file is not an ELF 64bit executable, it goes to the next one.
 4. If it is, the program check the executable headers sanity.
-5. It checks if the executable is already infected.
-6. If it isn't the program follow this logic:
-  - Get the Segment containing the ".text" section, otherwise, get the Segment of the executable entry point.
-  - Check if the executable is already infected.
-  - Save the old entry point to execute it at the end of this routine.
-  - Write the new entry point.
-  - Check if we have space to write our code at the end of the ".text" segment.
-  - If not, change the offset of the section following the ".text" section (or the entry point section)
-            and the offset of the following segments.
-  - Finally, rewrite the binary.
+6. Get the Segment containing the ".text" section, otherwise, get the Segment of the executable entry point.
+7. Check if the executable is already infected.
+8. Save the old entry point to execute it at the end of this routine.
+9. Write the new entry point.
+10. Check if we have space to write our code at the end of the ".text" segment.
+11. If not, change the offset of the section following the ".text" section (or the entry point section)
+    and the offset of the following segments.
+12. Finally, rewrite the binary.
   
 If you are more comfortable with C, there is the C code of the assembler in the folder Ressources.
 
