@@ -3,9 +3,9 @@ _Some exercices to learn the langage C plus plus_
 
 ## Day 00
 ### Namespace, class, member functions, stdio stream, initialization list, static, const, and lots of basic stuff
-- **Exercise 00 :** Megaphone
-- **Exercise 01 :** My Awesome Phonebook
-- **Exercise 02 :** The Job Of Your Dreams
+- **[Exercise 00](https://github.com/gbourgeo/42projects/blob/master/PiscineC%2B%2B/d00/ex00) :** Megaphone
+- **[Exercise 01](https://github.com/gbourgeo/42projects/blob/master/PiscineC%2B%2B/d00/ex01) :** My Awesome Phonebook
+- **[Exercise 02](https://github.com/gbourgeo/42projects/blob/master/PiscineC%2B%2B/d00/ex02) :** The Job Of Your Dreams
 
 ## Day 01
 ### Memory allocation, References, Pointers to members, File streams
