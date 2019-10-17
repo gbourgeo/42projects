@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cl_main.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 06:34:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/17 04:19:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void			init_addrinfo(char *addr, char *port, struct addrinfo **res)
 		ft_error("ERROR: getaddrinfo() returns.");
 }
 
-static void			ft_getaddrinfo(char *addr, char *port, t_envi *cl)
+static void			ft_getaddrinfo(char *addr, char *port, t_client *cl)
 {
 	struct addrinfo	*results;
 	struct addrinfo	*tmp;
@@ -51,29 +51,21 @@ static void			ft_getaddrinfo(char *addr, char *port, t_envi *cl)
 		ft_error("Error: setsockopt(SO_REUSEADDR) failed");
 }
 
-static void			init_client(char *addr, char *port, t_envi *cl, char **env)
+static void			init_client(char *addr, char *port, t_client *cl, char **env)
 {
 	ft_getaddrinfo(addr, port, cl);
-	if ((cl->path = ft_getenv("PATH=", env)) == NULL)
-		cl->path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
-	if ((cl->home = ft_strdup(ft_getenv("HOME=", env))) == NULL)
-		cl->home = ft_strdup("/");
-	cl->lpwd = getcwd(NULL, 0);
-	if ((cl->oldpwd = ft_strdup(ft_getenv("OLDPWD=", env))) == NULL)
-		cl->oldpwd = getcwd(NULL, 0);
-	if ((cl->user = ft_strdup(ft_getenv("USER=", env))) == NULL)
-		cl->user = ft_strdup("guest");
-	if (!cl->path || !cl->home || !cl->lpwd || !cl->oldpwd)
-		ft_error("ERROR: init_env() failed.");
 }
 
-int					main(int ac, char **av, char **environ)
+int					main(int ac, char **av)
 {
-	t_envi			cl;
+	t_client	*cl;
+	int			errnb;
 
-	if (ac != 3)
+	cl = &client;
+	if ((errnb = ft_init(cl, sizeof(*cl), CLIENT, av[0])) != IS_OK)
+		return (ft_error(errnb, cl));
+	if (ac < 3)
 		return (usage(av[0], CLIENT));
-	ft_memset(&cl, 0, sizeof(cl));
 	init_client(av[1], av[2], &cl, environ);
 	ft_signals();
 	cl_loop(&cl);

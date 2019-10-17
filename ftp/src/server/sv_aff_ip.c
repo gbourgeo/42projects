@@ -1,26 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_aff_ip.c                                        :+:      :+:    :+:   */
+/*   sv_aff_ip.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 04:50:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 20:49:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/17 01:56:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-#include "libft.h"
 
-void					ft_aff_ip(struct addrinfo *p, int v6)
+void					sv_aff_ip(struct addrinfo *p, int version)
 {
 	struct sockaddr_in	*ipv4;
 	struct sockaddr_in6	*ipv6;
 	void				*addr;
 	char				name[INET6_ADDRSTRLEN];
 
-	if (v6)
+	if (version == v6)
 	{
 		ipv6 = (struct sockaddr_in6 *)p->ai_addr;
 		addr = &(ipv6->sin6_addr);
@@ -34,4 +33,5 @@ void					ft_aff_ip(struct addrinfo *p, int v6)
 	}
 	inet_ntop(p->ai_family, addr, name, sizeof(name));
 	ft_putstr(name);
+	ft_putendl(" \033[32mONLINE\033[0m");
 }

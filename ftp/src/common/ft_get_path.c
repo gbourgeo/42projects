@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/18 18:37:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/08/20 11:00:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/17 15:43:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,6 @@ char			*ft_get_path(char *dest, char *home, char *lpwd, char *oldpwd)
 		pwd = ft_strdup(oldpwd);
 	else
 		pwd = decrypt_path(pwd, path);
-	ft_free(&path);
+	ft_freetab(&path);
 	return (pwd);
 }

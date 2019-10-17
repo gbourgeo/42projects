@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   common.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 20:24:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/18 00:30:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,45 +45,70 @@
 
 # define DATA_SIZE		2048
 
-/*
-** CLIENTS_MAX :
-** Server uses fork to work (...i know...) so
-** The size may be under the limit of your system fork limit :
-** see limits.conf on linux,
-** or MAXUPRC in <sys/param.h> under OSX (usually 266).
-*/
-
-# define CLIENTS_MAX	20
-
-typedef struct			s_envi
+enum
 {
-	int					ip[2];
-	int					fd;
-	int					rec;
-	int					success;
-	char				buff[BUFF_SIZE + 1];
-	char				data[DATA_SIZE + 1];
-	char				*user;
-	char				*path;
-	char				*home;
-	char				*pwd;
-	char				*lpwd;
-	char				*oldpwd;
-	struct stat			info;
-	pid_t				pid;
-}						t_envi;
+	IS_OK,
+	ERR_NB_PARAMS,
+	ERR_WRONG_PARAM,
+	ERR_DIGIT_PARAM,
+	ERR_TOOMUCH_PARAM,
+	ERR_GETADDR,
+	ERR_NO_IPV4_AVAIL,
+	ERR_NO_IPV6_AVAIL,
+	ERR_SETSOCKOPT,
+	ERR_LISTEN_V4,
+	ERR_LISTEN_V6,
+	ERR_MALLOC,
+	ERR_SELECT,
+	ERR_ACCEPT_V4,
+	ERR_ACCEPT_V6,
+	ERR_RECV,
+	ERR_DISCONNECT,
+	ERR_SIGNAL,
+	ERR_WAIT,
+	ERR_FORK,
+	ERR_DUP2,
+	ERR_EXECV,
+	ERR_SEND,
+};
 
-int						usage(char *prog_name, int caller);
-void					ft_error(const char *err);
+typedef struct		s_env
+{
+	char			*path;
+	char			*home;
+	// char			*lpwd;
+	// char			*oldpwd;
+	// char			*user;
+	// char			*pwd;
+}					t_env;
+
+typedef struct		s_common
+{
+	char			*progpath;
+	char			*progname;
+	int				progtype;
+	t_env			env;
+	// int					fd;
+	// int					rec;
+	// int					success;
+	// char				buff[BUFF_SIZE + 1];
+	// char				data[DATA_SIZE + 1];
+	// struct stat			info;
+	// pid_t				pid;
+}					t_common;
+
+int						ft_init(void *p, size_t size, int type, char *prog);
+const char				*ft_get_error(int errnb);
+int						ft_error(int errnb, t_common *info);
 char					*ft_getenv(char *search, char **envp);
 char					**ft_split_whitespaces(char *str);
 char					*ft_strndup(const char *s1, int size);
-char					*ft_get_path(char *dest, char *home, char *lpwd, \
-										char *oldpwd);
-char					*ft_get_command(char *cmd, char **dirs, int n);
-int						file_error(char *msg, t_envi *e, int caller, int fd);
+char					*ft_get_path(char *dest, char *home, char *lpwd,
+						char *oldpwd);
+char					*ft_get_command(char *cmd, char *paths, int n);
+// int						file_error(char *msg, t_envi *e, int caller, int fd);
 void					ft_putendn(int nb);
-void					ft_free(char ***tab);
+void					ft_freetab(char ***tab);
 void					ft_signals(void);
 
 #endif

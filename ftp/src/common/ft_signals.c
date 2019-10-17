@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signals.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 06:26:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 19:52:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/16 23:56:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 static void		ft_do(int nb)
 {
+	(void)nb;
 	ioctl(0, TIOCSTI, "\n");
-	nb = 1;
 }
 
 void			ft_signals(void)
