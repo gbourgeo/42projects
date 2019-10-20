@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/02 04:14:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/01/15 00:29:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/20 22:10:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ static void		tty_check(t_info *info)
 		ft_error("Terminal not valid.\n");
 	if (!ttyname(STDIN_FILENO))
 		ft_error("You are not connected a terminal.\n");
-	if (ttyslot() < 1)
-		ft_error("No terminal found in database.\n");
+//	if (ttyslot() < 1)
+//		ft_error("No terminal found in database.\n");
 	if ((info->fd = open(ttyname(0), O_RDWR)) == -1)
 	{
 		ft_putstr_fd("Failed to open: ", STDERR_FILENO);
