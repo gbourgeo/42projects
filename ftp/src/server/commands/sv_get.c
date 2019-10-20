@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   sv_get.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/07 11:00:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/21 00:38:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static int			sv_send_file(int ffd, t_envi *e)
+static int			sv_send_file(int ffd, t_server *sv)
 {
 	int				ret;
 
@@ -37,7 +37,7 @@ static int			sv_send_file(int ffd, t_envi *e)
 	return (0);
 }
 
-static int			sv_send_dir_files(char *file, char *path, t_envi *e)
+static int			sv_send_dir_files(char *file, char *path, t_server *sv)
 {
 	int				ffd;
 
@@ -61,7 +61,7 @@ static int			sv_send_dir_files(char *file, char *path, t_envi *e)
 	return (e->rec);
 }
 
-static int			sv_send_dir(char *file, char *path, t_envi *e)
+static int			sv_send_dir(char *file, char *path, t_server *sv)
 {
 	DIR				*ret;
 	struct dirent	*dir;
@@ -90,7 +90,7 @@ static int			sv_send_dir(char *file, char *path, t_envi *e)
 	return (e->rec);
 }
 
-int					sv_send_info(char *file, char *path, int ffd, t_envi *e)
+int					sv_send_info(char *file, char *path, int ffd, t_server *sv)
 {
 	if (e->success)
 		ft_putstr(file);
@@ -110,31 +110,51 @@ int					sv_send_info(char *file, char *path, int ffd, t_envi *e)
 	return (sv_send_file(ffd, e));
 }
 
-int					sv_get(char **cmds, t_envi *e)
-{
-	char			*file;
-	char			*path;
-	int				ffd;
 
-	ffd = -1;
-	if ((file = ft_get_path(cmds[1], "/", e->pwd, e->oldpwd)) == NULL)
-		return (file_error("\2ERROR: server: can't get path.", e, SERVER, 1));
-	else if ((path = ft_strjoin(e->home, file)) == NULL)
-		e->rec = file_error("\2ERROR: server: low memory.", e, SERVER, 1);
-	else if ((ffd = open(path, O_RDONLY)) == -1)
-		e->rec = file_error("\2ERROR: server: Can't open file", e, SERVER, 1);
-	else if (fstat(ffd, &e->info) == -1)
-		e->rec = file_error("\2ERROR: server: Check rights.", e, SERVER, 1);
-	else
-	{
-		send(e->fd, "\0", 1, 0);
-		e->rec = sv_send_info(ft_strrchr(file, '/') + 1, path, ffd, e);
-	}
-	if (ffd != -1)
-		close(ffd);
-	if (file)
-		free(file);
-	if (path)
-		free(path);
-	return (e->rec);
+static int			sv_get_error(char *str, char *cmd, t_client *cl, t_server *sv)
+{
+	int		ret;
+
+	ret = IS_OK;
+	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
+		if ((ret = sv_client_write(": ", cl)) == IS_OK)
+			if ((ret = sv_client_write(cmd, cl)) == IS_OK)
+				if ((ret = sv_client_write(": ", cl)) == IS_OK)
+					if ((ret = sv_client_write(str, cl)) == IS_OK)
+						if ((ret = sv_client_write("\n", cl)) == IS_OK)
+							ret = sv_client_write(SERVER_ERR_OUTPUT, cl);
+	return (ret);
+}
+
+int					sv_get(char **cmds, t_client *cl, t_server *sv)
+{
+
+	if (!cmds[1])
+		return (sv_get_error("Missing parameter.", cmds[0], cl, sv));
+	return (IS_OK);
+	// char			*file;
+	// char			*path;
+	// int				ffd;
+
+	// ffd = -1;
+	// if ((file = ft_get_path(cmds[1], "/", e->pwd, e->oldpwd)) == NULL)
+	// 	return (file_error("\2ERROR: server: can't get path.", e, SERVER, 1));
+	// else if ((path = ft_strjoin(e->home, file)) == NULL)
+	// 	e->rec = file_error("\2ERROR: server: low memory.", e, SERVER, 1);
+	// else if ((ffd = open(path, O_RDONLY)) == -1)
+	// 	e->rec = file_error("\2ERROR: server: Can't open file", e, SERVER, 1);
+	// else if (fstat(ffd, &e->info) == -1)
+	// 	e->rec = file_error("\2ERROR: server: Check rights.", e, SERVER, 1);
+	// else
+	// {
+	// 	send(e->fd, "\0", 1, 0);
+	// 	e->rec = sv_send_info(ft_strrchr(file, '/') + 1, path, ffd, e);
+	// }
+	// if (ffd != -1)
+	// 	close(ffd);
+	// if (file)
+	// 	free(file);
+	// if (path)
+	// 	free(path);
+	// return (e->rec);
 }

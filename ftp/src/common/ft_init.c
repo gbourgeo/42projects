@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 04:08:22 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/20 00:43:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/21 00:09:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,25 +33,5 @@ int				ft_init(void *p, size_t size, int type, char *prog)
 		return (ERR_MALLOC);
 	if (!(c->env.home = getcwd(NULL, 0)))
 		return (ERR_MALLOC);
-
-	// if ((sv->path = ft_getenv("PATH=", env)) == NULL)
-	// 	sv->path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
-	// sv->home = getcwd(NULL, 0);
-	// sv->pwd = ft_strdup("");
-	// sv->oldpwd = ft_strdup("");
-	// if (!sv->path || !sv->home || !sv->pwd || !sv->oldpwd)
-	// 	ft_error(ERR_MALLOC, sv);
-
-	// if ((cl->path = ft_getenv("PATH=", env)) == NULL)
-	// 	cl->path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
-	// if ((cl->home = ft_strdup(ft_getenv("HOME=", env))) == NULL)
-	// 	cl->home = ft_strdup("/");
-	// cl->lpwd = getcwd(NULL, 0);
-	// if ((cl->oldpwd = ft_strdup(ft_getenv("OLDPWD=", env))) == NULL)
-	// 	cl->oldpwd = getcwd(NULL, 0);
-	// if ((cl->user = ft_strdup(ft_getenv("USER=", env))) == NULL)
-	// 	cl->user = ft_strdup("guest");
-	// if (!cl->path || !cl->home || !cl->lpwd || !cl->oldpwd)
-	// 	ft_error("ERROR: init_env() failed.");
 	return (IS_OK);
 }

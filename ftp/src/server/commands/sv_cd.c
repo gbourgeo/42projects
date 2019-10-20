@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/20 18:01:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/21 00:36:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@ static int		sv_cd_error(char *str, char *cmd, t_client *cl, t_server *sv)
 			if ((ret = sv_client_write(cmd, cl)) == IS_OK)
 				if ((ret = sv_client_write(": ", cl)) == IS_OK)
 					if ((ret = sv_client_write(str, cl)) == IS_OK)
-						ret = sv_client_write("\n", cl);
-	return (sv_client_write(SERVER_ERR_OUTPUT, cl));
+						if ((ret = sv_client_write("\n", cl)) == IS_OK)
+							ret = sv_client_write(SERVER_ERR_OUTPUT, cl);
+	return (ret);
 }
 
 static void		sv_cd_new(char *cwd, char *newc, t_client *cl)
