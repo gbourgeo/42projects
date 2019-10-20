@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/17 22:28:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/10/19 23:47:28 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,7 @@ SER_C	= sv_main.c				\
 
 SER_C_D	= $(SER_D)commands/
 SER_C	+= sv_ls.c				\
+		sv_check_params.c		\
 		# sv_cd.c					\
 		# sv_get.c				\
 		# sv_put.c				\

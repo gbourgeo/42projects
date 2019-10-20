@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 03:28:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/20 03:50:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,20 @@ static int		sv_ls_fork(char **cmds, t_client *cl, t_server *sv)
 	pid_t		pid;
 	int			ret;
 
+	(void)sv;
 	pid = fork();
 	if (pid > 0)
 	{
 		if (wait4(pid, &ret, 0, NULL) != pid)
 			return (ERR_WAIT);
 		if (ret > 255)
-			return (sv_client_write("\n\x01\xff", cl));
-		return (sv_client_write("\n\x01\x01", cl));
+			return (sv_client_write(SERVER_ERR_OUTPUT, cl));
+		return (sv_client_write(SERVER_OK_OUTPUT, cl));
 	}
 	else if (pid == 0)
 	{
-		if (dup2(cl->fd, STDOUT_FILENO) < 0 || dup2(cl->fd, STDERR_FILENO) < 0)
+		close(STDERR_FILENO);
+		if (dup2(cl->fd, STDOUT_FILENO) < 0)// || dup2(cl->fd, STDERR_FILENO) < 0)
 			exit(255 + ERR_DUP2);
 		ret = execv(cmds[0], cmds);
 		exit(255 + ERR_EXECV);
@@ -49,20 +51,18 @@ int				sv_ls(char **cmds, t_client *cl, t_server *sv)
 	cmds[0] = cmdpath;
 	i = 0;
 	while (cmds[++i])
-		if ((errnb = sv_check_params(&cmds[i], cl, sv)) != IS_OK)
+		if ((errnb = sv_check_params(&cmds[i], cl, &sv->info.env)) != IS_OK)
 			return (errnb);
 	return (sv_ls_fork(cmds, cl, sv));
 }
 
 int				sv_pwd(char **cmds, t_client *cl, t_server *sv)
 {
-	char		*cwd;
+	int			ret;
 
 	(void)cmds;
 	(void)sv;
-	cwd = getcwd(NULL, 0);
-	if (!cwd)
-		return (sv_client_write("\n\x01\xff", cl));
-	sv_client_write(cwd, cl);
-	return (sv_client_write("\n\x01\x01", cl));
+	if ((ret = sv_client_write(cl->pwd, cl)) != IS_OK)
+		return (ret);
+	return (sv_client_write(SERVER_OK_OUTPUT, cl));
 }

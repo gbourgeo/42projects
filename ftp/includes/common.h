@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 00:30:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/20 03:48:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@
 */
 
 # define DATA_SIZE		2048
+
+# define SERVER_ERR_OUTPUT		"\x01\xff\n"
+# define SERVER_OK_OUTPUT		"\x01\x01\n"
 
 enum
 {
