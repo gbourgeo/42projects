@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 03:22:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/19 21:05:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static int		sv_client_commands(t_client *cl, t_server *sv)
 	int					val;
 
 	i = 0;
+	val = 0;
 	sv_buffcpy(buff, &cl->rd);
 	if ((cmd = ft_split_whitespaces(buff)) == NULL)
 		return (ERR_MALLOC);

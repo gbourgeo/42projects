@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 03:28:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/19 21:06:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static int		sv_ls_fork(char **cmds, t_client *cl, t_server *sv)
 	pid_t		pid;
 	int			ret;
 
+	(void)sv;
 	pid = fork();
 	if (pid > 0)
 	{
@@ -43,6 +44,7 @@ int				sv_ls(char **cmds, t_client *cl, t_server *sv)
 	int			i;
 	int			errnb;
 
+	(void)sv;
 	if (!(cmdpath = ft_get_command(cmds[0], sv->info.env.path, 0)))
 		return (IS_OK);
 	free(cmds[0]);
