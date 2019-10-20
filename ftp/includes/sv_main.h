@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 03:27:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/20 17:58:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 # define CLIENTS_MAX	20
 
-# define COMMAND0 {"ls", sv_ls, 9}, {"pwd", sv_pwd, 0},// {"cd", sv_cd, 1}
+# define COMMAND0 {"ls", sv_ls, 9}, {"pwd", sv_pwd, 0}, {"cd", sv_cd, 1}
 # define COMMAND1 {"get", sv_get, 1}, {"put", sv_put, 2},
 # define COMMAND2 {"mkdir", sv_mkdir, 9}, {"rmdir", sv_rmdir, 9},
 # define COMMAND3 {"unlink", sv_unlink, 9}, {"quit", sv_quit, 0}
@@ -87,7 +87,7 @@ void				sv_aff_ip(struct addrinfo *p, int version);
 int					sv_loop(t_server *sv);
 int					sv_accept(int version, t_server *sv);
 int					sv_client_recv(t_client *cl, t_server *sv);
-int					sv_check_params(char **path, t_client *cl, t_server *sv);
+int					sv_check_path(char **path, t_client *cl, t_env *e);
 int					sv_client_send(t_client *cl);
 int					sv_client_write(char *str, t_client *cl);
 t_client			*sv_client_end(t_client *cl, t_server *sv);

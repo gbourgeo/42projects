@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 00:30:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/20 16:49:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@
 
 # define DATA_SIZE		2048
 
+# define SERVER_ERR_OUTPUT		"\x01\xff\n"
+# define SERVER_OK_OUTPUT		"\x01\x01\n"
+
 enum
 {
 	IS_OK,
@@ -76,10 +79,6 @@ typedef struct		s_env
 {
 	char			*path;
 	char			*home;
-	// char			*lpwd;
-	// char			*oldpwd;
-	// char			*user;
-	// char			*pwd;
 }					t_env;
 
 typedef struct		s_common
@@ -88,27 +87,19 @@ typedef struct		s_common
 	char			*progname;
 	int				progtype;
 	t_env			env;
-	// int					fd;
-	// int					rec;
-	// int					success;
-	// char				buff[BUFF_SIZE + 1];
-	// char				data[DATA_SIZE + 1];
-	// struct stat			info;
-	// pid_t				pid;
 }					t_common;
 
-int						ft_init(void *p, size_t size, int type, char *prog);
-const char				*ft_get_error(int errnb);
-int						ft_error(int errnb, t_common *info);
-char					*ft_getenv(char *search, char **envp);
-char					**ft_split_whitespaces(char *str);
-char					*ft_strndup(const char *s1, int size);
-char					*ft_get_path(char *dest, char *home, char *lpwd,
-						char *oldpwd);
-char					*ft_get_command(char *cmd, char *paths, int n);
-// int						file_error(char *msg, t_envi *e, int caller, int fd);
-void					ft_putendn(int nb);
-void					ft_freetab(char ***tab);
-void					ft_signals(void);
+int					ft_init(void *p, size_t size, int type, char *prog);
+const char			*ft_get_error(int errnb);
+int					ft_error(int errnb, t_common *info);
+char				*ft_getenv(char *search, char **envp);
+char				**ft_split_whitespaces(char *str);
+char				*ft_strndup(const char *s1, int size);
+char				*ft_get_path(char *dest, char *home, char *lpwd,
+					char *oldpwd);
+char				*ft_get_command(char *cmd, char *paths, int n);
+void				ft_putendn(int nb);
+void				ft_freetab(char ***tab);
+void				ft_signals(void);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/19 21:05:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/20 16:48:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static int		sv_client_commands(t_client *cl, t_server *sv)
 	return (val);
 }
 
-int			sv_client_recv(t_client *cl, t_server *sv)
+int				sv_client_recv(t_client *cl, t_server *sv)
 {
 	int		ret;
 	int		val;
