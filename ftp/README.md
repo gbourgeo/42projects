@@ -4,21 +4,21 @@ La communication entre le client et le serveur se fera en TCP/IP (version 4).*
 
 ## USAGE
 ### Create the server
-```
+```sh
 $> make server
 $> ./server
 Usage: ./server [port] [-i] (for interactive server)
 $>
 ```
 ### Create the client
-```
+```sh
 $> make client
 $> ./client
 Usage: ./client [server_address] [server_port]
 $>
 ```
 ### Create the server and the client
-```
+```sh
 $> make
 $>
 ```
@@ -30,7 +30,7 @@ $>
 
 ## Commands
 ### Server Side
-```sh
+```
 - ls          : liste le répertoire courant du serveur
 - cd          : change le répertoire courant du serveur
 - get [file]  : récupère le fichier _file_ du serveur vers le client
@@ -40,7 +40,7 @@ $>
 ```
 
 ### Client Side
-```sh
+```
 - lcd         : ces fonctions concernent le filesystem “local” et non serveur
 - lpwd
 - lls
