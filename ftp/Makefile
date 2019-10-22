@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/21 18:28:42 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/10/22 19:41:56 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,7 @@ SER_C	+= sv_help.c			\
 		sv_ls.c					\
 		sv_cd.c					\
 		sv_check_path.c			\
+		sv_cmd_err.c			\
 		# sv_get.c				\
 		# sv_put.c				\
 		# sv_mkdir_rmdir_unlink.c	\
@@ -79,10 +80,9 @@ LIBS	= -L $(LIB_DIR) -lft
 
 WWW		= gcc -Wall -Werror -Wextra
 
-all: $(OBJ_D) $(CLIENT) $(SERVEUR)
+.SECONDEXPANSION:
 
-$(OBJ_D):
-	@mkdir -p $@
+all: $(CLIENT) $(SERVEUR)
 
 $(CLIENT): $(OBJ_X) $(OBJ_C)
 	@make -C $(LIB_DIR)
@@ -98,21 +98,24 @@ $(OBJ_C): includes/cl_main.h includes/common.h
 
 $(OBJ_S): includes/sv_main.h includes/common.h
 
-$(OBJ_D)%.o: $(CLI_D)%.c $(OBJ_D)
+$(OBJ_D)%.o: $(CLI_D)%.c
 	@echo "Compile: $<"
 	@$(WWW) -o $@ -c $< $(HDRS)
 
-$(OBJ_D)%.o: $(SER_D)%.c $(OBJ_D)
+$(OBJ_D)%.o: $(SER_D)%.c
 	@echo "Compile: $<"
 	@$(WWW) -o $@ -c $< $(HDRS)
 
-$(OBJ_D)%.o: $(SER_C_D)%.c $(OBJ_D)
+$(OBJ_D)%.o: $(SER_C_D)%.c
 	@echo "Compile: $<"
 	@$(WWW) -o $@ -c $< $(HDRS)
 
-$(OBJ_D)%.o: $(COM_D)%.c $(OBJ_D)
+$(OBJ_D)%.o: $(COM_D)%.c | $(OBJ_D)
 	@echo "Compile: $<"
 	@$(WWW) -o $@ -c $< $(HDRS)
+
+$(OBJ_D):
+	mkdir -p $@
 
 clean:
 	@make -C $(LIB_DIR) clean

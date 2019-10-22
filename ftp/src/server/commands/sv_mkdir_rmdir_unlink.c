@@ -3,35 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   sv_mkdir_rmdir_unlink.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/05 14:54:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/22 02:33:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int					sv_mkdir(char **cmds, t_envi *sv)
+int				sv_mkdir(char **cmds, t_client *cl, t_server *sv)
 {
-	int				i;
-	int				ret;
+	int		i;
+	int		errnb;
+	int		ret;
 
 	i = 1;
-	ret = 0;
+	if (cmds[i][0] == '-')
+		return (sv_cmd_err("No options allowed.", cmds[0], cl, sv));
 	while (cmds[i])
 	{
-		if (mkdir(cmds[i], 0755) == -1)
-			ret = file_error("\2ERROR: File exists", sv, SERVER, 1);
+		if ((errnb = sv_check_path(&cmds[i], cl, &sv->info.env)) != IS_OK)
+			return (errnb);
+		if (mkdir(cmds[i], 0755) < 0)
+			return (sv_cmd_err("Can't create directory", cmds[0], cl, sv));
 		i++;
 	}
-	if (ret == 0)
-		send(sv->fd, "\033[32mSUCCESS\033[0m\n", 17, 0);
-	send(sv->fd, "\0", 1, 0);
-	return (0);
+	return (sv_client_write(SERVER_OK_OUTPUT, cl));
 }
 
-static int			sv_enter_dir(char *path, t_envi *sv)
+static int			sv_enter_dir(char *path, t_server *sv)
 {
 	DIR				*dir;
 	struct dirent	*file;
@@ -59,15 +60,14 @@ static int			sv_enter_dir(char *path, t_envi *sv)
 	return (rmdir(path));
 }
 
-int					sv_rmdir(char **cmds, t_envi *sv)
+int					sv_rmdir(char **cmds, t_client *cl, t_server *sv)
 {
 	int				i;
 	char			*file;
 	char			*path;
 
 	i = 1;
-	sv->rec = 0;
-	while (cmds[i] && sv->rec == 0)
+	while (cmds[i])
 	{
 		if ((file = ft_get_path(cmds[i], "/", sv->pwd, sv->oldpwd)) == NULL)
 			sv->rec = file_error("\2ERROR: server: get_path()", sv, SERVER, 1);
@@ -86,7 +86,7 @@ int					sv_rmdir(char **cmds, t_envi *sv)
 	return (0);
 }
 
-int					sv_unlink(char **cmds, t_envi *sv)
+int					sv_unlink(char **cmds, t_server *sv)
 {
 	int				i;
 	char			*file;
