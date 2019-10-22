@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/20 17:58:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/22 02:14:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ void				sv_signals_hdlr(int sig);
 ** commands
 */
 
+int					sv_cmd_err(char *str, char *cmd, t_client *cl,
+					t_server *sv);
 int					sv_ls(char **cmds, t_client *cl, t_server *sv);
 int					sv_pwd(char **cmds, t_client *cl, t_server *sv);
 int					sv_cd(char **cmds, t_client *cl, t_server *sv);

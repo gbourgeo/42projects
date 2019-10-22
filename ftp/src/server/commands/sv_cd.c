@@ -6,26 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/21 00:36:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/22 02:14:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/param.h>
 #include "sv_main.h"
-
-static int		sv_cd_error(char *str, char *cmd, t_client *cl, t_server *sv)
-{
-	int			ret;
-
-	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
-		if ((ret = sv_client_write(": ", cl)) == IS_OK)
-			if ((ret = sv_client_write(cmd, cl)) == IS_OK)
-				if ((ret = sv_client_write(": ", cl)) == IS_OK)
-					if ((ret = sv_client_write(str, cl)) == IS_OK)
-						if ((ret = sv_client_write("\n", cl)) == IS_OK)
-							ret = sv_client_write(SERVER_ERR_OUTPUT, cl);
-	return (ret);
-}
 
 static void		sv_cd_new(char *cwd, char *newc, t_client *cl)
 {
@@ -69,9 +55,9 @@ int				sv_cd(char **cmds, t_client *cl, t_server *sv)
 	if (cmds[1])
 	{
 		if (cmds[1][0] == '-' && cmds[1][1])
-			return (sv_cd_error("No options allowed.", cmds[0], cl, sv));
+			return (sv_cmd_err("No options allowed.", cmds[0], cl, sv));
 		if (cmds[2])
-			return (sv_cd_error("Too much parameters.", cmds[0], cl, sv));
+			return (sv_cmd_err("Too much parameters.", cmds[0], cl, sv));
 	}
 	sv_cd_new(cwd, cmds[1], cl);
 	if (!(dup = ft_strdup(cwd)))
@@ -82,7 +68,7 @@ int				sv_cd(char **cmds, t_client *cl, t_server *sv)
 	ret = chdir(dup);
 	free(dup);
 	if (ret < 0)
-		return (sv_cd_error("invalid directory", cmds[0], cl, sv));
+		return (sv_cmd_err("Invalid directory", cmds[0], cl, sv));
 	if ((ret = sv_cd_change(cwd, cmds[1], cl)) != IS_OK)
 		return (ret);
 	return (sv_client_write(SERVER_OK_OUTPUT, cl));
