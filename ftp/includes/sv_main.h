@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/20 17:58:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/21 18:55:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,17 @@
 
 # define CLIENTS_MAX	20
 
-# define COMMAND0 {"ls", sv_ls, 9}, {"pwd", sv_pwd, 0}, {"cd", sv_cd, 1}
-# define COMMAND1 {"get", sv_get, 1}, {"put", sv_put, 2},
-# define COMMAND2 {"mkdir", sv_mkdir, 9}, {"rmdir", sv_rmdir, 9},
-# define COMMAND3 {"unlink", sv_unlink, 9}, {"quit", sv_quit, 0}
+# define CMD_HELP	{ "help", "Display this help.", sv_help }
+# define CMD_LS		{ "ls", "List current working directory files.", sv_ls }
+# define CMD_PWD	{ "pwd", "Display the current working directory.", sv_pwd }
+# define CMD_CD		{ "cd", "Change working directory.", sv_cd }
+# define CMD_GET	{ "get", "Get file from server.", sv_get }
+# define CMD_PUT	{ "put", "Put file to server.", sv_put }
+# define CMD_MKDIR	{ "mkdir", "Create directory on server.", sv_mkdir }
+# define CMD_RMDIR	{ "rmdir", "Remove directory on server.", sv_rmdir }
+# define CMD_UNLINK	{ "unlink", "Remove file from server.", sv_unlink }
+# define CMD_QUIT	{ "quit", "Quit the server.", sv_quit }
+# define CMD_END	{ NULL, NULL, NULL }
 
 # define SV_VERSION(c, v)	(c & (1 << v))
 
@@ -41,8 +48,8 @@ enum
 typedef struct		s_command
 {
 	const char		*name;
+	const char		*descrip;
 	int				(*func)();
-	char			check_params;
 }					t_command;
 
 typedef struct		s_buff
@@ -103,6 +110,7 @@ void				sv_signals_hdlr(int sig);
 ** commands
 */
 
+int					sv_help(char **cmds, t_client *cl, t_server *sv);
 int					sv_ls(char **cmds, t_client *cl, t_server *sv);
 int					sv_pwd(char **cmds, t_client *cl, t_server *sv);
 int					sv_cd(char **cmds, t_client *cl, t_server *sv);

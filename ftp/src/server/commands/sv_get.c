@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/21 00:38:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/21 18:21:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/param.h>
 #include "sv_main.h"
 
 static int			sv_send_file(int ffd, t_server *sv)
@@ -128,9 +129,25 @@ static int			sv_get_error(char *str, char *cmd, t_client *cl, t_server *sv)
 
 int					sv_get(char **cmds, t_client *cl, t_server *sv)
 {
+	char			cwd[MAXPATHLEN + 1];
+	char			*dup;
+	int				ret;
 
 	if (!cmds[1])
 		return (sv_get_error("Missing parameter.", cmds[0], cl, sv));
+	if (cmds[1][0] == '/')
+		ft_strncpy(cwd, cmds[1], MAXPATHLEN);
+	else
+	{
+		ft_strncpy(cwd, cl->pwd, MAXPATHLEN);
+		if (cwd[ft_strlen(cwd) - 1] != '/')
+			ft_strncat(cwd, "/", MAXPATHLEN);
+		ft_strncat(cwd, cmds[1], MAXPATHLEN);
+	}
+	if (!(dup = ft_strdup(cwd)))
+		return (ERR_MALLOC);
+	if ((ret = sv_check_path(&dup, cl, &sv->info.env)) != IS_OK)
+		return (ret);
 	return (IS_OK);
 	// char			*file;
 	// char			*path;
