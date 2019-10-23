@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/23 18:58:35 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/10/23 22:09:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,6 +49,7 @@ SER_C	+= sv_help.c			\
 		sv_ls.c					\
 		sv_cd.c					\
 		sv_mkdir.c				\
+		sv_rmdir.c				\
 		sv_check_path.c			\
 		sv_cmd_err.c			\
 		# sv_rmdir_unlink.c		\

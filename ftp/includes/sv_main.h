@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:58:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 01:09:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define SV_MAIN_H
 
 # include <netinet/in.h>
+# include <sys/stat.h>
 # include "libft.h"
 # include "common.h"
 
@@ -42,6 +43,16 @@ enum
 	v4,
 	v6
 };
+
+typedef struct		s_rmdir
+{
+	char			*cmd;
+	int				err[3];
+	char			**path;
+	struct dirent	*file;
+	char			*ptr;
+	struct stat		inf;
+}					t_rmdir;
 
 typedef struct		s_command
 {
@@ -120,6 +131,7 @@ int					sv_handle_dir(char *dir, t_server *sv);
 int					sv_handle_file(char *file, t_server *sv);
 int					sv_mkdir(char **cmds, t_client *cl, t_server *sv);
 int					sv_rmdir(char **cmds, t_client *cl, t_server *sv);
+void				sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv);
 int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
 int					sv_quit(char **cmds, t_client *cl, t_server *sv);
 
