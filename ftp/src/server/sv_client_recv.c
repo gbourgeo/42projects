@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/21 19:00:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 05:15:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static void		sv_buffcpy(char *dst, t_buff *src)
 static int		sv_client_commands(t_client *cl, t_server *sv)
 {
 	static t_command	commands[] = { CMD_HELP, CMD_LS, CMD_PWD, CMD_CD,
-		CMD_END,
+		CMD_MKDIR, CMD_END,
 	};
 	char				buff[BUFF_SIZE + 1];
 	char				**cmd;

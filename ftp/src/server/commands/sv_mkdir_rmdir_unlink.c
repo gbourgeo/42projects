@@ -6,32 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/22 02:33:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 05:15:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int				sv_mkdir(char **cmds, t_client *cl, t_server *sv)
-{
-	int		i;
-	int		errnb;
-	int		ret;
-
-	i = 1;
-	if (cmds[i][0] == '-')
-		return (sv_cmd_err("No options allowed.", cmds[0], cl, sv));
-	while (cmds[i])
-	{
-		if ((errnb = sv_check_path(&cmds[i], cl, &sv->info.env)) != IS_OK)
-			return (errnb);
-		if (mkdir(cmds[i], 0755) < 0)
-			return (sv_cmd_err("Can't create directory", cmds[0], cl, sv));
-		i++;
-	}
-	return (sv_client_write(SERVER_OK_OUTPUT, cl));
-}
-
+/*
 static int			sv_enter_dir(char *path, t_server *sv)
 {
 	DIR				*dir;
@@ -112,3 +93,4 @@ int					sv_unlink(char **cmds, t_server *sv)
 		send(sv->fd, "\033[32mSUCCESS\033[0m\n", 17, 0);
 	return (sv->rec);
 }
+*/
