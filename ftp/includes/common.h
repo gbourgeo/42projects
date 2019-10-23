@@ -6,23 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 16:39:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:57:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMON_H
 # define COMMON_H
-
-# include <sys/types.h>
-# include <sys/uio.h>
-# include <sys/socket.h>
-# include <sys/wait.h>
-# include <sys/stat.h>
-# include <netdb.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include <dirent.h>
-# include <stdio.h>
 
 # define CLIENT			1
 # define SERVER			2

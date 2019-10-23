@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 00:46:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:53:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "sv_main.h"
 
 static void		sv_send_error(int errnb[2], t_client *cl, t_server *sv)

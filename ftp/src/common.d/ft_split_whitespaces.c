@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split_whitespaces.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/31 23:26:28 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/05/29 20:27:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:51:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include "common.h"
 
 static int	tab_lines(char *s)
 {

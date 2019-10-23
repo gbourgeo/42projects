@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 00:49:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:42:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,10 @@ static void		sv_check_clients(t_server *sv)
 				sv_print_error(cl, sv);
 			if ((cl->errnb[0] != IS_OK && cl->errnb[0] != ERR_DISCONNECT)
 			|| (cl->errnb[1] != IS_OK && cl->errnb[1] != ERR_DISCONNECT))
-				return (sv_server_close(cl->version, cl->errnb, sv));
+			{
+				sv_server_close(cl->version, cl->errnb, sv);
+				break ;
+			}
 			cl = sv_client_end(cl, sv);
 		}
 		else
@@ -101,7 +104,7 @@ int				sv_loop(t_server *sv)
 	struct timeval	timeout;
 
 	if (sv->interactive)
-		ft_putendl("\e[1;33mSERVEUR: Waiting for clients...\e[0m");
+		ft_putendl("\x1B[1;33mSERVEUR: Waiting for clients...\x1B[0m");
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 	while (sv->ip[v4] > 0 && sv->ip[v6] > 0)

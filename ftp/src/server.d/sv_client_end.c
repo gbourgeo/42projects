@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/17 22:47:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:53:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "sv_main.h"
 
 t_client		*sv_client_end(t_client *cl, t_server *sv)

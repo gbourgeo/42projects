@@ -6,11 +6,15 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/20 18:02:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:54:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/param.h>
+#ifdef __linux__
+# define _DEFAULT_SOURCE
+#endif
+#include <unistd.h>
+#include <sys/wait.h>
 #include "sv_main.h"
 
 static int		sv_ls_fork(char **cmds, t_client *cl, t_server *sv)

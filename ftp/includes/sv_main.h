@@ -6,18 +6,16 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 16:37:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:58:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SV_MAIN_H
 # define SV_MAIN_H
 
+# include <netinet/in.h>
 # include "libft.h"
 # include "common.h"
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <errno.h>
 
 /*
 ** CLIENTS_MAX :
@@ -90,7 +88,6 @@ struct s_server		serv;
 
 int					sv_params(char **av, t_server *sv);
 int					sv_getaddrinfo(t_server *sv);
-void				sv_aff_ip(struct addrinfo *p, int version);
 int					sv_loop(t_server *sv);
 int					sv_accept(int version, t_server *sv);
 int					sv_client_recv(t_client *cl, t_server *sv);

@@ -6,11 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/08/20 10:42:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/17 15:25:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:51:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "common.h"
 
 void			ft_freetab(char ***tab)
 {

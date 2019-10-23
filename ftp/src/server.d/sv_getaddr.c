@@ -6,11 +6,43 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/17 05:24:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:58:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define _XOPEN_SOURCE 700
+#endif
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 #include "sv_main.h"
+
+static void		sv_aff_ip(struct addrinfo *p, int version)
+{
+	struct sockaddr_in	*ipv4;
+	struct sockaddr_in6	*ipv6;
+	void				*addr;
+	char				name[INET6_ADDRSTRLEN];
+
+	if (version == v6)
+	{
+		ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+		addr = &(ipv6->sin6_addr);
+		ft_putstr("\033[4mIPv6:\033[0m ");
+	}
+	else
+	{
+		ipv4 = (struct sockaddr_in *)p->ai_addr;
+		addr = &(ipv4->sin_addr);
+		ft_putstr("\033[4mIPv4:\033[0m ");
+	}
+	inet_ntop(p->ai_family, addr, name, sizeof(name));
+	ft_putstr(name);
+	ft_putendl(" \033[32mONLINE\033[0m");
+}
 
 static int		sv_findsocket(struct addrinfo *p, int ip, t_server *sv)
 {

@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 17:50:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 18:56:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/stat.h>
 #include "sv_main.h"
 
 static int		mkdir_opts(char **cmds, int *options, int *i)
