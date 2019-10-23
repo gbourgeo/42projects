@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 15:24:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/17 21:41:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/23 16:37:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int				sv_client_write(char *str, t_client *cl)
+int				sv_client_write(const char *str, t_client *cl)
 {
 	int			ret;
 
