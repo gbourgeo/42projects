@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 01:12:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 05:18:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int		rmdir_err(char *str, t_rmdir *e, t_client *cl, t_server *sv)
 					if ((ret = sv_client_write(str, cl)) == IS_OK)
 						if ((ret = sv_client_write(" '", cl)) == IS_OK)
 							if ((ret = sv_client_write(path, cl)) == IS_OK)
-								ret = sv_client_write("'\n", cl);
+								ret = sv_client_write("'.\n", cl);
 	e->err[1] = 1;
 	return (ret);
 }

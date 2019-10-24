@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/23 22:09:10 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/10/24 05:21:43 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,12 +50,12 @@ SER_C	+= sv_help.c			\
 		sv_cd.c					\
 		sv_mkdir.c				\
 		sv_rmdir.c				\
+		sv_unlink.c				\
+		sv_quit.c				\
 		sv_check_path.c			\
 		sv_cmd_err.c			\
-		# sv_rmdir_unlink.c		\
 		# sv_get.c				\
 		# sv_put.c				\
-		# sv_quit.c				\
 
 COM_D	= src/common.d/
 COM_C	= ft_init.c				\

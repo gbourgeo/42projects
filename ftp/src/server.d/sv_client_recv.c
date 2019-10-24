@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 22:32:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 05:27:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,19 @@ static void		sv_buffcpy(char *dst, t_buff *src)
 		src->head = src->buff;
 }
 
-/*
-** CMD_GET, CMD_PUT, CMD_MKDIR, CMD_RMDIR, CMD_UNLINK, CMD_QUIT,
-*/
+static void		sv_cmd_print(char *cmd, t_client *cl)
+{
+	ft_putstr("Client ");
+	ft_putnbr(cl->fd);
+	ft_putstr(": \"");
+	ft_putstr(cmd);
+	ft_putendl("\"");
+}
 
 static int		sv_client_commands(t_client *cl, t_server *sv)
 {
 	static t_command	commands[] = { CMD_HELP, CMD_LS, CMD_PWD, CMD_CD,
-		CMD_MKDIR, CMD_RMDIR, CMD_END,
+		CMD_MKDIR, CMD_RMDIR, CMD_UNLINK, CMD_QUIT, CMD_END,
 	};
 	char				buff[BUFF_SIZE + 1];
 	char				**cmd;
@@ -42,6 +47,8 @@ static int		sv_client_commands(t_client *cl, t_server *sv)
 	i = 0;
 	val = 0;
 	sv_buffcpy(buff, &cl->rd);
+	if (sv->interactive)
+		sv_cmd_print(buff, cl);
 	if ((cmd = ft_split_whitespaces(buff)) == NULL)
 		return (ERR_MALLOC);
 	while (i < (int)(sizeof(commands) / sizeof(commands[0])))
