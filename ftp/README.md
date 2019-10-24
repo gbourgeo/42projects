@@ -29,21 +29,25 @@ $>
 - Affichage sur le client des messages SUCCESS ou ERROR + explication après chaque requête.
 
 ## Commands
-### Server Side
+Those commands operate on the server side:
 ```
-- ls          : liste le répertoire courant du serveur
+- ls [-all]   : liste le répertoire courant du serveur
 - cd          : change le répertoire courant du serveur
+- pwd         : affiche le chemin du répertoire courant sur le serveur
 - get [file]  : récupère le fichier _file_ du serveur vers le client
 - put [file]  : envoi le fichier _file_ du client vers le serveur
-- pwd         : affiche le chemin du répertoire courant sur le serveur
+- mkdir [-pv] : cree un dossier
+- rmdir       : supprime un dossier recursivement
+- unlink      : supprime un fichier
 - quit        : coupe la connection + sort du programme
 ```
 
-### Client Side
+Those commands operate on the client local system:
 ```
-- lcd         : ces fonctions concernent le filesystem “local” et non serveur
-- lpwd
 - lls
+- lcd
+- lpwd
+- ...
 - mget [dir]  : comme get mais “multiple” et pour les dossiers
 - mput [dir]  : comme put mais “multiple” et pour les dossiers
 ```
