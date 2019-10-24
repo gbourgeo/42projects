@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:57:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 19:45:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ enum
 	IS_OK,
 	ERR_NB_PARAMS,
 	ERR_WRONG_PARAM,
+	ERR_INVALID_PARAM,
 	ERR_DIGIT_PARAM,
 	ERR_TOOMUCH_PARAM,
 	ERR_GETADDR,
@@ -78,7 +79,7 @@ typedef struct		s_common
 	t_env			env;
 }					t_common;
 
-int					ft_init(void *p, size_t size, int type, char *prog);
+int					ft_init(void *p, int size, int type, char *prog);
 const char			*ft_get_error(int errnb);
 int					ft_error(int errnb, t_common *info);
 char				*ft_getenv(char *search, char **envp);
