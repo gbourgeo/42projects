@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/24 05:21:43 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/10/24 23:12:33 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,8 +32,10 @@ CLI_C	= cl_main.c				\
 SERVEUR	= server
 SER_D	= src/server.d/
 SER_C	= sv_main.c				\
+		sv_param_p.c			\
 		sv_params.c				\
 		sv_getaddr.c			\
+		sv_print_info.c			\
 		sv_loop.c				\
 		sv_accept.c				\
 		sv_client_recv.c		\
@@ -53,6 +55,7 @@ SER_C	+= sv_help.c			\
 		sv_unlink.c				\
 		sv_quit.c				\
 		sv_check_path.c			\
+		sv_recreate_path.c		\
 		sv_cmd_err.c			\
 		# sv_get.c				\
 		# sv_put.c				\

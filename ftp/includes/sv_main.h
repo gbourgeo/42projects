@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 01:09:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 23:12:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,14 @@ typedef struct		s_server
 struct s_server		serv;
 
 int					sv_params(char **av, t_server *sv);
+int					sv_param_p(char *path, t_server *sv);
 int					sv_getaddrinfo(t_server *sv);
+void				sv_print_info(t_server *sv);
 int					sv_loop(t_server *sv);
 int					sv_accept(int version, t_server *sv);
 int					sv_client_recv(t_client *cl, t_server *sv);
 int					sv_check_path(char **path, t_client *cl, t_env *e);
+char				*sv_recreate_path(char *path);
 int					sv_client_send(t_client *cl);
 int					sv_client_write(const char *str, t_client *cl);
 t_client			*sv_client_end(t_client *cl, t_server *sv);
