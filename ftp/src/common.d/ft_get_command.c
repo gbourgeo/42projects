@@ -6,10 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 16:40:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/18 00:01:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 20:44:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+#include <sys/stat.h>
 #include "common.h"
 #include "libft.h"
 
