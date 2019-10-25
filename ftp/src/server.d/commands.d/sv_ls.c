@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:54:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/25 03:30:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 
 static int		sv_ls_fork(char **cmds, t_client *cl, t_server *sv)
 {
+	char		*pwd;
 	pid_t		pid;
 	int			ret;
 
-	(void)sv;
 	pid = fork();
 	if (pid > 0)
 	{
@@ -34,10 +34,13 @@ static int		sv_ls_fork(char **cmds, t_client *cl, t_server *sv)
 	}
 	else if (pid == 0)
 	{
+		pwd = ft_strjoin(sv->info.env.home, cl->pwd);
+		chdir(pwd);
+		free(pwd);
 		close(STDERR_FILENO);
 		if (dup2(cl->fd, STDOUT_FILENO) < 0)
 			exit(255 + ERR_DUP2);
-		ret = execv(cmds[0], cmds);
+		ret = execve(cmds[0], cmds, NULL);
 		exit(255 + ERR_EXECV);
 	}
 	return (ERR_FORK);

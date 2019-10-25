@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:42:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/24 23:14:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int				sv_loop(t_server *sv)
 	struct timeval	timeout;
 
 	if (sv->interactive)
-		ft_putendl("\x1B[1;33mSERVEUR: Waiting for clients...\x1B[0m");
+		sv_print_info(sv);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 	while (sv->ip[v4] > 0 && sv->ip[v6] > 0)
