@@ -1,25 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_puttab_fd.c                                     :+:      :+:    :+:   */
+/*   ft_itoa_base.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/04/04 19:46:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:51:22 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/15 22:06:38 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/15 22:36:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "libft.h"
 
-void			ft_puttab_fd(char **tab, int fd)
+char			*ft_itoa_base(ULL nb, ULL base)
 {
-	int			i;
+	char		*b;
+	ULL			size;
+	ULL			i;
+	char		*ret;
 
-	i = 0;
-	while (tab && tab[i])
+	b = "0123456789abcdef";
+	size = (nb == 0) ? 1 : 0;
+	i = nb;
+	while (i)
 	{
-		ft_putendl_fd(tab[i], fd);
-		i++;
+		size++;
+		i /= base;
 	}
+	if ((ret = ft_strnew(size + 1)) == NULL)
+		return (NULL);
+	while (size-- > 0)
+	{
+		ret[size] = b[nb % base];
+		nb /= base;
+	}
+	return (ret);
 }

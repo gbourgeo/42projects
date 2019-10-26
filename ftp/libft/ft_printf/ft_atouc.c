@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strrchr.c                                       :+:      :+:    :+:   */
+/*   ft_atouc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/21 19:18:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/05/18 20:08:22 by gbourgeo         ###   ########.fr       */
+/*   Created: 2017/08/17 09:35:38 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/08/17 09:36:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		*ft_strrchr(const char *s, int c)
+unsigned char		ft_atouc(char *str)
 {
-	int	i;
+	int				i;
+	unsigned char	c;
 
-	i = ft_strlen(s);
-	if (s == NULL)
-		return (NULL);
-	while (i >= 0 && s[i] != c)
-		--i;
-	if (i < 0)
-		return (NULL);
-	return (char*)(s + i);
+	i = 0;
+	c = 0;
+	while (i < 8)
+	{
+		if (str[i] == '1')
+			c += ft_pow(2, 7 - i);
+		i++;
+	}
+	return (c);
 }

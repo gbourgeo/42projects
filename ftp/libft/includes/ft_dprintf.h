@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tablen.c                                        :+:      :+:    :+:   */
+/*   ft_dprintf.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/28 00:19:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:44:13 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/09/21 07:20:35 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 07:20:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int			ft_tablen(char **tab)
-{
-	int		i;
+#ifndef FT_DPRINTF_H
+# define FT_DPRINTF_H
 
-	i = 0;
-	while (tab && tab[i])
-		i++;
-	return (i);
-}
+# include "ft_base_printf.h"
+
+int			ft_dprintf(int fd, const char *restrict format, ...);
+void		ft_dprintf_write(t_dt *data);
+
+#endif

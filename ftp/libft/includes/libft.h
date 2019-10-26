@@ -6,7 +6,7 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/04/04 19:47:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2017/09/21 03:11:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ typedef struct		s_list
 	struct s_list	*next;
 }					t_list;
 
+void				ft_freestr(char **str);
+void				ft_freetab(char ***table);
 size_t				ft_strlen(const char *s);
 char				*ft_strdup(const char *s1);
 char				*ft_strcpy(char *s1, const char *s2);
@@ -40,6 +42,7 @@ int					ft_isdigit(int c);
 int					ft_isalnum(int c);
 int					ft_isascii(int c);
 int					ft_isprint(int c);
+int					ft_iswhitespace(char c);
 int					ft_toupper(int c);
 int					ft_tolower(int c);
 void				*ft_memset(void *b, int c, size_t len);
@@ -81,9 +84,21 @@ void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 t_list				*ft_lstnew(void const *content, size_t content_size);
 void				ft_lstswap(t_list *one, t_list *two);
-char				**ft_tabdup(char **tab);
-int					ft_tablen(char **tab);
-void				ft_puttab(char **tab);
-void				ft_puttab_fd(char **tab, int fd);
+char				**ft_tabdup(char **table);
+int					ft_tablen(char **table);
+void				ft_puttab(char **table);
+void				ft_puttab_fd(char **table, int fd);
+void				ft_tabdel(char **table);
+char				**ft_split(char *str, char *charset);
+char				**ft_split_whitespaces(char *str);
+char				*ft_str2join(char const *s1, char const *s2, \
+									char const *s3);
+char				*ft_strcdup(char *str, char c);
+char				*ft_strcharset(char *s1, char *s2);
+void				ft_stricpy(char *s1, const char *s2, int pos);
+char				*ft_strndup(const char *s1, int size);
+char				*ft_strrcdup(char *str, char c);
+
+int					ft_pow(int nb, int power);
 
 #endif

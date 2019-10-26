@@ -1,26 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memset.c                                        :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/22 21:07:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/01 20:57:22 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/11/23 21:55:01 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/05/15 00:17:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <string.h>
+#include "libft.h"
 
-void		*ft_memset(void *b, int c, size_t len)
+void			*ft_memmove(void *s1, const void *s2, size_t n)
 {
-	char	*d;
+	char		*tone;
+	const char	*ttwo;
 
-	if (len)
-	{
-		d = b;
-		while (len--)
-			*d++ = c;
-	}
-	return (b);
+	tone = s1;
+	ttwo = s2;
+	tone = ft_strncpy(tone, ttwo, n);
+	return (s1);
 }

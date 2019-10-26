@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memmove.c                                       :+:      :+:    :+:   */
+/*   ft_pow.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/23 21:55:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2013/12/01 20:56:50 by gbourgeo         ###   ########.fr       */
+/*   Created: 2015/02/19 09:37:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2017/03/30 23:03:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-void			*ft_memmove(void *s1, const void *s2, size_t n)
+int				ft_pow(int nb, int power)
 {
-	char		*tone;
-	const char	*ttwo;
-
-	tone = s1;
-	ttwo = ft_strdup(s2);
-	if (tone == ttwo)
-		return (s1);
-	tone = ft_strncpy(tone, ttwo, n);
-	return (s1);
+	if (power <= 0)
+		return (1);
+	if (power == 1)
+		return (nb);
+	nb *= ft_pow(nb, power - 1);
+	return (nb);
 }

@@ -1,36 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strstr.c                                        :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/22 15:55:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2015/01/27 18:19:25 by gbourgeo         ###   ########.fr       */
+/*   Created: 2013/12/03 22:15:29 by gbourgeo          #+#    #+#             */
+/*   Updated: 2016/04/21 17:41:16 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
+# define BUFF_SIZE 8
 
-char	*ft_strstr(const char *s1, const char *s2)
+# include "libft.h"
+# include <sys/types.h>
+# include <sys/uio.h>
+# include <unistd.h>
+
+typedef struct		s_gnl
 {
-	int	i;
-	int	j;
+	int				fd;
+	char			*copy;
+	struct s_gnl	*next;
+	struct s_gnl	*prev;
+}					t_gnl;
 
-	i = 0;
-	j = 0;
-	if (s1 == NULL || s2 == NULL)
-		return (char*)(s1);
-	while (s1[i])
-	{
-		while (s2[j] == s1[i + j] && (s2[j] || s1[i + j]))
-			++j;
-		if (s2[j] == '\0')
-			return (char*)(s1 + i);
-		j = 0;
-		++i;
-	}
-	if (s2[j] == '\0')
-		return (char*)(s1 + i);
-	return (NULL);
-}
+int					get_next_line(int const fd, char **line);
+
+#endif

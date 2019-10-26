@@ -1,28 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*   ft_sprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2013/11/21 19:16:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2014/03/17 19:28:08 by gbourgeo         ###   ########.fr       */
+/*   Created: 2018/09/21 08:33:35 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 08:33:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
+#include "ft_sprintf.h"
 
-char	*ft_strchr(const char *s, int c)
+void		ft_sprintf_write(t_dt *data)
 {
-	int	i;
+	size_t	i;
+	size_t	j;
 
 	i = 0;
-	if (s)
+	j = 0;
+	while (data->str[i])
+		i++;
+	while (j < data->pos)
 	{
-		while (s[i] && s[i] != c)
-			++i;
-		if (s[i] == c)
-			return (char*)(s + i);
+		data->str[i + j] = data->buff[j];
+		j++;
 	}
-	return (NULL);
+	data->str[i + j] = '\0';
+	data->ret += j;
 }
