@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 03:08:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 23:27:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 02:47:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,5 @@ int				sv_check_path(char **path, t_client *cl, t_env *e)
 		return (ERR_MALLOC);
 	free(*path);
 	*path = tmp;
-ft_putendl(tmp);
 	return (IS_OK);
 }

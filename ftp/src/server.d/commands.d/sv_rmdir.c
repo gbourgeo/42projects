@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 05:18:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 02:58:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include "sv_main.h"
 
-#include<stdio.h>
 static int		rmdir_err(char *str, t_rmdir *e, t_client *cl, t_server *sv)
 {
 	char	*path;
@@ -52,9 +51,7 @@ static void		rmdir_loop(DIR *dir, t_rmdir *e, t_client *cl, t_server *sv)
 		else if (S_ISDIR(e->inf.st_mode))
 			sv_rmdir_open(e, cl, sv);
 		else
-			printf("UNLINK (%s)\n", e->ptr);
-		// else if ((e->err[1] = unlink(e->ptr)) != 0)
-		// 	return (sv_cmd_err("failed to remove directory.", path[1], cl, sv));
+			e->err[1] = -unlink(e->ptr);
 		e->ptr[ft_strlen(e->ptr) - 1] = '\0';
 		*(ft_strrchr(e->ptr, '/') + 1) = '\0';
 	}
@@ -78,10 +75,8 @@ void			sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv)
 		rmdir_loop(dir, e, cl, sv);
 		if (!e->file && errno)
 			e->err[2] = rmdir_err("failed to read directory", e, cl, sv);
-		else
-			printf("RMDIR (%s)\n", e->ptr);
-		// else if (rmdir(e->ptr) != 0)
-		// 	e->err[2] = rmdir_err("failed to remove directory", e, cl, sv);
+		else if (rmdir(e->ptr) != 0)
+			e->err[2] = rmdir_err("failed to remove directory", e, cl, sv);
 		closedir(dir);
 	}
 	else

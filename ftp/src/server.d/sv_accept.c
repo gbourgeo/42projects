@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/25 23:15:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 03:27:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,10 @@ int				sv_accept(int version, t_server *sv)
 	}
 	sv->connected++;
 	if (sv->interactive)
-		ft_putendl("Client connected");
+	{
+		ft_putstr("Client ");
+		ft_putnbr(fd);
+		ft_putendl(": connected.");
+	}
 	return (accept_client(version, fd, sv));
 }

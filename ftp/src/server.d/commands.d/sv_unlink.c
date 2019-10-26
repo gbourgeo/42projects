@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 05:18:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 02:53:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int		unlink_err(char *cmd, char *file, t_client *cl, t_server *sv)
 ** err[2] -> Overall error
 */
 
-int					sv_unlink(char **cmds, t_client *cl, t_server *sv)
+int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 {
 	int		i;
 	char	*path;

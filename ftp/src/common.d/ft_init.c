@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 04:08:22 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 20:43:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 03:06:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 #include "libft.h"
 #include "common.h"
 
-extern char		**environ;
-
-int				ft_init(void *p, int size, int type, char *prog)
+int				ft_init(void *p, int size, char **environ, char *prog)
 {
 	t_common	*c;
 
@@ -27,7 +25,6 @@ int				ft_init(void *p, int size, int type, char *prog)
 		c->progname = prog;
 	else
 		c->progname++;
-	c->progtype = type;
 	if ((c->env.path = ft_getenv("PATH=", environ)) == NULL)
 		c->env.path = ft_strdup("/usr/local/bin:/usr/bin:/bin");
 	if (!c->env.path)

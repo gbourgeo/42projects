@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 02:45:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 03:08:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void			sv_server_close(int version, int errnb[2], t_server *sv)
 {
 	t_client	*cl;
 
-	if ((version != v4 && version != v6) || (sv->ip[version] < 0 && sv->ip[version] < 0))
+	if ((version != v4 && version != v6) || sv->ip[version] <= 0)
 		return ;
 	if (sv->interactive)
 		print_fatal_error(version, errnb);
