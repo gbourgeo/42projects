@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 03:46:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 04:26:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void		print_usage(const char *progpath)
 	ft_putendl_fd("\tport\t\tPort to listen to.", 2);
 }
 
-int			main(int ac, char **av, char **environ)
+int				main(int ac, char **av, char **environ)
 {
 	t_server	*sv;
 	int			errnb[2];
@@ -46,10 +46,9 @@ int			main(int ac, char **av, char **environ)
 	sv_free_user(&sv->users);
 	if (errnb[0] != IS_OK)
 		if (ft_error(errnb[0], &sv->info) == 2)
-				print_usage(sv->info.progpath);
+			print_usage(sv->info.progpath);
 	if (sv->interactive && errnb[1] != IS_OK)
 		if (ft_error(errnb[1], &sv->info) == 2)
-				print_usage(sv->info.progpath);
-
+			print_usage(sv->info.progpath);
 	return (errnb[1]);
 }

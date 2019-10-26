@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 02:58:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 04:28:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void			sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv)
 	e->ptr = save;
 }
 
-static int		sv_rmdir_end(t_rmdir *e, t_client *cl)
+static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl)
 {
 	if (e->path)
 	{
@@ -92,8 +92,8 @@ static int		sv_rmdir_end(t_rmdir *e, t_client *cl)
 			free(e->path[0]);
 		free(e->path);
 	}
-	if (e->err[2])
-		return (e->err[2]);
+	if (errnb)
+		return (errnb);
 	if (e->err[0])
 		return (sv_client_write(SERVER_ERR_OUTPUT, cl));
 	return (sv_client_write(SERVER_OK_OUTPUT, cl));
@@ -120,16 +120,16 @@ int				sv_rmdir(char **cmds, t_client *cl, t_server *sv)
 		return (ERR_MALLOC);
 	while (cmds[i] && e.err[2] == IS_OK)
 	{
-		if (!(e.path[0] = ft_strdup(cmds[i])) && (e.err[2] = ERR_MALLOC))
-			return (sv_rmdir_end(&e, cl));
+		if (!(e.path[0] = ft_strdup(cmds[i])))
+			return (sv_rmdir_end(ERR_MALLOC, &e, cl));
 		e.path[1] = cmds[i];
 		if ((e.err[2] = sv_check_path(e.path, cl, &sv->info.env)))
-			return (sv_rmdir_end(&e, cl));
+			return (sv_rmdir_end(e.err[2], &e, cl));
 		sv_rmdir_open(&e, cl, sv);
 		ft_strdel(e.path);
 		e.err[0] += e.err[1];
 		e.err[1] = 0;
 		i++;
 	}
-	return (sv_rmdir_end(&e, cl));
+	return (sv_rmdir_end(e.err[2], &e, cl));
 }
