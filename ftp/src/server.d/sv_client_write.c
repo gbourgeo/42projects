@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 15:24:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 16:37:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/25 23:16:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ int				sv_client_write(const char *str, t_client *cl)
 
 	while (str && *str)
 	{
-		if (cl->wr.len == BUFF_SIZE)
+		if (cl->wr.len == FTP_BUFF_SIZE)
 			if ((ret = sv_client_send(cl)) != IS_OK)
 				return (ret);
 		*cl->wr.tail++ = *str;
-		if (cl->wr.tail >= cl->wr.buff + BUFF_SIZE)
+		if (cl->wr.tail >= cl->wr.buff + FTP_BUFF_SIZE)
 			cl->wr.tail = cl->wr.buff;
 		cl->wr.len++;
 		str++;

@@ -6,20 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 23:14:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 02:39:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/select.h>
 #include "sv_main.h"
-
-static void		sv_print_error(t_client *cl, t_server *sv)
-{
-	if (cl->errnb[0] > 0)
-		ft_error(cl->errnb[0], &sv->info);
-	if (cl->errnb[1] > 0)
-		ft_error(cl->errnb[1], &sv->info);
-}
 
 static void		sv_check_clients(t_server *sv)
 {
@@ -30,8 +22,6 @@ static void		sv_check_clients(t_server *sv)
 	{
 		if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK)
 		{
-			if (sv->interactive)
-				sv_print_error(cl, sv);
 			if ((cl->errnb[0] != IS_OK && cl->errnb[0] != ERR_DISCONNECT)
 			|| (cl->errnb[1] != IS_OK && cl->errnb[1] != ERR_DISCONNECT))
 			{

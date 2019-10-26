@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 05:27:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 02:04:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@ static void		sv_buffcpy(char *dst, t_buff *src)
 	while (src->head != src->tail)
 	{
 		*dst++ = *src->head++;
-		if (src->head >= src->buff + BUFF_SIZE)
+		if (src->head >= src->buff + FTP_BUFF_SIZE)
 			src->head = src->buff;
 	}
 	*dst = '\0';
-	if (++src->head >= src->buff + BUFF_SIZE)
+	if (++src->head >= src->buff + FTP_BUFF_SIZE)
 		src->head = src->buff;
 }
 
@@ -37,9 +37,9 @@ static void		sv_cmd_print(char *cmd, t_client *cl)
 static int		sv_client_commands(t_client *cl, t_server *sv)
 {
 	static t_command	commands[] = { CMD_HELP, CMD_LS, CMD_PWD, CMD_CD,
-		CMD_MKDIR, CMD_RMDIR, CMD_UNLINK, CMD_QUIT, CMD_END,
+		CMD_MKDIR, CMD_RMDIR, CMD_UNLINK, CMD_QUIT, CMD_SIGN, CMD_END,
 	};
-	char				buff[BUFF_SIZE + 1];
+	char				buff[FTP_BUFF_SIZE + 1];
 	char				**cmd;
 	size_t				i;
 	int					val;
@@ -79,11 +79,11 @@ int				sv_client_recv(t_client *cl, t_server *sv)
 				if ((val = sv_client_commands(cl, sv)) != IS_OK)
 					return (val);
 			}
-			if (++cl->rd.tail >= cl->rd.buff + BUFF_SIZE)
+			if (++cl->rd.tail >= cl->rd.buff + FTP_BUFF_SIZE)
 				cl->rd.tail = cl->rd.buff;
 			if (--cl->rd.len == 0)
 				cl->rd.len = (cl->rd.tail >= cl->rd.head)
-				? cl->rd.buff + BUFF_SIZE - cl->rd.tail
+				? cl->rd.buff + FTP_BUFF_SIZE - cl->rd.tail
 				: cl->rd.head - cl->rd.tail;
 		}
 	return (IS_OK);

@@ -1,0 +1,10 @@
+#
+# This file is used to store registered users for my FTP server
+#
+# A registered user is stored as follow:
+# 	name:pass
+#
+# The name is clear, but the pass must be hashed.
+#
+
+gbourgeo:prout

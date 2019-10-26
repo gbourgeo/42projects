@@ -6,24 +6,24 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 19:45:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/26 02:02:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMON_H
 # define COMMON_H
 
-# define CLIENT			1
-# define SERVER			2
+# define CLIENT				1
+# define SERVER				2
 
 /*
-** BUFF_SIZE :
+** FTP_BUFF_SIZE :
 ** Size of the client/server command line.
 ** Low value and long command will probably lead to an obsolete interaction
 ** with the server.
 */
 
-# define BUFF_SIZE		1024
+# define FTP_BUFF_SIZE		1024
 
 /*
 ** DATA_SIZE :
@@ -32,10 +32,10 @@
 ** may lead on undefined behaviours depending on the system.
 */
 
-# define DATA_SIZE		2048
+# define FTP_DATA_SIZE		2048
 
-# define SERVER_ERR_OUTPUT		"\x01\xff ERROR\n"
-# define SERVER_OK_OUTPUT		"\x01\x01 SUCCESS\n"
+# define SERVER_ERR_OUTPUT	"\x01\xff ERROR\n"
+# define SERVER_OK_OUTPUT	"\x01\x01 SUCCESS\n"
 
 enum
 {
@@ -50,6 +50,7 @@ enum
 	ERR_NO_IPV6_AVAIL,
 	ERR_SETSOCKOPT,
 	ERR_LISTEN_V4,
+	ERR_OPEN,
 	ERR_LISTEN_V6,
 	ERR_MALLOC,
 	ERR_SELECT,
@@ -63,6 +64,7 @@ enum
 	ERR_DUP2,
 	ERR_EXECV,
 	ERR_SEND,
+	ERR_INVALID_NAMEPASS,
 };
 
 typedef struct		s_env

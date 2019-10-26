@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/25 03:47:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/25 23:59:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,17 @@ static void		sv_aff_ip(struct addrinfo *p, int version)
 	{
 		ipv6 = (struct sockaddr_in6 *)p->ai_addr;
 		addr = &(ipv6->sin6_addr);
-		ft_putstr("\033[4mIPv6\033[0m: ");
+		ft_putstr("\033[4mIPv6\033[0m: \x1B[3m");
 	}
 	else
 	{
 		ipv4 = (struct sockaddr_in *)p->ai_addr;
 		addr = &(ipv4->sin_addr);
-		ft_putstr("\033[4mIPv4\033[0m: ");
+		ft_putstr("\033[4mIPv4\033[0m: \x1B[3m");
 	}
 	inet_ntop(p->ai_family, addr, name, sizeof(name));
 	ft_putstr(name);
-	ft_putendl("\t\033[32mONLINE\033[0m");
+	ft_putendl("\t\x1B[0;32mONLINE\033[0m");
 }
 
 static int		sv_findsocket(struct addrinfo *p, int ip, t_server *sv)
