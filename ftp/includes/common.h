@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:26:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 15:49:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ enum
 	ERR_SEND,
 	ERR_INVALID_NAMEPASS,
 	ERR_CHDIR,
+	ERR_COMMAND,
 };
 
 typedef struct		s_env
@@ -86,6 +87,8 @@ const char			*ft_get_error(int errnb);
 int					ft_error(int errnb, t_common *info);
 char				*ft_getenv(char *search, char **envp);
 char				**ft_split_whitespaces(char *str);
+char				*ft_strcset(char *src, const char *charset);
+
 char				*ft_strndup(const char *s1, int size);
 char				*ft_get_path(char *dest, char *home, char *lpwd,
 					char *oldpwd);

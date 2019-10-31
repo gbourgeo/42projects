@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_get_params.c                                    :+:      :+:    :+:   */
+/*   sv_params_get.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 00:37:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 19:03:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:45:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,26 +27,38 @@ static int		only_positive_number(const char *str)
 
 static int		get_value(char **av, int *i, t_server *sv)
 {
-	if (ft_strequ(av[*i] + 1, "i"))
-		sv->interactive = 1;
-	else if (ft_strequ(av[*i] + 1, "v4"))
-		sv->version = (1 << v4);
-	else if (ft_strequ(av[*i] + 1, "v6"))
-		sv->version = (1 << v6);
-	else if (ft_strequ(av[*i] + 1, "p"))
-		return (sv_get_param_p(av[++(*i)], sv));
-	else
-		return (ERR_WRONG_PARAM);
+	int			j;
+
+	j = 0;
+	while (av[*i][++j])
+		if (av[*i][j] == 'i')
+			sv->options |= (1 << sv_interactive);
+		else if (av[*i][j] == '4')
+		{
+			sv->options |= (1 << sv_v4);
+			sv->options &= ~(1 << sv_v6);
+		}
+		else if (av[*i][j] == '6')
+		{
+			sv->options |= (1 << sv_v6);
+			sv->options &= ~(1 << sv_v4);
+		}
+		else if (av[*i][j] == 'd')
+			sv->options |= (1 << sv_create_dir);
+		else if (av[*i][j] == 'p')
+			return (sv_param_p_get(av[++(*i)], sv));
+		else
+			return (ERR_WRONG_PARAM);
 	return (IS_OK);
 }
 
-int				sv_get_params(char **av, t_server *sv)
+int				sv_params_get(char **av, t_server *sv)
 {
 	int			i;
 	int			errnb;
 
 	i = 1;
-	sv->version = (1 << v4) + (1 << v6);
+	sv->options |= ((1 << sv_v4) | (1 << sv_v6));
 	while (av[i])
 	{
 		if (av[i][0] == '-')

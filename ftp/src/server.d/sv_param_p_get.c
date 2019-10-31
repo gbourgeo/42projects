@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_get_param_p.c                                   :+:      :+:    :+:   */
+/*   sv_param_p_get.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 21:11:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 20:41:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 15:59:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int		param_p_new_home(char *path, t_server *sv)
 	return (IS_OK);
 }
 
-int				sv_get_param_p(char *path, t_server *sv)
+int				sv_param_p_get(char *path, t_server *sv)
 {
 	struct stat	buf;
 	char		*err;

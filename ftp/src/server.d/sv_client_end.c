@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:18:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:51:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 {
 	t_client	*ret;
 
-	if (sv->interactive)
+	if (SV_CHECK(sv->options, sv_interactive))
 	{
 		ft_putstr("Client \x1B[33m");
 		ft_putnbr(cl->fd);

@@ -6,16 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:18:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:52:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void		signin_info(char *user, t_client *cl, t_server *sv)
+static void		signin_info(char *user, t_client *cl)
 {
-	if (!sv->interactive)
-		return ;
 	ft_putstr("User \x1B[0;33m");
 	ft_putstr(user);
 	ft_putstr("\x1B[0m successfully logged in ! Changing directory to ");
@@ -42,7 +40,8 @@ int				sv_signin(char **cmds, t_client *cl, t_server *sv)
 				|| !(cl->pwd = ft_strdup("/"))
 				|| !(cl->oldpwd = ft_strdup(cl->pwd)))
 					return (ERR_MALLOC);
-				signin_info(cmds[1], cl, sv);
+				if (SV_CHECK(sv->options, sv_interactive))
+					signin_info(cmds[1], cl);
 				return (sv_client_write(SERVER_OK_OUTPUT, cl));
 			}
 		ptr = ptr->next;

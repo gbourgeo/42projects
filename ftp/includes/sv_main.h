@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:34:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:36:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,32 @@
 
 # define CLIENTS_MAX	20
 
-# define CMD_HELP	{ "help", "Display this help.", sv_help }
+# define CMD_HELP	{ "help", "Display available commands.", sv_help }
 # define CMD_LS		{ "ls", "List current working directory files.", sv_ls }
-# define CMD_PWD	{ "pwd", "Display the current working directory.", sv_pwd }
 # define CMD_CD		{ "cd", "Change working directory.", sv_cd }
+# define CMD_PWD	{ "pwd", "Display current working directory.", sv_pwd }
 # define CMD_GET	{ "get", "Get file from server.", sv_get }
 # define CMD_PUT	{ "put", "Put file to server.", sv_put }
 # define CMD_MKDIR	{ "mkdir", "Create directory on server.", sv_mkdir }
-# define CMD_RMDIR	{ "rmdir", "Remove directory on server.", sv_rmdir }
+# define CMD_RMDIR	{ "rmdir", "Remove directory from server.", sv_rmdir }
 # define CMD_UNLINK	{ "unlink", "Remove file from server.", sv_unlink }
-# define CMD_SIGN	{ "signin", "Sign-in to the server.", sv_signin }
+# define CMD_SIGN	{ "sign", "Sign-in to the server.", sv_signin }
 # define CMD_REGIST	{ "register", "Register a new account.", sv_register }
 # define CMD_QUIT	{ "quit", "Quit the server.", sv_quit }
 # define CMD_END	{ NULL, NULL, NULL }
 
-# define SV_VERSION(c, v)	(c & (1 << v))
+# define SV_CHECK(c, v)	(c & (1 << v))
 
-# define SV_FILE_CLIENT		".sv_pass"
+# define SV_FILE_CLIENT	".sv_pass"
 
 # define SV_GUEST_NAME	"0"
 
 enum
 {
-	v4,
-	v6
+	sv_v4,
+	sv_v6,
+	sv_interactive,
+	sv_create_dir,
 };
 
 typedef struct		s_user
@@ -102,9 +104,8 @@ typedef struct		s_client
 typedef struct		s_server
 {
 	t_common		info;
-	char			version;
+	int				options;
 	char			*port;
-	int				interactive;
 	int				ip[2];
 	t_user			*users;
 	t_client		*clients;
@@ -117,10 +118,11 @@ struct s_server		g_serv;
 ** Parameters functions
 */
 
-int					sv_get_params(char **av, t_server *sv);
-int					sv_get_param_p(char *path, t_server *sv);
 int					sv_get_addrinfo(t_server *sv);
-int					sv_get_user(t_server *sv);
+int					sv_params_get(char **av, t_server *sv);
+int					sv_param_p_get(char *path, t_server *sv);
+int					sv_user_get(t_server *sv);
+int					sv_user_parse(char **data, const char *home);
 
 /*
 ** Server functions

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 02:57:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:50:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static void		print_fatal_error(int version, int errnb[2])
 		ft_putendl_fd(err, 2);
 	}
 	ft_putstr_fd("\x1B[31mFATAL\x1B[0m: Closing Ip v", 2);
-	ft_putnbr_fd((version == v4) ? 4 : 6, 2);
+	ft_putnbr_fd((version == sv_v4) ? 4 : 6, 2);
 	ft_putstr_fd("...\n", 2);
 }
 
@@ -60,9 +60,9 @@ void			sv_server_close(int version, int errnb[2], t_server *sv)
 {
 	t_client	*cl;
 
-	if ((version != v4 && version != v6) || sv->ip[version] <= 0)
+	if ((version != sv_v4 && version != sv_v6) || sv->ip[version] <= 0)
 		return ;
-	if (sv->interactive)
+	if (SV_CHECK(sv->options, sv_interactive))
 		print_fatal_error(version, errnb);
 	cl = sv->clients;
 	while (cl)

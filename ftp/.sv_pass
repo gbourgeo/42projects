@@ -2,9 +2,24 @@
 # This file is used to store registered users for my FTP server
 #
 # A registered user is stored as follow:
-# 	name:pass
 #
-# The name is clear, but the pass must be hashed.
+# 	type:name:pass:rights:
+#
+#
+# type		represent the type of user:
+# 			"C" is a client,
+#			"S" is a server (soon to come).
+# name		represent the name of the user registered.
+# pass		represent the password to sign-in.
+# rights	represent the rights the user have, defined as follow:
+# 			"0" is the restricted user. He can only try to sign-in with no toher commands.
+# 			"1" is the basic user. he have the restricted user privilege, plus
+#				he can perform commands like LS, CD, PWD.
+#			"2" is the intermediate user. He has the basic user privilege, plus
+#				he can perform commands like MKDIR, RMDIR, UNLINK, GET or PUT.
+#			"3" is the advanced user. He has the intermediate user privilege plus
+#				he can REGISTER other users.
 #
 
-gbourgeo:prout
+C:guest::1:
+C:gbourgeo:prout:2:

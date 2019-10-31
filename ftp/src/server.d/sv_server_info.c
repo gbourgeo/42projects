@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 20:47:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:54:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	sv_print_path(char *path)
 
 static void	sv_print_users(t_user *user)
 {
-	ft_putstr("\x1B[4mRegistered\x1B[0m:\t\x1B[0m");
+	ft_putstr("\x1B[4mUsers\x1B[0m:\t\t");
 	if (user)
 		while (user)
 		{
@@ -53,6 +53,12 @@ static void	sv_print_users(t_user *user)
 
 void		sv_server_info(t_server *sv)
 {
+	ft_putstr("\033[4mIPv4\033[0m:\t\t");
+	ft_putendl((sv->ip[sv_v4] > 0) ?
+	"\x1B[0;32mONLINE\033[0m" : "\x1B[0;31mOFFLINE\x1B[0m");
+	ft_putstr("\033[4mIPv6\033[0m:\t\t");
+	ft_putendl((sv->ip[sv_v6] > 0) ?
+	"\x1B[0;32mONLINE\033[0m" : "\x1B[0;31mOFFLINE\x1B[0m");
 	ft_putstr("\x1B[4mHome\x1B[0m:\t\t\"\x1B[1;35m");
 	ft_putstr(sv->info.env.home);
 	ft_putstr("\x1B[0m\"\n");

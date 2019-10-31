@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 19:06:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:55:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,13 @@ static int		sv_init_fd(fd_set *fdr, fd_set *fdw, t_server *sv)
 	int			max;
 
 	cl = sv->clients;
-	max = (sv->ip[v4] > sv->ip[v6]) ? sv->ip[v4] : sv->ip[v6];
+	max = (sv->ip[sv_v4] > sv->ip[sv_v6]) ? sv->ip[sv_v4] : sv->ip[sv_v6];
 	FD_ZERO(fdr);
 	FD_ZERO(fdw);
-	if (sv->ip[v4] > 0)
-		FD_SET(sv->ip[v4], fdr);
-	if (sv->ip[v6] > 0)
-		FD_SET(sv->ip[v6], fdr);
+	if (sv->ip[sv_v4] > 0)
+		FD_SET(sv->ip[sv_v4], fdr);
+	if (sv->ip[sv_v6] > 0)
+		FD_SET(sv->ip[sv_v6], fdr);
 	while (cl)
 	{
 		FD_SET(cl->fd, fdr);
@@ -67,12 +67,12 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 	cl = sv->clients;
 	errnb[0] = IS_OK;
 	errnb[1] = IS_OK;
-	if (sv->ip[v4] > 0 && FD_ISSET(sv->ip[v4], fdr))
-		if ((errnb[0] = sv_server_accept(v4, sv)) != IS_OK)
-			sv_server_close(v4, errnb, sv);
-	if (sv->ip[v6] > 0 && FD_ISSET(sv->ip[v6], fdr))
-		if ((errnb[1] = sv_server_accept(v6, sv)) != IS_OK)
-			sv_server_close(v6, errnb, sv);
+	if (sv->ip[sv_v4] > 0 && FD_ISSET(sv->ip[sv_v4], fdr))
+		if ((errnb[0] = sv_server_accept(sv_v4, sv)) != IS_OK)
+			sv_server_close(sv_v4, errnb, sv);
+	if (sv->ip[sv_v6] > 0 && FD_ISSET(sv->ip[sv_v6], fdr))
+		if ((errnb[1] = sv_server_accept(sv_v6, sv)) != IS_OK)
+			sv_server_close(sv_v6, errnb, sv);
 	while (cl && ret)
 	{
 		if (FD_ISSET(cl->fd, fdr))
@@ -93,11 +93,11 @@ int				sv_server_loop(t_server *sv)
 	fd_set			fd_write;
 	struct timeval	timeout;
 
-	if (sv->interactive)
+	if (SV_CHECK(sv->options, sv_interactive))
 		sv_server_info(sv);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
-	while (sv->ip[v4] > 0 && sv->ip[v6] > 0)
+	while (sv->ip[sv_v4] > 0 || sv->ip[sv_v6] > 0)
 	{
 		sv_check_clients(sv);
 		max = sv_init_fd(&fd_read, &fd_write, sv);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:21:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 16:49:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	sv->clients = cl;
 	if (!cl->pwd || !cl->oldpwd)
 		return (ERR_MALLOC);
-	if (sv->interactive)
+	if (SV_CHECK(sv->options, sv_interactive))
 		print_info_client(cl);
 	return (IS_OK);
 }
@@ -69,7 +69,7 @@ int				sv_server_accept(int version, t_server *sv)
 
 	len = sizeof(csin);
 	if ((fd = accept(sv->ip[version], &csin, &len)) < 0)
-		return ((version == v4) ? ERR_ACCEPT_V4 : ERR_ACCEPT_V6);
+		return ((version == sv_v4) ? ERR_ACCEPT_V4 : ERR_ACCEPT_V6);
 	if (sv->connected + 1 == CLIENTS_MAX)
 	{
 		send(fd, "Server Full. Come back later !\n", 31, 0);
