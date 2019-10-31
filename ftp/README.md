@@ -54,11 +54,11 @@ Those commands operate on the client local system:
 - mput [dir]  : like PUT but "multiple" and for directories
 ```
 
-### EXTRA
+## EXTRA
 - RFC 959 compliant
 - IPv6 supported
 - login/password management
 
-### AUTHOR
+## AUTHOR
 - gbourgeo
 
