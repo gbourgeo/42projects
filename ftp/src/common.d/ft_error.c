@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:27:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 04:09:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ const char		*ft_get_error(int errnb)
 		"Client disconnected.", "signal received.", "wait failed.",
 		"fork failed.", "dup2 failed.", "execv failed", "send failed.",
 		"invalid username/password.", "failed to change working directory.",
+		"invalid command.",
 	};
 
 	if (errnb < 0 || errnb > (int)(sizeof(errors) / sizeof(errors[0])))

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:34:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:59:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,16 @@
 
 # define CLIENTS_MAX	20
 
-# define CMD_HELP	{ "help", "Display this help.", sv_help }
+# define CMD_HELP	{ "help", "Display available commands.", sv_help }
 # define CMD_LS		{ "ls", "List current working directory files.", sv_ls }
-# define CMD_PWD	{ "pwd", "Display the current working directory.", sv_pwd }
 # define CMD_CD		{ "cd", "Change working directory.", sv_cd }
+# define CMD_PWD	{ "pwd", "Display current working directory.", sv_pwd }
 # define CMD_GET	{ "get", "Get file from server.", sv_get }
 # define CMD_PUT	{ "put", "Put file to server.", sv_put }
 # define CMD_MKDIR	{ "mkdir", "Create directory on server.", sv_mkdir }
-# define CMD_RMDIR	{ "rmdir", "Remove directory on server.", sv_rmdir }
+# define CMD_RMDIR	{ "rmdir", "Remove directory from server.", sv_rmdir }
 # define CMD_UNLINK	{ "unlink", "Remove file from server.", sv_unlink }
-# define CMD_SIGN	{ "signin", "Sign-in to the server.", sv_signin }
+# define CMD_SIGN	{ "sign", "Sign-in to the server.", sv_signin }
 # define CMD_REGIST	{ "register", "Register a new account.", sv_register }
 # define CMD_QUIT	{ "quit", "Quit the server.", sv_quit }
 # define CMD_END	{ NULL, NULL, NULL }
