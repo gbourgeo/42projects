@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 03:20:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:18:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 
 	if (sv->interactive)
 	{
-		ft_putstr("Client ");
+		ft_putstr("Client \x1B[33m");
 		ft_putnbr(cl->fd);
-		ft_putendl(": disconnected.");
+		ft_putendl("\x1B[0m: disconnected.");
 	}
 	close(cl->fd);
 	ft_strdel(&cl->pwd);

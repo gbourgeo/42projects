@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_getaddr.c                                       :+:      :+:    :+:   */
+/*   sv_get_addr.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/25 23:59:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 19:01:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static int		init_addrinfo(struct addrinfo **results, t_server *sv)
 	return (IS_OK);
 }
 
-int				sv_getaddrinfo(t_server *sv)
+int				sv_get_addrinfo(t_server *sv)
 {
 	struct addrinfo	*results;
 	struct addrinfo	*p;

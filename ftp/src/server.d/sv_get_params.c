@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_params.c                                        :+:      :+:    :+:   */
+/*   sv_get_params.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 00:37:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 22:33:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 19:03:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,13 @@ static int		get_value(char **av, int *i, t_server *sv)
 	else if (ft_strequ(av[*i] + 1, "v6"))
 		sv->version = (1 << v6);
 	else if (ft_strequ(av[*i] + 1, "p"))
-		return (sv_param_p(av[++(*i)], sv));
+		return (sv_get_param_p(av[++(*i)], sv));
 	else
 		return (ERR_WRONG_PARAM);
 	return (IS_OK);
 }
 
-int				sv_params(char **av, t_server *sv)
+int				sv_get_params(char **av, t_server *sv)
 {
 	int			i;
 	int			errnb;

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_loop.c                                          :+:      :+:    :+:   */
+/*   sv_server_loop.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 02:39:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 19:06:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 	errnb[0] = IS_OK;
 	errnb[1] = IS_OK;
 	if (sv->ip[v4] > 0 && FD_ISSET(sv->ip[v4], fdr))
-		if ((errnb[0] = sv_accept(v4, sv)) != IS_OK)
+		if ((errnb[0] = sv_server_accept(v4, sv)) != IS_OK)
 			sv_server_close(v4, errnb, sv);
 	if (sv->ip[v6] > 0 && FD_ISSET(sv->ip[v6], fdr))
-		if ((errnb[1] = sv_accept(v6, sv)) != IS_OK)
+		if ((errnb[1] = sv_server_accept(v6, sv)) != IS_OK)
 			sv_server_close(v6, errnb, sv);
 	while (cl && ret)
 	{
@@ -85,7 +85,7 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 	}
 }
 
-int				sv_loop(t_server *sv)
+int				sv_server_loop(t_server *sv)
 {
 	int				max;
 	int				ret;
@@ -94,7 +94,7 @@ int				sv_loop(t_server *sv)
 	struct timeval	timeout;
 
 	if (sv->interactive)
-		sv_print_info(sv);
+		sv_server_info(sv);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 	while (sv->ip[v4] > 0 && sv->ip[v6] > 0)

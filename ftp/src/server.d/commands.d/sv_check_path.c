@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 03:08:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 02:47:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 02:35:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static char		*setup_path(char *path, char *pwd)
 	return (ret);
 }
 
-int				sv_check_path(char **path, t_client *cl, t_env *e)
+int				sv_check_path(char **path, t_client *cl)
 {
 	char		*pth;
 	char		*tmp;
@@ -48,10 +48,10 @@ int				sv_check_path(char **path, t_client *cl, t_env *e)
 		if (!(pth = setup_path(*path, cl->pwd)))
 			return (ERR_MALLOC);
 	pth = sv_recreate_path(pth);
-	if (e->home[ft_strlen(e->home) - 1] != '/')
-		tmp = ft_strjoin(e->home, pth);
+	if (cl->home[ft_strlen(cl->home) - 1] != '/')
+		tmp = ft_strjoin(cl->home, pth);
 	else
-		tmp = ft_strjoin(e->home, pth + 1);
+		tmp = ft_strjoin(cl->home, pth + 1);
 	if (do_setup)
 		free(pth);
 	if (!tmp)

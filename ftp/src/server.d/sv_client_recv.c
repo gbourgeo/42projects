@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 02:04:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:30:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ static void		sv_buffcpy(char *dst, t_buff *src)
 
 static void		sv_cmd_print(char *cmd, t_client *cl)
 {
-	ft_putstr("Client ");
+	ft_putstr("Client \x1B[33m");
 	ft_putnbr(cl->fd);
-	ft_putstr(": \"");
+	ft_putstr("\x1B[0m: \"");
 	ft_putstr(cmd);
 	ft_putendl("\"");
 }
@@ -41,24 +41,23 @@ static int		sv_client_commands(t_client *cl, t_server *sv)
 	};
 	char				buff[FTP_BUFF_SIZE + 1];
 	char				**cmd;
-	size_t				i;
+	int					i;
 	int					val;
 
-	i = 0;
+	i = -1;
 	val = 0;
 	sv_buffcpy(buff, &cl->rd);
 	if (sv->interactive)
 		sv_cmd_print(buff, cl);
 	if ((cmd = ft_split_whitespaces(buff)) == NULL)
 		return (ERR_MALLOC);
-	while (i < (int)(sizeof(commands) / sizeof(commands[0])))
+	while (++i < (int)(sizeof(commands) / sizeof(commands[0])))
 		if (!ft_strcmp(commands[i].name, cmd[0]))
 		{
+			sv_change_working_directory(cl->home, cl->pwd);
 			val = commands[i].func((i) ? cmd : (char **)&commands, cl, sv);
 			break ;
 		}
-		else
-			i++;
 	ft_freetab(&cmd);
 	return (val);
 }

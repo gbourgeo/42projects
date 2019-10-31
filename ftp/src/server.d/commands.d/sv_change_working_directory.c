@@ -1,31 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   sv_change_working_directory.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 20:47:00 by gbourgeo         ###   ########.fr       */
+/*   Created: 2019/10/31 03:23:39 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/10/31 03:37:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <unistd.h>
+#include "sv_main.h"
 
-void			ft_tabdel(char ***table)
+int			sv_change_working_directory(char *home, char *pwd)
 {
-	int			i;
+	char	*cwd;
+	int		ret;
 
-	i = 0;
-	if (table && *table)
-	{
-		while ((*table)[i])
-		{
-			free((*table)[i]);
-			(*table)[i] = NULL;
-			i++;
-		}
-		free(*table);
-		*table = NULL;
-	}
+	if (!(cwd = ft_strjoin(home, pwd)))
+		return (ERR_MALLOC);
+	ret = chdir(cwd);
+	free(cwd);
+	return ((ret < 0) ? ERR_CHDIR : IS_OK);
 }

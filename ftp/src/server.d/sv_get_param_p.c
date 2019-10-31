@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_param_p.c                                       :+:      :+:    :+:   */
+/*   sv_get_param_p.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 21:11:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 23:10:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 20:41:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,32 +17,25 @@ static int		param_p_new_home(char *path, t_server *sv)
 {
 	char		*ptr;
 	char		*tmp;
-	int			errnb;
 
-	errnb = IS_OK;
+	tmp = (path[ft_strlen(path) - 1] != '/') ?
+	ft_strjoin(path, "/") : ft_strdup(path);
+	if (!tmp)
+		return (ERR_MALLOC);
+	ptr = tmp;
 	if (*path == '/')
-	{
-		ft_strdel(&sv->info.env.home);
-		if (!(ptr = ft_strdup(path)))
-			return (ERR_MALLOC);
-	}
+		tmp = NULL;
 	else
-	{
-		tmp = sv->info.env.home;
-		if (tmp[ft_strlen(tmp) - 1] != '/')
-			tmp = ft_strjoin(tmp, "/");
-		else
-			tmp = ft_strdup(tmp);
-		if (!tmp || !(ptr = ft_strjoin(tmp, path)))
-			return (ERR_MALLOC);
-		ft_strdel(&tmp);
-		ft_strdel(&sv->info.env.home);
-	}
+		ptr = ft_strjoin(sv->info.env.home, tmp);
+	ft_strdel(&tmp);
+	if (!ptr)
+		return (ERR_MALLOC);
+	ft_strdel(&sv->info.env.home);
 	sv->info.env.home = sv_recreate_path(ptr);
 	return (IS_OK);
 }
 
-int				sv_param_p(char *path, t_server *sv)
+int				sv_get_param_p(char *path, t_server *sv)
 {
 	struct stat	buf;
 	char		*err;
@@ -54,7 +47,7 @@ int				sv_param_p(char *path, t_server *sv)
 		err = "path is not readable.";
 	else if (access(path, W_OK) < 0)
 		err = "path is not writable.";
-	if (stat(path, &buf) < 0 || !S_ISDIR(buf.st_mode))
+	else if (stat(path, &buf) < 0 || !S_ISDIR(buf.st_mode))
 		err = "path not a directory.";
 	if (err == NULL)
 		return (param_p_new_home(path, sv));

@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   sv_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 20:47:00 by gbourgeo         ###   ########.fr       */
+/*   Created: 2019/10/30 21:04:52 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/10/31 02:53:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "sv_main.h"
 
-void			ft_tabdel(char ***table)
+int				sv_pwd(char **cmds, t_client *cl, t_server *sv)
 {
-	int			i;
+	int			ret;
 
-	i = 0;
-	if (table && *table)
-	{
-		while ((*table)[i])
-		{
-			free((*table)[i]);
-			(*table)[i] = NULL;
-			i++;
-		}
-		free(*table);
-		*table = NULL;
-	}
+	(void)cmds;
+	(void)sv;
+	if ((ret = sv_client_write(cl->pwd, cl)) != IS_OK
+	|| (ret = sv_client_write("\n", cl)) != IS_OK)
+		return (ret);
+	return (sv_client_write(SERVER_OK_OUTPUT, cl));
 }

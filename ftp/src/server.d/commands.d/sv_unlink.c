@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 02:53:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 02:29:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 	{
 		if (!(path = ft_strdup(cmds[i])))
 			return (ERR_MALLOC);
-		if ((err[0] = sv_check_path(&path, cl, &sv->info.env)) == IS_OK)
+		if ((err[0] = sv_check_path(&path, cl)) == IS_OK)
 			err[1] = unlink(path);
 		ft_strdel(&path);
 		if (err[1])

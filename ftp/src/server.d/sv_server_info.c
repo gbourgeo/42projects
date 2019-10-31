@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_print_info.c                                    :+:      :+:    :+:   */
+/*   sv_server_info.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 00:15:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 20:47:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static void	sv_print_path(char *path)
 				ft_putstr("\n\t\t");
 		}
 	ft_putstr("\n");
+	ft_tabdel(&split);
 }
 
 static void	sv_print_users(t_user *user)
@@ -50,7 +51,7 @@ static void	sv_print_users(t_user *user)
 	ft_putstr("\n");
 }
 
-void		sv_print_info(t_server *sv)
+void		sv_server_info(t_server *sv)
 {
 	ft_putstr("\x1B[4mHome\x1B[0m:\t\t\"\x1B[1;35m");
 	ft_putstr(sv->info.env.home);

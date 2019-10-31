@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:56:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 02:29:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,10 @@ static int		mkdir_create(char *path, int *opt, t_client *cl, t_server *sv)
 	char		*ptr;
 	int			errnb;
 
+	(void)sv;
 	if (!(ptr = ft_strdup(path)))
 		return (ERR_MALLOC);
-	if ((errnb = sv_check_path(&ptr, cl, &sv->info.env)))
+	if ((errnb = sv_check_path(&ptr, cl)))
 		return (errnb);
 	if ((errnb = mkdir(ptr, 0777)) != 0 && !(*opt & (1 << 0)))
 		*opt |= (1 << 7);

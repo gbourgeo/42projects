@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 22:39:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/24 23:09:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 21:01:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char			*sv_recreate_path(char *path)
 	char		*tail;
 
 	head = path;
-	while (*head)
+	while (*head && *(head + 1))
 	{
 		if (!(tail = ft_strchr(head + 1, '/')))
 			tail = head + ft_strlen(head);

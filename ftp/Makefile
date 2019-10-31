@@ -6,73 +6,72 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/26 02:04:10 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/10/31 03:37:01 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CLIENT	= client
 CLI_D	= src/client.d/
-CLI_C	= cl_main.c				\
-		cl_loop.c				\
-		cl_prompt.c				\
-		cl_help.c				\
-		cl_ls_and_pwd.c			\
-		cl_get.c				\
-		cl_put.c				\
-		cl_help.c				\
-		cl_cd.c					\
-		cl_commands.c			\
-		cl_lcd.c				\
-		cl_change_pwds.c		\
-		cl_end.c				\
-		cl_mkdir_rmdir_unlink.c	\
-		cl_mget_mput.c			\
-		ft_signals.c			\
+CLI_C	= cl_main.c						\
+		cl_loop.c						\
+		cl_prompt.c						\
+		cl_help.c						\
+		cl_ls_and_pwd.c					\
+		cl_get.c						\
+		cl_put.c						\
+		cl_help.c						\
+		cl_cd.c							\
+		cl_commands.c					\
+		cl_lcd.c						\
+		cl_change_pwds.c				\
+		cl_end.c						\
+		cl_mkdir_rmdir_unlink.c			\
+		cl_mget_mput.c					\
+		ft_signals.c					\
 
 SERVEUR	= server
 SER_D	= src/server.d/
-SER_C	= sv_main.c				\
-		sv_param_p.c			\
-		sv_params.c				\
-		sv_getaddr.c			\
-		sv_print_info.c			\
-		sv_get_user.c			\
-		sv_loop.c				\
-		sv_accept.c				\
-		sv_client_recv.c		\
-		sv_client_send.c		\
-		sv_client_write.c		\
-		sv_client_end.c			\
-		sv_server_close.c		\
-		sv_signals.c			\
-		sv_free.c				\
+SER_C	= sv_main.c						\
+		sv_get_addr.c					\
+		sv_get_params.c					\
+		sv_get_param_p.c				\
+		sv_get_user.c					\
+		sv_server_info.c				\
+		sv_server_loop.c				\
+		sv_server_accept.c				\
+		sv_server_close.c				\
+		sv_server_signals.c				\
+		sv_client_recv.c				\
+		sv_client_send.c				\
+		sv_client_write.c				\
+		sv_client_end.c					\
+		sv_free.c						\
 
 SER_C_D	= $(SER_D)commands.d/
-SER_C	+= sv_help.c			\
-		sv_ls.c					\
-		sv_cd.c					\
-		sv_mkdir.c				\
-		sv_rmdir.c				\
-		sv_unlink.c				\
-		sv_quit.c				\
-		sv_sign.c				\
-		sv_check_path.c			\
-		sv_recreate_path.c		\
-		sv_cmd_err.c			\
-		# sv_get.c				\
-		# sv_put.c				\
+SER_C	+= sv_cd.c						\
+		sv_change_working_directory.c	\
+		sv_check_path.c					\
+		sv_cmd_err.c					\
+		sv_help.c						\
+		sv_ls.c							\
+		sv_mkdir.c						\
+		sv_pwd.c						\
+		sv_quit.c						\
+		sv_rmdir.c						\
+		sv_recreate_path.c				\
+		sv_sign.c						\
+		sv_unlink.c						\
+		# sv_get.c						\
+		# sv_put.c						\
 
 COM_D	= src/common.d/
-COM_C	= ft_init.c				\
-		ft_error.c				\
-		ft_getenv.c				\
-		ft_get_command.c		\
-		ft_get_path.c			\
-		ft_freetab.c			\
-		ft_split_whitespaces.c	\
-#		ft_putendn.c			\
-#		ft_strndup.c			\
-#		file_error.c			\
+COM_C	= ft_init.c						\
+		ft_error.c						\
+		ft_getenv.c						\
+		ft_get_command.c				\
+		ft_get_path.c					\
+		ft_freetab.c					\
+		ft_split_whitespaces.c			\
 
 OBJ_D	= obj/
 OBJ_C	= $(addprefix $(OBJ_D), $(CLI_C:.c=.o))

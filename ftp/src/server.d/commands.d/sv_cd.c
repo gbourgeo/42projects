@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:55:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 02:50:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@ static void		sv_cd_new(char *cwd, char *newc, t_client *cl)
 	else
 	{
 		ft_strncpy(cwd, cl->pwd, MAXPATHLEN);
-		if (cwd[ft_strlen(cwd) - 1] != '/')
-			ft_strncat(cwd, "/", MAXPATHLEN);
 		ft_strncat(cwd, newc, MAXPATHLEN);
 	}
+	if (cwd[ft_strlen(cwd) - 1] != '/')
+		ft_strncat(cwd, "/", MAXPATHLEN);
 }
 
 static int		sv_cd_change(char *cwd, char *cmd, t_client *cl)
@@ -36,8 +36,7 @@ static int		sv_cd_change(char *cwd, char *cmd, t_client *cl)
 	int			ret;
 
 	ret = IS_OK;
-	if (cl->oldpwd)
-		free(cl->oldpwd);
+	ft_strdel(&cl->oldpwd);
 	cl->oldpwd = cl->pwd;
 	if (!(cl->pwd = ft_strdup(cwd)))
 		return (ERR_MALLOC);
@@ -63,9 +62,9 @@ int				sv_cd(char **cmds, t_client *cl, t_server *sv)
 	sv_cd_new(cwd, cmds[1], cl);
 	if (!(dup = ft_strdup(cwd)))
 		return (ERR_MALLOC);
-	if ((ret = sv_check_path(&dup, cl, &sv->info.env)) != IS_OK)
+	if ((ret = sv_check_path(&dup, cl)) != IS_OK)
 		return (ret);
-	ft_strcpy(cwd, dup + ft_strlen(sv->info.env.home));
+	ft_strcpy(cwd, dup + ft_strlen(cl->home) - 1);
 	ret = chdir(dup);
 	free(dup);
 	if (ret < 0)

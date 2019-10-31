@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 22:27:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/25 23:41:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:11:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void			sv_free_user(t_user **user)
 	if (user)
 		while (*user)
 		{
+			ft_strdel(&(*user)->home);
 			ft_strdel(&(*user)->name);
 			ft_strdel(&(*user)->pass);
 			next = (*user)->next;

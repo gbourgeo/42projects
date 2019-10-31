@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 12:02:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 03:11:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/30 20:47:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ char				**ft_tabdup(char **table);
 int					ft_tablen(char **table);
 void				ft_puttab(char **table);
 void				ft_puttab_fd(char **table, int fd);
-void				ft_tabdel(char **table);
+void				ft_tabdel(char ***table);
 char				**ft_split(char *str, char *charset);
 char				**ft_split_whitespaces(char *str);
 char				*ft_str2join(char const *s1, char const *s2, \

@@ -1,17 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_accept.c                                        :+:      :+:    :+:   */
+/*   sv_server_accept.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 03:27:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:21:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
+
+static void		print_info_client(t_client *cl)
+{
+	ft_putstr("Client \x1B[33m");
+	ft_putnbr(cl->fd);
+	ft_putstr("\x1B[0m connected to \"\x1B[1;35m");
+	ft_putstr(cl->home);
+	ft_putendl("\x1B[0m\".");
+}
+
+static char		*sv_guest_home(t_user *us)
+{
+	while (us)
+		if (!ft_strcmp(us->name, SV_GUEST_NAME))
+			return (us->home);
+		else
+			us = us->next;
+	return (NULL);
+}
 
 static int		accept_client(int version, int fd, t_server *sv)
 {
@@ -29,6 +48,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.head;
 	cl->wr.len = 0;
+	cl->home = sv_guest_home(sv->users);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
 	if ((cl->next = sv->clients))
@@ -36,10 +56,12 @@ static int		accept_client(int version, int fd, t_server *sv)
 	sv->clients = cl;
 	if (!cl->pwd || !cl->oldpwd)
 		return (ERR_MALLOC);
+	if (sv->interactive)
+		print_info_client(cl);
 	return (IS_OK);
 }
 
-int				sv_accept(int version, t_server *sv)
+int				sv_server_accept(int version, t_server *sv)
 {
 	int				fd;
 	struct sockaddr	csin;
@@ -55,11 +77,5 @@ int				sv_accept(int version, t_server *sv)
 		return (IS_OK);
 	}
 	sv->connected++;
-	if (sv->interactive)
-	{
-		ft_putstr("Client ");
-		ft_putnbr(fd);
-		ft_putendl(": connected.");
-	}
 	return (accept_client(version, fd, sv));
 }

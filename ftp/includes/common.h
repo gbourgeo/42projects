@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/26 03:22:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:26:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ enum
 	ERR_EXECV,
 	ERR_SEND,
 	ERR_INVALID_NAMEPASS,
+	ERR_CHDIR,
 };
 
 typedef struct		s_env
