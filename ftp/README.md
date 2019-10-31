@@ -31,7 +31,7 @@ $>
 ## Commands
 Those commands operate on the server side:
 ```
-- ls [-all]   : liste le répertoire courant du serveur
+- ls          : liste le répertoire courant du serveur
 - cd          : change le répertoire courant du serveur
 - pwd         : affiche le chemin du répertoire courant sur le serveur
 - get [file]  : récupère le fichier _file_ du serveur vers le client
@@ -39,6 +39,7 @@ Those commands operate on the server side:
 - mkdir [-pv] : cree un dossier
 - rmdir       : supprime un dossier recursivement
 - unlink      : supprime un fichier
+- signin      : sign-in to the server
 - quit        : coupe la connection + sort du programme
 ```
 
@@ -55,3 +56,4 @@ Those commands operate on the client local system:
 ### Bonus
 - respect de la RFC (standard 9 ou rfc 959)
 - support de l’IPv6
+- gestion de login/password
