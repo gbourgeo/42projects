@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 17:07:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/04 17:45:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ int					ft_error(int errnb, t_common *info);
 char				*ft_getenv(char *search, char **envp);
 char				**ft_split_whitespaces(char *str);
 char				*ft_strcset(char *src, const char *charset);
+char				**ft_strsplit2(char const *s, char c);
 
 char				*ft_strndup(const char *s1, int size);
 char				*ft_get_path(char *dest, char *home, char *lpwd,

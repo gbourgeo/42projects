@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:54:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/04 18:04:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ static void	sv_print_users(t_user *user)
 			ft_putstr("\x1B[0m : \x1B[37m");
 			ft_putstr(user->pass);
 			ft_putstr("\x1B[0m");
+			ft_putstr(", HOME=\"");
+			ft_putstr(user->home);
+			ft_putstr("\"");
 			if ((user = user->next))
 				ft_putstr("\n\t\t");
 		}

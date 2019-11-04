@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 17:07:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/04 19:26:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
 
 # define SV_FILE_CLIENT	".sv_pass"
 
-# define SV_GUEST_NAME	"0"
+# define SV_GUEST_NAME	"guest"
 
 enum
 {
@@ -122,7 +122,7 @@ int					sv_get_addrinfo(t_server *sv);
 int					sv_params_get(char **av, t_server *sv);
 int					sv_param_p_get(char *path, t_server *sv);
 int					sv_user_get(t_server *sv);
-int					sv_user_parse(char **data, const char *home);
+int					sv_user_parse(char **data, t_server *sv);
 
 /*
 ** Server functions

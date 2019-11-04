@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/10/31 15:55:33 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/11/04 17:58:54 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,6 +73,7 @@ COM_C	= ft_error.c					\
 		ft_init.c						\
 		ft_split_whitespaces.c			\
 		ft_strcset.c					\
+		ft_strsplit2.c					\
 		# ft_get_path.c					\
 
 OBJ_D	= obj/

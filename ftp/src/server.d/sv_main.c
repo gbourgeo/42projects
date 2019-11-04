@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:36:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/04 18:06:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ static void		print_usage(const char *progpath)
 	ft_putstr_fd(progpath, 2);
 	ft_putendl_fd(" [-i46d] [-p [path]] [port]", 2);
 	ft_putendl_fd("\t-i\t\tInteractive server.", 2);
-	ft_putendl_fd("\t-4\t\tIp version 4 only.", 2);
-	ft_putendl_fd("\t-6\t\tIp version 6 only.", 2);
+	ft_putendl_fd("\t-4\t\tIpV4 only.", 2);
+	ft_putendl_fd("\t-6\t\tIpV6 only.", 2);
 	ft_putendl_fd("\t-d\t\tCreate a directory for all registered users.", 2);
 	ft_putendl_fd("\t-p [path]\tServer working path.", 2);
 	ft_putendl_fd("\tport\t\tPort to listen to.", 2);

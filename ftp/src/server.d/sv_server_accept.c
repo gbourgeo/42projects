@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:49:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/04 19:55:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,17 @@ static void		print_info_client(t_client *cl)
 	ft_putendl("\x1B[0m\".");
 }
 
-static char		*sv_guest_home(t_user *us)
+static char		*sv_guest_home(t_user *us, t_server *sv)
 {
-	while (us)
-		if (!ft_strcmp(us->name, SV_GUEST_NAME))
-			return (us->home);
-		else
-			us = us->next;
-	return (NULL);
+	if (sv->options & (1 << sv_create_dir))
+		while (us)
+		{
+			if (!ft_strcmp(us->name, SV_GUEST_NAME))
+				return (us->home);
+			else
+				us = us->next;
+		}
+	return (sv->info.env.home);
 }
 
 static int		accept_client(int version, int fd, t_server *sv)
@@ -48,7 +51,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.head;
 	cl->wr.len = 0;
-	cl->home = sv_guest_home(sv->users);
+	cl->home = sv_guest_home(sv->users, sv);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
 	if ((cl->next = sv->clients))

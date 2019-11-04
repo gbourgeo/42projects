@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 15:53:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:46:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/04 18:02:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,19 +45,13 @@ static int			parse_rights(char *rights)
 	return (1);
 }
 
-int					sv_user_parse(char **data, const char *home)
+static int			users_create_dir(char *dir_name, const char *home)
 {
-	int				i;
 	char			*newdir;
 	struct stat		buf;
+	int				i;
 
-	i = 0;
-	if (parse_type(data[0]))
-		if (parse_name(data[1]))
-			if (parse_rights(data[2]))
-				return (1);
-	return (0);
-	if (!(newdir = ft_strjoin(home, data[0])))
+	if (!(newdir = ft_strjoin(home, dir_name)))
 		return (0);
 	i = 1;
 	if (access(newdir, F_OK) < 0)
@@ -70,4 +64,15 @@ int					sv_user_parse(char **data, const char *home)
 		i = 0;
 	ft_strdel(&newdir);
 	return (i);
+}
+
+int					sv_user_parse(char **data, t_server *sv)
+{
+	if (parse_type(data[0]))
+		if (parse_name(data[1]))
+			if (parse_rights(data[3]))
+				if (!(sv->options & (1 << sv_create_dir))
+				|| users_create_dir(data[1], sv->info.env.home))
+					return (1);
+	return (0);
 }

@@ -20,6 +20,8 @@
 #			"3" is the advanced user. He has the intermediate user privilege plus
 #				he can REGISTER other users.
 #
+# A "guest" user account will automatically be added at users creation, with no password.
+# The name is defined in 'sv_main.h' under SV_GUEST_NAME.
+#
 
-C:guest::1:
 C:gbourgeo:prout:2:
