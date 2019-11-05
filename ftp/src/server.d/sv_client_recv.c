@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 17:06:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/05 01:50:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <errno.h>
 #include "sv_main.h"
 
 static void		sv_buffcpy(char *dst, t_client *cl, t_server *sv)
@@ -71,7 +72,7 @@ int				sv_client_recv(t_client *cl, t_server *sv)
 
 	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, 0);
 	if (ret <= 0)
-		return ((ret == 0) ? ERR_DISCONNECT : ERR_RECV);
+		return ((ret == 0 || errno == ECONNRESET) ? ERR_DISCONNECT : ERR_RECV);
 	else
 		while (ret--)
 		{

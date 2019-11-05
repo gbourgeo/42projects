@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/04 19:26:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/05 00:41:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ typedef struct		s_client
 	char			*home;
 	char			*pwd;
 	char			*oldpwd;
+	pid_t			pid;
 	struct s_client	*prev;
 	struct s_client	*next;
 }					t_client;

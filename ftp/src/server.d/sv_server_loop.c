@@ -6,12 +6,38 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:55:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/05 01:49:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define _DEFAULT_SOURCE
+#endif
+#include <sys/wait.h>
 #include <sys/select.h>
 #include "sv_main.h"
+
+static void		sv_check_pid(t_client *cl, t_server *sv)
+{
+	int			ret;
+	int			status;
+
+	(void)sv;
+	ret = wait4(cl->pid, &status, WNOHANG, NULL);
+	if (ret <= 0 || ret != cl->pid)
+	{
+		if (ret < 0)
+			cl->errnb[0] = ERR_WAIT;
+		return ;
+	}
+	if (WEXITSTATUS(status))
+		ret = sv_client_write(SERVER_ERR_OUTPUT, cl);
+	else
+		ret = sv_client_write(SERVER_OK_OUTPUT, cl);
+	if (ret != IS_OK)
+		cl->errnb[0] = ret;
+	cl->pid = 0;
+}
 
 static void		sv_check_clients(t_server *sv)
 {
@@ -20,15 +46,18 @@ static void		sv_check_clients(t_server *sv)
 	cl = sv->clients;
 	while (cl)
 	{
+		if (cl->pid > 0)
+			sv_check_pid(cl, sv);
 		if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK)
 		{
 			if ((cl->errnb[0] != IS_OK && cl->errnb[0] != ERR_DISCONNECT)
 			|| (cl->errnb[1] != IS_OK && cl->errnb[1] != ERR_DISCONNECT))
 			{
 				sv_server_close(cl->version, cl->errnb, sv);
-				break ;
+				cl = sv->clients;
 			}
-			cl = sv_client_end(cl, sv);
+			else
+				cl = sv_client_end(cl, sv);
 		}
 		else
 			cl = cl->next;
