@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/05 00:41:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 14:35:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 
 # define SV_CHECK(c, v)	(c & (1 << v))
 
-# define SV_FILE_CLIENT	".sv_pass"
+# define SV_USERS_FILE	".sv_users"
 
 # define SV_GUEST_NAME	"guest"
 

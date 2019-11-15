@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/05 01:50:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 14:31:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,28 +65,36 @@ static int		sv_client_commands(t_client *cl, t_server *sv)
 	return (i);
 }
 
+static int		recv_ret(int ret)
+{
+	if (ret == 0 || errno == ECONNRESET)
+		return (ERR_DISCONNECT);
+	if (errno == EAGAIN || errno == EWOULDBLOCK)
+		return (IS_OK);
+	return (ERR_RECV);
+}
+
 int				sv_client_recv(t_client *cl, t_server *sv)
 {
 	int		ret;
 	int		val;
 
-	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, 0);
+	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, MSG_DONTWAIT);
 	if (ret <= 0)
-		return ((ret == 0 || errno == ECONNRESET) ? ERR_DISCONNECT : ERR_RECV);
-	else
-		while (ret--)
+		return (recv_ret(ret));
+	while (ret--)
+	{
+		if (*cl->rd.tail == '\n')
 		{
-			if (*cl->rd.tail == '\n')
-			{
-				if ((val = sv_client_commands(cl, sv)) != IS_OK)
-					return (val);
-			}
-			if (++cl->rd.tail >= cl->rd.buff + FTP_BUFF_SIZE)
-				cl->rd.tail = cl->rd.buff;
-			if (--cl->rd.len == 0)
-				cl->rd.len = (cl->rd.tail >= cl->rd.head)
-				? cl->rd.buff + FTP_BUFF_SIZE - cl->rd.tail
-				: cl->rd.head - cl->rd.tail;
+			if ((val = sv_client_commands(cl, sv)) != IS_OK)
+				return (val);
 		}
+		if (++cl->rd.tail >= cl->rd.buff + FTP_BUFF_SIZE)
+			cl->rd.tail = cl->rd.buff;
+		if (--cl->rd.len == 0)
+			cl->rd.len = (cl->rd.tail >= cl->rd.head)
+			? cl->rd.buff + FTP_BUFF_SIZE - cl->rd.tail
+			: cl->rd.head - cl->rd.tail;
+	}
 	return (IS_OK);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/04 19:55:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 14:35:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,9 @@ int			sv_user_get(t_server *sv)
 	int		errnb;
 
 	errnb = IS_OK;
-	if (access(SV_FILE_CLIENT, F_OK) < 0 || access(SV_FILE_CLIENT, R_OK) < 0)
+	if (access(SV_USERS_FILE, F_OK) < 0 || access(SV_USERS_FILE, R_OK) < 0)
 		return (IS_OK);
-	if ((fd = open(SV_FILE_CLIENT, O_RDONLY)) < 0)
+	if ((fd = open(SV_USERS_FILE, O_RDONLY)) < 0)
 		return (ERR_OPEN);
 	line = NULL;
 	while ((errnb = get_next_line(fd, &line)) > 0)

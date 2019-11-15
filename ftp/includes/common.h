@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/04 17:45:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 14:38:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 enum
 {
 	IS_OK,
+	ERR_HELP,
 	ERR_NB_PARAMS,
 	ERR_WRONG_PARAM,
 	ERR_INVALID_PARAM,

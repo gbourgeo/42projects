@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:51:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 14:26:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 		cl->next->prev = cl->prev;
 	ret = cl->next;
 	free(cl);
+	sv->connected--;
 	return (ret);
 }

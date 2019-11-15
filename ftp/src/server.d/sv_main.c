@@ -6,24 +6,32 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/04 18:06:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 15:02:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include "sv_main.h"
 
-static void		print_usage(const char *progpath)
+static void		print_usage(const char *progname, const char *progpath)
 {
-	ft_putstr_fd("\nUsage: ", 2);
+	ft_putstr_fd("\n\x1B[1mNAME\x1B[0m\n\t", 2);
+	ft_putstr_fd(progname, 2);
+	ft_putendl_fd(" - FTP server", 2);
+	ft_putstr_fd("\n\x1B[1mUSAGE\n\t", 2);
 	ft_putstr_fd(progpath, 2);
-	ft_putendl_fd(" [-i46d] [-p [path]] [port]", 2);
-	ft_putendl_fd("\t-i\t\tInteractive server.", 2);
-	ft_putendl_fd("\t-4\t\tIpV4 only.", 2);
-	ft_putendl_fd("\t-6\t\tIpV6 only.", 2);
-	ft_putendl_fd("\t-d\t\tCreate a directory for all registered users.", 2);
-	ft_putendl_fd("\t-p [path]\tServer working path.", 2);
-	ft_putendl_fd("\tport\t\tPort to listen to.", 2);
+	ft_putendl_fd("\x1B[0m [\x1B[4mOPTION\x1B[0m]... [\x1B[4mPORT\x1B[0m]", 2);
+	ft_putstr_fd("\n\x1B[1mDESCRIPTION\x1B[0m\n", 2);
+	ft_putendl_fd("\n\t\x1B[1m-4\x1B[0m\tServer allows IpV4 only.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-6\x1B[0m\tServer allows IpV6 only.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-d\x1B[0m\tServer creates personal directory "
+	"for registered users.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-h\x1B[0m\tCommand help server.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-i\x1B[0m\tInteractive server."
+	" Prints information on STDOUT.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-p\x1B[0m [path]\n\t\tServer working path.", 2);
+	ft_putendl_fd("\n\t\x1B[1mport\x1B[0m\tPort to listen to.", 2);
+	ft_putendl_fd("\n\x1B[1mAUTHOR\x1B[0m\n\tWritten by Gilles Bourgeois.", 2);
 }
 
 int				main(int ac, char **av, char **environ)
@@ -47,9 +55,9 @@ int				main(int ac, char **av, char **environ)
 	sv_free_user(&sv->users);
 	if (errnb[0] != IS_OK)
 		if (ft_error(errnb[0], &sv->info) == 2)
-			print_usage(sv->info.progpath);
+			print_usage(sv->info.progname, sv->info.progpath);
 	if (SV_CHECK(sv->options, sv_interactive) && errnb[1] != IS_OK)
 		if (ft_error(errnb[1], &sv->info) == 2)
-			print_usage(sv->info.progpath);
-	return (errnb[1]);
+			print_usage(sv->info.progname, sv->info.progpath);
+	return (errnb[0] + errnb[1]);
 }

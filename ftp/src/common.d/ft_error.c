@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 04:09:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 14:39:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,9 @@ int				ft_error(int errnb, t_common *info)
 const char		*ft_get_error(int errnb)
 {
 	static const char	*errors[] = {
-		"Disconnected.", "-- Missing parameter", "-- Wrong parameter",
-		"-- Invalid parameter", "parameter contains non digit characters.",
+		"Disconnected.", "-- Server Help", "-- Missing parameter",
+		"-- Wrong parameter", "-- Invalid parameter",
+		"parameter contains non digit characters.",
 		"only one port can be specified.", "getaddrinfo failed.",
 		"port already in use (v4)", "port already in use (v6)",
 		"setsockopt failed.", "listen(AF_INET) failed.", "open failed.",
