@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/15 15:02:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/15 15:03:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void		print_usage(const char *progname, const char *progpath)
 	ft_putendl_fd("\n\t\x1B[1m-6\x1B[0m\tServer allows IpV6 only.", 2);
 	ft_putendl_fd("\n\t\x1B[1m-d\x1B[0m\tServer creates personal directory "
 	"for registered users.", 2);
-	ft_putendl_fd("\n\t\x1B[1m-h\x1B[0m\tCommand help server.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-h\x1B[0m\tPrint help and exit.", 2);
 	ft_putendl_fd("\n\t\x1B[1m-i\x1B[0m\tInteractive server."
 	" Prints information on STDOUT.", 2);
 	ft_putendl_fd("\n\t\x1B[1m-p\x1B[0m [path]\n\t\tServer working path.", 2);
