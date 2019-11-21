@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 00:37:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/15 14:37:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:11:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int		get_value(char **av, int *i, t_server *sv)
 			sv->options &= ~(1 << sv_v4);
 		}
 		else if (av[*i][j] == 'd')
-			sv->options |= (1 << sv_create_dir);
+			sv->options |= (1 << sv_user_mode);
 		else if (av[*i][j] == 'p')
 			return (sv_param_p_get(av[++(*i)], sv));
 		else if (av[*i][j] == 'h' || ft_strequ(&av[*i][j], "-help"))

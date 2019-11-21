@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/15 15:03:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:15:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@ static void		print_usage(const char *progname, const char *progpath)
 	ft_putendl_fd(" - FTP server", 2);
 	ft_putstr_fd("\n\x1B[1mUSAGE\n\t", 2);
 	ft_putstr_fd(progpath, 2);
-	ft_putendl_fd("\x1B[0m [\x1B[4mOPTION\x1B[0m]... [\x1B[4mPORT\x1B[0m]", 2);
+	ft_putstr_fd("\x1B[0m [\x1B[4mOPTIONS\x1B[0m]... ", 2);
+	ft_putendl_fd("\x1B[4mPORT\x1B[0m", 2);
 	ft_putstr_fd("\n\x1B[1mDESCRIPTION\x1B[0m\n", 2);
-	ft_putendl_fd("\n\t\x1B[1m-4\x1B[0m\tServer allows IpV4 only.", 2);
-	ft_putendl_fd("\n\t\x1B[1m-6\x1B[0m\tServer allows IpV6 only.", 2);
-	ft_putendl_fd("\n\t\x1B[1m-d\x1B[0m\tServer creates personal directory "
-	"for registered users.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-4\x1B[0m\tServer allows IpV4 address only.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-6\x1B[0m\tServer allows IpV6 address only.", 2);
+	ft_putendl_fd("\n\t\x1B[1m-d\x1B[0m\tEnables registered users mode only.\n"
+	"\t\tEvery registered users will have his personal directory created.", 2);
 	ft_putendl_fd("\n\t\x1B[1m-h\x1B[0m\tPrint help and exit.", 2);
 	ft_putendl_fd("\n\t\x1B[1m-i\x1B[0m\tInteractive server."
 	" Prints information on STDOUT.", 2);

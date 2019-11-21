@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/15 14:38:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:50:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@
 
 # define FTP_DATA_SIZE		2048
 
-# define SERVER_ERR_OUTPUT	"\x0b\xff ERROR\n"
-# define SERVER_OK_OUTPUT	"\x0b\x01 SUCCESS\n"
+# define SERVER_ERR_OUTPUT	"\x0b\xff>ERROR\n"
+# define SERVER_OK_OUTPUT	"\x0b\x01>SUCCESS\n"
 
 enum
 {

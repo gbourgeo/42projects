@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/04 19:55:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:34:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void		print_info_client(t_client *cl)
 
 static char		*sv_guest_home(t_user *us, t_server *sv)
 {
-	if (sv->options & (1 << sv_create_dir))
+	if (sv->options & (1 << sv_user_mode))
 		while (us)
 		{
 			if (!ft_strcmp(us->name, SV_GUEST_NAME))
@@ -33,6 +33,22 @@ static char		*sv_guest_home(t_user *us, t_server *sv)
 				us = us->next;
 		}
 	return (sv->info.env.home);
+}
+
+static int		integrate_client(t_client *cl, t_server *sv)
+{
+	if ((cl->next = sv->clients))
+		cl->next->prev = cl;
+	sv->clients = cl;
+	if (!cl->pwd || !cl->oldpwd)
+		return (ERR_MALLOC);
+	sv->connected++;
+	if (SV_CHECK(sv->options, sv_interactive))
+		print_info_client(cl);
+	if (SV_CHECK(sv->options, sv_user_mode))
+		cl->errnb[0] = sv_client_write("Server in user mode only. You must "
+		"signin to complete connection.\n", cl);
+	return (IS_OK);
 }
 
 static int		accept_client(int version, int fd, t_server *sv)
@@ -54,14 +70,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->home = sv_guest_home(sv->users, sv);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
-	if ((cl->next = sv->clients))
-		cl->next->prev = cl;
-	sv->clients = cl;
-	if (!cl->pwd || !cl->oldpwd)
-		return (ERR_MALLOC);
-	if (SV_CHECK(sv->options, sv_interactive))
-		print_info_client(cl);
-	return (IS_OK);
+	return (integrate_client(cl, sv));
 }
 
 int				sv_server_accept(int version, t_server *sv)
@@ -79,6 +88,5 @@ int				sv_server_accept(int version, t_server *sv)
 		close(fd);
 		return (IS_OK);
 	}
-	sv->connected++;
 	return (accept_client(version, fd, sv));
 }

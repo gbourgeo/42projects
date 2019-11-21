@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 17:44:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/04 17:59:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:35:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ char				**ft_strsplit2(char const *s, char c)
 	i = 0;
 	while (*s)
 	{
-
 		if (!(ptr = ft_strchr(s, c)))
 			ptr = (char *)s + ft_strlen(s);
 		ret[i] = ft_memalloc(ptr - s + 1);

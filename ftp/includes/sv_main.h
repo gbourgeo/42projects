@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/15 14:35:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:39:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,23 @@
 # define CMD_END	{ NULL, NULL, NULL }
 
 # define SV_CHECK(c, v)	(c & (1 << v))
-
 # define SV_USERS_FILE	".sv_users"
-
 # define SV_GUEST_NAME	"guest"
+# define SERVER_TYPE	1
+# define CLIENT_TYPE	2
 
 enum
 {
 	sv_v4,
 	sv_v6,
 	sv_interactive,
-	sv_create_dir,
+	sv_user_mode,
 };
 
 typedef struct		s_user
 {
+	int				type;
+	int				rights;
 	char			*home;
 	char			*name;
 	char			*pass;
@@ -81,7 +83,7 @@ typedef struct		s_buff
 {
 	char			*head;
 	char			*tail;
-	char			buff[FTP_BUFF_SIZE + 1];
+	char			buff[FTP_BUFF_SIZE];
 	size_t			len;
 }					t_buff;
 
@@ -98,6 +100,7 @@ typedef struct		s_client
 	char			*pwd;
 	char			*oldpwd;
 	pid_t			pid;
+	t_user			*user;
 	struct s_client	*prev;
 	struct s_client	*next;
 }					t_client;

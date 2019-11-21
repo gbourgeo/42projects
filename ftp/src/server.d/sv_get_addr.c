@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 16:44:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 17:35:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include "sv_main.h"
-
 
 static int		sv_findsocket(struct addrinfo *p, int ip, t_server *sv)
 {

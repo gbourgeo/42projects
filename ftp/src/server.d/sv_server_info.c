@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/15 15:05:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/21 19:09:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ static void	sv_print_users(t_user *user)
 	if (user)
 		while (user)
 		{
+			ft_putstr((user->type == SERVER_TYPE) ? "S: " : "C: ");
 			ft_putstr("\x1B[3;33m");
 			ft_putstr(user->name);
 			ft_putstr("\x1B[0m : \x1B[2;3;37m");
 			ft_putstr(user->pass);
-			ft_putstr("\x1B[0m");
+			ft_putstr("\x1B[0m, ");
+			ft_putnbr(user->rights);
 			ft_putstr(", HOME=\"");
 			ft_putstr(user->home);
 			ft_putstr("\"");
