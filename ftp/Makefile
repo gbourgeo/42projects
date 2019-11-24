@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/11/04 17:58:54 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/11/24 19:31:05 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,10 +33,12 @@ SERVEUR	= server
 SER_D	= src/server.d/
 SER_C	= sv_main.c						\
 		sv_get_addr.c					\
+		sv_params_1.c					\
+		sv_params_2.c					\
 		sv_params_get.c					\
-		sv_param_p_get.c				\
 		sv_user_get.c					\
 		sv_user_parse.c					\
+		sv_server_end.c					\
 		sv_server_info.c				\
 		sv_server_loop.c				\
 		sv_server_accept.c				\

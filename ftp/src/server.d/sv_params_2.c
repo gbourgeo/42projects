@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_param_p_get.c                                   :+:      :+:    :+:   */
+/*   sv_params_2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 21:11:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 15:59:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/24 20:08:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-static int		param_p_new_home(char *path, t_server *sv)
+static int		param_p_new_home(const char *path, t_server *sv)
 {
 	char		*ptr;
 	char		*tmp;
@@ -35,25 +35,26 @@ static int		param_p_new_home(char *path, t_server *sv)
 	return (IS_OK);
 }
 
-int				sv_param_p_get(char *path, t_server *sv)
+int				sv_param_p(const char **arg, int *i, t_server *sv)
 {
 	struct stat	buf;
 	char		*err;
 
 	err = NULL;
-	if (access(path, F_OK) < 0)
+	*i += 1;
+	if (access(arg[*i], F_OK) < 0)
 		err = "path does not exist.";
-	else if (access(path, R_OK) < 0)
+	else if (access(arg[*i], R_OK) < 0)
 		err = "path is not readable.";
-	else if (access(path, W_OK) < 0)
+	else if (access(arg[*i], W_OK) < 0)
 		err = "path is not writable.";
-	else if (stat(path, &buf) < 0 || !S_ISDIR(buf.st_mode))
+	else if (stat(arg[*i], &buf) < 0 || !S_ISDIR(buf.st_mode))
 		err = "path not a directory.";
 	if (err == NULL)
-		return (param_p_new_home(path, sv));
+		return (param_p_new_home(arg[*i], sv));
 	ft_putstr_fd(sv->info.progname, 2);
 	ft_putstr_fd(": ", 2);
-	ft_putstr_fd(path, 2);
+	ft_putstr_fd(arg[*i], 2);
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(err, 2);
 	return (ERR_INVALID_PARAM);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:11:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/24 20:13:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ int			sv_user_get(t_server *sv)
 	int		errnb;
 
 	errnb = IS_OK;
+	if (!SV_CHECK(sv->options, sv_user_mode))
+		return (IS_OK);
 	if (access(SV_USERS_FILE, F_OK) < 0 || access(SV_USERS_FILE, R_OK) < 0)
 		return (IS_OK);
 	if ((fd = open(SV_USERS_FILE, O_RDONLY)) < 0)
