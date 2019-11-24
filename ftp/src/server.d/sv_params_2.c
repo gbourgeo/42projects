@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 21:11:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/24 20:08:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 00:11:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,12 @@ int				sv_param_p(const char **arg, int *i, t_server *sv)
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(err, 2);
 	return (ERR_INVALID_PARAM);
+}
+
+int				sv_param_d(const char **arg, int *i, t_server *sv)
+{
+	(void)arg;
+	(void)i;
+	sv->options |= (1 << sv_create_dir);
+	return (IS_OK);
 }

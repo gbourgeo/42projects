@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:09:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 00:16:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,24 @@ static void	sv_print_path(char *path)
 	ft_tabdel(&split);
 }
 
-static void	sv_print_users(t_user *user)
+static void	sv_print_users(t_user *user, t_server *sv)
 {
-	ft_putstr("\x1B[4mUsers\x1B[0m:\t\t");
+	ft_putstr("\x1B[4mUsers\x1B[0m:"
+	"\t\tType\t| Name\t\t| Pass\t\t| Right\t| Home\n\t\t");
 	if (user)
 		while (user)
 		{
-			ft_putstr((user->type == SERVER_TYPE) ? "S: " : "C: ");
-			ft_putstr("\x1B[3;33m");
+			ft_putstr((user->type == SERVER_TYPE) ? "Server\t" : "Client\t");
+			ft_putstr("  \x1B[3;33m");
 			ft_putstr(user->name);
-			ft_putstr("\x1B[0m : \x1B[2;3;37m");
+			ft_putstr((ft_strlen(user->name) > 5)
+			? "\x1B[0m\t  \x1B[2;3;37m" : "\x1B[0m\t\t  \x1B[2;3;37m");
 			ft_putstr(user->pass);
-			ft_putstr("\x1B[0m, ");
+			ft_putstr((ft_strlen(user->pass) > 5)
+			? "\x1B[0m\t  " : "\x1B[0m\t\t  ");
 			ft_putnbr(user->rights);
-			ft_putstr(", HOME=\"");
-			ft_putstr(user->home);
-			ft_putstr("\"");
+			ft_putstr("\t  ");
+			ft_putstr(&user->home[ft_strlen(sv->info.env.home) - 1]);
 			if ((user = user->next))
 				ft_putstr("\n\t\t");
 		}
@@ -77,6 +79,6 @@ void		sv_server_info(t_server *sv)
 	ft_putstr("\x1B[4mMax Clients\x1B[0m:\t\x1B[0m");
 	ft_putnbr(CLIENTS_MAX);
 	ft_putstr("\x1B[0m\n");
-	sv_print_users(sv->users);
+	sv_print_users(sv->users, sv);
 	ft_putendl("\n\x1B[36mSERVEUR: Waiting for clients...\x1B[0m");
 }

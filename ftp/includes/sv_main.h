@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/24 20:26:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 00:15:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,11 @@
 
 # define PRM_4		{ {'4', NULL }, NULL, "Server allows IpV4 address only.", sv_param_four }
 # define PRM_6		{ {'6', NULL }, NULL, "Server allows IpV6 address only.", sv_param_six }
+# define PRM_D		{ {'d', NULL }, NULL, "Every registered users will have his personal directory created.", sv_param_d }
 # define PRM_H		{ {'h', "-help" }, NULL, "Print help and exit.", sv_param_h }
 # define PRM_I		{ {'i', NULL }, NULL, "Interactive server. Prints information on STDOUT.", sv_param_i }
 # define PRM_P		{ {'p', "-path" }, "[path]", "Server working path.", sv_param_p }
-# define PRM_U		{ {'u', "-user" }, NULL, "Enables registered users mode only.\n\t\tEvery registered users will have his personal directory created.", sv_param_u }
+# define PRM_U		{ {'u', "-user" }, NULL, "Enables registered users mode only.", sv_param_u }
 
 /*
 ** CLIENTS_MAX :
@@ -57,7 +58,12 @@ enum
 	sv_v6,
 	sv_interactive,
 	sv_user_mode,
+	sv_create_dir,
 };
+
+/*
+** Users structure
+*/
 
 typedef struct		s_user
 {
@@ -69,22 +75,9 @@ typedef struct		s_user
 	struct s_user	*next;
 }					t_user;
 
-typedef struct		s_rmdir
-{
-	char			*cmd;
-	int				err[3];
-	char			**path;
-	struct dirent	*file;
-	char			*ptr;
-	struct stat		inf;
-}					t_rmdir;
-
-typedef struct		s_command
-{
-	const char		*name;
-	const char		*descrip;
-	int				(*func)();
-}					t_command;
+/*
+** Client structures
+*/
 
 typedef struct		s_buff
 {
@@ -112,6 +105,10 @@ typedef struct		s_client
 	struct s_client	*next;
 }					t_client;
 
+/*
+** Server structure (global)
+*/
+
 typedef struct		s_server
 {
 	t_common		info;
@@ -124,6 +121,35 @@ typedef struct		s_server
 }					t_server;
 
 struct s_server		g_serv;
+
+/*
+** Structure for the RMDIR command
+*/
+
+typedef struct		s_rmdir
+{
+	char			*cmd;
+	int				err[3];
+	char			**path;
+	struct dirent	*file;
+	char			*ptr;
+	struct stat		inf;
+}					t_rmdir;
+
+/*
+** Structure for the clients' commands
+*/
+
+typedef struct		s_command
+{
+	const char		*name;
+	const char		*descrip;
+	int				(*func)();
+}					t_command;
+
+/*
+** Structures for the server parameters and options
+*/
 
 typedef struct		s_name
 {
@@ -154,6 +180,7 @@ int					sv_get_addrinfo(t_server *sv);
 int					sv_params_get(char **av, t_opt *opts, int size, t_server *sv);
 int					sv_param_four(const char **arg, int *i, t_server *sv);
 int					sv_param_six(const char **arg, int *i, t_server *sv);
+int					sv_param_d(const char **arg, int *i, t_server *sv);
 int					sv_param_h(const char **arg, int *i, t_server *sv);
 int					sv_param_i(const char **arg, int *i, t_server *sv);
 int					sv_param_p(const char **arg, int *i, t_server *sv);

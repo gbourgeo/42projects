@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 15:53:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:12:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/24 23:49:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int					sv_user_parse(char **data, t_server *sv)
 	if (parse_type(data[0]))
 		if (parse_name(data[1]))
 			if (parse_rights(data[3]))
-				if (!(sv->options & (1 << sv_user_mode))
+				if (!(sv->options & (1 << sv_create_dir))
 				|| users_create_dir(data[1], sv->info.env.home))
 					return (1);
 	return (0);

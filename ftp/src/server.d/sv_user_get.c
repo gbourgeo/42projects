@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/24 20:13:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/24 23:49:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	new_user(char **data, t_user **next, t_server *sv)
 	if (!(user = ft_memalloc(sizeof(*user))))
 		return (ERR_MALLOC);
 	user->type = (data[0][0] == 'S') ? SERVER_TYPE : CLIENT_TYPE;
-	if (sv->options & (1 << sv_user_mode))
+	if (sv->options & (1 << sv_create_dir))
 	{
 		if (!(ptr = ft_strjoin(sv->info.env.home, data[1])))
 			return (ERR_MALLOC);

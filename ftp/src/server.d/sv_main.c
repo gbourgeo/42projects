@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/24 20:00:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/24 23:43:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int				main(int ac, char **av, char **environ)
 	t_server	*sv;
 	int			errnb[2];
 	static t_opt	opts[] = {
-		PRM_4, PRM_6, PRM_H, PRM_I, PRM_P, PRM_U,
+		PRM_4, PRM_6, PRM_D, PRM_H, PRM_I, PRM_P, PRM_U,
 	};
 
 	ac = sizeof(opts) / sizeof(opts[0]);
