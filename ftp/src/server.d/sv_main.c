@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/24 23:43:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 01:45:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int				main(int ac, char **av, char **environ)
 	signal(SIGINT, sv_signals_hdlr);
 	if ((errnb[0] = ft_init(sv, sizeof(*sv), environ, av[0])) == IS_OK)
 		if ((errnb[0] = sv_params_get(av, opts, ac, sv)) == IS_OK)
-			if ((errnb[0] = sv_user_get(sv)) == IS_OK)
+			if ((errnb[0] = sv_user_file(sv)) == IS_OK)
 				if ((errnb[0] = sv_get_addrinfo(sv)) == IS_OK)
 					errnb[1] = sv_server_loop(sv);
 	sv_server_end(sv);

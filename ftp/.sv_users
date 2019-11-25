@@ -12,7 +12,7 @@
 # name		represent the name of the user registered.
 # pass		represent the password to sign-in.
 # rights	represent the rights the user have, defined as follow:
-# 			"0" is the restricted user. He can only try to sign-in with no toher commands.
+# 			"0" is the restricted user. He can only try to sign-in with no other command.
 # 			"1" is the basic user. he have the restricted user privilege, plus
 #				he can perform commands like LS, CD, PWD.
 #			"2" is the intermediate user. He has the basic user privilege, plus
@@ -20,8 +20,12 @@
 #			"3" is the advanced user. He has the intermediate user privilege plus
 #				he can REGISTER other users.
 #
-# A "guest" user account will automatically be added at users creation, with no password.
-# The name is defined in 'sv_main.h' under SV_GUEST_NAME.
+# A "guest" user account will automatically be added at users creation, with this specifications:
+# C:guest::0:
+#
+# The prototype is defined in 'sv_main.h' under SV_GUEST.
 #
 
-C:gbourgeo:prout:2:
+C:g:prout:1:
+C:gb:prout:2:
+C:gbo:prout:3:

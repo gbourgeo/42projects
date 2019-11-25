@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 00:15:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:23:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@
 # define CMD_SIGN	{ "sign", "Sign-in to the server.", sv_signin }
 # define CMD_REGIST	{ "register", "Register a new account.", sv_register }
 # define CMD_QUIT	{ "quit", "Quit the server.", sv_quit }
-# define CMD_END	{ NULL, NULL, NULL }
 
 # define SV_CHECK(c, v)	(c & (1 << v))
 # define SV_USERS_FILE	".sv_users"
 # define SV_GUEST_NAME	"guest"
+# define SV_GUEST		"C:"SV_GUEST_NAME"::0:"
 # define SERVER_TYPE	1
 # define CLIENT_TYPE	2
 
@@ -100,7 +100,7 @@ typedef struct		s_client
 	char			*pwd;
 	char			*oldpwd;
 	pid_t			pid;
-	t_user			*user;
+	t_user			user;
 	struct s_client	*prev;
 	struct s_client	*next;
 }					t_client;
@@ -185,7 +185,7 @@ int					sv_param_h(const char **arg, int *i, t_server *sv);
 int					sv_param_i(const char **arg, int *i, t_server *sv);
 int					sv_param_p(const char **arg, int *i, t_server *sv);
 int					sv_param_u(const char **arg, int *i, t_server *sv);
-int					sv_user_get(t_server *sv);
+int					sv_user_file(t_server *sv);
 int					sv_user_parse(char **data, t_server *sv);
 
 /*
@@ -199,6 +199,8 @@ void				sv_server_close(int version, int errnb[2], t_server *sv);
 void				sv_free_env(t_env *env);
 void				sv_free_user(t_user **user);
 void				sv_server_end(t_server *sv);
+t_user				*sv_getuserbyname(t_user *users, const char *name);
+int					sv_getcommandsright(int rights);
 
 /*
 ** Client functions
@@ -230,6 +232,7 @@ int					sv_pwd(char **cmds, t_client *cl, t_server *sv);
 int					sv_quit(char **cmds, t_client *cl, t_server *sv);
 int					sv_rmdir(char **cmds, t_client *cl, t_server *sv);
 void				sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv);
+int					sv_register(char **cmds, t_client *cl, t_server *sv);
 int					sv_signin(char **cmds, t_client *cl, t_server *sv);
 int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
 
@@ -243,6 +246,5 @@ int					sv_put(char **cmds, t_client *cl, t_server *sv);
 int					sv_handle_dir(char *dir, t_server *sv);
 int					sv_handle_file(char *file, t_server *sv);
 
-int					sv_register(char **cmds, t_client *cl, t_server *sv);
 
 #endif

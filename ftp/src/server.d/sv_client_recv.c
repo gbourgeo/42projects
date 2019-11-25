@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:48:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:18:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,25 @@
 
 static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 {
-	static t_command	commands[] = { CMD_HELP, CMD_LS, CMD_CD, CMD_PWD,
-		CMD_MKDIR, CMD_RMDIR, CMD_UNLINK, CMD_SIGN, CMD_QUIT, CMD_END,
+	static t_command	commands[] = {
+		CMD_HELP, CMD_QUIT, CMD_SIGN,
+		CMD_LS, CMD_CD, CMD_PWD,
+		CMD_MKDIR, CMD_RMDIR, CMD_UNLINK,
+		CMD_REGIST,
 	};
-	size_t				i;
+	int					i;
+	int					size;
 
 	i = 0;
+	size = sv_getcommandsright(cl->user.rights);
 	if (!cmd[0] || !cmd[0][0])
 		return (IS_OK);
-	while (i < sizeof(commands) / sizeof(commands[0]))
+	while (i < size)
 		if (!ft_strcmp(commands[i].name, cmd[0]))
 		{
 			sv_change_working_directory(cl->home, cl->pwd);
 			if (commands[i].func == sv_help)
 				return (commands[i].func((char **)&commands, cl, sv));
-			if (SV_CHECK(sv->options, sv_user_mode) && !cl->user
-			&& commands[i].func != sv_signin && commands[i].func != sv_quit)
-				break ;
 			return (commands[i].func(cmd, cl, sv));
 		}
 		else

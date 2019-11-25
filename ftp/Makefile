@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/11/24 19:31:05 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/11/25 02:11:32 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SER_C	= sv_main.c						\
 		sv_params_1.c					\
 		sv_params_2.c					\
 		sv_params_get.c					\
+		sv_user_file.c					\
 		sv_user_get.c					\
 		sv_user_parse.c					\
 		sv_server_end.c					\
@@ -62,6 +63,7 @@ SER_C	+= sv_cd.c						\
 		sv_quit.c						\
 		sv_rmdir.c						\
 		sv_recreate_path.c				\
+		sv_register.c					\
 		sv_sign.c						\
 		sv_unlink.c						\
 		# sv_get.c						\

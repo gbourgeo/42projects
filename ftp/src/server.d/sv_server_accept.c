@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:34:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:27:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void		print_info_client(t_client *cl)
 {
 	ft_putstr("Client \x1B[33m");
 	ft_putnbr(cl->fd);
-	ft_putstr("\x1B[0m connected to \"\x1B[1;35m");
+	ft_putstr("\x1B[0m: connected to \"\x1B[1;35m");
 	ft_putstr(cl->home);
 	ft_putendl("\x1B[0m\".");
 }
@@ -54,6 +54,7 @@ static int		integrate_client(t_client *cl, t_server *sv)
 static int		accept_client(int version, int fd, t_server *sv)
 {
 	t_client	*cl;
+	t_user		*user;
 
 	if (!(cl = ft_memalloc(sizeof(*cl))))
 		return (ERR_MALLOC);
@@ -70,6 +71,11 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->home = sv_guest_home(sv->users, sv);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
+	user = sv_getuserbyname(sv->users, SV_GUEST_NAME);
+	if (SV_CHECK(sv->options, sv_user_mode))
+		cl->user = (user) ? *user : (t_user){ 0 };
+	else
+		cl->user.rights = 3;
 	return (integrate_client(cl, sv));
 }
 

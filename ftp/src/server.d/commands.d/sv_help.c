@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 16:39:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:32:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,21 @@ int					sv_help(char **cmds, t_client *cl, t_server *sv)
 {
 	t_command		*cmd;
 	int				ret;
+	int				size;
+	char			*spacing;
 
 	cmd = (t_command *)cmds;
 	ret = IS_OK;
+	size = sv_getcommandsright(cl->user.rights);
 	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
 		if ((ret = sv_client_write(": -- help\n", cl)) == IS_OK)
-			while (cmd && cmd->name && ret == IS_OK)
+			while (size-- && ret == IS_OK)
 			{
-				if ((ret = sv_client_write(cmd->name, cl)) == IS_OK)
-					if ((ret = sv_client_write("\t\t", cl)) == IS_OK)
-						if ((ret = sv_client_write(cmd->descrip, cl)) == IS_OK)
+				spacing = (ft_strlen(cmd[size].name) > 6) ? "\t" : "\t\t";
+				if ((ret = sv_client_write(cmd[size].name, cl)) == IS_OK)
+					if ((ret = sv_client_write(spacing, cl)) == IS_OK)
+						if ((ret = sv_client_write(cmd[size].descrip, cl)) == IS_OK)
 							ret = sv_client_write("\n", cl);
-				cmd++;
 			}
 	if (ret != IS_OK)
 		return (ret);

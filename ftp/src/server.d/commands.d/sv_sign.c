@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:46:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:09:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,22 +33,18 @@ int				sv_signin(char **cmds, t_client *cl, t_server *sv)
 
 	if (!cmds[1] || !cmds[2])
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	ptr = sv->users;
-	while (ptr)
-	{
-		if (!ft_strcmp(cmds[1], ptr->name))
-			if (!ft_strcmp(cmds[2], ptr->pass))
-			{
-				ft_strdel(&cl->pwd);
-				ft_strdel(&cl->oldpwd);
-				if (!(cl->home = ptr->home)
-				|| !(cl->pwd = ft_strdup("/"))
-				|| !(cl->oldpwd = ft_strdup(cl->pwd)))
-					return (ERR_MALLOC);
-				cl->user = ptr;
-				return (signin_success(cl, sv));
-			}
-		ptr = ptr->next;
-	}
+	ptr = sv_getuserbyname(sv->users, cmds[1]);
+	if (ptr)
+		if (!ft_strcmp(ptr->pass, cmds[2]))
+		{
+			ft_strdel(&cl->pwd);
+			ft_strdel(&cl->oldpwd);
+			if (!(cl->home = ptr->home)
+			|| !(cl->pwd = ft_strdup("/"))
+			|| !(cl->oldpwd = ft_strdup(cl->pwd)))
+				return (ERR_MALLOC);
+			cl->user = *ptr;
+			return (signin_success(cl, sv));
+		}
 	return (sv_cmd_err(ft_get_error(ERR_INVALID_NAMEPASS), cmds[0], cl, sv));
 }
