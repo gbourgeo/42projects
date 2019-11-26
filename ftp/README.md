@@ -4,17 +4,42 @@
 
 ### Create the Server, the Client or both
 ```sh
-$> make server
-$> ./server -h
-Usage: ./server [-i] [-v4] [-v6] [-p [path]] [port]
-	-i		    Interactive server.
-	-v4		    Ip v4 only.
-	-v6		    Ip v6 only.
-	-p [path]	Server working path.
-	port		  Port to listen to.
+$> make server && ./server -h
+server: -- Server Help
 
-$> make client
-$> ./client
+NAME
+	server - FTP server
+
+USAGE
+	./server [OPTIONS]... PORT
+
+DESCRIPTION
+	Launch an FTP server.
+
+	-4	   Server allows IpV4 address only.
+
+	-6	   Server allows IpV6 address only.
+
+	-d	   Every registered users will have his personal directory created. Works only with -u.
+
+	-h, --help
+		   Print help and exit.
+
+	-i	   Interactive server. Prints information on STDOUT.
+
+	-p, --path [path]
+		   Server working path.
+
+	-u, --user
+		   Enables registered users mode.
+
+	port	Port to listen to.
+
+AUTHOR
+	Written by Gilles Bourgeois.
+```
+```sh
+$> make client && ./client
 Usage: ./client [server_address] [server_port]
 
 ```

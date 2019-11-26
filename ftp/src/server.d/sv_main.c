@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 01:45:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:36:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_opt *opts, int size)
 	ft_putstr_fd(progpath, 2);
 	ft_putstr_fd("\x1B[0m [\x1B[4mOPTIONS\x1B[0m]... ", 2);
 	ft_putendl_fd("\x1B[4mPORT\x1B[0m", 2);
-	ft_putstr_fd("\n\x1B[1mDESCRIPTION\x1B[0m\n", 2);
+	ft_putstr_fd("\n\x1B[1mDESCRIPTION\x1B[0m\n\tLaunch an FTP server.\n", 2);
 	print_params(opts, size);
 	ft_putendl_fd("\n\t\x1B[1mport\x1B[0m\tPort to listen to.", 2);
 	ft_putendl_fd("\n\x1B[1mAUTHOR\x1B[0m\n\tWritten by Gilles Bourgeois.", 2);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:23:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/11/25 02:38:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@
 
 # define PRM_4		{ {'4', NULL }, NULL, "Server allows IpV4 address only.", sv_param_four }
 # define PRM_6		{ {'6', NULL }, NULL, "Server allows IpV6 address only.", sv_param_six }
-# define PRM_D		{ {'d', NULL }, NULL, "Every registered users will have his personal directory created.", sv_param_d }
+# define PRM_D		{ {'d', NULL }, NULL, "Every registered users will have his personal directory created. Works only with \x1B[1m-u\x1B[0m.", sv_param_d }
 # define PRM_H		{ {'h', "-help" }, NULL, "Print help and exit.", sv_param_h }
 # define PRM_I		{ {'i', NULL }, NULL, "Interactive server. Prints information on STDOUT.", sv_param_i }
 # define PRM_P		{ {'p', "-path" }, "[path]", "Server working path.", sv_param_p }
-# define PRM_U		{ {'u', "-user" }, NULL, "Enables registered users mode only.", sv_param_u }
+# define PRM_U		{ {'u', "-user" }, NULL, "Enables registered users mode.", sv_param_u }
 
 /*
 ** CLIENTS_MAX :
