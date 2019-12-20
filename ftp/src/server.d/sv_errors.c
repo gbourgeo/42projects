@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_client_write.c                                  :+:      :+:    :+:   */
+/*   sv_errors.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/17 15:24:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:47:35 by gbourgeo         ###   ########.fr       */
+/*   Created: 2019/12/19 20:22:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/12/19 20:53:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <errno.h>
 #include "sv_main.h"
 
-int				sv_client_write(const char *str, t_client *cl)
+int					sv_recv_error(int errnb)
 {
-	int			ret;
+	if (errnb == 0 || errno == ECONNRESET)
+		return (ERR_DISCONNECT);
+	if (errno == EAGAIN || errno == EWOULDBLOCK)
+		return (IS_OK);
+	return (ERR_RECV);
+}
 
-	while (str && *str)
-	{
-		if (cl->wr.len == CMD_BUFF_SIZE)
-			if ((ret = sv_client_send(cl)) != IS_OK)
-				return (ret);
-		*cl->wr.tail++ = *str;
-		if (cl->wr.tail >= cl->wr.buff + CMD_BUFF_SIZE)
-			cl->wr.tail = cl->wr.buff;
-		cl->wr.len++;
-		str++;
-	}
-	return (IS_OK);
+int					sv_send_error(int errnb)
+{
+	return ((errnb == 0 || errno == ECONNRESET) ? ERR_DISCONNECT :
+		(errno == EAGAIN || errno == EWOULDBLOCK) ? IS_OK :
+		(errno == EPIPE) ? ERR_DISCONNECT : ERR_SEND);
 }

@@ -6,11 +6,10 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:36:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 21:45:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
 #include "sv_main.h"
 
 static void		print_params(t_opt *opts, int size)
@@ -69,12 +68,12 @@ int				main(int ac, char **av, char **environ)
 	sv = &g_serv;
 	errnb[0] = IS_OK;
 	errnb[1] = IS_OK;
-	signal(SIGINT, sv_signals_hdlr);
 	if ((errnb[0] = ft_init(sv, sizeof(*sv), environ, av[0])) == IS_OK)
-		if ((errnb[0] = sv_params_get(av, opts, ac, sv)) == IS_OK)
-			if ((errnb[0] = sv_user_file(sv)) == IS_OK)
-				if ((errnb[0] = sv_get_addrinfo(sv)) == IS_OK)
-					errnb[1] = sv_server_loop(sv);
+		if ((errnb[0] = sv_init_sig(sv)) == IS_OK)
+			if ((errnb[0] = sv_params_get(av, opts, ac, sv)) == IS_OK)
+				if ((errnb[0] = sv_user_file(sv)) == IS_OK)
+					if ((errnb[0] = sv_get_addrinfo(sv)) == IS_OK)
+						errnb[1] = sv_server_loop(sv);
 	sv_server_end(sv);
 	if (errnb[0] != IS_OK)
 		if (ft_error(errnb[0], &sv->info) == 2)

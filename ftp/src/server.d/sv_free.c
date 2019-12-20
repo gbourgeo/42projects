@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 22:27:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 03:11:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:03:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void			sv_free_env(t_env *env)
 {
 	if (env->path)
 		free(env->path);
+	env->path = NULL;
 	if (env->home)
 		free(env->home);
+	env->home = NULL;
 }

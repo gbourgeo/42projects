@@ -6,12 +6,21 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 02:29:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 00:32:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/stat.h>
 #include "sv_main.h"
+
+/*
+** MKDIR options are:
+**	-p		Create parent directories without error if they exist
+**	-v		Print a message for each directory created
+*/
+#define MKDIR_P		(1 << 0)
+#define MKDIR_V		(1 << 1)
+#define MKDIR_ERR	(1 << 7)
 
 static int		mkdir_opts(char **cmds, int *options, int *i)
 {
@@ -24,69 +33,70 @@ static int		mkdir_opts(char **cmds, int *options, int *i)
 		j = 0;
 		while (cmds[*i][++j])
 			if (cmds[*i][j] == 'p')
-				*options |= (1 << 0);
+				*options |= MKDIR_P;
 			else if (cmds[*i][j] == 'v')
-				*options |= (1 << 1);
+				*options |= MKDIR_V;
 			else
 				return (ERR_WRONG_PARAM);
 		(*i)++;
 	}
 	return ((cmds[*i] && cmds[*i][0]) ? IS_OK : ERR_NB_PARAMS);
 }
-
-static int		mkdir_create(char *path, int *opt, t_client *cl, t_server *sv)
+//char *path, int *opt,
+static int		mkdir_create(t_mkdir *mk, t_client *cl, t_server *sv)
 {
 	char		*ptr;
 	int			errnb;
 
 	(void)sv;
-	if (!(ptr = ft_strdup(path)))
+	if (!(ptr = ft_strdup(mk->cmd[mk->i])))
 		return (ERR_MALLOC);
-	if ((errnb = sv_check_path(&ptr, cl)))
+	if ((errnb = sv_check_path(&ptr, cl)) != IS_OK)
 		return (errnb);
-	if ((errnb = mkdir(ptr, 0777)) != 0 && !(*opt & (1 << 0)))
-		*opt |= (1 << 7);
+	if ((errnb = mkdir(ptr, 0777)) != 0 && !(mk->opt & MKDIR_P))
+		mk->opt |= MKDIR_ERR;
 	free(ptr);
-	if (errnb == 0 && !(*opt & (1 << 0)) && (*opt & (1 << 1)))
+	if (errnb == 0 && !(mk->opt & MKDIR_P) && (mk->opt & MKDIR_V))
 		ptr = "created directory: ";
-	else if (errnb != 0 && !(*opt & (1 << 0)))
+	else if (errnb != 0 && !(mk->opt & MKDIR_P))
 		ptr = "failed to create: ";
 	else
 		ptr = NULL;
 	errnb = IS_OK;
 	if (ptr)
-		if ((errnb = sv_client_write("mkdir: ", cl)) == IS_OK)
-			if ((errnb = sv_client_write(ptr, cl)) == IS_OK)
-				if ((errnb = sv_client_write(path, cl)) == IS_OK)
-					errnb = sv_client_write("\n", cl);
+		if ((errnb = sv_client_write(mk->cmd[0], cl)) == IS_OK)
+			if ((errnb = sv_client_write(": ", cl)) == IS_OK)
+				if ((errnb = sv_client_write(ptr, cl)) == IS_OK)
+					if ((errnb = sv_client_write(mk->cmd[mk->i], cl)) == IS_OK)
+						errnb = sv_client_write("\n", cl);
 	return (errnb);
 }
 
 int				sv_mkdir(char **cmds, t_client *cl, t_server *sv)
 {
-	int		i;
-	int		opt;
-	int		errnb;
-	char	*dir;
+	t_mkdir		mk;
+	int			errnb;
+	char		*dir;
 
-	if ((errnb = mkdir_opts(cmds, &opt, &i)) != IS_OK)
-		return (sv_client_write(ft_get_error(errnb), cl));
-	while (cmds[i])
+	mk.cmd = cmds;
+	if ((errnb = mkdir_opts(cmds, &mk.opt, &mk.i)) != IS_OK)
+		return (sv_cmd_err(ft_get_error(errnb), cmds[0], cl, sv));
+	while (cmds[mk.i])
 	{
-		dir = (cmds[i][0] == '/') ? cmds[i] + 1 : cmds[i];
-		if (opt & (1 << 0))
+		dir = (cmds[mk.i][0] == '/') ? cmds[mk.i] + 1 : cmds[mk.i];
+		if (mk.opt & MKDIR_P)
 			while (*dir && (dir = ft_strchr(dir, '/')) && *(dir + 1))
 			{
 				*dir = '\0';
-				if ((errnb = mkdir_create(cmds[i], &opt, cl, sv)) != IS_OK)
+				if ((errnb = mkdir_create(&mk, cl, sv)) != IS_OK)
 					return (errnb);
 				*dir++ = '/';
 			}
-		if ((errnb = mkdir_create(cmds[i], &opt, cl, sv)) != IS_OK)
+		if ((errnb = mkdir_create(&mk, cl, sv)) != IS_OK)
 			return (errnb);
-		i++;
+		mk.i++;
 	}
-	if (opt & (1 << 7))
-		return (sv_client_write(SERVER_ERR_OUTPUT, cl));
-	return (sv_client_write(SERVER_OK_OUTPUT, cl));
+	if (mk.opt & MKDIR_ERR)
+		return (sv_client_write(ERR_OUTPUT, cl));
+	return (sv_client_write(OK_OUTPUT, cl));
 }

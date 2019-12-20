@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 21:25:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/25 23:16:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:47:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,24 @@ int				sv_client_send(t_client *cl)
 {
 	int			ret;
 
-	ret = IS_OK;
-	if (cl->wr.len)
+	if (cl->wr.len <= 0)
+		return (IS_OK);
+	if (cl->wr.tail > cl->wr.head)
 	{
-		if (cl->wr.tail > cl->wr.head)
-			ret = send(cl->fd, cl->wr.head, cl->wr.len, 0);
-		else
-		{
-			ret = send(cl->fd, cl->wr.head,
-			cl->wr.buff + FTP_BUFF_SIZE - cl->wr.head, 0);
-			ret = send(cl->fd, cl->wr.buff, cl->wr.tail - cl->wr.tail, 0);
-		}
-		cl->wr.head = cl->wr.tail;
-		cl->wr.len = 0;
+		ret = send(cl->fd, cl->wr.head, cl->wr.len, MSG_DONTWAIT | MSG_NOSIGNAL);
 		if (ret <= 0)
-			return ((ret == 0) ? ERR_DISCONNECT : ERR_SEND);
+			return (sv_send_error(ret));
+		if ((cl->wr.head += ret) >= cl->wr.buff + CMD_BUFF_SIZE)
+			cl->wr.head = cl->wr.buff;
+		cl->wr.len -= ret;
+		return (IS_OK);
 	}
-	return (IS_OK);
+	ret = send(cl->fd, cl->wr.head,
+	cl->wr.buff + CMD_BUFF_SIZE - cl->wr.head, MSG_DONTWAIT | MSG_NOSIGNAL);
+	if (ret <= 0)
+		return (sv_send_error(ret));
+	if ((cl->wr.head += ret) >= cl->wr.buff + CMD_BUFF_SIZE)
+		cl->wr.head = cl->wr.buff;
+	cl->wr.len -= ret;
+	return (sv_client_send(cl));
 }

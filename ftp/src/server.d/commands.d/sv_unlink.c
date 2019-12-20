@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 02:29:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 23:59:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ static int		unlink_err(char *cmd, char *file, t_client *cl, t_server *sv)
 }
 
 /*
-** int err[2]:
-** err[0] -> Fatal error
-** err[1] -> Command error
-** err[2] -> Overall error
+** (int) err[3] means:
+**
+** err[0] -> Did a fatal error occured ?
+** err[1] -> Did the current operation succeed ?
+** err[2] -> Did all the operation succeed ?
 */
-
 int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 {
 	int		i;
@@ -57,6 +57,6 @@ int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 		i++;
 	}
 	if (err[0] || err[2])
-		return (sv_client_write(SERVER_ERR_OUTPUT, cl));
-	return (sv_client_write(SERVER_OK_OUTPUT, cl));
+		return (sv_client_write(ERR_OUTPUT, cl));
+	return (sv_client_write(OK_OUTPUT, cl));
 }

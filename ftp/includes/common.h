@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:50:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 02:11:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 ** with the server.
 */
 
-# define FTP_BUFF_SIZE		1024
+# define CMD_BUFF_SIZE		128
 
 /*
 ** DATA_SIZE :
@@ -32,42 +32,44 @@
 ** may lead on undefined behaviours depending on the system.
 */
 
-# define FTP_DATA_SIZE		2048
+# define DATA_BUFF_SIZE		2048
 
-# define SERVER_ERR_OUTPUT	"\x0b\xff>ERROR\n"
-# define SERVER_OK_OUTPUT	"\x0b\x01>SUCCESS\n"
+# define ERR_OUTPUT	"\x0f\xff>ERROR\n"
+# define OK_OUTPUT	"\x0f\x01>SUCCESS\n"
 
 enum
 {
-	IS_OK,
+	IS_OK = 0,
 	ERR_HELP,
 	ERR_NB_PARAMS,
 	ERR_WRONG_PARAM,
-	ERR_INVALID_PARAM,
+	ERR_INVALID_PARAM = 5,
 	ERR_DIGIT_PARAM,
 	ERR_TOOMUCH_PARAM,
 	ERR_GETADDR,
 	ERR_NO_IPV4_AVAIL,
 	ERR_NO_IPV6_AVAIL,
-	ERR_SETSOCKOPT,
+	ERR_SETSOCKOPT = 10,
 	ERR_LISTEN_V4,
 	ERR_OPEN,
 	ERR_LISTEN_V6,
 	ERR_MALLOC,
-	ERR_SELECT,
+	ERR_SELECT = 15,
 	ERR_ACCEPT_V4,
 	ERR_ACCEPT_V6,
 	ERR_RECV,
 	ERR_DISCONNECT,
-	ERR_SIGNAL,
+	ERR_SIGNAL = 20,
 	ERR_WAIT,
 	ERR_FORK,
 	ERR_DUP2,
 	ERR_EXECV,
-	ERR_SEND,
+	ERR_SEND = 25,
 	ERR_INVALID_NAMEPASS,
 	ERR_CHDIR,
 	ERR_COMMAND,
+	ERR_ALREADY_REGISTERED,
+	ERR_WRITE,
 };
 
 typedef struct		s_env

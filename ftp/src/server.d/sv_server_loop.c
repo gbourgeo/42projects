@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/05 01:49:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:49:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,18 @@ static void		sv_check_pid(t_client *cl, t_server *sv)
 			cl->errnb[0] = ERR_WAIT;
 		return ;
 	}
-	if (WEXITSTATUS(status))
-		ret = sv_client_write(SERVER_ERR_OUTPUT, cl);
-	else
-		ret = sv_client_write(SERVER_OK_OUTPUT, cl);
-	if (ret != IS_OK)
-		cl->errnb[0] = ret;
+	if (WIFEXITED(status))
+		cl->errnb[0] = (WEXITSTATUS(status)) ?
+			sv_client_write(ERR_OUTPUT, cl) :
+			sv_client_write(OK_OUTPUT, cl);
+	else if (WIFSIGNALED(status))
+		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
+#ifdef WCOREDUMP
+	else if (WCOREDUMP(status))
+		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
+#endif
+	else if (WSTOPSIG(status) || WIFCONTINUED(status))
+		return ;
 	cl->pid = 0;
 }
 
@@ -131,9 +137,9 @@ int				sv_server_loop(t_server *sv)
 		sv_check_clients(sv);
 		max = sv_init_fd(&fd_read, &fd_write, sv);
 		ret = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
-		if (ret == -1)
+		if (ret < 0)
 			return (ERR_SELECT);
-		if (ret)
+		if (ret > 0)
 			sv_check_fd(ret, &fd_read, &fd_write, sv);
 	}
 	return (IS_OK);

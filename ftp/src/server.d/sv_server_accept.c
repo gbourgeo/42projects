@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:27:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:46:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->fct_write = sv_client_send;
 	cl->rd.head = cl->rd.buff;
 	cl->rd.tail = cl->rd.head;
-	cl->rd.len = FTP_BUFF_SIZE;
+	cl->rd.len = CMD_BUFF_SIZE;
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.head;
 	cl->wr.len = 0;

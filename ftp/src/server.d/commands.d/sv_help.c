@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:32:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:49:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,5 @@ int					sv_help(char **cmds, t_client *cl, t_server *sv)
 			}
 	if (ret != IS_OK)
 		return (ret);
-	return (sv_client_write(SERVER_OK_OUTPUT, cl));
+	return (sv_client_write(OK_OUTPUT, cl));
 }

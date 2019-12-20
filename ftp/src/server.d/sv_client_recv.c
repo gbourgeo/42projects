@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:18:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:47:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static void		print_buff(char *buff, int size, t_client *cl)
 
 static int		sv_buffcpy(t_client *cl, t_server *sv)
 {
-	char		buff[FTP_BUFF_SIZE + 1];
+	char		buff[CMD_BUFF_SIZE + 1];
 	char		**cmd;
 	int			i;
 
@@ -61,10 +61,10 @@ static int		sv_buffcpy(t_client *cl, t_server *sv)
 	while (cl->rd.head != cl->rd.tail)
 	{
 		buff[i++] = *cl->rd.head++;
-		if (cl->rd.head >= cl->rd.buff + FTP_BUFF_SIZE)
+		if (cl->rd.head >= cl->rd.buff + CMD_BUFF_SIZE)
 			cl->rd.head = cl->rd.buff;
 	}
-	if (++cl->rd.head >= cl->rd.buff + FTP_BUFF_SIZE)
+	if (++cl->rd.head >= cl->rd.buff + CMD_BUFF_SIZE)
 		cl->rd.head = cl->rd.buff;
 	buff[i] = '\0';
 	if (SV_CHECK(sv->options, sv_interactive))
@@ -76,36 +76,27 @@ static int		sv_buffcpy(t_client *cl, t_server *sv)
 	return (i);
 }
 
-static int		recv_ret(int ret)
-{
-	if (ret == 0 || errno == ECONNRESET)
-		return (ERR_DISCONNECT);
-	if (errno == EAGAIN || errno == EWOULDBLOCK)
-		return (IS_OK);
-	return (ERR_RECV);
-}
-
 int				sv_client_recv(t_client *cl, t_server *sv)
 {
 	int		ret;
-	int		val;
+	int		errnb;
 
-	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, MSG_DONTWAIT);
+	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (ret <= 0)
-		return (recv_ret(ret));
+		return (sv_recv_error(ret));
 	while (ret--)
 	{
 		if (*cl->rd.tail == '\n')
 		{
-			if ((val = sv_buffcpy(cl, sv)) != IS_OK)
-				return (val);
+			if ((errnb = sv_buffcpy(cl, sv)) != IS_OK)
+				return (errnb);
 		}
-		if (++cl->rd.tail >= cl->rd.buff + FTP_BUFF_SIZE)
+		if (++cl->rd.tail >= cl->rd.buff + CMD_BUFF_SIZE)
 			cl->rd.tail = cl->rd.buff;
 		if (--cl->rd.len == 0)
 			cl->rd.len = (cl->rd.head > cl->rd.tail) ?
 			cl->rd.head - cl->rd.tail :
-			cl->rd.buff + FTP_BUFF_SIZE - cl->rd.tail;
+			cl->rd.buff + CMD_BUFF_SIZE - cl->rd.tail;
 	}
 	return (IS_OK);
 }

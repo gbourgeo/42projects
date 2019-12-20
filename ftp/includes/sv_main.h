@@ -6,17 +6,22 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:38:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 02:10:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SV_MAIN_H
 # define SV_MAIN_H
 
+# include <signal.h>
 # include <netinet/in.h>
 # include <sys/stat.h>
 # include "libft.h"
 # include "common.h"
+
+# ifdef __linux__
+#  define NSIG _NSIG
+# endif
 
 # define PRM_4		{ {'4', NULL }, NULL, "Server allows IpV4 address only.", sv_param_four }
 # define PRM_6		{ {'6', NULL }, NULL, "Server allows IpV6 address only.", sv_param_six }
@@ -46,15 +51,28 @@
 # define CMD_QUIT	{ "quit", "Quit the server.", sv_quit }
 
 # define SV_CHECK(c, v)	(c & (1 << v))
-# define SV_USERS_FILE	".sv_users"
+# define SV_USERS_FILE	"/home/gbourgeo/gbourgeo/ftp/.sv_users"
 # define SV_GUEST_NAME	"guest"
 # define SV_GUEST		"C:"SV_GUEST_NAME"::0:"
-# define SERVER_TYPE	1
-# define CLIENT_TYPE	2
+
+/*
+** Enumeration for USERS registered
+*/
 
 enum
 {
-	sv_v4,
+	us_server = (1 << 0),
+	us_client = (1 << 1),
+	us_new = (1 << 2),
+};
+
+/*
+** Enumeration for SERVER options
+*/
+
+enum
+{
+	sv_v4 = 0,
 	sv_v6,
 	sv_interactive,
 	sv_user_mode,
@@ -76,16 +94,20 @@ typedef struct		s_user
 }					t_user;
 
 /*
-** Client structures
+** Client Ring-Buffer structure
 */
 
 typedef struct		s_buff
 {
 	char			*head;
 	char			*tail;
-	char			buff[FTP_BUFF_SIZE];
+	char			buff[CMD_BUFF_SIZE];
 	size_t			len;
 }					t_buff;
+
+/*
+** Client structure
+*/
 
 typedef struct		s_client
 {
@@ -109,9 +131,12 @@ typedef struct		s_client
 ** Server structure (global)
 */
 
+typedef void (*sighandler_t)(int);
+
 typedef struct		s_server
 {
 	t_common		info;
+	sighandler_t	sig[NSIG];
 	int				options;
 	char			*port;
 	int				ip[2];
@@ -123,7 +148,18 @@ typedef struct		s_server
 struct s_server		g_serv;
 
 /*
-** Structure for the RMDIR command
+** Command MKDIR structure
+*/
+
+typedef struct		s_mkdir
+{
+	int				opt;
+	int				i;
+	char			**cmd;
+}					t_mkdir;
+
+/*
+** Command RMDIR structure
 */
 
 typedef struct		s_rmdir
@@ -137,7 +173,7 @@ typedef struct		s_rmdir
 }					t_rmdir;
 
 /*
-** Structure for the clients' commands
+** Commands structure
 */
 
 typedef struct		s_command
@@ -148,7 +184,7 @@ typedef struct		s_command
 }					t_command;
 
 /*
-** Structures for the server parameters and options
+** Server parameters / options structures
 */
 
 typedef struct		s_name
@@ -187,11 +223,14 @@ int					sv_param_p(const char **arg, int *i, t_server *sv);
 int					sv_param_u(const char **arg, int *i, t_server *sv);
 int					sv_user_file(t_server *sv);
 int					sv_user_parse(char **data, t_server *sv);
+int					sv_new_user(char **data, t_user **next, t_server *sv);
+int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 
 /*
 ** Server functions
 */
 
+int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 void				sv_server_info(t_server *sv);
 int					sv_server_loop(t_server *sv);
@@ -213,6 +252,13 @@ t_client			*sv_client_end(t_client *cl, t_server *sv);
 int					sv_check_path(char **path, t_client *cl);
 char				*sv_recreate_path(char *path);
 int					sv_change_working_directory(char *home, char *pwd);
+
+/*
+** Errors handler
+*/
+
+int					sv_recv_error(int ret);
+int					sv_send_error(int errnb);
 
 /*
 ** Signal Handlers
@@ -238,6 +284,7 @@ int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
 
 int					sv_cmd_err(const char *str, char *cmd, t_client *cl,
 					t_server *sv);
+int					sv_cmd_ok(const char *str, t_client *cl, t_server *sv);
 
 int					sv_get(char **cmds, t_client *cl, t_server *sv);
 int					sv_send_info(char *file, char *path, int fd, t_server *sv);

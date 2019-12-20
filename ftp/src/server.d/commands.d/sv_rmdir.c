@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 02:29:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/19 23:59:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,13 +95,14 @@ static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl)
 	if (errnb)
 		return (errnb);
 	if (e->err[0])
-		return (sv_client_write(SERVER_ERR_OUTPUT, cl));
-	return (sv_client_write(SERVER_OK_OUTPUT, cl));
+		return (sv_client_write(ERR_OUTPUT, cl));
+	return (sv_client_write(OK_OUTPUT, cl));
 }
 
 /*
-** int err[3] is:
-** err[0] -> Did all the opeation succeed ?
+** (int) e.err[3] means:
+**
+** err[0] -> Did all the operation succeed ?
 ** err[1] -> Did the current operation succeed ?
 ** err[2] -> Did a fatal error occured ?
 */

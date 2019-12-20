@@ -6,25 +6,22 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:09:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 00:47:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static int		signin_success(t_client *cl, t_server *sv)
+static void		print_info(char *name, t_client *cl, t_server *sv)
 {
-	int			errnb;
-
 	if (SV_CHECK(sv->options, sv_interactive))
 	{
 		ft_putstr("Client \x1B[0;33m");
 		ft_putnbr(cl->fd);
-		ft_putendl("\x1B[0m: successfully logged in.");
+		ft_putstr("\x1B[0m: Successfully logged in as `");
+		ft_putstr(name);
+		ft_putendl("`");
 	}
-	if ((errnb = sv_client_write("Successfully logged in.", cl)) == IS_OK)
-		errnb = sv_client_write(SERVER_OK_OUTPUT, cl);
-	return (errnb);
 }
 
 int				sv_signin(char **cmds, t_client *cl, t_server *sv)
@@ -44,7 +41,8 @@ int				sv_signin(char **cmds, t_client *cl, t_server *sv)
 			|| !(cl->oldpwd = ft_strdup(cl->pwd)))
 				return (ERR_MALLOC);
 			cl->user = *ptr;
-			return (signin_success(cl, sv));
+			print_info(cmds[1], cl, sv);
+			return (sv_cmd_ok("Successfully signed in", cl, sv));
 		}
 	return (sv_cmd_err(ft_get_error(ERR_INVALID_NAMEPASS), cmds[0], cl, sv));
 }
