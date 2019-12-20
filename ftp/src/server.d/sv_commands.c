@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:58:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 19:28:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:50:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,11 @@ static void			define_all(t_command *cmds)
 	, sv_rmdir);
 	*(cmds + 8) = define_commands("unlink", "Remove file from server."
 	, sv_unlink);
-	*(cmds + 9) = define_commands("register", "Register a new account."
+	*(cmds + 9) = define_commands("get", "Get file from server.", sv_get);
+	*(cmds + 10) = define_commands("put", "Put file to server.", sv_put);
+	*(cmds + 11) = define_commands("register", "Register a new account."
 	, sv_register);
 }
-
-/*
-** *(cmds + 10) = define_commands("get", "Get file from server.", sv_get);
-** *(cmds + 11) = define_commands("put", "Put file to server.", sv_put);
-*/
 
 t_command			*sv_commands(int getsize, int tofree)
 {
@@ -54,11 +51,22 @@ t_command			*sv_commands(int getsize, int tofree)
 		return (NULL);
 	}
 	if (getsize)
-		return ((cmds == NULL) ? (t_command *)0 : (t_command *)11);
+		return ((cmds == NULL) ? (t_command *)0 : (t_command *)13);
 	if (cmds != NULL)
 		return (cmds);
 	if ((cmds = ft_memalloc(sizeof(*cmds) * 13)) == NULL)
 		return (NULL);
 	define_all(cmds);
 	return (cmds);
+}
+
+int					sv_getcommandsright(int rights)
+{
+	if (rights < 1)
+		return (3);
+	if (rights < 2)
+		return (6);
+	if (rights < 3)
+		return (11);
+	return ((int)sv_commands(1, 0));
 }

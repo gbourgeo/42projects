@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/12/20 19:14:38 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/12/20 19:45:41 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,9 +63,11 @@ SER_C	+= sv_cd.c						\
 		sv_check_path.c					\
 		sv_cmd_err.c					\
 		sv_cmd_ok.c						\
+		sv_get.c						\
 		sv_help.c						\
 		sv_ls.c							\
 		sv_mkdir.c						\
+		sv_put.c						\
 		sv_pwd.c						\
 		sv_quit.c						\
 		sv_rmdir.c						\
@@ -73,8 +75,6 @@ SER_C	+= sv_cd.c						\
 		sv_register.c					\
 		sv_sign.c						\
 		sv_unlink.c						\
-		# sv_get.c						\
-		# sv_put.c						\
 
 COM_D	= src/common.d/
 COM_C	= ft_error.c					\
@@ -128,7 +128,7 @@ $(OBJ_D)%.o: $(CLI_D)%.c
 
 $(OBJ_D)%.o: $(SER_D)%.c
 	@echo "Compile: $<"
-	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
+	$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
 
 $(OBJ_D)%.o: $(SER_C_D)%.c
 	@echo "Compile: $<"

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 18:47:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:48:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,12 @@ int				main(int ac, char **av, char **environ)
 				if ((errnb[0] = sv_user_file(sv)) == IS_OK)
 					if ((errnb[0] = sv_get_addrinfo(sv)) == IS_OK)
 						errnb[1] = sv_server_loop(sv);
-	sv_server_end(sv);
 	if (errnb[0] != IS_OK)
 		if (ft_error(errnb[0], &sv->info) == 2)
 			print_usage(sv->info.progname, sv->info.progpath);
 	if (SV_CHECK(sv->options, sv_interactive) && errnb[1] != IS_OK)
 		if (ft_error(errnb[1], &sv->info) == 2)
 			print_usage(sv->info.progname, sv->info.progpath);
-	sv_params(0, 1);
+	sv_server_end(sv);
 	return (errnb[0] + errnb[1]);
 }

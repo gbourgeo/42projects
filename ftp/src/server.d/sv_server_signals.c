@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 02:07:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 18:41:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:50:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,5 @@ void		sv_signals_hdlr(int sig)
 	if (serv->sig[sig] == SIG_ERR)
 		return ;
 	sv_server_end(serv);
-	sv_params(0, 1);
 	exit(EXIT_FAILURE);
 }
