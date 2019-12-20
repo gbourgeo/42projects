@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 01:45:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 02:15:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:16:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,7 @@ t_user			*sv_getuserbyname(t_user *users, const char *name)
 
 int				sv_getcommandsright(int rights)
 {
-	if (rights < 1)
-		return (3);
-	if (rights < 2)
-		return (6);
 	if (rights < 3)
-		return (9);
+		return ((rights + 1) * 3);
 	return (10);
 }

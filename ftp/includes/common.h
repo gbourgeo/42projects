@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 02:11:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:47:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ enum
 	ERR_INVALID_NAMEPASS,
 	ERR_CHDIR,
 	ERR_COMMAND,
-	ERR_ALREADY_REGISTERED,
+	ERR_REGISTERED,
 	ERR_WRITE,
 };
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 00:37:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/24 20:26:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 18:40:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,13 @@ static int		get_value(char **av, t_param *p, t_server *sv)
 	return (IS_OK);
 }
 
-int				sv_params_get(char **av, t_opt *opts, int size, t_server *sv)
+int				sv_params_get(char **av, t_server *sv)
 {
 	t_param		p;
 	int			errnb;
 
-	p.opts = opts;
-	p.size = size;
+	p.opts = sv_params(0, 0);
+	p.size = (int)sv_params(1, 0);
 	p.i = 1;
 	sv->options |= ((1 << sv_v4) | (1 << sv_v6));
 	while (av[p.i])

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:49:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:56:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,8 @@ static void		sv_check_pid(t_client *cl, t_server *sv)
 			sv_client_write(OK_OUTPUT, cl);
 	else if (WIFSIGNALED(status))
 		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
-#ifdef WCOREDUMP
-	else if (WCOREDUMP(status))
+	else if (HAS_WCOREDUMP && WCOREDUMP(status))
 		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
-#endif
 	else if (WSTOPSIG(status) || WIFCONTINUED(status))
 		return ;
 	cl->pid = 0;

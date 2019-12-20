@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 01:04:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 18:56:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,6 @@ int			sv_user_file(t_server *sv)
 	ft_strdel(&line);
 	close(fd);
 	if (errnb == IS_OK)
-		errnb = get_user(SV_GUEST, sv);
+		errnb = get_user("C:"SV_GUEST_NAME"::0:", sv);
 	return (errnb);
 }

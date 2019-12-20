@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 02:13:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:47:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,12 @@ int					sv_register(char **cmds, t_client *cl, t_server *sv)
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
 	if (users == NULL)
 		return (register_err("Registration unavailable", cmds[0], cl));
-	errnb = IS_OK;
 	if (!sv_user_parse(&cmds[1], sv))
 		return (sv_cmd_err(ft_get_error(ERR_WRONG_PARAM), cmds[0], cl, sv));
 	while (users)
 	{
 		if (!ft_strcmp(users->name, cmds[2]))
-			return (sv_cmd_err(ft_get_error(ERR_ALREADY_REGISTERED), cmds[0],
-								cl, sv));
+			return (sv_cmd_err(ft_get_error(ERR_REGISTERED), cmds[0], cl, sv));
 		users = users->next;
 	}
 	if ((errnb = sv_new_user(&cmds[1], &sv->users->next, sv)) != IS_OK)

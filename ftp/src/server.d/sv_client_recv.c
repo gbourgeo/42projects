@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:47:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:25:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,12 @@
 
 static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 {
-	static t_command	commands[] = {
-		CMD_HELP, CMD_QUIT, CMD_SIGN,
-		CMD_LS, CMD_CD, CMD_PWD,
-		CMD_MKDIR, CMD_RMDIR, CMD_UNLINK,
-		CMD_REGIST,
-	};
-	int					i;
-	int					size;
+	t_command	*commands;
+	int			i;
+	int			size;
 
+	if (!(commands = sv_commands(0, 0)))
+		return (ERR_MALLOC);
 	i = 0;
 	size = sv_getcommandsright(cl->user.rights);
 	if (!cmd[0] || !cmd[0][0])
@@ -34,7 +31,7 @@ static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 		{
 			sv_change_working_directory(cl->home, cl->pwd);
 			if (commands[i].func == sv_help)
-				return (commands[i].func((char **)&commands, cl, sv));
+				return (commands[i].func((char **)commands, cl, sv));
 			return (commands[i].func(cmd, cl, sv));
 		}
 		else

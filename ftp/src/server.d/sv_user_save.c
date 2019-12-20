@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 01:08:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 02:12:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:53:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ t_server *sv)
 	ft_putstr(s2);
 	ft_putendl("`");
 }
+
 static void		get_info(char *info, t_user *user)
 {
 	ft_strcpy(info, (user->type & us_server) ? "S:" : "C:");

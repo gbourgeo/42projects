@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 00:32:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:44:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 **	-p		Create parent directories without error if they exist
 **	-v		Print a message for each directory created
 */
-#define MKDIR_P		(1 << 0)
-#define MKDIR_V		(1 << 1)
-#define MKDIR_ERR	(1 << 7)
+#define MKDIR_P		1
+#define MKDIR_V		2
+#define MKDIR_ERR	128
 
 static int		mkdir_opts(char **cmds, int *options, int *i)
 {
@@ -42,7 +42,7 @@ static int		mkdir_opts(char **cmds, int *options, int *i)
 	}
 	return ((cmds[*i] && cmds[*i][0]) ? IS_OK : ERR_NB_PARAMS);
 }
-//char *path, int *opt,
+
 static int		mkdir_create(t_mkdir *mk, t_client *cl, t_server *sv)
 {
 	char		*ptr;

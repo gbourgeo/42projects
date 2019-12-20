@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 02:07:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:38:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 18:41:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ static void	print_info(int sig, t_server *sv)
 		return ;
 	ft_putstr_fd("\n\x1B[31m********************\x1B[0m Signal \x1B[1;33m", 2);
 	if (sig > 0 && sig < (int)(sizeof(signame) / sizeof(signame[0])))
-			ft_putstr_fd(signame[sig], 2);
+		ft_putstr_fd(signame[sig], 2);
 	else
-			ft_putstr_fd("UNKNOWN", 2);
+		ft_putstr_fd("UNKNOWN", 2);
 	ft_putstr_fd("\x1B[0m received \x1B[31m********************\x1B[0m\n", 2);
 }
 
@@ -59,5 +59,6 @@ void		sv_signals_hdlr(int sig)
 	if (serv->sig[sig] == SIG_ERR)
 		return ;
 	sv_server_end(serv);
+	sv_params(0, 1);
 	exit(EXIT_FAILURE);
 }

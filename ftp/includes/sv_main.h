@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 02:10:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:24:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,14 @@
 # ifdef __linux__
 #  define NSIG _NSIG
 # endif
-
-# define PRM_4		{ {'4', NULL }, NULL, "Server allows IpV4 address only.", sv_param_four }
-# define PRM_6		{ {'6', NULL }, NULL, "Server allows IpV6 address only.", sv_param_six }
-# define PRM_D		{ {'d', NULL }, NULL, "Every registered users will have his personal directory created. Works only with \x1B[1m-u\x1B[0m.", sv_param_d }
-# define PRM_H		{ {'h', "-help" }, NULL, "Print help and exit.", sv_param_h }
-# define PRM_I		{ {'i', NULL }, NULL, "Interactive server. Prints information on STDOUT.", sv_param_i }
-# define PRM_P		{ {'p', "-path" }, "[path]", "Server working path.", sv_param_p }
-# define PRM_U		{ {'u', "-user" }, NULL, "Enables registered users mode.", sv_param_u }
+# ifndef MSG_NOSIGNAL
+#  define MSG_NOSIGNAL 0
+# endif
+# ifndef WCOREDUMP
+#  define HAS_WCOREDUMP 0
+# else
+#  define HAS_WCOREDUMP 1
+# endif
 
 /*
 ** CLIENTS_MAX :
@@ -37,23 +37,9 @@
 
 # define CLIENTS_MAX	20
 
-# define CMD_HELP	{ "help", "Display available commands.", sv_help }
-# define CMD_LS		{ "ls", "List current working directory files.", sv_ls }
-# define CMD_CD		{ "cd", "Change working directory.", sv_cd }
-# define CMD_PWD	{ "pwd", "Display current working directory.", sv_pwd }
-# define CMD_GET	{ "get", "Get file from server.", sv_get }
-# define CMD_PUT	{ "put", "Put file to server.", sv_put }
-# define CMD_MKDIR	{ "mkdir", "Create directory on server.", sv_mkdir }
-# define CMD_RMDIR	{ "rmdir", "Remove directory from server.", sv_rmdir }
-# define CMD_UNLINK	{ "unlink", "Remove file from server.", sv_unlink }
-# define CMD_SIGN	{ "sign", "Sign-in to the server.", sv_signin }
-# define CMD_REGIST	{ "register", "Register a new account.", sv_register }
-# define CMD_QUIT	{ "quit", "Quit the server.", sv_quit }
-
-# define SV_CHECK(c, v)	(c & (1 << v))
-# define SV_USERS_FILE	"/home/gbourgeo/gbourgeo/ftp/.sv_users"
+# define SV_CHECK		sv_check
+# define SV_USERS_FILE	"/Users/gbourgeo/gbourgeo/ftp/.sv_users"
 # define SV_GUEST_NAME	"guest"
-# define SV_GUEST		"C:"SV_GUEST_NAME"::0:"
 
 /*
 ** Enumeration for USERS registered
@@ -131,12 +117,12 @@ typedef struct		s_client
 ** Server structure (global)
 */
 
-typedef void (*sighandler_t)(int);
+typedef void		(*t_sighandler)(int);
 
 typedef struct		s_server
 {
 	t_common		info;
-	sighandler_t	sig[NSIG];
+	t_sighandler	sig[NSIG];
 	int				options;
 	char			*port;
 	int				ip[2];
@@ -213,7 +199,8 @@ typedef struct		s_param
 */
 
 int					sv_get_addrinfo(t_server *sv);
-int					sv_params_get(char **av, t_opt *opts, int size, t_server *sv);
+t_opt				*sv_params(int getsize, int tofree);
+int					sv_params_get(char **av, t_server *sv);
 int					sv_param_four(const char **arg, int *i, t_server *sv);
 int					sv_param_six(const char **arg, int *i, t_server *sv);
 int					sv_param_d(const char **arg, int *i, t_server *sv);
@@ -230,6 +217,7 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 ** Server functions
 */
 
+int					sv_check(int option, int value);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 void				sv_server_info(t_server *sv);
@@ -270,6 +258,7 @@ void				sv_signals_hdlr(int sig);
 ** commands
 */
 
+t_command			*sv_commands(int getsize, int tofree);
 int					sv_cd(char **cmds, t_client *cl, t_server *sv);
 int					sv_help(char **cmds, t_client *cl, t_server *sv);
 int					sv_ls(char **cmds, t_client *cl, t_server *sv);
@@ -292,6 +281,5 @@ int					sv_send_info(char *file, char *path, int fd, t_server *sv);
 int					sv_put(char **cmds, t_client *cl, t_server *sv);
 int					sv_handle_dir(char *dir, t_server *sv);
 int					sv_handle_file(char *file, t_server *sv);
-
 
 #endif

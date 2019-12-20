@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 23:59:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:48:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static int		unlink_err(char *cmd, char *file, t_client *cl, t_server *sv)
 ** err[1] -> Did the current operation succeed ?
 ** err[2] -> Did all the operation succeed ?
 */
+
 int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 {
 	int		i;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:49:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/20 17:40:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,14 @@ int					sv_help(char **cmds, t_client *cl, t_server *sv)
 	ret = IS_OK;
 	size = sv_getcommandsright(cl->user.rights);
 	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
-		if ((ret = sv_client_write(": -- help\n", cl)) == IS_OK)
+		if ((ret = sv_client_write(": -- HELP\n\n", cl)) == IS_OK)
 			while (size-- && ret == IS_OK)
 			{
 				spacing = (ft_strlen(cmd[size].name) > 6) ? "\t" : "\t\t";
 				if ((ret = sv_client_write(cmd[size].name, cl)) == IS_OK)
 					if ((ret = sv_client_write(spacing, cl)) == IS_OK)
-						if ((ret = sv_client_write(cmd[size].descrip, cl)) == IS_OK)
+						if ((ret = sv_client_write(cmd[size].descrip, cl))
+							== IS_OK)
 							ret = sv_client_write("\n", cl);
 			}
 	if (ret != IS_OK)
