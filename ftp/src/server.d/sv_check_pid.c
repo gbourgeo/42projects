@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 03:31:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 17:06:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,30 @@
 #include <sys/wait.h>
 #include "sv_main.h"
 
-int				sv_check_pid(pid_t *pid, t_client *cl)
+static int		check_pid_value(const char *name, int status, t_client *cl,
+t_server *sv)
+{
+	if (WIFEXITED(status))
+	{
+		if (WEXITSTATUS(status))
+			return (sv_cmd_err(ft_get_error(WEXITSTATUS(status)), name,
+				cl, sv));
+		return (sv_cmd_ok("Operation exited normally", cl, sv));
+	}
+	else if (WIFSIGNALED(status))
+	{
+		if (HAS_WCOREDUMP && WCOREDUMP(status))
+			return (sv_cmd_err("Operation coredump'ed", name, cl, sv));
+		return (sv_cmd_err("Operation signal'ed", name, cl, sv));
+	}
+	return (sv_cmd_err("Unknown error", name, cl, sv));
+}
+
+int				sv_check_pid(pid_t *pid, t_client *cl, t_server *sv)
 {
 	pid_t		ret;
 	int			status;
+	int			errnb;
 
 	ret = wait4(*pid, &status, WNOHANG, NULL);
 	if (ret <= 0)
@@ -28,16 +48,14 @@ int				sv_check_pid(pid_t *pid, t_client *cl)
 			return (ERR_WAIT);
 		return (IS_OK);
 	}
-	if (WIFEXITED(status))
-		cl->errnb[0] = (WEXITSTATUS(status)) ?
-			sv_client_write(ERR_OUTPUT, cl) :
-			sv_client_write(OK_OUTPUT, cl);
-	else if (WIFSIGNALED(status))
-		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
-	else if (HAS_WCOREDUMP && WCOREDUMP(status))
-		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
-	else if (WSTOPSIG(status) || WIFCONTINUED(status))
-		return (IS_OK);
+	if (WIFSTOPPED(status) || WIFCONTINUED(status))
+		return (sv_client_write("Operation stopped / continued.\n", cl));
+	if (*pid == cl->pid_ls)
+		errnb = check_pid_value("ls", status, cl, sv);
+	else if (cl->data.function == sv_data_put)
+		errnb = check_pid_value("put", status, cl, sv);
+	else
+		errnb = check_pid_value("get", status, cl, sv);
 	*pid = 0;
-	return (IS_OK);
+	return (errnb);
 }

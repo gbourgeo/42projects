@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 03:30:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 17:02:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,6 @@ enum
 	sv_create_dir,
 };
 
-# define CLIENT_PUT			1
-# define CLIENT_GET			2
-
 /*
 ** Client Ring-Buffer structure
 */
@@ -108,10 +105,10 @@ typedef struct		s_user
 */
 typedef struct		s_data
 {
-	int				type;
 	int				fd;
 	int				socket;
 	pid_t			pid;
+	int				(*function)();
 }					t_data;
 
 /*
@@ -243,7 +240,7 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 */
 
 int					sv_check_option(int option, int value);
-int					sv_check_pid(pid_t *pid, t_client *cl);
+int					sv_check_pid(pid_t *pid, t_client *cl, t_server *sv);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 void				sv_server_info(t_server *sv);
@@ -267,7 +264,7 @@ int					sv_check_path(char **path, t_client *cl);
 char				*sv_recreate_path(char *path);
 int					sv_change_working_directory(char *home, char *pwd);
 int					sv_data_accept(t_client *cl, t_server *sv);
-
+int					sv_data_put(t_client *cl, t_server *sv);
 /*
 ** Errors handler
 */
@@ -300,7 +297,7 @@ int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
 int					sv_put(char **cmds, t_client *cl, t_server *sv);
 int					sv_put_open_port(char *port, t_client *cl);
 
-int					sv_cmd_err(const char *str, char *cmd, t_client *cl,
+int					sv_cmd_err(const char *str, const char *cmd, t_client *cl,
 					t_server *sv);
 int					sv_cmd_ok(const char *str, t_client *cl, t_server *sv);
 

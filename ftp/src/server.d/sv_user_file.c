@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/21 21:54:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 15:58:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int			sv_user_file(t_server *sv)
 	if (!SV_CHECK(sv->options, sv_user_mode))
 		return (IS_OK);
 	if (access(SV_USERS_FILE, F_OK) < 0 || access(SV_USERS_FILE, R_OK) < 0)
-		return (ERR_USER_FILE);
+		return (ERR_OPEN);
 	if ((fd = open(SV_USERS_FILE, O_RDONLY)) < 0)
 		return (ERR_OPEN);
 	while ((errnb = get_next_line(fd, &line)) > 0)

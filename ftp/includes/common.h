@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/21 21:53:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 16:11:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ enum
 	ERR_WRITE = 30,
 	ERR_USER_FILE,
 	ERR_GETNEXTLINE,
+	ERR_TRANSFERT,
+	ERR_OPEN_PORT,
 };
 
 typedef struct		s_env

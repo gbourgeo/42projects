@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/12/22 03:21:31 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/12/22 16:13:30 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SER_C	= sv_main.c						\
 		sv_check_pid.c					\
 		sv_commands.c					\
 		sv_data_accept.c				\
+		sv_data_put.c					\
 		sv_get_addr.c					\
 		sv_params.c						\
 		sv_params_1.c					\

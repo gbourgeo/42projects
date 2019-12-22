@@ -6,27 +6,27 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 03:35:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 16:52:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/select.h>
 #include "sv_main.h"
 
-static void		sv_check_clients(t_client *client, t_server *sv)
+static void		sv_check_clients(t_client *cl, t_server *sv)
 {
-	while (client)
+	while (cl)
 	{
-		if (client->errnb[0] != IS_OK
-		|| client->errnb[1] != IS_OK
-		|| client->errnb[2] != IS_OK
-		|| (client->pid_ls > 0
-			&& (client->errnb[2] = sv_check_pid(&client->pid_ls, client)))
-		|| (client->data.pid > 0
-			&& (client->errnb[2] = sv_check_pid(&client->data.pid, client))))
-			client = sv_client_end(client, sv);
+		if (cl->errnb[0] != IS_OK
+		|| cl->errnb[1] != IS_OK
+		|| cl->errnb[2] != IS_OK
+		|| (cl->pid_ls > 0
+			&& (cl->errnb[2] = sv_check_pid(&cl->pid_ls, cl, sv)))
+		|| (cl->data.pid > 0
+			&& (cl->errnb[2] = sv_check_pid(&cl->data.pid, cl, sv))))
+			cl = sv_client_end(cl, sv);
 		else
-			client = client->next;
+			cl = cl->next;
 	}
 }
 

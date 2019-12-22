@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:50:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 16:02:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int				sv_signin(char **cmds, t_client *cl, t_server *sv)
 
 	if (!cmds[1] || !cmds[2])
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
+	if (!SV_CHECK(sv->options, sv_user_mode))
+		return (sv_cmd_err("Sign-in Unavailable", cmds[0], cl, sv));
 	ptr = sv_getuserbyname(sv->users, cmds[1]);
 	if (ptr)
 		if (!ft_strcmp(ptr->pass, cmds[2]))
