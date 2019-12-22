@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/12/22 00:59:40 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/12/22 03:21:31 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,8 +32,10 @@ CLI_C	= cl_main.c						\
 SERVEUR	= server
 SER_D	= src/server.d/
 SER_C	= sv_main.c						\
-		sv_check.c						\
+		sv_check_option.c				\
+		sv_check_pid.c					\
 		sv_commands.c					\
+		sv_data_accept.c				\
 		sv_get_addr.c					\
 		sv_params.c						\
 		sv_params_1.c					\
@@ -67,6 +69,7 @@ SER_C	+= sv_cd.c						\
 		sv_help.c						\
 		sv_ls.c							\
 		sv_mkdir.c						\
+		sv_put_open.c					\
 		sv_put.c						\
 		sv_pwd.c						\
 		sv_quit.c						\

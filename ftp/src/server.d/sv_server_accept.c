@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:18:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 02:18:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,7 @@ static int		integrate_client(t_client *cl, t_server *sv)
 	sv->connected++;
 	print_info(cl, sv);
 	if (SV_CHECK(sv->options, sv_user_mode))
-		cl->errnb[0] = sv_client_write("Server in user mode only. You must "
-		"signin to complete connection.\n", cl);
+		cl->errnb[0] = sv_client_write("You must signin to connect...\n", cl);
 	return (IS_OK);
 }
 
@@ -69,6 +68,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->home = sv_guest_home(sv->users, sv);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
+	cl->data.fd = -1;
 	user = sv_getuserbyname(sv->users, SV_GUEST_NAME);
 	if (SV_CHECK(sv->options, sv_user_mode))
 		cl->user = (user) ? *user : (t_user){ 0 };

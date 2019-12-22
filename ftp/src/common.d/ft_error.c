@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:54:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 03:40:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ const char		*ft_get_error(int errnb)
 		"setsockopt failed.", "listen(AF_INET) failed.", "open failed.",
 		"listen(AF_INET6) failed.", "malloc failed.", "select failed.",
 		"accept IP_V4 failed.", "accept IP_V6 failed.", "recv failed.",
-		"Client disconnected.", "signal received.", "wait failed.",
+		"disconnected.", "signal received.", "wait failed.",
 		"fork failed.", "dup2 failed.", "execv failed", "send failed.",
 		"invalid username/password.", "failed to change working directory.",
 		"invalid command.", "user already registered", "write failed",

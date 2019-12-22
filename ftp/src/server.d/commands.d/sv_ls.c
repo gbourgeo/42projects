@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 19:10:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 03:21:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 static int		sv_ls_fork(char **cmds, t_client *cl)
 {
-	cl->pid = fork();
-	if (cl->pid < 0)
+	cl->pid_ls = fork();
+	if (cl->pid_ls < 0)
 		return (ERR_FORK);
-	else if (cl->pid == 0)
+	else if (cl->pid_ls == 0)
 	{
 		close(STDERR_FILENO);
 		if (dup2(cl->fd, STDOUT_FILENO) < 0)

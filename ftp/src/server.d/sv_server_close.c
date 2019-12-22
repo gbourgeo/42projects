@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/21 23:51:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 03:44:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,54 +16,37 @@
 #include <unistd.h>
 #include "sv_main.h"
 
-static void		sv_send_error_msg(int errnb[2], t_client *cl, t_server *sv)
+static void		print_info(int version, t_server *sv)
 {
-	if (errnb[0] >= 0)
-	{
-		ft_strcpy(cl->wr.buff, sv->info.progname);
-		ft_strcat(cl->wr.buff, ": ");
-		ft_strcat(cl->wr.buff, ft_get_error(errnb[0]));
-		ft_strcat(cl->wr.buff, "\n");
-		send(cl->fd, cl->wr.buff, ft_strlen(cl->wr.buff),
-			MSG_DONTWAIT | MSG_NOSIGNAL);
-	}
-	if (errnb[1] >= 0)
-	{
-		ft_strcpy(cl->wr.buff, sv->info.progname);
-		ft_strcat(cl->wr.buff, ": ");
-		ft_strcat(cl->wr.buff, ft_get_error(errnb[1]));
-		ft_strcat(cl->wr.buff, "\n");
-		send(cl->fd, cl->wr.buff, ft_strlen(cl->wr.buff),
-			MSG_DONTWAIT | MSG_NOSIGNAL);
-	}
+	if (!SV_CHECK(sv->options, sv_interactive))
+		return ;
+	printf("Closing IPv"COLOR_GREEN"%s"COLOR_RESET"...\n",
+	(version == sv_v4) ? "4" : "6");
 }
 
-static void		print_fatal_error(int version, int errnb[2])
+static void		send_err(int errnb, t_client *cl)
 {
-	if (errnb[0] > 0)
-		dprintf(STDERR_FILENO, COLOR_BOLD""COLOR_RED"FATAL"COLOR_RESET
-		": %s...\n", ft_get_error(errnb[0]));
-	if (errnb[1] > 0)
-		dprintf(STDERR_FILENO, COLOR_BOLD""COLOR_RED"FATAL"COLOR_RESET
-		": %s...\n", ft_get_error(errnb[1]));
-	dprintf(STDERR_FILENO, COLOR_RED"FATAL"COLOR_RESET": Closing IPv%c...\n",
-	(version == sv_v4) ? '4' : '6');
+	const char	*error;
+
+	error = ft_get_error(errnb);
+	if (send(cl->fd, "Server: ", 8, MSG_DONTWAIT | MSG_NOSIGNAL) > 0)
+		if (send(cl->fd, error, ft_strlen(error), MSG_DONTWAIT | MSG_NOSIGNAL) > 0)
+			send(cl->fd, "\n", 1, MSG_DONTWAIT | MSG_NOSIGNAL);
 }
 
-void			sv_server_close(int version, int errnb[2], t_server *sv)
+void			sv_server_close(int version, t_server *sv)
 {
 	t_client	*cl;
 
 	if ((version != sv_v4 && version != sv_v6) || sv->ip[version] <= 0)
 		return ;
-	if (SV_CHECK(sv->options, sv_interactive))
-		print_fatal_error(version, errnb);
+	print_info(version, sv);
 	cl = sv->clients;
 	while (cl)
 	{
 		if (cl->version == version)
 		{
-			sv_send_error_msg(errnb, cl, sv);
+			send_err(sv->errnb[version], cl);
 			cl = sv_client_end(cl, sv);
 		}
 		else

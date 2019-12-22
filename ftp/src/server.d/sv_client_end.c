@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:51:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 03:40:33 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,34 @@
 #include <unistd.h>
 #include "sv_main.h"
 
+static void		print_info(t_client *cl, t_server *sv)
+{
+	if (!SV_CHECK(sv->options, sv_interactive))
+		return ;
+	if (cl->errnb[0] > 0)
+		printf("Client "COLOR_BOLD""COLOR_RED"%d"COLOR_RESET": %s\n",
+		cl->fd, ft_get_error(cl->errnb[0]));
+	if (cl->errnb[1] > 0)
+		printf("Client "COLOR_BOLD""COLOR_RED"%d"COLOR_RESET": %s\n",
+		cl->fd, ft_get_error(cl->errnb[1]));
+	if (cl->errnb[2] > 0)
+		printf("Client "COLOR_BOLD""COLOR_RED"%d"COLOR_RESET": %s\n",
+		cl->fd, ft_get_error(cl->errnb[2]));
+}
+
 t_client		*sv_client_end(t_client *cl, t_server *sv)
 {
 	t_client	*ret;
 
-	if (SV_CHECK(sv->options, sv_interactive))
-		printf("Client "COLOR_YELLOW"%d"COLOR_RESET": disconnect.\n", cl->fd);
-	if (cl->pid > 0)
-		kill(cl->pid, SIGKILL);
+	print_info(cl, sv);
+	if (cl->data.pid > 0)
+		kill(cl->data.pid, SIGKILL);
+	if (cl->data.fd > 0)
+		close(cl->data.fd);
+	if (cl->data.socket > 0)
+		close(cl->data.socket);
+	if (cl->pid_ls > 0)
+		kill(cl->pid_ls, SIGKILL);
 	close(cl->fd);
 	ft_strdel(&cl->pwd);
 	ft_strdel(&cl->oldpwd);

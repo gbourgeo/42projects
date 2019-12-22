@@ -6,65 +6,27 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 17:56:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 03:35:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifdef __linux__
-# define _DEFAULT_SOURCE
-#endif
-#include <sys/wait.h>
 #include <sys/select.h>
 #include "sv_main.h"
 
-static void		sv_check_pid(t_client *cl, t_server *sv)
+static void		sv_check_clients(t_client *client, t_server *sv)
 {
-	int			ret;
-	int			status;
-
-	(void)sv;
-	ret = wait4(cl->pid, &status, WNOHANG, NULL);
-	if (ret <= 0 || ret != cl->pid)
+	while (client)
 	{
-		if (ret < 0)
-			cl->errnb[0] = ERR_WAIT;
-		return ;
-	}
-	if (WIFEXITED(status))
-		cl->errnb[0] = (WEXITSTATUS(status)) ?
-			sv_client_write(ERR_OUTPUT, cl) :
-			sv_client_write(OK_OUTPUT, cl);
-	else if (WIFSIGNALED(status))
-		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
-	else if (HAS_WCOREDUMP && WCOREDUMP(status))
-		cl->errnb[0] = sv_client_write(ERR_OUTPUT, cl);
-	else if (WSTOPSIG(status) || WIFCONTINUED(status))
-		return ;
-	cl->pid = 0;
-}
-
-static void		sv_check_clients(t_server *sv)
-{
-	t_client	*cl;
-
-	cl = sv->clients;
-	while (cl)
-	{
-		if (cl->pid > 0)
-			sv_check_pid(cl, sv);
-		if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK)
-		{
-			if ((cl->errnb[0] != IS_OK && cl->errnb[0] != ERR_DISCONNECT)
-			|| (cl->errnb[1] != IS_OK && cl->errnb[1] != ERR_DISCONNECT))
-			{
-				sv_server_close(cl->version, cl->errnb, sv);
-				cl = sv->clients;
-			}
-			else
-				cl = sv_client_end(cl, sv);
-		}
+		if (client->errnb[0] != IS_OK
+		|| client->errnb[1] != IS_OK
+		|| client->errnb[2] != IS_OK
+		|| (client->pid_ls > 0
+			&& (client->errnb[2] = sv_check_pid(&client->pid_ls, client)))
+		|| (client->data.pid > 0
+			&& (client->errnb[2] = sv_check_pid(&client->data.pid, client))))
+			client = sv_client_end(client, sv);
 		else
-			cl = cl->next;
+			client = client->next;
 	}
 }
 
@@ -87,6 +49,10 @@ static int		sv_init_fd(fd_set *fdr, fd_set *fdw, t_server *sv)
 		FD_SET(cl->fd, fdw);
 		if (cl->fd > max)
 			max = cl->fd;
+		if (cl->data.fd > 0)
+			FD_SET(cl->data.fd, fdr);
+		if (cl->data.fd > max)
+			max = cl->data.fd;
 		cl = cl->next;
 	}
 	return (max);
@@ -95,17 +61,14 @@ static int		sv_init_fd(fd_set *fdr, fd_set *fdw, t_server *sv)
 static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 {
 	t_client	*cl;
-	int			errnb[2];
 
 	cl = sv->clients;
-	errnb[0] = IS_OK;
-	errnb[1] = IS_OK;
 	if (sv->ip[sv_v4] > 0 && FD_ISSET(sv->ip[sv_v4], fdr))
-		if ((errnb[0] = sv_server_accept(sv_v4, sv)) != IS_OK)
-			sv_server_close(sv_v4, errnb, sv);
+		if ((sv->errnb[0] = sv_server_accept(sv_v4, sv)) != IS_OK)
+			sv_server_close(sv_v4, sv);
 	if (sv->ip[sv_v6] > 0 && FD_ISSET(sv->ip[sv_v6], fdr))
-		if ((errnb[1] = sv_server_accept(sv_v6, sv)) != IS_OK)
-			sv_server_close(sv_v6, errnb, sv);
+		if ((sv->errnb[1] = sv_server_accept(sv_v6, sv)) != IS_OK)
+			sv_server_close(sv_v6, sv);
 	while (cl && ret)
 	{
 		if (FD_ISSET(cl->fd, fdr))
@@ -114,6 +77,11 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 			cl->errnb[1] = cl->fct_write(cl, sv);
 		if (FD_ISSET(cl->fd, fdr) || FD_ISSET(cl->fd, fdw))
 			ret--;
+		if (cl->data.fd > 0 && FD_ISSET(cl->data.fd, fdr))
+		{
+			cl->errnb[2] = sv_data_accept(cl, sv);
+			ret--;
+		}
 		cl = cl->next;
 	}
 }
@@ -132,7 +100,7 @@ int				sv_server_loop(t_server *sv)
 	timeout.tv_usec = 0;
 	while (sv->ip[sv_v4] > 0 || sv->ip[sv_v6] > 0)
 	{
-		sv_check_clients(sv);
+		sv_check_clients(sv->clients, sv);
 		max = sv_init_fd(&fd_read, &fd_write, sv);
 		ret = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
 		if (ret < 0)
