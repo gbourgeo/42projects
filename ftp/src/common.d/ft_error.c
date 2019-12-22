@@ -6,10 +6,15 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 02:12:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 00:54:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define _POSIX_C_SOURCE 200809L
+#endif
+#include <unistd.h>
+#include <stdio.h>
 #include "common.h"
 #include "libft.h"
 
@@ -20,11 +25,7 @@ int				ft_error(int errnb, t_common *info)
 	if ((err = ft_get_error(errnb)))
 	{
 		if (info)
-		{
-			ft_putstr_fd(info->progname, 2);
-			ft_putstr_fd(": ", 2);
-			ft_putendl_fd(err, 2);
-		}
+			dprintf(STDERR_FILENO, "%s: %s\n", info->progname, err);
 		if (*err == '-')
 			return (2);
 	}
@@ -34,8 +35,8 @@ int				ft_error(int errnb, t_common *info)
 const char		*ft_get_error(int errnb)
 {
 	static const char	*errors[] = {
-		"Disconnected.", "-- Server Help", "-- Missing parameter",
-		"-- Wrong parameter", "-- Invalid parameter",
+		"Disconnected.", "-- Help", "Missing parameter",
+		"Wrong parameter", "Invalid parameter",
 		"parameter contains non digit characters.",
 		"only one port can be specified.", "getaddrinfo failed.",
 		"port already in use (v4)", "port already in use (v6)",
@@ -46,6 +47,7 @@ const char		*ft_get_error(int errnb)
 		"fork failed.", "dup2 failed.", "execv failed", "send failed.",
 		"invalid username/password.", "failed to change working directory.",
 		"invalid command.", "user already registered", "write failed",
+		"users file not found.", "get_next_line failed.",
 	};
 
 	if (errnb < 0 || errnb > (int)(sizeof(errors) / sizeof(errors[0])))

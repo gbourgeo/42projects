@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 00:47:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 00:50:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,10 @@
 
 static void		print_info(char *name, t_client *cl, t_server *sv)
 {
-	if (SV_CHECK(sv->options, sv_interactive))
-	{
-		ft_putstr("Client \x1B[0;33m");
-		ft_putnbr(cl->fd);
-		ft_putstr("\x1B[0m: Successfully logged in as `");
-		ft_putstr(name);
-		ft_putendl("`");
-	}
+	if (!SV_CHECK(sv->options, sv_interactive))
+		return ;
+	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": Logged in as '", cl->fd);
+	printf(COLOR_ITALIC"%s"COLOR_RESET"'.\n", name);
 }
 
 int				sv_signin(char **cmds, t_client *cl, t_server *sv)

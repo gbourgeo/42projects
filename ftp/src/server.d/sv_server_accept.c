@@ -6,20 +6,19 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 17:38:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 00:18:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-static void		print_info_client(t_client *cl)
+static void		print_info(t_client *cl, t_server *sv)
 {
-	ft_putstr("Client \x1B[33m");
-	ft_putnbr(cl->fd);
-	ft_putstr("\x1B[0m: connected to \"\x1B[1;35m");
-	ft_putstr(cl->home);
-	ft_putendl("\x1B[0m\".");
+	if (!SV_CHECK(sv->options, sv_interactive))
+	return ;
+	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": connected to %s.\n",
+	cl->fd, cl->home);
 }
 
 static char		*sv_guest_home(t_user *us, t_server *sv)
@@ -43,8 +42,7 @@ static int		integrate_client(t_client *cl, t_server *sv)
 	if (!cl->pwd || !cl->oldpwd)
 		return (ERR_MALLOC);
 	sv->connected++;
-	if (SV_CHECK(sv->options, sv_interactive))
-		print_info_client(cl);
+	print_info(cl, sv);
 	if (SV_CHECK(sv->options, sv_user_mode))
 		cl->errnb[0] = sv_client_write("Server in user mode only. You must "
 		"signin to complete connection.\n", cl);

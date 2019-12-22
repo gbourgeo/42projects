@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 18:56:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 21:54:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,27 +39,27 @@ static int	get_user(char *line, t_server *sv)
 int			sv_user_file(t_server *sv)
 {
 	int		fd;
-	char	*line;
 	int		errnb;
+	char	*line;
 
+	line = NULL;
 	errnb = IS_OK;
 	if (!SV_CHECK(sv->options, sv_user_mode))
 		return (IS_OK);
 	if (access(SV_USERS_FILE, F_OK) < 0 || access(SV_USERS_FILE, R_OK) < 0)
-		return (IS_OK);
+		return (ERR_USER_FILE);
 	if ((fd = open(SV_USERS_FILE, O_RDONLY)) < 0)
 		return (ERR_OPEN);
-	line = NULL;
 	while ((errnb = get_next_line(fd, &line)) > 0)
 	{
-		if (!line)
-			continue ;
 		if ((errnb = get_user(line, sv)) != IS_OK)
 			break ;
 		ft_strdel(&line);
 	}
 	ft_strdel(&line);
 	close(fd);
+	if (errnb < 0)
+		errnb = ERR_GETNEXTLINE;
 	if (errnb == IS_OK)
 		errnb = get_user("C:"SV_GUEST_NAME"::0:", sv);
 	return (errnb);

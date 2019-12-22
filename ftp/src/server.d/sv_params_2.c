@@ -6,10 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 21:11:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/25 00:11:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 23:44:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define _POSIX_C_SOURCE 200809L
+#endif
 #include <unistd.h>
 #include "sv_main.h"
 
@@ -52,11 +55,7 @@ int				sv_param_p(const char **arg, int *i, t_server *sv)
 		err = "path not a directory.";
 	if (err == NULL)
 		return (param_p_new_home(arg[*i], sv));
-	ft_putstr_fd(sv->info.progname, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putstr_fd(arg[*i], 2);
-	ft_putstr_fd(": ", 2);
-	ft_putendl_fd(err, 2);
+	dprintf(STDERR_FILENO, "%s: %s: %s\n", sv->info.progname, arg[*i], err);
 	return (ERR_INVALID_PARAM);
 }
 

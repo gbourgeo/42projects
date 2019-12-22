@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sv_params.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:02:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 18:47:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 00:14:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ t_opt			*sv_params(int getsize, int tofree)
 		return (NULL);
 	}
 	if (getsize)
-		return ((opts == NULL) ? (t_opt *)0 : (t_opt *)8);
+		return ((opts == NULL) ? (t_opt *)0 : (t_opt *)7);
 	if (opts != NULL)
 		return (opts);
-	if ((opts = ft_memalloc(sizeof(*opts) * 8)) == NULL)
+	if ((opts = ft_memalloc(sizeof(*opts) * 7)) == NULL)
 		return (NULL);
 	define_all(opts);
 	return (opts);

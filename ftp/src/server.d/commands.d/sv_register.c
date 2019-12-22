@@ -6,22 +6,19 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 17:47:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 23:39:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static void			print_info(char *name, t_client *cl, t_server *sv)
+static void			print_info(char **cmds, t_client *cl, t_server *sv)
 {
-	if (SV_CHECK(sv->options, sv_interactive))
-	{
-		ft_putstr("Client \x1B[0;33m");
-		ft_putnbr(cl->fd);
-		ft_putstr("\x1B[0m: Successfully registered `");
-		ft_putstr(name);
-		ft_putendl("`");
-	}
+	if (!SV_CHECK(sv->options, sv_interactive))
+		return ;
+	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": Successfully ", cl->fd);
+	printf("reistered "COLOR_UNDERLINED);
+	printf("%s:%s:***:%s:"COLOR_RESET".\n", cmds[1], cmds[2], cmds[4]);
 }
 
 static int			register_err(const char *str, char *cmdname, t_client *cl)
@@ -52,8 +49,7 @@ int					sv_register(char **cmds, t_client *cl, t_server *sv)
 	int			errnb;
 
 	users = sv->users;
-	if (!cmds[1] || !cmds[1][0] || !cmds[2] || !cmds[2][0]
-	|| !cmds[3] || !cmds[3][0])
+	if (!cmds[1] || !cmds[2] || !cmds[3] || !cmds[4])
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
 	if (users == NULL)
 		return (register_err("Registration unavailable", cmds[0], cl));
@@ -68,7 +64,7 @@ int					sv_register(char **cmds, t_client *cl, t_server *sv)
 	if ((errnb = sv_new_user(&cmds[1], &sv->users->next, sv)) != IS_OK)
 		return (errnb);
 	sv->users->next->type |= us_new;
-	print_info(cmds[2], cl, sv);
+	print_info(cmds, cl, sv);
 	if (sv_save_user(sv->users->next, cl, sv))
 		return (sv_cmd_err("Failed to register", cmds[0], cl, sv));
 	return (sv_cmd_ok("Successfully registered", cl, sv));

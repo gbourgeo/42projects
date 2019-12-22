@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 19:24:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 00:46:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <signal.h>
 # include <netinet/in.h>
 # include <sys/stat.h>
+# include <stdio.h>
 # include "libft.h"
 # include "common.h"
 
@@ -31,15 +32,23 @@
 #  define HAS_WCOREDUMP 1
 # endif
 
-/*
-** CLIENTS_MAX :
-*/
+# define SV_CHECK			sv_check
+# define SV_USERS_FILE		".sv_users"
+# define SV_GUEST_NAME		"guest"
+# define CLIENTS_MAX		20
 
-# define CLIENTS_MAX	20
-
-# define SV_CHECK		sv_check
-# define SV_USERS_FILE	"/Users/gbourgeo/gbourgeo/ftp/.sv_users"
-# define SV_GUEST_NAME	"guest"
+# define COLOR_RESET		"\x1B[0m"
+# define COLOR_BOLD			"\x1B[1m"
+# define COLOR_DARK			"\x1B[2m"
+# define COLOR_ITALIC		"\x1B[3m"
+# define COLOR_UNDERLINED	"\x1B[4m"
+# define COLOR_RED			"\x1B[31m"
+# define COLOR_GREEN		"\x1B[32m"
+# define COLOR_YELLOW		"\x1B[33m"
+# define COLOR_BLUE			"\x1B[34m"
+# define COLOR_PINK			"\x1B[35m"
+# define COLOR_LIGHT_BLUE	"\x1B[36m"
+# define COLOR_GREY			"\x1B[37m"
 
 /*
 ** Enumeration for USERS registered
@@ -66,6 +75,18 @@ enum
 };
 
 /*
+** Client Ring-Buffer structure
+*/
+
+typedef struct		s_buff
+{
+	char			*head;
+	char			*tail;
+	char			buff[CMD_BUFF_SIZE];
+	size_t			len;
+}					t_buff;
+
+/*
 ** Users structure
 */
 
@@ -80,16 +101,13 @@ typedef struct		s_user
 }					t_user;
 
 /*
-** Client Ring-Buffer structure
+** Data transfert structure
 */
-
-typedef struct		s_buff
+typedef struct		s_data
 {
-	char			*head;
-	char			*tail;
-	char			buff[CMD_BUFF_SIZE];
-	size_t			len;
-}					t_buff;
+	pid_t			pid;
+	int				fd;
+}					t_data;
 
 /*
 ** Client structure
@@ -108,6 +126,7 @@ typedef struct		s_client
 	char			*pwd;
 	char			*oldpwd;
 	pid_t			pid;
+	t_data			data;
 	t_user			user;
 	struct s_client	*prev;
 	struct s_client	*next;
@@ -190,7 +209,7 @@ typedef struct		s_opt
 typedef struct		s_param
 {
 	t_opt			*opts;
-	int				size;
+	size_t			size;
 	int				i;
 }					t_param;
 
@@ -227,7 +246,7 @@ void				sv_free_env(t_env *env);
 void				sv_free_user(t_user **user);
 void				sv_server_end(t_server *sv);
 t_user				*sv_getuserbyname(t_user *users, const char *name);
-int					sv_getcommandsright(int rights);
+size_t				sv_getcommandsright(int rights);
 
 /*
 ** Client functions

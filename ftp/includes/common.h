@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 17:47:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 21:53:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,9 @@ enum
 	ERR_CHDIR,
 	ERR_COMMAND,
 	ERR_REGISTERED,
-	ERR_WRITE,
+	ERR_WRITE = 30,
+	ERR_USER_FILE,
+	ERR_GETNEXTLINE,
 };
 
 typedef struct		s_env

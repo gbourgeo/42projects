@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:58:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 19:50:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 21:47:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ t_command			*sv_commands(int getsize, int tofree)
 	return (cmds);
 }
 
-int					sv_getcommandsright(int rights)
+size_t				sv_getcommandsright(int rights)
 {
 	if (rights < 1)
 		return (3);
@@ -68,5 +68,5 @@ int					sv_getcommandsright(int rights)
 		return (6);
 	if (rights < 3)
 		return (11);
-	return ((int)sv_commands(1, 0));
+	return ((size_t)sv_commands(1, 0));
 }

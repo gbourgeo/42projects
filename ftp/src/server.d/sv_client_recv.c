@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 19:25:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/22 00:49:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,14 @@ static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 	return (sv_cmd_err(ft_get_error(ERR_COMMAND), cmd[0], cl, sv));
 }
 
-static void		print_buff(char *buff, int size, t_client *cl)
+static void		print_info(char *buff, int size, t_client *cl, t_server *sv)
 {
-	ft_putstr("Client \x1B[33m");
-	ft_putnbr(cl->fd);
-	ft_putstr("\x1B[0m: \"");
+	if (!SV_CHECK(sv->options, sv_interactive))
+		return ;
+	printf("Client "COLOR_YELLOW"%d"COLOR_RESET" :\"", cl->fd);
+	fflush(stdout);
 	write(1, buff, size);
-	ft_putendl("\"");
+	printf("\"\n");
 }
 
 static int		sv_buffcpy(t_client *cl, t_server *sv)
@@ -64,8 +65,7 @@ static int		sv_buffcpy(t_client *cl, t_server *sv)
 	if (++cl->rd.head >= cl->rd.buff + CMD_BUFF_SIZE)
 		cl->rd.head = cl->rd.buff;
 	buff[i] = '\0';
-	if (SV_CHECK(sv->options, sv_interactive))
-		print_buff(buff, i, cl);
+	print_info(buff, i, cl, sv);
 	if ((cmd = ft_split_whitespaces(buff)) == NULL)
 		return (ERR_MALLOC);
 	i = sv_client_commands(cmd, cl, sv);

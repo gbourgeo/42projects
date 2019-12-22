@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 00:37:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 18:40:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 21:48:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ static int		only_positive_number(const char *str)
 
 static int		get_value(char **av, t_param *p, t_server *sv)
 {
-	int			j;
-	int			k;
+	size_t		j;
+	size_t		k;
 	int			errnb;
 
 	j = 0;
@@ -60,7 +60,7 @@ int				sv_params_get(char **av, t_server *sv)
 	int			errnb;
 
 	p.opts = sv_params(0, 0);
-	p.size = (int)sv_params(1, 0);
+	p.size = (size_t)sv_params(1, 0);
 	p.i = 1;
 	sv->options |= ((1 << sv_v4) | (1 << sv_v6));
 	while (av[p.i])

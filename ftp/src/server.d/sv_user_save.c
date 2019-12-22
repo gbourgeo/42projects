@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 01:08:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 17:53:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 23:29:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,7 @@ t_server *sv)
 {
 	if (!SV_CHECK(sv->options, sv_interactive))
 		return ;
-	ft_putstr("Client \x1B[0;33m");
-	ft_putnbr(cl->fd);
-	ft_putstr("\x1B[0m: ");
-	ft_putstr(s1);
-	ft_putstr(" `");
-	ft_putstr(s2);
-	ft_putendl("`");
+	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": %s `%s`\n", cl->fd, s1, s2);
 }
 
 static void		get_info(char *info, t_user *user)

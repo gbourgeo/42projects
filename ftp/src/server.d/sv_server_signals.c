@@ -6,10 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 02:07:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 19:50:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/21 23:57:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define _POSIX_C_SOURCE 200809L
+#endif
+#include <unistd.h>
 #include "sv_main.h"
 
 int			sv_init_sig(t_server *sv)
@@ -42,12 +46,14 @@ static void	print_info(int sig, t_server *sv)
 
 	if (!SV_CHECK(sv->options, sv_interactive))
 		return ;
-	ft_putstr_fd("\n\x1B[31m********************\x1B[0m Signal \x1B[1;33m", 2);
+	dprintf(STDERR_FILENO, "\n"COLOR_RED"********************"COLOR_RESET);
+	dprintf(STDERR_FILENO, " Signal "COLOR_BOLD""COLOR_BLUE);
 	if (sig > 0 && sig < (int)(sizeof(signame) / sizeof(signame[0])))
-		ft_putstr_fd(signame[sig], 2);
+		dprintf(STDERR_FILENO, "%s", signame[sig]);
 	else
-		ft_putstr_fd("UNKNOWN", 2);
-	ft_putstr_fd("\x1B[0m received \x1B[31m********************\x1B[0m\n", 2);
+		dprintf(STDERR_FILENO, "%d", sig);
+	dprintf(STDERR_FILENO, COLOR_RESET" received ");
+	dprintf(STDERR_FILENO, COLOR_RED"********************"COLOR_RESET"\n");
 }
 
 void		sv_signals_hdlr(int sig)
