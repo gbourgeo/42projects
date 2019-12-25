@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 15:58:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/23 13:00:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ static int	get_user(char *line, t_server *sv)
 				errnb = ERR_MALLOC;
 			else if (sv_user_parse(data, sv))
 				errnb = sv_new_user(data, &sv->users, sv);
-			ft_freetab(&data);
+			ft_tabdel(&data);
 		}
-	ft_freetab(&array);
+	ft_tabdel(&array);
 	return (errnb);
 }
 

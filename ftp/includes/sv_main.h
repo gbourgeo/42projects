@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 17:02:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/25 02:20:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 # define SV_USERS_FILE		".sv_users"
 # define SV_GUEST_NAME		"guest"
 # define CLIENTS_MAX		20
+# define TRANSFERT_TIMEOUT	5
 
 # define COLOR_RESET		"\x1B[0m"
 # define COLOR_BOLD			"\x1B[1m"
@@ -75,6 +76,27 @@ enum
 };
 
 /*
+** Enumeration for TRANSFERED FILE type
+*/
+enum
+{
+	tf_binary = 1,
+	tf_ascii,
+};
+
+/*
+** Packet received for put, get, etc.:
+**	size : Total size of the file
+**	type : BINARY (1) or ASCII (2)
+*/
+
+typedef struct	s_hdr
+{
+	long 		size;
+	int			type;
+}				t_hdr;
+
+/*
 ** Client Ring-Buffer structure
 */
 
@@ -106,9 +128,12 @@ typedef struct		s_user
 typedef struct		s_data
 {
 	int				fd;
+	time_t			timeout;
 	int				socket;
 	pid_t			pid;
+	int				filefd;
 	int				(*function)();
+	char			**args;
 }					t_data;
 
 /*
@@ -245,10 +270,10 @@ int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 void				sv_server_info(t_server *sv);
 int					sv_server_loop(t_server *sv);
-void				sv_server_close(int version, t_server *sv);
+void				sv_server_end(t_server *sv, int sendmsg);
+void				sv_server_close(int version, int sendmsg, t_server *sv);
 void				sv_free_env(t_env *env);
 void				sv_free_user(t_user **user);
-void				sv_server_end(t_server *sv);
 t_user				*sv_getuserbyname(t_user *users, const char *name);
 size_t				sv_getcommandsright(int rights);
 
@@ -260,11 +285,12 @@ int					sv_client_recv(t_client *cl, t_server *sv);
 int					sv_client_send(t_client *cl);
 int					sv_client_write(const char *str, t_client *cl);
 t_client			*sv_client_end(t_client *cl, t_server *sv);
+t_client			*sv_client_timeout(t_client *cl, t_server *sv);
 int					sv_check_path(char **path, t_client *cl);
 char				*sv_recreate_path(char *path);
 int					sv_change_working_directory(char *home, char *pwd);
 int					sv_data_accept(t_client *cl, t_server *sv);
-int					sv_data_put(t_client *cl, t_server *sv);
+
 /*
 ** Errors handler
 */
@@ -294,8 +320,10 @@ void				sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv);
 int					sv_register(char **cmds, t_client *cl, t_server *sv);
 int					sv_signin(char **cmds, t_client *cl, t_server *sv);
 int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
-int					sv_put(char **cmds, t_client *cl, t_server *sv);
-int					sv_put_open_port(char *port, t_client *cl);
+int					sv_transfer(char **cmds, t_client *cl, t_server *sv);
+int					sv_open_port(char *port, t_client *cl);
+int					sv_receive_hdr(int fd, t_hdr *hdr);
+int					sv_put(t_client *cl, t_server *sv);
 
 int					sv_cmd_err(const char *str, const char *cmd, t_client *cl,
 					t_server *sv);

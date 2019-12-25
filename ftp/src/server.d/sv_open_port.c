@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_put_open.c                                      :+:      :+:    :+:   */
+/*   sv_open_port.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 01:09:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 02:49:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/23 11:49:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <arpa/inet.h>
 #include "sv_main.h"
 
-static int		put_findsocket(struct addrinfo *p, int version)
+static int		open_findsocket(struct addrinfo *p, int version)
 {
 	int		sock;
 	int		on;
@@ -52,7 +52,7 @@ static int		init_addrinfo(struct addrinfo **results, char *port)
 	return (1);
 }
 
-int				sv_put_open_port(char *port, t_client *cl)
+int				sv_open_port(char *port, t_client *cl)
 {
 	struct addrinfo	*results;
 	struct addrinfo	*p;
@@ -64,9 +64,9 @@ int				sv_put_open_port(char *port, t_client *cl)
 	while (p && cl->data.fd < 0)
 	{
 		if (cl->version == sv_v4 && p->ai_family == AF_INET)
-			cl->data.fd = put_findsocket(p, cl->version);
+			cl->data.fd = open_findsocket(p, cl->version);
 		else if (cl->version == sv_v6 && p->ai_family == AF_INET6)
-			cl->data.fd = put_findsocket(p, cl->version);
+			cl->data.fd = open_findsocket(p, cl->version);
 		p = p->ai_next;
 	}
 	freeaddrinfo(results);

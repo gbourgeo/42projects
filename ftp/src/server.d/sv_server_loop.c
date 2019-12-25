@@ -6,11 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 16:52:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/25 02:12:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/select.h>
+#include <time.h>
 #include "sv_main.h"
 
 static void		sv_check_clients(t_client *cl, t_server *sv)
@@ -25,6 +26,9 @@ static void		sv_check_clients(t_client *cl, t_server *sv)
 		|| (cl->data.pid > 0
 			&& (cl->errnb[2] = sv_check_pid(&cl->data.pid, cl, sv))))
 			cl = sv_client_end(cl, sv);
+		else if (cl->data.fd > 0
+		&& time(NULL) - cl->data.timeout >= TRANSFERT_TIMEOUT)
+			cl = sv_client_timeout(cl, sv);
 		else
 			cl = cl->next;
 	}
@@ -65,10 +69,10 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 	cl = sv->clients;
 	if (sv->ip[sv_v4] > 0 && FD_ISSET(sv->ip[sv_v4], fdr))
 		if ((sv->errnb[0] = sv_server_accept(sv_v4, sv)) != IS_OK)
-			sv_server_close(sv_v4, sv);
+			sv_server_close(sv_v4, 1, sv);
 	if (sv->ip[sv_v6] > 0 && FD_ISSET(sv->ip[sv_v6], fdr))
 		if ((sv->errnb[1] = sv_server_accept(sv_v6, sv)) != IS_OK)
-			sv_server_close(sv_v6, sv);
+			sv_server_close(sv_v6, 1, sv);
 	while (cl && ret)
 	{
 		if (FD_ISSET(cl->fd, fdr))

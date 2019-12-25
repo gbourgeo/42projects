@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 16:11:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/25 01:54:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ enum
 	ERR_GETNEXTLINE,
 	ERR_TRANSFERT,
 	ERR_OPEN_PORT,
+	ERR_DATA_HDR,
+	ERR_TIMEOUT,
 };
 
 typedef struct		s_env
@@ -102,7 +104,7 @@ char				*ft_get_path(char *dest, char *home, char *lpwd,
 					char *oldpwd);
 char				*ft_get_command(char *cmd, char *paths, int n);
 void				ft_putendn(int nb);
-void				ft_freetab(char ***tab);
 void				ft_signals(void);
+void				ft_freetab2(char ***tab, int freeall);
 
 #endif

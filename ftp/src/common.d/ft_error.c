@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 16:10:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/25 01:54:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ const char		*ft_get_error(int errnb)
 		"invalid command.", "user already registered", "write failed",
 		"users file not found.", "get_next_line failed.",
 		"A transfert is already in progress", "Unable to open port",
+		"DATA header corrupted", "transfert timed out",
 	};
 
 	if (errnb < 0 || errnb > (int)(sizeof(errors) / sizeof(errors[0])))

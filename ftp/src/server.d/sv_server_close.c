@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 03:44:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/23 15:47:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,21 @@ static void		send_err(int errnb, t_client *cl)
 			send(cl->fd, "\n", 1, MSG_DONTWAIT | MSG_NOSIGNAL);
 }
 
-void			sv_server_close(int version, t_server *sv)
+void			sv_server_close(int version, int sendmsg, t_server *sv)
 {
 	t_client	*cl;
 
 	if ((version != sv_v4 && version != sv_v6) || sv->ip[version] <= 0)
 		return ;
-	print_info(version, sv);
+	if (sendmsg)
+		print_info(version, sv);
 	cl = sv->clients;
 	while (cl)
 	{
 		if (cl->version == version)
 		{
-			send_err(sv->errnb[version], cl);
+			if (sendmsg)
+				send_err(sv->errnb[version], cl);
 			cl = sv_client_end(cl, sv);
 		}
 		else

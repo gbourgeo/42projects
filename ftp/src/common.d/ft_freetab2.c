@@ -1,29 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_data_put.c                                      :+:      :+:    :+:   */
+/*   ft_freetab2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/22 16:15:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 16:58:57 by gbourgeo         ###   ########.fr       */
+/*   Created: 2015/08/20 10:42:25 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/12/23 12:21:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include "libft.h"
+#include "common.h"
 
-static void		print_info(const char *s, t_client *cl, t_server *sv)
+void			ft_freetab2(char ***tab, int freeall)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	int			i;
+
+	i = 0;
+	if (!tab || !*tab)
 		return ;
-	printf("Client \x1B[33m%d\x1B[0m: %s\n", cl->fd, s);
-}
-
-int				sv_data_put(t_client *cl, t_server *sv)
-{
-	int		errnb;
-
-	errnb = ERR_MALLOC;
-	print_info("Successfully connected to DATA port", cl, sv);
-	return (errnb);
+	while ((*tab)[i] != 0)
+	{
+		free((*tab)[i]);
+		(*tab)[i] = NULL;
+		i++;
+	}
+	if (freeall)
+		free(*tab);
+	*tab = NULL;
 }

@@ -6,53 +6,80 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 16:17:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/25 02:20:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "sv_main.h"
 
-static void		print_info(char *port, t_client *cl, t_server *sv)
+static void		print_info(const char *s, t_client *cl, t_server *sv)
 {
 	if (!SV_CHECK(sv->options, sv_interactive))
 		return ;
-	printf("Client \x1B[33m%d\x1B[0m: DATA port %s open.\n", cl->fd, port);
+	printf("Client \x1B[33m%d\x1B[0m: Ready to receive '%s'\n",
+		cl->fd, s);
 }
 
-static int		put_success(char *p, t_client *cl)
+static int		put_receive(t_data *data, t_hdr *hdr)
 {
-	int			errnb;
+	char	*buff;
+	long	size;
+	int		ret;
+	int		received;
+	int		errnb;
 
-	if ((errnb = sv_client_write("Port ", cl)) == IS_OK)
-		if ((errnb = sv_client_write(p, cl)) == IS_OK)
-			if ((errnb = sv_client_write(" open for transfert\n", cl)) == IS_OK)
-				errnb = sv_client_write(OK_OUTPUT, cl);
+	errnb = IS_OK;
+	if ((buff = malloc(hdr->size)) != NULL)
+		size = hdr->size;
+	else if ((buff = malloc(65000)) != NULL)
+		size = 65000;
+	else
+		return (ERR_MALLOC);
+	received = 0;
+	while (received < hdr->size && errnb == IS_OK)
+	{
+		ret = recv(data->socket, buff, size, MSG_DONTWAIT | MSG_NOSIGNAL);
+		if (ret <= 0)
+		{
+			errnb = sv_recv_error(ret);
+			continue ;
+		}
+		if (write(data->filefd, buff, ret) != ret)
+			errnb = ERR_WRITE;
+		received += ret;
+	}
+	free(buff);
 	return (errnb);
 }
 
-int				sv_put(char **cmds, t_client *cl, t_server *sv)
+static int		put_type(int type)
 {
-	char	*p;
-	int 	port;
-	int		errnb;
+	if (type == tf_binary)
+		return (0755);
+	if (type == tf_ascii)
+		return (0644);
+	return (0);
+}
 
-	port = 1024;
-	if (!cmds[1] || !cmds[1][0])
-		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	if (cl->data.fd > 0 || cl->data.pid > 0)
-		return (sv_cmd_err(ft_get_error(ERR_TRANSFERT), cmds[0], cl, sv));
-	while (++port < 65535)
-	{
-		if ((p = ft_itoa(port)))
-			if (sv_put_open_port(p, cl))
-			{
-				cl->data.function = sv_data_put;
-				errnb = put_success(p, cl);
-				print_info(p, cl, sv);
-				ft_strdel(&p);
-				return (errnb);
-			}
-		ft_strdel(&p);
-	}
-	return (sv_cmd_err(ft_get_error(ERR_OPEN_PORT), cmds[0], cl, sv));
+int				sv_put(t_client *cl, t_server *sv)
+{
+	t_hdr		hdr;
+	int			errnb;
+
+	print_info(cl->data.args[0], cl, sv);
+	if ((errnb = sv_receive_hdr(cl->data.socket, &hdr)) != IS_OK)
+		return (errnb);
+	if (!put_type(hdr.type))
+		return (ERR_DATA_HDR);
+	if ((cl->data.filefd = open(cl->data.args[0],
+		O_CREAT | O_TRUNC | O_WRONLY, put_type(hdr.type))) < 0)
+		return (ERR_OPEN);
+	if (errnb == IS_OK)
+		errnb = put_receive(&cl->data, &hdr);
+	close(cl->data.filefd);
+	return (errnb);
 }

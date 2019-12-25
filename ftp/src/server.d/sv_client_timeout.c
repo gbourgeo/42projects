@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_freetab.c                                       :+:      :+:    :+:   */
+/*   sv_client_timeout.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/08/20 10:42:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/23 18:51:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2019/12/25 02:08:08 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/12/25 02:19:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "common.h"
+#include <unistd.h>
+#include "sv_main.h"
 
-void			ft_freetab(char ***tab)
+t_client			*sv_client_timeout(t_client *cl, t_server *sv)
 {
-	int			i;
-
-	i = 0;
-	if (!tab || !*tab)
-		return ;
-	while ((*tab)[i] != 0)
-	{
-		free((*tab)[i]);
-		(*tab)[i] = NULL;
-		i++;
-	}
-	free(*tab);
-	*tab = NULL;
+	close(cl->data.fd);
+	cl->data.fd = -1;
+	cl->errnb[2] = sv_cmd_err("Connection timeout", "transfert", cl, sv);
+	if (SV_CHECK(sv->options, sv_interactive))
+		printf("Client "COLOR_RED"%d"COLOR_RESET": Transfert timeout\n",
+		cl->fd);
+	return (cl);
 }

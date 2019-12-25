@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:49:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/23 12:59:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int		sv_buffcpy(t_client *cl, t_server *sv)
 	if ((cmd = ft_split_whitespaces(buff)) == NULL)
 		return (ERR_MALLOC);
 	i = sv_client_commands(cmd, cl, sv);
-	ft_freetab(&cmd);
+	ft_tabdel(&cmd);
 	return (i);
 }
 
