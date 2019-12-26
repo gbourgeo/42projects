@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:41:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:48:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,14 +223,8 @@ typedef struct		s_command
 }					t_command;
 
 /*
-** Server parameters / options structures
+** Bianry options structure
 */
-
-typedef struct		s_name
-{
-	char			c;
-	const char		*str;
-}					t_name;
 
 typedef struct		s_opt
 {
@@ -240,6 +234,10 @@ typedef struct		s_opt
 	const char		*description;
 	int				(*function)();
 }					t_opt;
+
+/*
+** Binary parameters structure
+*/
 
 typedef struct		s_param
 {
