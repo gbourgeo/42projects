@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:49:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:02:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ static void	sv_print_users(t_user *user, t_server *sv)
 			(ft_strlen(user->pass) > 5) ? "" : "\t",
 			user->rights,
 			&user->home[ft_strlen(sv->info.env.home) - 1]);
-
 			if ((user = user->next))
 				printf("\t\t");
 		}

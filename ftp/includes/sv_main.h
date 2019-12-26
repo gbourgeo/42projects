@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 01:30:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:10:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,11 +97,11 @@ enum
 **	type : BINARY (1) or ASCII (2)
 */
 
-typedef struct	s_hdr
+typedef struct		s_hdr
 {
-	long 		size;
-	int			type;
-}				t_hdr;
+	long			size;
+	int				type;
+}					t_hdr;
 
 /*
 ** Client Ring-Buffer structure
@@ -135,10 +135,9 @@ typedef struct		s_user
 typedef struct		s_data
 {
 	int				fd;
-	time_t			timeout;
 	int				socket;
+	time_t			timeout;
 	pid_t			pid;
-	int				filefd;
 	int				(*function)();
 	char			*file;
 }					t_data;

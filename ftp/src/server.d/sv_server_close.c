@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 15:47:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:02:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,22 @@ static void		print_info(int version, t_server *sv)
 	(version == sv_v4) ? "4" : "6");
 }
 
-static void		send_err(int errnb, t_client *cl)
+static void		send_err(int errnb, t_client *cl, t_server *sv)
 {
 	const char	*error;
+	char		*msg;
+	int			len;
 
 	error = ft_get_error(errnb);
-	if (send(cl->fd, "Server: ", 8, MSG_DONTWAIT | MSG_NOSIGNAL) > 0)
-		if (send(cl->fd, error, ft_strlen(error), MSG_DONTWAIT | MSG_NOSIGNAL) > 0)
-			send(cl->fd, "\n", 1, MSG_DONTWAIT | MSG_NOSIGNAL);
+	len = ft_strlen(sv->info.progname) + ft_strlen(error) + 3;
+	if (!(msg = malloc(len)))
+		return ;
+	ft_strcpy(msg, sv->info.progname);
+	ft_strcat(msg, ": ");
+	ft_strcat(msg, error);
+	ft_strcat(msg, "\n");
+	send(cl->fd, msg, len, MSG_DONTWAIT | MSG_NOSIGNAL);
+	free(msg);
 }
 
 void			sv_server_close(int version, int sendmsg, t_server *sv)
@@ -48,7 +56,7 @@ void			sv_server_close(int version, int sendmsg, t_server *sv)
 		if (cl->version == version)
 		{
 			if (sendmsg)
-				send_err(sv->errnb[version], cl);
+				send_err(sv->errnb[version], cl, sv);
 			cl = sv_client_end(cl, sv);
 		}
 		else

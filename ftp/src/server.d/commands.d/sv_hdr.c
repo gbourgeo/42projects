@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/25 01:28:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/25 01:57:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 17:41:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,5 @@ int				sv_receive_hdr(int fd, t_hdr *hdr)
 		timeout = time(NULL);
 		received += ret;
 	}
-// printf("READY to recv %ld bytes in %d mode.\n", hdr.size, hdr.type);
 	return (errnb);
 }

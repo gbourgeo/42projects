@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 11:28:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:03:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,13 @@
 static int		check_pid_value(const char *name, int status, t_client *cl,
 t_server *sv)
 {
+	int		ret;
+
 	if (WIFEXITED(status))
 	{
-		if (WEXITSTATUS(status))
-			return (sv_cmd_err(ft_get_error(WEXITSTATUS(status)), name,
-				cl, sv));
+		ret = WEXITSTATUS(status);
+		if (ret)
+			return (sv_cmd_err(ft_get_error(ret), name, cl, sv));
 		return (sv_cmd_ok("Operation exited normally", cl, sv));
 	}
 	else if (WIFSIGNALED(status))
@@ -41,13 +43,9 @@ int				sv_check_pid(pid_t *pid, t_client *cl, t_server *sv)
 	int			status;
 	int			errnb;
 
-	ret = wait4(*pid, &status, WNOHANG, NULL);
-	if (ret <= 0)
-	{
-		if (ret < 0)
-			return (ERR_WAIT);
-		return (IS_OK);
-	}
+	errnb = IS_OK;
+	if ((ret = wait4(*pid, &status, WNOHANG, NULL)) <= 0)
+		return ((ret < 0) ? ERR_WAIT : IS_OK);
 	if (WIFSTOPPED(status) || WIFCONTINUED(status))
 		return (sv_client_write("Operation stopped / continued.\n", cl));
 	if (*pid == cl->pid_ls)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 01:30:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 17:55:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,14 @@ static int		transfert_success(char *p, t_client *cl)
 
 typedef int		(*t_func)(t_client *, t_server *);
 
-static t_func		get_function(const char *name)
+/*
+** { "mput", NULL, sv_mput }, { "mget", NULL, sv_mget },
+*/
+
+static t_func	get_function(const char *name)
 {
 	static t_command	cmd[] = { { "put", NULL, sv_put },
 		{ "get", NULL, sv_get },
-		// { "mput", NULL, sv_mput }, { "mget", NULL, sv_mget },
 	};
 	uint32_t			i;
 
@@ -52,7 +55,7 @@ static t_func		get_function(const char *name)
 int				sv_transfer(char **cmds, t_client *cl, t_server *sv)
 {
 	char	*p;
-	int 	port;
+	int		port;
 	int		errnb;
 
 	port = 1024;
@@ -64,10 +67,10 @@ int				sv_transfer(char **cmds, t_client *cl, t_server *sv)
 	{
 		if ((p = ft_itoa(port)) && sv_open_port(p, cl))
 		{
-			cl->data.timeout = time(NULL);
 			cl->data.function = get_function(cmds[0]);
-			errnb = (!(cl->data.file = ft_strdup(cmds[1]))) ? ERR_MALLOC
-				: transfert_success(p, cl);
+			cl->data.file = ft_strdup(cmds[1]);
+			cl->data.timeout = time(NULL);
+			errnb = (!cl->data.file) ? ERR_MALLOC : transfert_success(p, cl);
 			print_info(p, cl, sv);
 			ft_strdel(&p);
 			return (errnb);

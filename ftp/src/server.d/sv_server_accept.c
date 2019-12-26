@@ -6,20 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 02:18:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 17:56:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
-
-static void		print_info(t_client *cl, t_server *sv)
-{
-	if (!SV_CHECK(sv->options, sv_interactive))
-	return ;
-	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": connected to %s.\n",
-	cl->fd, cl->home);
-}
 
 static char		*sv_guest_home(t_user *us, t_server *sv)
 {
@@ -42,7 +34,9 @@ static int		integrate_client(t_client *cl, t_server *sv)
 	if (!cl->pwd || !cl->oldpwd)
 		return (ERR_MALLOC);
 	sv->connected++;
-	print_info(cl, sv);
+	if (SV_CHECK(sv->options, sv_interactive))
+		printf("Client "COLOR_YELLOW"%d"COLOR_RESET": connected to %s.\n",
+		cl->fd, cl->home);
 	if (SV_CHECK(sv->options, sv_user_mode))
 		cl->errnb[0] = sv_client_write("You must signin to connect...\n", cl);
 	return (IS_OK);
