@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 12:59:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 01:32:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 		close(cl->data.fd);
 	if (cl->data.socket > 0)
 		close(cl->data.socket);
-	ft_tabdel(&cl->data.args);
+	ft_strdel(&cl->data.file);
 	if (cl->pid_ls > 0)
 		kill(cl->pid_ls, SIGKILL);
 	close(cl->fd);

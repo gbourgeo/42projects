@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:49:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 02:32:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,5 @@ int				sv_cd(char **cmds, t_client *cl, t_server *sv)
 		return (sv_cmd_err("Invalid directory", cmds[0], cl, sv));
 	if ((ret = sv_cd_change(cwd, cmds[1], cl)) != IS_OK)
 		return (ret);
-	return (sv_client_write(OK_OUTPUT, cl));
+	return (sv_cmd_ok("Successfully changed directory", cl, sv));
 }

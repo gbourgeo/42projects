@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:47:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 15:50:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 01:31:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ int				sv_data_accept(t_client *cl, t_server *sv)
 		sv_server_end(sv, 0);
 		exit(errnb);
 	}
-	ft_tabdel(&cl->data.args);
-	cl->data.args = NULL;
+	ft_strdel(&cl->data.file);
 	close(cl->data.fd);
 	cl->data.fd = -1;
 	close(cl->data.socket);

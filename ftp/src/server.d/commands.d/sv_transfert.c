@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/25 02:22:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 01:30:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,8 @@ static int		transfert_success(char *p, t_client *cl)
 {
 	int			errnb;
 
-	if ((errnb = sv_client_write("Port ", cl)) == IS_OK)
-		if ((errnb = sv_client_write(p, cl)) == IS_OK)
-			errnb = sv_client_write(" open\n", cl);
+	if ((errnb = sv_client_write(p, cl)) == IS_OK)
+		errnb = sv_client_write(" : Port open for transfert\n", cl);
 	return (errnb);
 }
 
@@ -67,7 +66,7 @@ int				sv_transfer(char **cmds, t_client *cl, t_server *sv)
 		{
 			cl->data.timeout = time(NULL);
 			cl->data.function = get_function(cmds[0]);
-			errnb = (!(cl->data.args = ft_tabdup(&cmds[1]))) ? ERR_MALLOC
+			errnb = (!(cl->data.file = ft_strdup(cmds[1]))) ? ERR_MALLOC
 				: transfert_success(p, cl);
 			print_info(p, cl, sv);
 			ft_strdel(&p);

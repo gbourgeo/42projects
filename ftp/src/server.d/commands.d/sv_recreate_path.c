@@ -6,11 +6,10 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 22:39:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 21:01:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 02:01:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "sv_main.h"
 
 static char		*search_back(char *head, char *path)
@@ -24,8 +23,8 @@ static char		*search_back(char *head, char *path)
 
 char			*sv_recreate_path(char *path)
 {
-	char		*head;
-	char		*tail;
+	char	*head;
+	char	*tail;
 
 	head = path;
 	while (*head && *(head + 1))

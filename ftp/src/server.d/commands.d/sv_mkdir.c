@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/20 17:44:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 02:40:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,6 @@ int				sv_mkdir(char **cmds, t_client *cl, t_server *sv)
 		mk.i++;
 	}
 	if (mk.opt & MKDIR_ERR)
-		return (sv_client_write(ERR_OUTPUT, cl));
-	return (sv_client_write(OK_OUTPUT, cl));
+		return (sv_cmd_err("failed", cmds[0], cl, sv));
+	return (sv_cmd_ok("Successfully created", cl, sv));
 }

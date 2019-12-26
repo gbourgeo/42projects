@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 23:59:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 02:41:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void			sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv)
 	e->ptr = save;
 }
 
-static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl)
+static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl, t_server *sv)
 {
 	if (e->path)
 	{
@@ -95,8 +95,8 @@ static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl)
 	if (errnb)
 		return (errnb);
 	if (e->err[0])
-		return (sv_client_write(ERR_OUTPUT, cl));
-	return (sv_client_write(OK_OUTPUT, cl));
+		return (sv_cmd_err("failed", e->cmd, cl, sv));
+	return (sv_cmd_ok("Sucessfully removed", cl, sv));
 }
 
 /*
@@ -122,15 +122,15 @@ int				sv_rmdir(char **cmds, t_client *cl, t_server *sv)
 	while (cmds[i] && e.err[2] == IS_OK)
 	{
 		if (!(e.path[0] = ft_strdup(cmds[i])))
-			return (sv_rmdir_end(ERR_MALLOC, &e, cl));
+			return (sv_rmdir_end(ERR_MALLOC, &e, cl, sv));
 		e.path[1] = cmds[i];
 		if ((e.err[2] = sv_check_path(e.path, cl)))
-			return (sv_rmdir_end(e.err[2], &e, cl));
+			return (sv_rmdir_end(e.err[2], &e, cl, sv));
 		sv_rmdir_open(&e, cl, sv);
 		ft_strdel(e.path);
 		e.err[0] += e.err[1];
 		e.err[1] = 0;
 		i++;
 	}
-	return (sv_rmdir_end(e.err[2], &e, cl));
+	return (sv_rmdir_end(e.err[2], &e, cl, sv));
 }

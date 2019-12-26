@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/25 01:54:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 00:21:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,12 @@ enum
 	ERR_GETNEXTLINE,
 	ERR_TRANSFERT,
 	ERR_OPEN_PORT,
-	ERR_DATA_HDR,
+	ERR_DATA_HDR = 35,
 	ERR_TIMEOUT,
+	ERR_LSEEK,
+	ERR_MMAP,
+	ERR_FSTAT,
+	ERR_NOT_REGULAR_FILE = 40,
 };
 
 typedef struct		s_env
@@ -98,6 +102,7 @@ char				*ft_getenv(char *search, char **envp);
 char				**ft_split_whitespaces(char *str);
 char				*ft_strcset(char *src, const char *charset);
 char				**ft_strsplit2(char const *s, char c);
+void				ft_close(int *fd);
 
 char				*ft_strndup(const char *s1, int size);
 char				*ft_get_path(char *dest, char *home, char *lpwd,

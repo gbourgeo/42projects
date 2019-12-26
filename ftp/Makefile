@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/12/25 02:14:49 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/12/25 22:05:51 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -84,6 +84,7 @@ SER_C	+= sv_cd.c						\
 
 COM_D	= src/common.d/
 COM_C	= ft_init.c						\
+		ft_close.c						\
 		ft_error.c						\
 		ft_get_command.c				\
 		ft_getenv.c						\

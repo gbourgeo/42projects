@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/25 02:20:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 01:30:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,13 @@
 # define SV_USERS_FILE		".sv_users"
 # define SV_GUEST_NAME		"guest"
 # define CLIENTS_MAX		20
+
+/*
+** Maximum transfert bytes.
+** Timeout for connection or transfert.
+*/
+
+# define TRANSFERT_MAX		2000000000
 # define TRANSFERT_TIMEOUT	5
 
 # define COLOR_RESET		"\x1B[0m"
@@ -133,7 +140,7 @@ typedef struct		s_data
 	pid_t			pid;
 	int				filefd;
 	int				(*function)();
-	char			**args;
+	char			*file;
 }					t_data;
 
 /*
@@ -324,12 +331,12 @@ int					sv_transfer(char **cmds, t_client *cl, t_server *sv);
 int					sv_open_port(char *port, t_client *cl);
 int					sv_receive_hdr(int fd, t_hdr *hdr);
 int					sv_put(t_client *cl, t_server *sv);
+int					sv_get(t_client *cl, t_server *sv);
 
 int					sv_cmd_err(const char *str, const char *cmd, t_client *cl,
 					t_server *sv);
 int					sv_cmd_ok(const char *str, t_client *cl, t_server *sv);
 
-int					sv_get(char **cmds, t_client *cl, t_server *sv);
 int					sv_send_info(char *file, char *path, int fd, t_server *sv);
 
 int					sv_handle_dir(char *dir, t_server *sv);

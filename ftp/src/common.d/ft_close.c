@@ -1,25 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_pwd.c                                           :+:      :+:    :+:   */
+/*   ft_close.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/30 21:04:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:39:00 by gbourgeo         ###   ########.fr       */
+/*   Created: 2019/12/25 22:04:18 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/12/25 22:05:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include <unistd.h>
+#include "common.h"
 
-int				sv_pwd(char **cmds, t_client *cl, t_server *sv)
+void			ft_close(int *fd)
 {
-	int			ret;
-
-	(void)cmds;
-	(void)sv;
-	if ((ret = sv_client_write(cl->pwd, cl)) != IS_OK
-	|| (ret = sv_client_write("\n", cl)) != IS_OK)
-		return (ret);
-	return (sv_cmd_ok("Successfully printed working directory", cl, sv));
+	if (fd)
+	{
+		if (*fd >= 0)
+			close(*fd);
+		*fd = -1;
+	}
 }
