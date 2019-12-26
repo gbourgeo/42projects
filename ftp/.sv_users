@@ -26,6 +26,6 @@
 # The prototype is defined in 'sv_main.h' under SV_GUEST.
 #
 
-C:g:prout:1:
-C:gb:prout:2:
-C:gbo:prout:3:
+C:g:g:1:
+C:gb:gb:2:
+C:gbo:gbo:3:
