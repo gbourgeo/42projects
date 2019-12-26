@@ -6,55 +6,25 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:02:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 00:14:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:41:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-static t_opt	define_opts(char c, char *arg, char *msg, char *info)
+t_opt			*sv_params(int getsize)
 {
-	return ((t_opt){ { c, arg }, msg, info, NULL});
-}
+	static t_opt	opts[] = {
+		{ '4', NULL, NULL, "Allows IpV4 only.", sv_param_four },
+		{ '6', NULL, NULL, "Allows IpV6 only.", sv_param_six },
+		{ 'd', NULL, NULL, "Users directory created (with -u).", sv_param_d },
+		{ 'h', "-help", NULL, "Print help and exit.", sv_param_h },
+		{ 'i', NULL, NULL, "Interactive server.", sv_param_i },
+		{ 'p', "-path", "[path]", "Working path.", sv_param_p },
+		{ 'u', "-user", NULL, "Registered users mode.", sv_param_u },
+	};
 
-static void		define_all(t_opt *opts)
-{
-	*opts = define_opts('4', NULL, NULL, "Server allows IpV4 only.");
-	(*opts).function = sv_param_four;
-	*(opts + 1) = define_opts('6', NULL, NULL, "Every registered users will "
-	"have his personal directory created. Works only with \x1B[1m-u\x1B[0m.");
-	(*(opts + 1)).function = sv_param_six;
-	*(opts + 2) = define_opts('d', NULL, NULL, "Every registered users will "
-	"have his personal directory created. Works only with \x1B[1m-u\x1B[0m.");
-	(*(opts + 2)).function = sv_param_d;
-	*(opts + 3) = define_opts('h', "-help", NULL, "Print help and exit.");
-	(*(opts + 3)).function = sv_param_h;
-	*(opts + 4) = define_opts('i', NULL, NULL, "Interactive server.");
-	(*(opts + 4)).function = sv_param_i;
-	*(opts + 5) = define_opts('p', "-path", "[path]", "Server working path.");
-	(*(opts + 5)).function = sv_param_p;
-	*(opts + 6) = define_opts('u', "-user", NULL, "Enables registered users "
-	"mode.");
-	(*(opts + 6)).function = sv_param_u;
-}
-
-t_opt			*sv_params(int getsize, int tofree)
-{
-	static t_opt	*opts = NULL;
-
-	if (tofree)
-	{
-		if (opts)
-			free(opts);
-		opts = NULL;
-		return (NULL);
-	}
 	if (getsize)
-		return ((opts == NULL) ? (t_opt *)0 : (t_opt *)7);
-	if (opts != NULL)
-		return (opts);
-	if ((opts = ft_memalloc(sizeof(*opts) * 7)) == NULL)
-		return (NULL);
-	define_all(opts);
+		return (t_opt *)(sizeof(opts) / sizeof(opts[0]));
 	return (opts);
 }

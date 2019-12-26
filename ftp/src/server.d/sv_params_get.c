@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 00:37:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/21 21:48:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:42:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,15 @@ static int		get_value(char **av, t_param *p, t_server *sv)
 	{
 		k = -1;
 		while (++k < p->size)
-			if (av[p->i][j] == p->opts[k].name.c
-			|| (p->opts[k].name.str
-				&& ft_strequ(&av[p->i][j], p->opts[k].name.str)))
+			if (av[p->i][j] == p->opts[k].c
+			|| (p->opts[k].str
+				&& ft_strequ(&av[p->i][j], p->opts[k].str)))
 			{
 				if ((errnb = p->opts[k].function(av, &p->i, sv)) != IS_OK)
 					return (errnb);
 				if (p->opts[k].param
-				|| (p->opts[k].name.str
-					&& ft_strequ(&av[p->i][j], p->opts[k].name.str)))
+				|| (p->opts[k].str
+					&& ft_strequ(&av[p->i][j], p->opts[k].str)))
 					return (IS_OK);
 				break ;
 			}
@@ -59,8 +59,8 @@ int				sv_params_get(char **av, t_server *sv)
 	t_param		p;
 	int			errnb;
 
-	p.opts = sv_params(0, 0);
-	p.size = (size_t)sv_params(1, 0);
+	p.opts = sv_params(0);
+	p.size = (size_t)sv_params(1);
 	p.i = 1;
 	sv->options |= ((1 << sv_v4) | (1 << sv_v6));
 	while (av[p.i])

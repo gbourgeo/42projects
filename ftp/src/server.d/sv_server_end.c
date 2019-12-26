@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/24 18:53:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 15:46:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:42:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,4 @@ void			sv_server_end(t_server *sv, int sendmsg)
 			signal(i, sv->sig[i]);
 		i++;
 	}
-	sv_params(0, 1);
-	sv_commands(0, 1);
 }

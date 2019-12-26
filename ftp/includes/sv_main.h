@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:10:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:41:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,8 @@ typedef struct		s_name
 
 typedef struct		s_opt
 {
-	t_name			name;
+	char			c;
+	const char		*str;
 	const char		*param;
 	const char		*description;
 	int				(*function)();
@@ -252,7 +253,7 @@ typedef struct		s_param
 */
 
 int					sv_get_addrinfo(t_server *sv);
-t_opt				*sv_params(int getsize, int tofree);
+t_opt				*sv_params(int getsize);
 int					sv_params_get(char **av, t_server *sv);
 int					sv_param_four(const char **arg, int *i, t_server *sv);
 int					sv_param_six(const char **arg, int *i, t_server *sv);
@@ -314,7 +315,7 @@ void				sv_signals_hdlr(int sig);
 ** commands
 */
 
-t_command			*sv_commands(int getsize, int tofree);
+t_command			*sv_commands(int getsize);
 int					sv_cd(char **cmds, t_client *cl, t_server *sv);
 int					sv_help(char **cmds, t_client *cl, t_server *sv);
 int					sv_ls(char **cmds, t_client *cl, t_server *sv);

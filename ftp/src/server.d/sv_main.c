@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 15:47:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:41:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ static void		print_params(t_opt *opts, size_t size)
 	i = 0;
 	while (i < size)
 	{
-		dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"-%c", opts[i].name.c);
-		if (opts[i].name.str)
+		dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"-%c", opts[i].c);
+		if (opts[i].str)
 			dprintf(STDERR_FILENO, COLOR_RESET", "COLOR_BOLD"-%s"COLOR_RESET,
-			opts[i].name.str);
+			opts[i].str);
 		if (opts[i].param)
 			dprintf(STDERR_FILENO, " %s", opts[i].param);
-		if (opts[i].name.str || opts[i].param)
+		if (opts[i].str || opts[i].param)
 			dprintf(STDERR_FILENO, COLOR_RESET"\n\t");
 		dprintf(STDERR_FILENO, COLOR_RESET"\t%s\n", opts[i].description);
 		i++;
@@ -45,7 +45,7 @@ static void		print_usage(const char *progname, const char *progpath)
 	dprintf(STDERR_FILENO, COLOR_UNDERLINED"PORT"COLOR_RESET"\n\n");
 	dprintf(STDERR_FILENO, COLOR_BOLD"DESCRIPTION"COLOR_RESET"\n\t");
 	dprintf(STDERR_FILENO, "Start a File Transfert Protocol server.\n");
-	print_params(sv_params(0, 0), (size_t)sv_params(1, 0));
+	print_params(sv_params(0), (size_t)sv_params(1));
 	dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"port"COLOR_RESET);
 	dprintf(STDERR_FILENO, "\tPort to listen to.\n\n");
 	dprintf(STDERR_FILENO, COLOR_BOLD"AUTHOR"COLOR_RESET"\n\t");

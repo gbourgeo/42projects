@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/23 12:59:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2019/12/26 18:25:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@ static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 	int			i;
 	int			size;
 
-	if (!(commands = sv_commands(0, 0)))
-		return (ERR_MALLOC);
+	commands = sv_commands(0);
 	i = 0;
 	size = sv_getcommandsright(cl->user.rights);
 	if (!cmd[0] || !cmd[0][0])
