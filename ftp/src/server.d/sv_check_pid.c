@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:03:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/04 18:40:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,18 @@
 static int		check_pid_value(const char *name, int status, t_client *cl,
 t_server *sv)
 {
-	int		ret;
-
 	if (WIFEXITED(status))
 	{
-		ret = WEXITSTATUS(status);
-		if (ret)
-			return (sv_cmd_err(ft_get_error(ret), name, cl, sv));
-		return (sv_cmd_ok("Operation exited normally", cl, sv));
+		if (WEXITSTATUS(status))
+			return (sv_cmd_err(ft_get_error(WEXITSTATUS(status)), name,
+				cl, sv));
+		if (!ft_strcmp(name, "ls"))
+			return (sv_cmd_ok("Successfully listed file/directory", cl, sv));
+		if (!ft_strcmp(name, "put"))
+			return (sv_cmd_ok("Successfully put file", cl, sv));
+		if (!ft_strcmp(name, "get"))
+			return (sv_cmd_ok("Successfully get file", cl, sv));
+		return (sv_cmd_ok("Successfully done", cl, sv));
 	}
 	else if (WIFSIGNALED(status))
 	{

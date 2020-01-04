@@ -6,11 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 17:56:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/04 19:05:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <sys/select.h>
 #include "sv_main.h"
 
 static char		*sv_guest_home(t_user *us, t_server *sv)
@@ -80,6 +81,12 @@ int				sv_server_accept(int version, t_server *sv)
 	len = sizeof(csin);
 	if ((fd = accept(sv->ip[version], &csin, &len)) < 0)
 		return ((version == sv_v4) ? ERR_ACCEPT_V4 : ERR_ACCEPT_V6);
+	if (fd >= FD_SETSIZE)
+	{
+		send(fd, "Server Busy. Come back later !\n", 31, 0);
+		close(fd);
+		return (IS_OK);
+	}
 	if (sv->connected + 1 == CLIENTS_MAX)
 	{
 		send(fd, "Server Full. Come back later !\n", 31, 0);

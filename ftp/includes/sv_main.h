@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:48:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/04 18:55:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # define CLIENTS_MAX		20
 
 /*
-** Maximum transfert bytes.
+** Maximum DATA size to transfert.
 ** Timeout for connection or transfert.
 */
 
