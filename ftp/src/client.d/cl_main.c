@@ -6,68 +6,71 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/17 04:19:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 23:38:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+# ifdef __linux__
+#  define _POSIX_C_SOURCE 200809L
+# endif
+#include <unistd.h>
 #include "cl_main.h"
 
-static void			init_addrinfo(char *addr, char *port, struct addrinfo **res)
+static void		print_params(t_opt *opts, size_t size)
 {
-	struct addrinfo	hints;
+	size_t		i;
 
-	ft_memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_flags = AI_PASSIVE;
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo(addr, port, &hints, res))
-		ft_error("ERROR: getaddrinfo() returns.");
-}
-
-static void			ft_getaddrinfo(char *addr, char *port, t_client *cl)
-{
-	struct addrinfo	*results;
-	struct addrinfo	*tmp;
-	int				on;
-
-	on = 1;
-	init_addrinfo(addr, port, &results);
-	tmp = results;
-	while (tmp != NULL)
+	i = 0;
+	while (i < size)
 	{
-		cl->fd = socket(tmp->ai_family, tmp->ai_socktype, tmp->ai_protocol);
-		if (cl->fd == -1)
-			continue ;
-		if (connect(cl->fd, tmp->ai_addr, tmp->ai_addrlen) == 0)
-			break ;
-		close(cl->fd);
-		tmp = tmp->ai_next;
+		dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"-%c", opts[i].c);
+		if (opts[i].str)
+			dprintf(STDERR_FILENO, COLOR_RESET", "COLOR_BOLD"-%s"COLOR_RESET,
+			opts[i].str);
+		if (opts[i].param)
+			dprintf(STDERR_FILENO, " %s", opts[i].param);
+		if (opts[i].str || opts[i].param)
+			dprintf(STDERR_FILENO, COLOR_RESET"\n\t");
+		dprintf(STDERR_FILENO, COLOR_RESET"\t%s\n", opts[i].description);
+		i++;
 	}
-	freeaddrinfo(results);
-	if (tmp == NULL)
-		ft_error("Error: No server found.");
-	if (setsockopt(cl->fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
-		ft_error("Error: setsockopt(SO_REUSEADDR) failed");
 }
 
-static void			init_client(char *addr, char *port, t_client *cl, char **env)
+static void			print_usage(const char *progname, const char *progpath)
 {
-	ft_getaddrinfo(addr, port, cl);
+	dprintf(STDERR_FILENO, "\n"COLOR_BOLD"NAME"COLOR_RESET"\n\t");
+	dprintf(STDERR_FILENO, "%s - ftp client\n\n", progname);
+	dprintf(STDERR_FILENO, COLOR_BOLD"USAGE\n\t%s"COLOR_RESET, progpath);
+	dprintf(STDERR_FILENO, " ["COLOR_UNDERLINED"OPTIONS"COLOR_RESET"]... ");
+	dprintf(STDERR_FILENO, COLOR_UNDERLINED"PORT"COLOR_RESET" ");
+	dprintf(STDERR_FILENO, COLOR_UNDERLINED"ADDR"COLOR_RESET"\n\n");
+	dprintf(STDERR_FILENO, COLOR_BOLD"DESCRIPTION"COLOR_RESET"\n\t");
+	dprintf(STDERR_FILENO, "Start a File Transfert Protocol client.\n");
+	print_params(cl_params(0), (size_t)cl_params(1));
+	dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"port"COLOR_RESET);
+	dprintf(STDERR_FILENO, "\tPort to connect to.\n");
+	dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"addr"COLOR_RESET);
+	dprintf(STDERR_FILENO, "\tAddress to connect to.\n\n");
+	dprintf(STDERR_FILENO, COLOR_BOLD"AUTHOR"COLOR_RESET"\n\t");
+	dprintf(STDERR_FILENO, "Written by Gilles Bourgeois\n");
 }
 
-int					main(int ac, char **av)
+int					main(int ac, char **av, char **environ)
 {
 	t_client	*cl;
 	int			errnb;
 
+	(void)ac;
 	cl = &client;
-	if ((errnb = ft_init(cl, sizeof(*cl), CLIENT, av[0])) != IS_OK)
-		return (ft_error(errnb, cl));
-	if (ac < 3)
-		return (usage(av[0], CLIENT));
-	init_client(av[1], av[2], &cl, environ);
-	ft_signals();
-	cl_loop(&cl);
-	return (0);
+	if ((errnb = ft_init(cl, sizeof(*cl), environ, av[0])) == IS_OK)
+		if ((errnb = cl_client_signals(cl)) == IS_OK)
+			if ((errnb = cl_params_get(av, cl)) == IS_OK)
+				if ((errnb = cl_get_addrinfo(cl)) == IS_OK)
+					printf("OK\n");
+				// errnb = cl_client_loop(cl);
+	if (errnb != IS_OK)
+		if (ft_error(errnb, &cl->info) == 2)
+			print_usage(cl->info.progname, cl->info.progpath);
+	cl_client_end(cl);
+	return (errnb);
 }

@@ -6,33 +6,23 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2019/12/25 22:05:51 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/05 23:33:38 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CLIENT	= client
 CLI_D	= src/client.d/
 CLI_C	= cl_main.c						\
-		cl_loop.c						\
-		cl_prompt.c						\
-		cl_help.c						\
-		cl_ls_and_pwd.c					\
-		cl_get.c						\
-		cl_put.c						\
-		cl_help.c						\
-		cl_cd.c							\
-		cl_commands.c					\
-		cl_lcd.c						\
-		cl_change_pwds.c				\
-		cl_end.c						\
-		cl_mkdir_rmdir_unlink.c			\
-		cl_mget_mput.c					\
-		ft_signals.c					\
+		cl_client_end.c					\
+		cl_client_signals.c				\
+		cl_get_addrinfo.c				\
+		cl_params_get.c					\
+		cl_params.c						\
+		cl_params_1.c					\
 
 SERVEUR	= server
 SER_D	= src/server.d/
 SER_C	= sv_main.c						\
-		sv_check_option.c				\
 		sv_check_pid.c					\
 		sv_commands.c					\
 		sv_data_accept.c				\
@@ -84,12 +74,14 @@ SER_C	+= sv_cd.c						\
 
 COM_D	= src/common.d/
 COM_C	= ft_init.c						\
+		ft_check_option.c				\
 		ft_close.c						\
 		ft_error.c						\
 		ft_get_command.c				\
 		ft_getenv.c						\
 		ft_strsplit2.c					\
 		ft_strcset.c					\
+		signal_info.c					\
 
 OBJ_D	= obj/
 OBJ_C	= $(addprefix $(OBJ_D), $(CLI_C:.c=.o))

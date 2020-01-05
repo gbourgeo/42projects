@@ -6,15 +6,34 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 19:33:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 23:46:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMON_H
 # define COMMON_H
 
-# define CLIENT				1
-# define SERVER				2
+# include <stdio.h>
+# include <signal.h>
+
+# ifdef __linux__
+#  define NSIG _NSIG
+# endif
+
+# define COLOR_RESET		"\x1B[0m"
+# define COLOR_BOLD			"\x1B[1m"
+# define COLOR_DARK			"\x1B[2m"
+# define COLOR_ITALIC		"\x1B[3m"
+# define COLOR_UNDERLINED	"\x1B[4m"
+# define COLOR_RED			"\x1B[31m"
+# define COLOR_GREEN		"\x1B[32m"
+# define COLOR_YELLOW		"\x1B[33m"
+# define COLOR_BLUE			"\x1B[34m"
+# define COLOR_PINK			"\x1B[35m"
+# define COLOR_LIGHT_BLUE	"\x1B[36m"
+# define COLOR_GREY			"\x1B[37m"
+
+# define FT_CHECK			ft_check_option
 
 /*
 ** FTP_BUFF_SIZE :
@@ -43,8 +62,8 @@ enum
 	ERR_HELP,
 	ERR_NB_PARAMS,
 	ERR_WRONG_PARAM,
-	ERR_INVALID_PARAM = 5,
-	ERR_DIGIT_PARAM,
+	ERR_INVALID_PARAM,
+	ERR_DIGIT_PARAM = 5,
 	ERR_TOOMUCH_PARAM,
 	ERR_GETADDR,
 	ERR_NO_IPV4_AVAIL,
@@ -80,6 +99,7 @@ enum
 	ERR_MMAP,
 	ERR_FSTAT,
 	ERR_NOT_REGULAR_FILE = 40,
+	ERR_NO_SERVER,
 };
 
 typedef struct		s_env
@@ -94,6 +114,9 @@ typedef struct		s_common
 	char			*progname;
 	t_env			env;
 }					t_common;
+
+void				print_signal_info(int sig, int interactive);
+int					ft_check_option(int option, int value);
 
 int					ft_init(void *p, int size, char **environ, char *prog);
 const char			*ft_get_error(int errnb);

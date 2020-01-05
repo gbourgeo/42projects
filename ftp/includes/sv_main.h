@@ -6,23 +6,18 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 18:55:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:39:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SV_MAIN_H
 # define SV_MAIN_H
 
-# include <signal.h>
 # include <netinet/in.h>
 # include <sys/stat.h>
-# include <stdio.h>
 # include "libft.h"
 # include "common.h"
 
-# ifdef __linux__
-#  define NSIG _NSIG
-# endif
 # ifndef MSG_NOSIGNAL
 #  define MSG_NOSIGNAL 0
 # endif
@@ -32,7 +27,6 @@
 #  define HAS_WCOREDUMP 1
 # endif
 
-# define SV_CHECK			sv_check_option
 # define SV_USERS_FILE		".sv_users"
 # define SV_GUEST_NAME		"guest"
 # define CLIENTS_MAX		20
@@ -44,19 +38,6 @@
 
 # define TRANSFERT_MAX		2000000000
 # define TRANSFERT_TIMEOUT	5
-
-# define COLOR_RESET		"\x1B[0m"
-# define COLOR_BOLD			"\x1B[1m"
-# define COLOR_DARK			"\x1B[2m"
-# define COLOR_ITALIC		"\x1B[3m"
-# define COLOR_UNDERLINED	"\x1B[4m"
-# define COLOR_RED			"\x1B[31m"
-# define COLOR_GREEN		"\x1B[32m"
-# define COLOR_YELLOW		"\x1B[33m"
-# define COLOR_BLUE			"\x1B[34m"
-# define COLOR_PINK			"\x1B[35m"
-# define COLOR_LIGHT_BLUE	"\x1B[36m"
-# define COLOR_GREY			"\x1B[37m"
 
 /*
 ** Enumeration for USERS registered
@@ -223,7 +204,7 @@ typedef struct		s_command
 }					t_command;
 
 /*
-** Bianry options structure
+** Server Options structure
 */
 
 typedef struct		s_opt
@@ -302,12 +283,6 @@ int					sv_data_accept(t_client *cl, t_server *sv);
 
 int					sv_recv_error(int ret);
 int					sv_send_error(int errnb);
-
-/*
-** Signal Handlers
-*/
-
-void				sv_signals_hdlr(int sig);
 
 /*
 ** commands

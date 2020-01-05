@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 19:33:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 23:46:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ const char		*ft_get_error(int errnb)
 		"Disconnected.", "-- Help", "Missing parameter",
 		"Wrong parameter", "Invalid parameter",
 		"parameter contains non digit characters.",
-		"only one port can be specified.", "getaddrinfo failed.",
+		"too much paramaters given.", "getaddrinfo failed.",
 		"port already in use (v4)", "port already in use (v6)",
 		"setsockopt failed.", "listen(AF_INET) failed.", "open failed.",
 		"listen(AF_INET6) failed.", "malloc failed.", "select failed.",
@@ -50,7 +50,7 @@ const char		*ft_get_error(int errnb)
 		"users file not found.", "get_next_line failed.",
 		"A transfert is already in progress", "Unable to open port",
 		"DATA header corrupted", "transfert timed out", "lseek failed",
-		"mmap failed", "fstat failed", "not valid file",
+		"mmap failed", "fstat failed", "not valid file", "no server found",
 	};
 
 	if (errnb < 0 || errnb > (int)(sizeof(errors) / sizeof(errors[0])))

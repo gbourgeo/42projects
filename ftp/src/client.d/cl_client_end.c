@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_end.c                                           :+:      :+:    :+:   */
+/*   cl_client_end.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 08:11:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 23:29:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int			cl_end(char *msg, t_envi *cl)
+void			cl_client_end(t_client *cl)
 {
-	if (msg)
-		ft_putendl_fd(msg, 2);
-	close(cl->fd);
-	ft_bzero(cl->buff, BUFF_SIZE + 1);
-	ft_bzero(cl->data, DATA_SIZE + 1);
-	free(cl->user);
-	free(cl->path);
-	free(cl->home);
-	free(cl->lpwd);
-	free(cl->oldpwd);
-	ft_putendl_fd("\033[34m ~ Bye ~", 2);
-	exit(cl->success);
-	return (0);
+	int		i;
+
+	i = 0;
+	ft_freestr(&cl->info.env.path);
+	ft_freestr(&cl->info.env.home);
+	while (i < NSIG)
+	{
+		if (cl->sig[i] != SIG_ERR)
+			signal(i, cl->sig[i]);
+		i++;
+	}
 }

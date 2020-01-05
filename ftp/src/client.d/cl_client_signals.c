@@ -1,38 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_signals.c                                       :+:      :+:    :+:   */
+/*   cl_client_signals.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 06:26:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/16 23:56:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 23:29:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-static void		ft_do(int nb)
+static void		cl_sig_hdlr(int sig)
 {
-	(void)nb;
-	ioctl(0, TIOCSTI, "\n");
+	t_client	*cl;
+
+	cl = &client;
+	print_signal_info(sig, FT_CHECK(cl->options, cl_interactive));
+	if (sig < 0 || sig > NSIG || cl->sig[sig] == SIG_ERR)
+		return ;
+	cl_client_end(cl);
+	exit(EXIT_FAILURE);
 }
 
-void			ft_signals(void)
+int				cl_client_signals(t_client *cl)
 {
-	signal(SIGHUP, &ft_do);
-	signal(SIGINT, &ft_do);
-	signal(SIGQUIT, &ft_do);
-	signal(SIGILL, &ft_do);
-	signal(SIGABRT, &ft_do);
-	signal(SIGFPE, &ft_do);
-	signal(SIGSEGV, &ft_do);
-	signal(SIGPIPE, &ft_do);
-	signal(SIGTERM, &ft_do);
-	signal(SIGUSR1, &ft_do);
-	signal(SIGUSR2, &ft_do);
-	signal(SIGCONT, &ft_do);
-	signal(SIGSTOP, &ft_do);
-	signal(SIGTSTP, &ft_do);
-	signal(SIGWINCH, &ft_do);
+	int			i;
+
+	i = 0;
+	while (i < NSIG)
+		cl->sig[i++] = SIG_ERR;
+	cl->sig[SIGINT] = signal(SIGINT, cl_sig_hdlr);
+	return (IS_OK);
 }
