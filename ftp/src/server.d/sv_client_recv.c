@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:25:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:29:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 
 static void		print_info(char *buff, int size, t_client *cl, t_server *sv)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
 	printf("Client "COLOR_YELLOW"%d"COLOR_RESET" :\"", cl->fd);
 	fflush(stdout);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:14:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:29:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int			sv_get(t_client *cl, t_server *sv)
 	if ((errnb = sv_check_path(&cl->data.file, cl)) != IS_OK
 	|| (errnb = get_file(cl->data.file, &file, &hdr)) != IS_OK)
 		return (errnb);
-	if (SV_CHECK(sv->options, sv_interactive))
+	if (FT_CHECK(sv->options, sv_interactive))
 		printf("Client "COLOR_YELLOW"%d"COLOR_RESET": Sending file '%s', %ld "
 		"bytes, type %d\n", cl->fd, cl->data.file, hdr.size, hdr.type);
 	info = (char *)&hdr;

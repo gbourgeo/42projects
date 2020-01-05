@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:11:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:30:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static int		put_type(int type)
 static void		print_info_d(const char *s1, long nb, t_client *cl,
 t_server *sv)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
 	printf("Client \x1B[33m%d\x1B[0m: %s %ld\n", cl->fd, s1, nb);
 }

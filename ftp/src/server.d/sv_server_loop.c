@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/25 02:12:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:28:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int				sv_server_loop(t_server *sv)
 	fd_set			fd_write;
 	struct timeval	timeout;
 
-	if (SV_CHECK(sv->options, sv_interactive))
+	if (FT_CHECK(sv->options, sv_interactive))
 		sv_server_info(sv);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;

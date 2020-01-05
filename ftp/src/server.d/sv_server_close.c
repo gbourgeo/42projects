@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:02:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:29:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 static void		print_info(int version, t_server *sv)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
 	printf("Closing IPv"COLOR_GREEN"%s"COLOR_RESET"...\n",
 	(version == sv_v4) ? "4" : "6");

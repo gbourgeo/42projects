@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 01:32:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:29:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 static void		print_info(t_client *cl, t_server *sv)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
 	if (cl->errnb[0] > 0)
 		printf("Client "COLOR_BOLD""COLOR_RED"%d"COLOR_RESET": %s\n",

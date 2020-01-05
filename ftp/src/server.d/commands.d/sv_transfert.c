@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 19:36:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:30:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 static void		print_info(char *port, t_client *cl, t_server *sv)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
 	printf("Client \x1B[33m%d\x1B[0m: DATA port %s open.\n", cl->fd, port);
 }

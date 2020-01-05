@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/11/21 17:35:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 23:52:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ static int		init_addrinfo(struct addrinfo **results, t_server *sv)
 	hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(NULL, sv->port, &hints, results))
 		return (ERR_GETADDR);
-	sv->ip[sv_v4] = -SV_CHECK(sv->options, sv_v4);
-	sv->ip[sv_v6] = -SV_CHECK(sv->options, sv_v6);
+	sv->ip[sv_v4] = -FT_CHECK(sv->options, sv_v4);
+	sv->ip[sv_v6] = -FT_CHECK(sv->options, sv_v6);
 	return (IS_OK);
 }
 
@@ -67,20 +67,20 @@ int				sv_get_addrinfo(t_server *sv)
 	p = results;
 	while (p && (sv->ip[sv_v4] < 0 || sv->ip[sv_v6] < 0))
 	{
-		if (SV_CHECK(sv->options, sv_v4) && p->ai_family == AF_INET)
+		if (FT_CHECK(sv->options, sv_v4) && p->ai_family == AF_INET)
 			sv->ip[sv_v4] = sv_findsocket(p, sv_v4, sv);
-		if (SV_CHECK(sv->options, sv_v6) && p->ai_family == AF_INET6)
+		if (FT_CHECK(sv->options, sv_v6) && p->ai_family == AF_INET6)
 			sv->ip[sv_v6] = sv_findsocket(p, sv_v6, sv);
 		p = p->ai_next;
 	}
 	freeaddrinfo(results);
-	if (SV_CHECK(sv->options, sv_v4) && sv->ip[sv_v4] < 0)
+	if (FT_CHECK(sv->options, sv_v4) && sv->ip[sv_v4] < 0)
 		return (ERR_NO_IPV4_AVAIL);
-	if (SV_CHECK(sv->options, sv_v6) && sv->ip[sv_v6] < 0)
+	if (FT_CHECK(sv->options, sv_v6) && sv->ip[sv_v6] < 0)
 		return (ERR_NO_IPV6_AVAIL);
-	if (SV_CHECK(sv->options, sv_v4) && listen(sv->ip[sv_v4], CLIENTS_MAX) < 0)
+	if (FT_CHECK(sv->options, sv_v4) && listen(sv->ip[sv_v4], CLIENTS_MAX) < 0)
 		return (ERR_LISTEN_V4);
-	if (SV_CHECK(sv->options, sv_v6) && listen(sv->ip[sv_v6], CLIENTS_MAX) < 0)
+	if (FT_CHECK(sv->options, sv_v6) && listen(sv->ip[sv_v6], CLIENTS_MAX) < 0)
 		return (ERR_LISTEN_V6);
 	return (IS_OK);
 }

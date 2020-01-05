@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 16:01:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:30:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void			print_info(char **cmds, t_client *cl, t_server *sv)
 {
-	if (!SV_CHECK(sv->options, sv_interactive))
+	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
 	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": Successfully ", cl->fd);
 	printf("reistered "COLOR_UNDERLINED);
@@ -40,7 +40,7 @@ int					sv_register(char **cmds, t_client *cl, t_server *sv)
 	users = sv->users;
 	if (!cmds[1] || !cmds[2] || !cmds[3] || !cmds[4])
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	if (!SV_CHECK(sv->options, sv_user_mode))
+	if (!FT_CHECK(sv->options, sv_user_mode))
 		return (sv_cmd_err("Registration Unavailable", cmds[0], cl, sv));
 	if (!sv_user_parse(&cmds[1], sv))
 		return (sv_cmd_err(ft_get_error(ERR_WRONG_PARAM), cmds[0], cl, sv));

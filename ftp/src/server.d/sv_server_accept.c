@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 19:05:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/05 22:28:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ static int		integrate_client(t_client *cl, t_server *sv)
 	if (!cl->pwd || !cl->oldpwd)
 		return (ERR_MALLOC);
 	sv->connected++;
-	if (SV_CHECK(sv->options, sv_interactive))
+	if (FT_CHECK(sv->options, sv_interactive))
 		printf("Client "COLOR_YELLOW"%d"COLOR_RESET": connected to %s.\n",
 		cl->fd, cl->home);
-	if (SV_CHECK(sv->options, sv_user_mode))
+	if (FT_CHECK(sv->options, sv_user_mode))
 		cl->errnb[0] = sv_client_write("You must signin to connect...\n", cl);
 	return (IS_OK);
 }
@@ -65,7 +65,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->oldpwd = ft_strdup("/");
 	cl->data.fd = -1;
 	user = sv_getuserbyname(sv->users, SV_GUEST_NAME);
-	if (SV_CHECK(sv->options, sv_user_mode))
+	if (FT_CHECK(sv->options, sv_user_mode))
 		cl->user = (user) ? *user : (t_user){ 0 };
 	else
 		cl->user.rights = 3;
