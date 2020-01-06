@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_loop.c                                          :+:      :+:    :+:   */
+/*   cl_client_loop.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/06/09 07:07:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 17:06:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,35 @@ static void			cl_check_commands(t_envi *cl)
 	ft_free(&cmds);
 }
 
-void				cl_loop(t_envi *cl)
+static int			client_info(t_client *cl)
 {
+	if (!(cl->server.pwd = ft_strdup("/")))
+		return (ERR_MALLOC);
+	if (!(cl->pwd = getcwd(NULL, 0)))
+		return (ERR_MALLOC);
+	cl->success = 1;
+	return (IS_OK);
+}
+
+void			cl_prompt(t_client *cl)
+{
+	printf(COLOR_RESET"Server: "COLOR_GREEN"%s"COLOR_RESET"\n"
+	"Client: "COLOR_PINK"%s"COLOR_RESET"\n"
+	"%s > "COLOR_RESET,
+	cl->server.pwd, cl->pwd, (!cl->success) ? COLOR_RED : COLOR_GREEN);
+	fflush(stdout);
+}
+
+int					cl_client_loop(t_client *cl)
+{
+	int			ret;
+	char		buff[CMD_BUFF_SIZE];
+	int			errnb;
+
+	if ((errnb = client_info(cl)) != IS_OK)
+		return (errnb);
 	cl_prompt(cl);
-	while ((cl->rec = read(0, cl->buff, BUFF_SIZE)) > 0)
+	while ((ret = read(0, buff, CMD_BUFF_SIZE)) > 0)
 	{
 		if (cl->buff[cl->rec - 1] == '\n')
 			cl->buff[cl->rec - 1] = '\0';

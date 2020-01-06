@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:29:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:13:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void		print_info(char *buff, int size, t_client *cl, t_server *sv)
 {
 	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
-	printf("Client "COLOR_YELLOW"%d"COLOR_RESET" :\"", cl->fd);
+	printf("Client "FTP_YELLOW"%d"FTP_RESET" :\"", cl->fd);
 	fflush(stdout);
 	write(1, buff, size);
 	printf("\"\n");

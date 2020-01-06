@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:28:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:12:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int		integrate_client(t_client *cl, t_server *sv)
 		return (ERR_MALLOC);
 	sv->connected++;
 	if (FT_CHECK(sv->options, sv_interactive))
-		printf("Client "COLOR_YELLOW"%d"COLOR_RESET": connected to %s.\n",
+		printf("Client "FTP_YELLOW"%d"FTP_RESET": connected to %s.\n",
 		cl->fd, cl->home);
 	if (FT_CHECK(sv->options, sv_user_mode))
 		cl->errnb[0] = sv_client_write("You must signin to connect...\n", cl);

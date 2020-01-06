@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:30:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:14:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ static void			print_info(char **cmds, t_client *cl, t_server *sv)
 {
 	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
-	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": Successfully ", cl->fd);
-	printf("reistered "COLOR_UNDERLINED);
-	printf("%s:%s:***:%s:"COLOR_RESET".\n", cmds[1], cmds[2], cmds[4]);
+	printf("Client "FTP_YELLOW"%d"FTP_RESET": Successfully ", cl->fd);
+	printf("reistered "FTP_UNDERLINED);
+	printf("%s:%s:***:%s:"FTP_RESET".\n", cmds[1], cmds[2], cmds[4]);
 }
 
 /*

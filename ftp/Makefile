@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/05 23:33:38 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/06 18:10:02 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,8 @@ CLI_C	= cl_main.c						\
 		cl_client_end.c					\
 		cl_client_signals.c				\
 		cl_get_addrinfo.c				\
+		cl_ncurses.c					\
+		cl_ncurses_box.c				\
 		cl_params_get.c					\
 		cl_params.c						\
 		cl_params_1.c					\
@@ -106,7 +108,7 @@ all: $(CLIENT) $(SERVEUR)
 
 $(CLIENT): $(OBJ_X) $(OBJ_C)
 	@make -C $(LIB_DIR)
-	@$(CC) -o $@ $^ $(LIBS)
+	@$(CC) -o $@ $^ $(LIBS) -lncurses
 	@echo "GENERATED: $(CLIENT)"
 
 $(SERVEUR): $(OBJ_X) $(OBJ_S)

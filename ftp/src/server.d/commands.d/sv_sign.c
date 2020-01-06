@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:30:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:14:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ static void		print_info(char *name, t_client *cl, t_server *sv)
 {
 	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
-	printf("Client "COLOR_YELLOW"%d"COLOR_RESET": Logged in as '", cl->fd);
-	printf(COLOR_ITALIC"%s"COLOR_RESET"'.\n", name);
+	printf("Client "FTP_YELLOW"%d"FTP_RESET": Logged in as '", cl->fd);
+	printf(FTP_ITALIC"%s"FTP_RESET"'.\n", name);
 }
 
 int				sv_signin(char **cmds, t_client *cl, t_server *sv)

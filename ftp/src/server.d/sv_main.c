@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:48:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:27:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:12:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,32 +23,32 @@ static void		print_params(t_opt *opts, size_t size)
 	i = 0;
 	while (i < size)
 	{
-		dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"-%c", opts[i].c);
+		dprintf(STDERR_FILENO, "\n\t"FTP_BOLD"-%c", opts[i].c);
 		if (opts[i].str)
-			dprintf(STDERR_FILENO, COLOR_RESET", "COLOR_BOLD"-%s"COLOR_RESET,
+			dprintf(STDERR_FILENO, FTP_RESET", "FTP_BOLD"-%s"FTP_RESET,
 			opts[i].str);
 		if (opts[i].param)
 			dprintf(STDERR_FILENO, " %s", opts[i].param);
 		if (opts[i].str || opts[i].param)
-			dprintf(STDERR_FILENO, COLOR_RESET"\n\t");
-		dprintf(STDERR_FILENO, COLOR_RESET"\t%s\n", opts[i].description);
+			dprintf(STDERR_FILENO, FTP_RESET"\n\t");
+		dprintf(STDERR_FILENO, FTP_RESET"\t%s\n", opts[i].description);
 		i++;
 	}
 }
 
 static void		print_usage(const char *progname, const char *progpath)
 {
-	dprintf(STDERR_FILENO, "\n"COLOR_BOLD"NAME"COLOR_RESET"\n\t");
+	dprintf(STDERR_FILENO, "\n"FTP_BOLD"NAME"FTP_RESET"\n\t");
 	dprintf(STDERR_FILENO, "%s - ftp server\n\n", progname);
-	dprintf(STDERR_FILENO, COLOR_BOLD"USAGE\n\t%s"COLOR_RESET, progpath);
-	dprintf(STDERR_FILENO, " ["COLOR_UNDERLINED"OPTIONS"COLOR_RESET"]... ");
-	dprintf(STDERR_FILENO, COLOR_UNDERLINED"PORT"COLOR_RESET"\n\n");
-	dprintf(STDERR_FILENO, COLOR_BOLD"DESCRIPTION"COLOR_RESET"\n\t");
+	dprintf(STDERR_FILENO, FTP_BOLD"USAGE\n\t%s"FTP_RESET, progpath);
+	dprintf(STDERR_FILENO, " ["FTP_UNDERLINED"OPTIONS"FTP_RESET"]... ");
+	dprintf(STDERR_FILENO, FTP_UNDERLINED"PORT"FTP_RESET"\n\n");
+	dprintf(STDERR_FILENO, FTP_BOLD"DESCRIPTION"FTP_RESET"\n\t");
 	dprintf(STDERR_FILENO, "Start a File Transfert Protocol server.\n");
 	print_params(sv_params(0), (size_t)sv_params(1));
-	dprintf(STDERR_FILENO, "\n\t"COLOR_BOLD"port"COLOR_RESET);
+	dprintf(STDERR_FILENO, "\n\t"FTP_BOLD"port"FTP_RESET);
 	dprintf(STDERR_FILENO, "\tPort to listen to.\n\n");
-	dprintf(STDERR_FILENO, COLOR_BOLD"AUTHOR"COLOR_RESET"\n\t");
+	dprintf(STDERR_FILENO, FTP_BOLD"AUTHOR"FTP_RESET"\n\t");
 	dprintf(STDERR_FILENO, "Written by Gilles Bourgeois\n");
 }
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 23:46:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:11:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,18 @@
 #  define NSIG _NSIG
 # endif
 
-# define COLOR_RESET		"\x1B[0m"
-# define COLOR_BOLD			"\x1B[1m"
-# define COLOR_DARK			"\x1B[2m"
-# define COLOR_ITALIC		"\x1B[3m"
-# define COLOR_UNDERLINED	"\x1B[4m"
-# define COLOR_RED			"\x1B[31m"
-# define COLOR_GREEN		"\x1B[32m"
-# define COLOR_YELLOW		"\x1B[33m"
-# define COLOR_BLUE			"\x1B[34m"
-# define COLOR_PINK			"\x1B[35m"
-# define COLOR_LIGHT_BLUE	"\x1B[36m"
-# define COLOR_GREY			"\x1B[37m"
+# define FTP_RESET		"\x1B[0m"
+# define FTP_BOLD		"\x1B[1m"
+# define FTP_DARK		"\x1B[2m"
+# define FTP_ITALIC		"\x1B[3m"
+# define FTP_UNDERLINED	"\x1B[4m"
+# define FTP_RED		"\x1B[31m"
+# define FTP_GREEN		"\x1B[32m"
+# define FTP_YELLOW		"\x1B[33m"
+# define FTP_BLUE		"\x1B[34m"
+# define FTP_PINK		"\x1B[35m"
+# define FTP_LIGHT_BLUE	"\x1B[36m"
+# define FTP_GREY		"\x1B[37m"
 
 # define FT_CHECK			ft_check_option
 
@@ -100,6 +100,13 @@ enum
 	ERR_FSTAT,
 	ERR_NOT_REGULAR_FILE = 40,
 	ERR_NO_SERVER,
+	ERR_NCURSE_MAIN,
+	ERR_NCURSE_TEXTBOX,
+	ERR_NCURSE_TEXTWIN,
+	ERR_NCURSE_LISTBOX,
+	ERR_NCURSE_LISTWIN,
+	ERR_NCURSE_CHATBOX,
+	ERR_NCURSE_CHATWIN,
 };
 
 typedef struct		s_env

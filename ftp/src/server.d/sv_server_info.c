@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 18:02:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 18:12:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ static void	sv_print_path(char *path)
 	int		i;
 
 	i = 0;
-	printf(COLOR_UNDERLINED"Path"COLOR_RESET":\t\t");
+	printf(FTP_UNDERLINED"Path"FTP_RESET":\t\t");
 	if ((split = ft_strsplit(path, ':')))
 		while (split[i])
 		{
-			printf("\""COLOR_YELLOW"%s"COLOR_RESET"\"\n", split[i++]);
+			printf("\""FTP_YELLOW"%s"FTP_RESET"\"\n", split[i++]);
 			if (split[i])
 				printf("\t\t");
 		}
@@ -31,14 +31,14 @@ static void	sv_print_path(char *path)
 
 static void	sv_print_users(t_user *user, t_server *sv)
 {
-	printf(COLOR_UNDERLINED"Users"COLOR_RESET":"
+	printf(FTP_UNDERLINED"Users"FTP_RESET":"
 	"\t\tType\t| Name\t\t| Pass\t\t| Right\t| Home\n\t\t");
 	if (user)
 		while (user)
 		{
-			printf("%s\t  "COLOR_ITALIC""COLOR_GREEN"%s"COLOR_RESET"\t%s  "
-			COLOR_DARK""COLOR_ITALIC""COLOR_GREY"%s"COLOR_RESET"\t%s  "
-			COLOR_YELLOW"%d"COLOR_RESET"\t "COLOR_BLUE"%s"COLOR_RESET"\n",
+			printf("%s\t  "FTP_ITALIC""FTP_GREEN"%s"FTP_RESET"\t%s  "
+			FTP_DARK""FTP_ITALIC""FTP_GREY"%s"FTP_RESET"\t%s  "
+			FTP_YELLOW"%d"FTP_RESET"\t "FTP_BLUE"%s"FTP_RESET"\n",
 			(user->type & us_server) ? "Server" : "Client",
 			user->name,
 			(ft_strlen(user->name) > 5) ? "" : "\t",
@@ -50,27 +50,27 @@ static void	sv_print_users(t_user *user, t_server *sv)
 				printf("\t\t");
 		}
 	else
-		printf(COLOR_RED"Empty"COLOR_RESET);
+		printf(FTP_RED"Empty"FTP_RESET);
 	printf("\n");
 }
 
 void		sv_server_info(t_server *sv)
 {
-	printf(COLOR_UNDERLINED"IPv4"COLOR_RESET"\t\t"COLOR_UNDERLINED);
-	printf("%s\n"COLOR_RESET,
-	(sv->ip[sv_v4] > 0) ? COLOR_GREEN"ONLINE" : COLOR_RED"OFFLINE");
-	printf(COLOR_UNDERLINED"IPv6"COLOR_RESET"\t\t"COLOR_UNDERLINED);
-	printf("%s\n"COLOR_RESET,
-	(sv->ip[sv_v6] > 0) ? COLOR_GREEN"ONLINE" : COLOR_RED"OFFLINE");
-	printf(COLOR_UNDERLINED"Home"COLOR_RESET":\t\t\""COLOR_BOLD);
-	printf(COLOR_PINK"%s"COLOR_RESET"\"\n", sv->info.env.home);
+	printf(FTP_UNDERLINED"IPv4"FTP_RESET"\t\t"FTP_UNDERLINED);
+	printf("%s\n"FTP_RESET,
+	(sv->ip[sv_v4] > 0) ? FTP_GREEN"ONLINE" : FTP_RED"OFFLINE");
+	printf(FTP_UNDERLINED"IPv6"FTP_RESET"\t\t"FTP_UNDERLINED);
+	printf("%s\n"FTP_RESET,
+	(sv->ip[sv_v6] > 0) ? FTP_GREEN"ONLINE" : FTP_RED"OFFLINE");
+	printf(FTP_UNDERLINED"Home"FTP_RESET":\t\t\""FTP_BOLD);
+	printf(FTP_PINK"%s"FTP_RESET"\"\n", sv->info.env.home);
 	sv_print_path(sv->info.env.path);
-	printf(COLOR_UNDERLINED"Buff Size"COLOR_RESET":\t"COLOR_RESET"%d\n",
+	printf(FTP_UNDERLINED"Buff Size"FTP_RESET":\t"FTP_RESET"%d\n",
 	CMD_BUFF_SIZE);
-	printf(COLOR_UNDERLINED"Data Size"COLOR_RESET":\t"COLOR_RESET"%d\n",
+	printf(FTP_UNDERLINED"Data Size"FTP_RESET":\t"FTP_RESET"%d\n",
 	DATA_BUFF_SIZE);
-	printf(COLOR_UNDERLINED"Max Clients"COLOR_RESET":\t"COLOR_RESET"%d\n",
+	printf(FTP_UNDERLINED"Max Clients"FTP_RESET":\t"FTP_RESET"%d\n",
 	CLIENTS_MAX);
 	sv_print_users(sv->users, sv);
-	printf(COLOR_LIGHT_BLUE"Server Online..."COLOR_RESET"\n");
+	printf(FTP_LIGHT_BLUE"Server Online..."FTP_RESET"\n");
 }

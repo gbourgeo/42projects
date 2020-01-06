@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:17:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 23:07:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/06 19:45:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,12 @@ void		print_signal_info(int sig, int interactive)
 
 	if (!interactive)
 		return ;
-	dprintf(STDERR_FILENO, "\n"COLOR_RED"********************"COLOR_RESET);
-	dprintf(STDERR_FILENO, " Signal "COLOR_BOLD""COLOR_BLUE);
+	dprintf(STDERR_FILENO, "\n"FTP_RED"********************"FTP_RESET);
+	dprintf(STDERR_FILENO, " Signal "FTP_BOLD""FTP_BLUE);
 	if (sig > 0 && sig < (int)(sizeof(signame) / sizeof(signame[0])))
 		dprintf(STDERR_FILENO, "%s", signame[sig]);
 	else
 		dprintf(STDERR_FILENO, "%d", sig);
-	dprintf(STDERR_FILENO, COLOR_RESET" received ");
-	dprintf(STDERR_FILENO, COLOR_RED"********************"COLOR_RESET"\n");
+	dprintf(STDERR_FILENO, FTP_RESET" received ");
+	dprintf(STDERR_FILENO, FTP_RED"********************"FTP_RESET"\n");
 }
