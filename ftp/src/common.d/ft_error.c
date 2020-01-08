@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:20:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 22:07:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,10 @@ const char		*ft_get_error(int errnb)
 		"ncurse: init main win failed", "ncurse: init text box failed",
 		"ncurse: init text win failed", "ncurse: init list box failed",
 		"ncurse: init list win failed", "ncurse: init chat box failed",
-		"ncurse: init chat win failed",
+		"ncurse: init chat win failed", "read failed", "open terminal failed",
+		"tcgetattr failed", "tcsetattr failed", "Quit",
+		"Specify a terminal type", "Could not access the termcap data base",
+		"Terminal type is not defined",
 	};
 
 	if (errnb < 0 || errnb > (int)(sizeof(errors) / sizeof(errors[0])))

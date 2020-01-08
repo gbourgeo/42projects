@@ -6,11 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 16:52:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 21:42:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/select.h>
+#include <unistd.h>
 #include "cl_main.h"
 
 static int			client_info(t_client *cl)
@@ -32,28 +33,32 @@ static int			init_fdset(fd_set *r, fd_set *w, t_client *cl)
 	max = 0;
 	FD_ZERO(r);
 	FD_ZERO(w);
-	FD_SET(0, r);
-	FD_SET(cl->server.fd, r);
+	if (cl->rd.len < CMD_BUFF_SIZE)
+		FD_SET(STDIN_FILENO, r);
+	if (cl->server.fd > 0)
+		FD_SET(cl->server.fd, r);
 	if (cl->server.fd > max)
 		max = cl->server.fd;
 	return (max);
 }
 
-static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
+static int			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 {
-	if (FD_ISSET(0, r))
-		cl->errnb[0] = (FT_CHECK(cl->options, cl_ncurses))
-		? cl_ncurses_read : cl_stdin_read;
-	if (FD_ISSET(cl->server.fd, r))
-		cl->errnb[1] = cl_server_recv(cl);
+	if (FD_ISSET(STDIN_FILENO, r))
+		return ((FT_CHECK(cl->options, cl_ncurses))
+		? cl_ncurses_read(cl) : cl_stdin_read(cl));
+	else if (FD_ISSET(cl->server.fd, r))
+		return (cl_server_recv(cl));
+	else if (FD_ISSET(cl->server.fd, w))
+		return (cl_server_send(cl));
+	return (IS_OK);
 }
 
 int					cl_client_loop(t_client *cl)
 {
 	int				max;
 	int				ret;
-	fd_set			fd_read;
-	fd_set			fd_write;
+	fd_set			fds[2];
 	struct timeval	timeout;
 	int				errnb;
 
@@ -61,19 +66,21 @@ int					cl_client_loop(t_client *cl)
 		return (errnb);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
-	while (1)
+	if (!FT_CHECK(cl->options, cl_ncurses))
+		cl_prompt(cl);
+	while (errnb == IS_OK)
 	{
-		max = init_fdset(&fd_read, &fd_write, cl);
-		ret = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
+		max = init_fdset(&fds[0], &fds[1], cl);
+		ret = select(max + 1, &fds[0], &fds[1], NULL, &timeout);
 		if (ret < 0)
 			return (ERR_SELECT);
 		if (ret > 0)
-			check_fdset(&fd_read, &fd_write, cl);
+			errnb = check_fdset(&fds[0], &fds[1], cl);
 	}
-	return (IS_OK);
+	return (errnb);
 }
 
-void			cl_prompt(t_client *cl)
+void				cl_prompt(t_client *cl)
 {
 	if (FT_CHECK(cl->options, cl_ncurses))
 		return ;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 16:51:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 22:04:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,18 @@ enum
 	ERR_NCURSE_MAIN,
 	ERR_NCURSE_TEXTBOX,
 	ERR_NCURSE_TEXTWIN,
-	ERR_NCURSE_LISTBOX,
+	ERR_NCURSE_LISTBOX = 45,
 	ERR_NCURSE_LISTWIN,
 	ERR_NCURSE_CHATBOX,
 	ERR_NCURSE_CHATWIN,
+	ERR_READ,
+	ERR_OPEN_TTY = 50,
+	ERR_TCGETATTR,
+	ERR_TCSETATTR,
+	ERR_QUIT,
+	ERR_TERM_NOT_DEFINED,
+	ERR_TERM_DATABASE,
+	ERR_TERM_NOT_FOUND,
 };
 
 typedef struct		s_env
@@ -152,6 +160,5 @@ char				*ft_get_path(char *dest, char *home, char *lpwd,
 char				*ft_get_command(char *cmd, char *paths, int n);
 void				ft_putendn(int nb);
 void				ft_signals(void);
-void				ft_freetab2(char ***tab, int freeall);
 
 #endif

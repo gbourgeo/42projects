@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:11:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 14:46:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 19:57:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void		cl_resize_window(int sig)
 	cl_ncurses_end(cl);
 	refresh();
 	clear();
-	if ((errnb = cl_init_ncurses(cl)) == IS_OK)
+	if ((errnb = cl_ncurses_init(cl)) == IS_OK)
 		return ;
 	cl_client_end(cl);
 	ft_error(errnb, &cl->info);
@@ -38,12 +38,10 @@ static void		cl_init_pairs(void)
 	init_pair(CLIENT_TEXT_COLOR, COLOR_WHITE, -1);
 }
 
-int				cl_init_ncurses(t_client *cl)
+int				cl_ncurses_init(t_client *cl)
 {
 	int			errnb;
 
-	if (!FT_CHECK(cl->options, cl_ncurses))
-		return (IS_OK);
 	cl->sig[SIGWINCH] = signal(SIGWINCH, cl_resize_window);
 	if ((cl->ncu.main = initscr()) == NULL)
 		return (ERR_NCURSE_MAIN);
@@ -52,6 +50,7 @@ int				cl_init_ncurses(t_client *cl)
 	keypad(cl->ncu.main, TRUE);
 	start_color();
 	use_default_colors();
+	clear();
 	cl_init_pairs();
 	if ((errnb = create_s_text(cl)) == IS_OK)
 		if ((errnb = create_s_list(cl)) == IS_OK)

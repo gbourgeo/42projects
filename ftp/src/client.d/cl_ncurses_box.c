@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:28:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/07 00:15:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 21:43:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,6 @@ int			create_c_text(t_client *cl)
 	if (!(cl->ncu.textbox = subwin(cl->ncu.main, y, x, LINES - y, 0)))
 		return (ERR_NCURSE_CHATBOX);
 	box(cl->ncu.textbox, 0, 0);
-	// mvwaddch(cl->ncu.textbox, 0, (x * 0.5) - 5, ACS_RTEE);
-	// wattron(cl->ncu.textbox, COLOR_PAIR(CLIENT_TITLE_COLOR));
-	// mvwaddstr(cl->ncu.textbox, 0, (x * 0.5) - 4, " L I S T ");
-	// wattroff(cl->ncu.textbox, COLOR_PAIR(CLIENT_TITLE_COLOR));
-	// mvwaddch(cl->ncu.textbox, 0, (x * 0.5) + 5, ACS_LTEE);
 	wrefresh(cl->ncu.textbox);
 	cl->ncu.textwin = subwin(cl->ncu.textbox, y - 2, x - 2, LINES - y + 1, 1);
 	if (!cl->ncu.textwin)

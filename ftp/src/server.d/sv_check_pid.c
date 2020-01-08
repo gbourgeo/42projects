@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 18:40:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 21:45:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ t_server *sv)
 {
 	if (WIFEXITED(status))
 	{
-		if (WEXITSTATUS(status))
-			return (sv_cmd_err(ft_get_error(WEXITSTATUS(status)), name,
-				cl, sv));
+		status = WEXITSTATUS(status);
+		if (status)
+			return (sv_cmd_err(ft_get_error(status), name, cl, sv));
 		if (!ft_strcmp(name, "ls"))
 			return (sv_cmd_ok("Successfully listed file/directory", cl, sv));
 		if (!ft_strcmp(name, "put"))

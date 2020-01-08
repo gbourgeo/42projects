@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/08 17:23:36 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/08 21:52:30 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,15 +14,18 @@ CLIENT	= client
 CLI_D	= src/client.d/
 CLI_C	= cl_main.c						\
 		cl_client_end.c					\
+		cl_client_loop.c				\
 		cl_client_signals.c				\
+		cl_client_read.c				\
 		cl_get_addrinfo.c				\
 		cl_ncurses.c					\
 		cl_ncurses_box.c				\
 		cl_params_get.c					\
 		cl_params.c						\
 		cl_params_1.c					\
-		cl_client_loop.c				\
-		cl_client_read.c				\
+		cl_server_recv.c				\
+		cl_server_send.c				\
+		cl_terminal_init.c				\
 
 SERVEUR	= server
 SER_D	= src/server.d/
@@ -106,11 +109,14 @@ CFLAGS	+= -fsanitize=address
 LIBS	+= -fsanitize=address
 endif
 
-all: $(CLIENT) $(SERVEUR)
+all: $(OBJ_D) $(CLIENT) $(SERVEUR)
+
+$(OBJ_D):
+	mkdir -p $@
 
 $(CLIENT): $(OBJ_X) $(OBJ_C)
 	@make -C $(LIB_DIR)
-	@$(CC) -o $@ $^ $(LIBS) -lncurses
+	@$(CC) -o $@ $^ $(LIBS) -ltermcap -lncurses
 	@echo "GENERATED: $(CLIENT)"
 
 $(SERVEUR): $(OBJ_X) $(OBJ_S)
@@ -138,16 +144,13 @@ $(OBJ_D)%.o: $(COM_D)%.c | $(OBJ_D)
 	@echo "Compile: $<"
 	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
 
-$(OBJ_D):
-	mkdir -p $@
-
 clean:
 	@make -C $(LIB_DIR) clean
-	@if test -d $(OBJ_D); then rm -r $(OBJ_D) && echo rm -r $(OBJ_D) ; fi
+	@rm -rf $(OBJ_D)
 
 fclean: clean
 	@make -C $(LIB_DIR) fclean
-	@if test -f $(CLIENT) ; then rm $(CLIENT) && echo rm $(CLIENT) ; fi
-	@if test -f $(SERVEUR) ; then rm $(SERVEUR) && echo rm $(SERVEUR) ; fi
+	@rm -f $(CLIENT)
+	@rm -f $(SERVEUR)
 
 re: fclean all

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 16:51:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 21:41:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <signal.h>
 # include <ncurses.h>
+# include <termios.h>
 # include "libft.h"
 # include "common.h"
 
@@ -56,6 +57,12 @@ typedef struct		s_ncu
 	WINDOW			*textwin;
 }					t_ncu;
 
+typedef struct		s_term
+{
+	int				fd;
+	struct termios	info;
+}					t_term;
+
 /*
 ** Server related structure
 */
@@ -79,11 +86,11 @@ typedef struct		s_client
 	int				options;
 	char			*port;
 	char			*addr;
+	t_term			term;
 	t_ncu			ncu;
 	t_server		server;
 	char			*pwd;
 	int				success;
-	int				errnb[2];
 	t_buff			rd;
 }					t_client;
 
@@ -121,7 +128,11 @@ int					cl_param_h(char **av, int *i, t_client *cl);
 int					cl_param_n(char **av, int *i, t_client *cl);
 void				cl_client_end(t_client *cl);
 int					cl_get_addrinfo(t_client *cl);
-int					cl_init_ncurses(t_client *cl);
+int					cl_terminal_init(t_client *cl);
+int					cl_pchar(int nb);
+char				*cl_tgetstr(char *t);
+
+int					cl_ncurses_init(t_client *cl);
 int					create_s_text(t_client *cl);
 int					create_s_list(t_client *cl);
 int					create_c_text(t_client *cl);
@@ -130,6 +141,7 @@ int					cl_client_loop(t_client *cl);
 int					cl_ncurses_read(t_client *cl);
 int					cl_stdin_read(t_client *cl);
 int					cl_server_recv(t_client *cl);
+int					cl_server_send(t_client *cl);
 
 void			cl_prompt(t_client *cl);
 
