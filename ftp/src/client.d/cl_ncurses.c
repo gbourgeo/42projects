@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:11:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/07 00:11:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 14:46:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,14 @@ int				cl_init_ncurses(t_client *cl)
 {
 	int			errnb;
 
+	if (!FT_CHECK(cl->options, cl_ncurses))
+		return (IS_OK);
 	cl->sig[SIGWINCH] = signal(SIGWINCH, cl_resize_window);
 	if ((cl->ncu.main = initscr()) == NULL)
 		return (ERR_NCURSE_MAIN);
 	noecho();
 	cbreak();
 	keypad(cl->ncu.main, TRUE);
-	// curs_set(0);
 	start_color();
 	use_default_colors();
 	cl_init_pairs();

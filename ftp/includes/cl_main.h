@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/07 00:07:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 16:51:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 enum
 {
 	cl_interactive = 0,
+	cl_ncurses,
 };
 
 /*
@@ -82,6 +83,8 @@ typedef struct		s_client
 	t_server		server;
 	char			*pwd;
 	int				success;
+	int				errnb[2];
+	t_buff			rd;
 }					t_client;
 
 struct s_client		client;
@@ -115,6 +118,7 @@ int					cl_params_get(char **av, t_client *cl);
 t_opt				*cl_params(int getsize);
 int					cl_param_i(char **av, int *i, t_client *cl);
 int					cl_param_h(char **av, int *i, t_client *cl);
+int					cl_param_n(char **av, int *i, t_client *cl);
 void				cl_client_end(t_client *cl);
 int					cl_get_addrinfo(t_client *cl);
 int					cl_init_ncurses(t_client *cl);
@@ -123,6 +127,9 @@ int					create_s_list(t_client *cl);
 int					create_c_text(t_client *cl);
 void				cl_ncurses_end(t_client *cl);
 int					cl_client_loop(t_client *cl);
+int					cl_ncurses_read(t_client *cl);
+int					cl_stdin_read(t_client *cl);
+int					cl_server_recv(t_client *cl);
 
 void			cl_prompt(t_client *cl);
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:11:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 16:51:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,18 @@ typedef struct		s_common
 	char			*progname;
 	t_env			env;
 }					t_common;
+
+/*
+** Ring-Buffer structure
+*/
+
+typedef struct		s_buff
+{
+	char			*head;
+	char			*tail;
+	char			buff[CMD_BUFF_SIZE];
+	size_t			len;
+}					t_buff;
 
 void				print_signal_info(int sig, int interactive);
 int					ft_check_option(int option, int value);

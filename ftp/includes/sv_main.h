@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:39:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 16:50:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,18 +83,6 @@ typedef struct		s_hdr
 	long			size;
 	int				type;
 }					t_hdr;
-
-/*
-** Client Ring-Buffer structure
-*/
-
-typedef struct		s_buff
-{
-	char			*head;
-	char			*tail;
-	char			buff[CMD_BUFF_SIZE];
-	size_t			len;
-}					t_buff;
 
 /*
 ** Users structure

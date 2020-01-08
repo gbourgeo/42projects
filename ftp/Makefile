@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/06 18:10:02 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/08 17:23:36 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,8 @@ CLI_C	= cl_main.c						\
 		cl_params_get.c					\
 		cl_params.c						\
 		cl_params_1.c					\
+		cl_client_loop.c				\
+		cl_client_read.c				\
 
 SERVEUR	= server
 SER_D	= src/server.d/

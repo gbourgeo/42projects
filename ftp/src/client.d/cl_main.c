@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:46:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/08 14:48:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,7 @@ int					main(int ac, char **av, char **environ)
 			if ((errnb = cl_params_get(av, cl)) == IS_OK)
 				if ((errnb = cl_init_ncurses(cl)) == IS_OK)
 				// if ((errnb = cl_get_addrinfo(cl)) == IS_OK)
-						while (1) ;
-						// errnb = cl_client_loop(cl);
+						errnb = cl_client_loop(cl);
 	cl_client_end(cl);
 	if (errnb != IS_OK)
 		if (ft_error(errnb, &cl->info) == 2)
