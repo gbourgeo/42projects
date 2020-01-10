@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:17:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 19:45:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 19:18:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifdef __linux__
-#  define _POSIX_C_SOURCE 200809L
-# endif
+#ifdef __linux__
+# define _POSIX_C_SOURCE 200809L
+#endif
 #include <unistd.h>
 #include "common.h"
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 22:02:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 18:40:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int					cl_stdin_read(t_client *cl)
 				tputs(cl_tgetstr("dc"), 1, cl_pchar);
 			}
 		}
-		else if (*buff == '\n')
+		else if (*buff == 0x0A) // LF
 		{
 			if (cl->rd.len)
 			{
@@ -75,8 +75,8 @@ int					cl_stdin_read(t_client *cl)
 		}
 		else
 		{
-			dprintf(0, "%02X", buff[i]);
-			fflush(stdin);
+			// dprintf(0, "%02X", buff[i]);
+			// fflush(stdin);
 			// break ;
 		}
 		i++;

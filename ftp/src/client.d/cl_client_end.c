@@ -6,12 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 22:01:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 18:37:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <term.h>
 #include <curses.h>
+#include <unistd.h>
 #include "cl_main.h"
 
 void			cl_ncurses_end(t_client *cl)
@@ -34,9 +35,11 @@ void			cl_ncurses_end(t_client *cl)
 
 static void		cl_term_end(t_client *cl)
 {
+	if (cl->term.fd <= 0)
+		return ;
 	tputs(cl_tgetstr("ei"), 1, cl_pchar);
 	tcsetattr(cl->term.fd, TCSANOW, &cl->term.info);
-	ft_close(&cl->term.fd);
+	close(cl->term.fd);
 }
 
 void			cl_client_end(t_client *cl)
@@ -52,7 +55,8 @@ void			cl_client_end(t_client *cl)
 			signal(i, cl->sig[i]);
 		i++;
 	}
-	ft_close(&cl->server.fd);
+	if (cl->server.fd > 0)
+		close(cl->server.fd);
 	ft_strdel(&cl->server.pwd);
 	ft_strdel(&cl->pwd);
 	if (FT_CHECK(cl->options, cl_ncurses))

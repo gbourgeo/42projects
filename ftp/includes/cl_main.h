@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 21:41:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 19:19:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,13 @@
 # include "libft.h"
 # include "common.h"
 
-# define COMMANDS "help", "ls", "pwd", "cd", "get", "put", "lcd", "mkdir"
-# define CMD_PLUS "rmdir", "unlink", "mget", "mput"
-# define FUNCTIONS cl_help, cl_ls_pwd, cl_ls_pwd, cl_cd, cl_get, cl_put, cl_lcd
-# define FUNC_PLUS cl_mkdir, cl_rmdir, cl_unlink, cl_mget_mput, cl_mget_mput
+/*
+** # define COMMANDS "help", "ls", "pwd", "cd", "get", "put", "lcd", "mkdir"
+** # define CMD_PLUS "rmdir", "unlink", "mget", "mput"
+** # define FUNCTIONS cl_help, cl_ls_pwd, cl_ls_pwd, cl_cd, cl_get, cl_put,
+** cl_lcd
+** # define FUNC_PLUS cl_mkdir, cl_rmdir, cl_unlink, cl_mget_mput, cl_mget_mput
+*/
 
 /*
 ** Enumeration for CLIENT options
@@ -143,31 +146,31 @@ int					cl_stdin_read(t_client *cl);
 int					cl_server_recv(t_client *cl);
 int					cl_server_send(t_client *cl);
 
-void			cl_prompt(t_client *cl);
+void				cl_prompt(t_client *cl);
 
 /*
 ** commands
 */
 
-int				cl_help(char **cmds, t_client *cl);
-int				cl_get_help(t_client *cl);
-int				cl_put_help(t_client *cl);
-int				cl_ls_pwd(char **cmds, t_client *cl);
-int				cl_cd(char **cmds, t_client *cl);
-int				cl_get(char **cmds, t_client *cl);
-int				cl_put(char **cmds, t_client *cl);
-int				cl_lcd(char **args, t_client *cl);
-int				cl_mkdir(char **cmds, t_client *cl);
-int				cl_rmdir(char **cmds, t_client *cl);
-int				cl_unlink(char **cmds, t_client *cl);
-int				cl_mget_mput(char **cmds, t_client *cl);
+int					cl_help(char **cmds, t_client *cl);
+int					cl_get_help(t_client *cl);
+int					cl_put_help(t_client *cl);
+int					cl_ls_pwd(char **cmds, t_client *cl);
+int					cl_cd(char **cmds, t_client *cl);
+int					cl_get(char **cmds, t_client *cl);
+int					cl_put(char **cmds, t_client *cl);
+int					cl_lcd(char **args, t_client *cl);
+int					cl_mkdir(char **cmds, t_client *cl);
+int					cl_rmdir(char **cmds, t_client *cl);
+int					cl_unlink(char **cmds, t_client *cl);
+int					cl_mget_mput(char **cmds, t_client *cl);
 
-int				cl_commands(char **args, t_client *cl);
-void			cl_change_pwds(char *pwd, t_client *cl);
-char			*cl_getcwd(char *dir, char *lpwd);
-int				cl_check_server(int ffd, t_client *cl, char *f);
-int				cl_received_dir_files(t_client *cl);
-int				cl_get_dir(char *dir, t_client *cl);
-int				cl_get_file(char *file, t_client *cl);
+int					cl_commands(char **args, t_client *cl);
+void				cl_change_pwds(char *pwd, t_client *cl);
+char				*cl_getcwd(char *dir, char *lpwd);
+int					cl_check_server(int ffd, t_client *cl, char *f);
+int					cl_received_dir_files(t_client *cl);
+int					cl_get_dir(char *dir, t_client *cl);
+int					cl_get_file(char *file, t_client *cl);
 
 #endif

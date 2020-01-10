@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 22:07:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 19:17:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "common.h"
 #include "libft.h"
 
-int				ft_error(int errnb, t_common *info)
+int					ft_error(int errnb, t_common *info)
 {
 	const char	*err;
 
@@ -39,7 +39,23 @@ int				ft_error(int errnb, t_common *info)
 	return (1);
 }
 
-const char		*ft_get_error(int errnb)
+static const char	*get_error_next(int errnb)
+{
+	static const char	*errors[] = {
+		"ncurse: init text win failed", "ncurse: init list box failed",
+		"ncurse: init list win failed", "ncurse: init chat box failed",
+		"ncurse: init chat win failed", "read failed", "open terminal failed",
+		"tcgetattr failed", "tcsetattr failed", "Quit",
+		"Specify a terminal type", "Could not access the termcap data base",
+		"Terminal type is not defined",
+	};
+
+	if (errnb < (int)(sizeof(errors) / sizeof(errors[0])))
+		return (errors[errnb]);
+	return (NULL);
+}
+
+const char			*ft_get_error(int errnb)
 {
 	static const char	*errors[] = {
 		"Disconnected", "-- Help", "Missing parameter",
@@ -59,15 +75,11 @@ const char		*ft_get_error(int errnb)
 		"DATA header corrupted", "transfert timed out", "lseek failed",
 		"mmap failed", "fstat failed", "not valid file", "no server found",
 		"ncurse: init main win failed", "ncurse: init text box failed",
-		"ncurse: init text win failed", "ncurse: init list box failed",
-		"ncurse: init list win failed", "ncurse: init chat box failed",
-		"ncurse: init chat win failed", "read failed", "open terminal failed",
-		"tcgetattr failed", "tcsetattr failed", "Quit",
-		"Specify a terminal type", "Could not access the termcap data base",
-		"Terminal type is not defined",
 	};
 
-	if (errnb < 0 || errnb > (int)(sizeof(errors) / sizeof(errors[0])))
+	if (errnb < 0)
 		return (NULL);
-	return (errors[errnb]);
+	if (errnb < (int)(sizeof(errors) / sizeof(errors[0])))
+		return (errors[errnb]);
+	return (get_error_next(errnb - (int)(sizeof(errors) / sizeof(errors[0]))));
 }

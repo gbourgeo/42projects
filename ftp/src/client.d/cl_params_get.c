@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:36:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 23:23:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 18:35:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,14 @@ int				cl_params_get(char **av, t_client *cl)
 			if ((errnb = get_value(av, &p, cl)) != IS_OK)
 				return (errnb);
 		}
+		else if (cl->addr == NULL)
+			cl->addr = av[p.i];
 		else if (cl->port == NULL)
 		{
 			if (!only_digit(av[p.i]))
 				return (ERR_DIGIT_PARAM);
 			cl->port = av[p.i];
 		}
-		else if (cl->addr == NULL)
-			cl->addr = av[p.i];
 		else
 			return (ERR_TOOMUCH_PARAM);
 		p.i++;

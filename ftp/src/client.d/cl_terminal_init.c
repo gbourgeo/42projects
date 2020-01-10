@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 19:56:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 22:08:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 18:31:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static int		cl_stdin_init(t_client *cl)
 	char			term_buffer[2048];
 	int				success;
 
-	if ((termtype = getenv("TERM") )== 0)
+	if ((termtype = getenv("TERM")) == 0)
 		return (ERR_TERM_NOT_DEFINED);
 	if ((success = tgetent(term_buffer, termtype)) <= 0)
 		return ((success < 0) ? ERR_TERM_DATABASE : ERR_TERM_NOT_FOUND);

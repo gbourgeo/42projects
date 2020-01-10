@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 21:43:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/10 18:35:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,15 @@ static void			print_usage(const char *progname, const char *progpath)
 	dprintf(STDERR_FILENO, "%s - ftp client\n\n", progname);
 	dprintf(STDERR_FILENO, FTP_BOLD"USAGE\n\t%s"FTP_RESET, progpath);
 	dprintf(STDERR_FILENO, " ["FTP_UNDERLINED"OPTIONS"FTP_RESET"]... ");
-	dprintf(STDERR_FILENO, FTP_UNDERLINED"PORT"FTP_RESET" ");
-	dprintf(STDERR_FILENO, FTP_UNDERLINED"ADDR"FTP_RESET"\n\n");
+	dprintf(STDERR_FILENO, FTP_UNDERLINED"ADDR"FTP_RESET" ");
+	dprintf(STDERR_FILENO, FTP_UNDERLINED"PORT"FTP_RESET"\n\n");
 	dprintf(STDERR_FILENO, FTP_BOLD"DESCRIPTION"FTP_RESET"\n\t");
 	dprintf(STDERR_FILENO, "Start a File Transfert Protocol client.\n");
 	print_params(cl_params(0), (size_t)cl_params(1));
-	dprintf(STDERR_FILENO, "\n\t"FTP_BOLD"port"FTP_RESET);
-	dprintf(STDERR_FILENO, "\tPort to connect to.\n");
 	dprintf(STDERR_FILENO, "\n\t"FTP_BOLD"addr"FTP_RESET);
 	dprintf(STDERR_FILENO, "\tAddress to connect to.\n\n");
+	dprintf(STDERR_FILENO, "\n\t"FTP_BOLD"port"FTP_RESET);
+	dprintf(STDERR_FILENO, "\tPort to connect to.\n");
 	dprintf(STDERR_FILENO, FTP_BOLD"AUTHOR"FTP_RESET"\n\t");
 	dprintf(STDERR_FILENO, "Written by Gilles Bourgeois\n");
 }
@@ -68,7 +68,7 @@ int					main(int ac, char **av, char **environ)
 		if ((errnb = cl_client_signals(cl)) == IS_OK)
 			if ((errnb = cl_params_get(av, cl)) == IS_OK)
 				if ((errnb = cl_terminal_init(cl)) == IS_OK)
-				// if ((errnb = cl_get_addrinfo(cl)) == IS_OK)
+					if ((errnb = cl_get_addrinfo(cl)) == IS_OK)
 						errnb = cl_client_loop(cl);
 	cl_client_end(cl);
 	if (errnb != IS_OK)
