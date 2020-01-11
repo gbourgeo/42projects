@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:13:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:26:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 {
 	t_client	*ret;
 
-	print_info(cl, sv);
 	if (cl->data.pid > 0)
-		kill(cl->data.pid, SIGKILL);
+		return (cl->next);
+	print_info(cl, sv);
 	if (cl->data.fd > 0)
 		close(cl->data.fd);
 	if (cl->data.socket > 0)

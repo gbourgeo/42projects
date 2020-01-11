@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:13:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 15:58:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 
 	commands = sv_commands(0);
 	i = 0;
-	size = sv_getcommandsright(cl->user.rights);
+	size = sv_getuserrights(cl->login.member);
 	if (!cmd[0] || !cmd[0][0])
 		return (IS_OK);
 	while (i < size)

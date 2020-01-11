@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 19:56:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/10 18:31:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 14:51:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,16 @@ static int		cl_stdin_init(t_client *cl)
 	term.c_cc[VTIME] = 0;
 	if ((tcsetattr(cl->term.fd, TCSANOW, &term)) == -1)
 		return (ERR_TCSETATTR);
+	if (FT_CHECK(cl->options, cl_interactive))
+		ft_putendl(FTP_GREEN"OK"FTP_RESET);
 	tputs(cl_tgetstr("im"), 1, cl_pchar);
 	return (IS_OK);
 }
 
 int				cl_terminal_init(t_client *cl)
 {
+	if (FT_CHECK(cl->options, cl_interactive))
+		ft_putstr("Initialising terminal... ");
 	if (!FT_CHECK(cl->options, cl_ncurses))
 		return (cl_stdin_init(cl));
 	return (cl_ncurses_init(cl));

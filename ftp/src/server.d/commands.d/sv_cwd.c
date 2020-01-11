@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_cd.c                                            :+:      :+:    :+:   */
+/*   sv_cwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:32:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:34:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <sys/param.h>
 #include "sv_main.h"
 
-static void		sv_cd_new(char *cwd, char *newc, t_client *cl)
+static void		sv_cwd_new(char *cwd, char *newc, t_client *cl)
 {
 	if (!newc)
 		ft_strncpy(cwd, "/", MAXPATHLEN);
@@ -31,7 +31,7 @@ static void		sv_cd_new(char *cwd, char *newc, t_client *cl)
 		ft_strncat(cwd, "/", MAXPATHLEN);
 }
 
-static int		sv_cd_change(char *cwd, char *cmd, t_client *cl)
+static int		sv_cwd_change(char *cwd, char *cmd, t_client *cl)
 {
 	int			ret;
 
@@ -46,7 +46,7 @@ static int		sv_cd_change(char *cwd, char *cmd, t_client *cl)
 	return (ret);
 }
 
-int				sv_cd(char **cmds, t_client *cl, t_server *sv)
+int				sv_cwd(char **cmds, t_client *cl, t_server *sv)
 {
 	char		cwd[MAXPATHLEN];
 	char		*dup;
@@ -59,7 +59,7 @@ int				sv_cd(char **cmds, t_client *cl, t_server *sv)
 		if (cmds[2])
 			return (sv_cmd_err("Too much parameters.", cmds[0], cl, sv));
 	}
-	sv_cd_new(cwd, cmds[1], cl);
+	sv_cwd_new(cwd, cmds[1], cl);
 	if (!(dup = ft_strdup(cwd)))
 		return (ERR_MALLOC);
 	if ((ret = sv_check_path(&dup, cl)) != IS_OK)
@@ -69,7 +69,7 @@ int				sv_cd(char **cmds, t_client *cl, t_server *sv)
 	free(dup);
 	if (ret < 0)
 		return (sv_cmd_err("Invalid directory", cmds[0], cl, sv));
-	if ((ret = sv_cd_change(cwd, cmds[1], cl)) != IS_OK)
+	if ((ret = sv_cwd_change(cwd, cmds[1], cl)) != IS_OK)
 		return (ret);
-	return (sv_cmd_ok("Successfully changed directory", cl, sv));
+	return (sv_cmd_ok("Changed directory", cl, sv));
 }

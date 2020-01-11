@@ -6,12 +6,20 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 22:27:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/19 22:03:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 15:48:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "sv_main.h"
+
+void			sv_free_login(t_login *login)
+{
+	ft_strdel(&login->user);
+	ft_strdel(&login->password);
+	ft_strdel(&login->account);
+	login->member = NULL;
+}
 
 void			sv_free_user(t_user **user)
 {

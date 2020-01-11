@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 23:31:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:22:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 14:55:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,12 @@ int				cl_get_addrinfo(t_client *cl)
 
 	if (FT_CHECK(cl->options, cl_interactive))
 	{
-		printf("Connecting to "FTP_LIGHT_BLUE"%s"FTP_RESET":"FTP_YELLOW
-		"%s"FTP_RESET"... ", cl->addr, cl->port);
+		printf("Initialising connection to "FTP_LIGHT_BLUE"%s"FTP_RESET
+		":"FTP_YELLOW"%s"FTP_RESET"... ", cl->addr, cl->port);
 		fflush(stdout);
 	}
 	errnb = connect_to(&cl->server.fd, cl);
-	if (FT_CHECK(cl->options, cl_interactive))
-	{
-		if (errnb != IS_OK)
-			printf(FTP_RED"ERROR"FTP_RESET"\n");
-		else
-			printf(FTP_GREEN"OK"FTP_RESET"\n");
-	}
+	if (FT_CHECK(cl->options, cl_interactive) && errnb == IS_OK)
+		ft_putendl(FTP_GREEN"OK"FTP_RESET);
 	return (errnb);
 }

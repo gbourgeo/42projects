@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_pwd.c                                           :+:      :+:    :+:   */
+/*   sv_cdup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/30 21:04:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:36:13 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/11 17:53:57 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/11 18:14:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int				sv_pwd(char **cmds, t_client *cl, t_server *sv)
+typedef struct	s_cdup
 {
-	int			ret;
+	char	*cmd;
+	char	*arg;
+	char	*null;
+}				t_cdup;
 
-	(void)cmds;
-	(void)sv;
-	if ((ret = sv_client_write(cl->pwd, cl)) != IS_OK
-	|| (ret = sv_client_write("\n", cl)) != IS_OK)
-		return (ret);
-	return (sv_cmd_ok("Printed working directory", cl, sv));
+int					sv_cdup(char **cmds, t_client *cl, t_server *sv)
+{
+	return (sv_cwd((char **)&(t_cdup){ cmds[0], "..", NULL }, cl, sv));
 }

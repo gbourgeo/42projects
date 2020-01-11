@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:41:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 15:59:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int					sv_help(char **cmds, t_client *cl, t_server *sv)
 
 	cmd = (t_command *)cmds;
 	ret = IS_OK;
-	size = sv_getcommandsright(cl->user.rights);
+	size = sv_getuserrights(cl->login.member);
 	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
 		if ((ret = sv_client_write(": -- HELP\n", cl)) == IS_OK)
 			while (size-- && ret == IS_OK)

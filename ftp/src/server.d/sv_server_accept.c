@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:12:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 17:37:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ static int		integrate_client(t_client *cl, t_server *sv)
 static int		accept_client(int version, int fd, t_server *sv)
 {
 	t_client	*cl;
-	t_user		*user;
 
 	if (!(cl = ft_memalloc(sizeof(*cl))))
 		return (ERR_MALLOC);
@@ -64,11 +63,7 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
 	cl->data.fd = -1;
-	user = sv_getuserbyname(sv->users, SV_GUEST_NAME);
-	if (FT_CHECK(sv->options, sv_user_mode))
-		cl->user = (user) ? *user : (t_user){ 0 };
-	else
-		cl->user.rights = 3;
+	cl->login.member = sv_getuserbyname(sv->users, SV_GUEST_NAME);
 	return (integrate_client(cl, sv));
 }
 

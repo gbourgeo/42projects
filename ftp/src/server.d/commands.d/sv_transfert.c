@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:30:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:40:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int				sv_transfer(char **cmds, t_client *cl, t_server *sv)
 	int		port;
 
 	p = NULL;
-	port = 1024;
+	port = (cl->data.port) ? ft_atoi(cl->data.port) - 1 : ft_atoi(sv->port);
 	if (!cmds[1] || !cmds[1][0])
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
 	if (cl->data.fd > 0 || cl->data.pid > 0)

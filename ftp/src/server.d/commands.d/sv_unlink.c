@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:43:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:37:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,5 @@ int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 	}
 	if (err[0] || err[2])
 		return (sv_cmd_err("failed", cmds[0], cl, sv));
-	return (sv_cmd_ok("Successfully removed", cl, sv));
+	return (sv_cmd_ok("Removed file", cl, sv));
 }

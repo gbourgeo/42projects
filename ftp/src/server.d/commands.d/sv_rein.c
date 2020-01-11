@@ -1,25 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_pwd.c                                           :+:      :+:    :+:   */
+/*   sv_rein.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/30 21:04:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:36:13 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/11 18:19:18 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/11 18:36:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int				sv_pwd(char **cmds, t_client *cl, t_server *sv)
+int					sv_rein(char **cmds, t_client *cl, t_server *sv)
 {
-	int			ret;
-
 	(void)cmds;
-	(void)sv;
-	if ((ret = sv_client_write(cl->pwd, cl)) != IS_OK
-	|| (ret = sv_client_write("\n", cl)) != IS_OK)
-		return (ret);
-	return (sv_cmd_ok("Printed working directory", cl, sv));
+	sv_free_login(&cl->login);
+	return (sv_cmd_ok("Reinitialized user", cl, sv));
 }

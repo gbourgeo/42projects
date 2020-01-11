@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/08 21:52:30 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/11 18:29:58 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ CLI_C	= cl_main.c						\
 SERVEUR	= server
 SER_D	= src/server.d/
 SER_C	= sv_main.c						\
+		sv_assign_ptr.c					\
 		sv_check_pid.c					\
 		sv_commands.c					\
 		sv_data_accept.c				\
@@ -59,7 +60,8 @@ SER_C	= sv_main.c						\
 		sv_free.c						\
 
 SER_C_D	= $(SER_D)commands.d/
-SER_C	+= sv_cd.c						\
+SER_C	+= sv_cwd.c						\
+		sv_cdup.c						\
 		sv_change_working_directory.c	\
 		sv_check_path.c					\
 		sv_cmd_err.c					\
@@ -68,16 +70,19 @@ SER_C	+= sv_cd.c						\
 		sv_help.c						\
 		sv_ls.c							\
 		sv_mkdir.c						\
+		sv_port.c						\
 		sv_put.c						\
 		sv_pwd.c						\
 		sv_quit.c						\
 		sv_rmdir.c						\
 		sv_hdr.c						\
+		sv_password.c					\
 		sv_recreate_path.c				\
 		sv_register.c					\
-		sv_sign.c						\
+		sv_rein.c						\
 		sv_transfert.c					\
 		sv_unlink.c						\
+		sv_user.c						\
 
 COM_D	= src/common.d/
 COM_C	= ft_init.c						\

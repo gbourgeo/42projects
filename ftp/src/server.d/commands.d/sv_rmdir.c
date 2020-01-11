@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:41:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:37:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl, t_server *sv)
 		return (errnb);
 	if (e->err[0])
 		return (sv_cmd_err("failed", e->cmd, cl, sv));
-	return (sv_cmd_ok("Sucessfully removed", cl, sv));
+	return (sv_cmd_ok("Removed directory", cl, sv));
 }
 
 /*

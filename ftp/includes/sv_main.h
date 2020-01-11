@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 16:50:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:32:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,23 @@ typedef struct		s_user
 }					t_user;
 
 /*
+** Login structure
+*/
+
+typedef struct		s_login
+{
+	char			*user;
+	char			*password;
+	char			*account;
+	t_user			*member;
+}					t_login;
+
+/*
 ** Data transfert structure
 */
 typedef struct		s_data
 {
+	char			*port;
 	int				fd;
 	int				socket;
 	time_t			timeout;
@@ -127,9 +140,9 @@ typedef struct		s_client
 	char			*home;
 	char			*pwd;
 	char			*oldpwd;
+	t_login			login;
 	pid_t			pid_ls;
 	t_data			data;
-	t_user			user;
 	struct s_client	*prev;
 	struct s_client	*next;
 }					t_client;
@@ -246,10 +259,12 @@ void				sv_server_info(t_server *sv);
 int					sv_server_loop(t_server *sv);
 void				sv_server_end(t_server *sv, int sendmsg);
 void				sv_server_close(int version, int sendmsg, t_server *sv);
+void				sv_free_login(t_login *login);
 void				sv_free_env(t_env *env);
 void				sv_free_user(t_user **user);
+void				sv_assign_ptr(char **ptr, char **assign, char **table);
 t_user				*sv_getuserbyname(t_user *users, const char *name);
-size_t				sv_getcommandsright(int rights);
+size_t				sv_getuserrights(t_user *user);
 
 /*
 ** Client functions
@@ -277,8 +292,15 @@ int					sv_send_error(int errnb);
 */
 
 t_command			*sv_commands(int getsize);
-int					sv_cd(char **cmds, t_client *cl, t_server *sv);
 int					sv_help(char **cmds, t_client *cl, t_server *sv);
+int					sv_user(char **cmds, t_client *cl, t_server *sv);
+int					sv_password(char **cmds, t_client *cl, t_server *sv);
+int					sv_cwd(char **cmds, t_client *cl, t_server *sv);
+int					sv_cdup(char **cmds, t_client *cl, t_server *sv);
+int					sv_rein(char **cmds, t_client *cl, t_server *sv);
+
+int					sv_port(char **cmds, t_client *cl, t_server *sv);
+
 int					sv_ls(char **cmds, t_client *cl, t_server *sv);
 int					sv_mkdir(char **cmds, t_client *cl, t_server *sv);
 int					sv_pwd(char **cmds, t_client *cl, t_server *sv);
@@ -286,7 +308,7 @@ int					sv_quit(char **cmds, t_client *cl, t_server *sv);
 int					sv_rmdir(char **cmds, t_client *cl, t_server *sv);
 void				sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv);
 int					sv_register(char **cmds, t_client *cl, t_server *sv);
-int					sv_signin(char **cmds, t_client *cl, t_server *sv);
+// int					sv_signin(char **cmds, t_client *cl, t_server *sv);
 int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
 int					sv_transfer(char **cmds, t_client *cl, t_server *sv);
 int					sv_open_port(char *port, t_client *cl);

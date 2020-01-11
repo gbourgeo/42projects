@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:14:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 18:36:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,5 @@ int					sv_register(char **cmds, t_client *cl, t_server *sv)
 	print_info(cmds, cl, sv);
 	if (sv_save_user(sv->users->next, cl, sv))
 		return (sv_cmd_err("Failed to save user", cmds[0], cl, sv));
-	return (sv_cmd_ok("Successfully registered", cl, sv));
+	return (sv_cmd_ok("Registered new user", cl, sv));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 22:43:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:27:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 15:55:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int			sv_user_file(t_server *sv)
 	line = NULL;
 	errnb = IS_OK;
 	if (!FT_CHECK(sv->options, sv_user_mode))
-		return (IS_OK);
+		return (get_user("C:"SV_GUEST_NAME"::3:", sv));
 	if (access(SV_USERS_FILE, F_OK) < 0 || access(SV_USERS_FILE, R_OK) < 0)
 		return (ERR_OPEN);
 	if ((fd = open(SV_USERS_FILE, O_RDONLY)) < 0)
