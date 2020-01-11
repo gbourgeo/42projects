@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/11 18:29:58 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/11 23:04:14 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,6 +70,7 @@ SER_C	+= sv_cwd.c						\
 		sv_help.c						\
 		sv_ls.c							\
 		sv_mkdir.c						\
+		sv_pasv.c						\
 		sv_port.c						\
 		sv_put.c						\
 		sv_pwd.c						\
@@ -80,7 +81,6 @@ SER_C	+= sv_cwd.c						\
 		sv_recreate_path.c				\
 		sv_register.c					\
 		sv_rein.c						\
-		sv_transfert.c					\
 		sv_unlink.c						\
 		sv_user.c						\
 
@@ -105,13 +105,13 @@ LIB_DIR	= libft/
 HDRS	= -I includes/ -I $(LIB_DIR)includes/
 LIBS	= -L $(LIB_DIR) -lft
 
-CC		= gcc
+CC		= /usr/bin/gcc
 CFLAGS	= -Wall -Werror -Wextra
 CFLAGS	+= -std=c11 -Wmissing-prototypes -pedantic -pedantic-errors -g3
 
 ifeq ($(LEAKS),)
-CFLAGS	+= -fsanitize=address
-LIBS	+= -fsanitize=address
+CFLAGS	+= -fsanitize=address -fsanitize=undefined
+LIBS	+= -fsanitize=address -fsanitize=undefined
 endif
 
 all: $(OBJ_D) $(CLIENT) $(SERVEUR)

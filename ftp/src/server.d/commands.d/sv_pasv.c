@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_transfert.c                                     :+:      :+:    :+:   */
+/*   sv_pasv.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:40:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 23:16:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,17 +64,20 @@ t_server *sv)
 	return (errnb);
 }
 
-int				sv_transfer(char **cmds, t_client *cl, t_server *sv)
+/*
+** PASSIVE (PASV) : MODE PASSIF
+*/
+
+int				sv_pasv(char **cmds, t_client *cl, t_server *sv)
 {
 	char	*p;
 	int		port;
 
 	p = NULL;
-	port = (cl->data.port) ? ft_atoi(cl->data.port) - 1 : ft_atoi(sv->port);
-	if (!cmds[1] || !cmds[1][0])
-		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	if (cl->data.fd > 0 || cl->data.pid > 0)
-		return (sv_cmd_err(ft_get_error(ERR_TRANSFERT), cmds[0], cl, sv));
+	port = (cl->login.port) ? ft_atoi(cl->login.port) - 1 : ft_atoi(sv->port);
+	// 	return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
+	// if (cl->data.fd > 0 || cl->data.pid > 0)
+	// 	return (sv_cmd_err(ft_get_error(ERR_TRANSFERT), cmds[0], cl, sv));
 	while (++port < 65535)
 		if ((p = ft_itoa(port)) && sv_open_port(p, cl))
 		{

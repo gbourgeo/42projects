@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:32:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 23:15:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,21 +107,25 @@ typedef struct		s_login
 	char			*user;
 	char			*password;
 	char			*account;
+	char			address[INET6_ADDRSTRLEN];
+	char			*port;
 	t_user			*member;
 }					t_login;
 
 /*
 ** Data transfert structure
 */
+
 typedef struct		s_data
 {
-	char			*port;
+	// char			*port;
 	int				fd;
 	int				socket;
 	time_t			timeout;
 	pid_t			pid;
 	int				(*function)();
 	char			*file;
+	struct s_data	*next;
 }					t_data;
 
 /*
@@ -300,6 +304,7 @@ int					sv_cdup(char **cmds, t_client *cl, t_server *sv);
 int					sv_rein(char **cmds, t_client *cl, t_server *sv);
 
 int					sv_port(char **cmds, t_client *cl, t_server *sv);
+int					sv_pasv(char **cmds, t_client *cl, t_server *sv);
 
 int					sv_ls(char **cmds, t_client *cl, t_server *sv);
 int					sv_mkdir(char **cmds, t_client *cl, t_server *sv);
@@ -310,7 +315,6 @@ void				sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv);
 int					sv_register(char **cmds, t_client *cl, t_server *sv);
 // int					sv_signin(char **cmds, t_client *cl, t_server *sv);
 int					sv_unlink(char **cmds, t_client *cl, t_server *sv);
-int					sv_transfer(char **cmds, t_client *cl, t_server *sv);
 int					sv_open_port(char *port, t_client *cl);
 int					sv_receive_hdr(int fd, t_hdr *hdr);
 int					sv_put(t_client *cl, t_server *sv);

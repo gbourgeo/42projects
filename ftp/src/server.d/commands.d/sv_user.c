@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:33:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/11 21:50:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,5 @@ int				sv_user(char **cmds, t_client *cl, t_server *sv)
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
 	sv_free_login(&cl->login);
 	sv_assign_ptr(&cl->login.user, &cmds[1], cmds);
-	return (sv_cmd_ok("Changed user", cl, sv));
+	return (sv_cmd_ok("User name OK", cl, sv));
 }
