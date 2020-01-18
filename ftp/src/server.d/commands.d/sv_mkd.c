@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_mkdir.c                                         :+:      :+:    :+:   */
+/*   sv_mkd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:34:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:18:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static int		mkdir_create(t_mkdir *mk, t_client *cl, t_server *sv)
 	return (errnb);
 }
 
-int				sv_mkdir(char **cmds, t_client *cl, t_server *sv)
+int				sv_mkd(char **cmds, t_client *cl, t_server *sv)
 {
 	t_mkdir		mk;
 	int			errnb;
@@ -99,4 +99,14 @@ int				sv_mkdir(char **cmds, t_client *cl, t_server *sv)
 	if (mk.opt & MKDIR_ERR)
 		return (sv_cmd_err("failed", cmds[0], cl, sv));
 	return (sv_cmd_ok("Created directory", cl, sv));
+}
+
+int				sv_mkd_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Create Directory\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

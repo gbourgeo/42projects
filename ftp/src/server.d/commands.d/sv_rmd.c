@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_rmdir.c                                         :+:      :+:    :+:   */
+/*   sv_rmd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:37:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:24:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl, t_server *sv)
 ** err[2] -> Did a fatal error occured ?
 */
 
-int				sv_rmdir(char **cmds, t_client *cl, t_server *sv)
+int				sv_rmd(char **cmds, t_client *cl, t_server *sv)
 {
 	t_rmdir		e;
 	int			i;
@@ -133,4 +133,14 @@ int				sv_rmdir(char **cmds, t_client *cl, t_server *sv)
 		i++;
 	}
 	return (sv_rmdir_end(e.err[2], &e, cl, sv));
+}
+
+int				sv_rmd_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Remove Directory\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

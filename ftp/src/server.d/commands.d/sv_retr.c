@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_put.c                                           :+:      :+:    :+:   */
+/*   sv_retr.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:30:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:24:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ t_server *sv)
 	printf("Client \x1B[33m%d\x1B[0m: %s %ld\n", cl->fd, s1, nb);
 }
 
-int				sv_put(t_client *cl, t_server *sv)
+int				sv_retr(t_client *cl, t_server *sv)
 {
 	t_hdr		hdr;
 	int			fd;
@@ -86,5 +86,15 @@ int				sv_put(t_client *cl, t_server *sv)
 		return (ERR_OPEN);
 	errnb = put_receive(fd, &cl->data, &hdr);
 	close(fd);
+	return (errnb);
+}
+
+int				sv_retr_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Retreive file from server\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
 	return (errnb);
 }

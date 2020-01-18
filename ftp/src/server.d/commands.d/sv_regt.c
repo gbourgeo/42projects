@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_register.c                                      :+:      :+:    :+:   */
+/*   sv_regt.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:36:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:23:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static void			print_info(char **cmds, t_client *cl, t_server *sv)
 ** Example: "register C toto KouKouLeSAmiS 2"
 */
 
-int					sv_register(char **cmds, t_client *cl, t_server *sv)
+int					sv_regt(char **cmds, t_client *cl, t_server *sv)
 {
 	t_user		*users;
 	int			errnb;
@@ -57,4 +57,14 @@ int					sv_register(char **cmds, t_client *cl, t_server *sv)
 	if (sv_save_user(sv->users->next, cl, sv))
 		return (sv_cmd_err("Failed to save user", cmds[0], cl, sv));
 	return (sv_cmd_ok("Registered new user", cl, sv));
+}
+
+int				sv_regt_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Register a new account\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_ls.c                                            :+:      :+:    :+:   */
+/*   sv_nlst.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/22 17:10:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:19:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-int				sv_ls(char **cmds, t_client *cl, t_server *sv)
+int				sv_nlst(char **cmds, t_client *cl, t_server *sv)
 {
 	char		*cmdpath;
 	int			i;
@@ -39,4 +39,14 @@ int				sv_ls(char **cmds, t_client *cl, t_server *sv)
 		exit(ERR_EXECV);
 	}
 	return (IS_OK);
+}
+
+int				sv_nlst_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Display short listing\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

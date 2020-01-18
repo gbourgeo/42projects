@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_unlink.c                                        :+:      :+:    :+:   */
+/*   sv_dele.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:37:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:18:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int		unlink_err(char *cmd, char *file, t_client *cl, t_server *sv)
 ** err[2] -> Did all the operation succeed ?
 */
 
-int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
+int				sv_dele(char **cmds, t_client *cl, t_server *sv)
 {
 	int		i;
 	char	*path;
@@ -60,4 +60,14 @@ int				sv_unlink(char **cmds, t_client *cl, t_server *sv)
 	if (err[0] || err[2])
 		return (sv_cmd_err("failed", cmds[0], cl, sv));
 	return (sv_cmd_ok("Removed file", cl, sv));
+}
+
+int				sv_dele_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Delete file\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 18:34:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:14:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,14 @@ int				sv_cwd(char **cmds, t_client *cl, t_server *sv)
 	if ((ret = sv_cwd_change(cwd, cmds[1], cl)) != IS_OK)
 		return (ret);
 	return (sv_cmd_ok("Changed directory", cl, sv));
+}
+
+int				sv_cwd_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Change Working Directory\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

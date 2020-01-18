@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_get.c                                           :+:      :+:    :+:   */
+/*   sv_stor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:14:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:25:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static int	get_file(char *file, void **map, t_hdr *hdr)
 	return (errnb);
 }
 
-int			sv_get(t_client *cl, t_server *sv)
+int			sv_stor(t_client *cl, t_server *sv)
 {
 	t_hdr	hdr;
 	void	*file;
@@ -81,5 +81,15 @@ int			sv_get(t_client *cl, t_server *sv)
 	if ((errnb = get_send(info, sizeof(hdr), cl->data.socket)) == IS_OK)
 		errnb = get_send(file, hdr.size, cl->data.socket);
 	munmap(file, hdr.size);
+	return (errnb);
+}
+
+int				sv_stor_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Store file to server\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
 	return (errnb);
 }

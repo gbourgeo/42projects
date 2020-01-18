@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 23:16:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:21:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,31 +27,31 @@ typedef int		(*t_func)(t_client *, t_server *);
 ** { "mput", NULL, sv_mput }, { "mget", NULL, sv_mget },
 */
 
-static t_func	get_function(const char *name)
-{
-	static t_command	cmd[] = { { "put", NULL, sv_put },
-		{ "get", NULL, sv_get },
-	};
-	uint32_t			i;
+// static t_func	get_function(const char *name)
+// {
+// 	static t_command	cmd[] = { { "put", NULL, sv_put },
+// 		{ "get", NULL, sv_get },
+// 	};
+// 	uint32_t			i;
 
-	i = 0;
-	while (i < sizeof(cmd) / sizeof(cmd[0]))
-	{
-		if (!ft_strcmp(cmd[i].name, name))
-			return (cmd[i].func);
-		i++;
-	}
-	return (NULL);
-}
+// 	i = 0;
+// 	while (i < sizeof(cmd) / sizeof(cmd[0]))
+// 	{
+// 		if (!ft_strcmp(cmd[i].name, name))
+// 			return (cmd[i].func);
+// 		i++;
+// 	}
+// 	return (NULL);
+// }
 
 static int		transfert_success(char **cmds, char *p, t_client *cl,
 t_server *sv)
 {
 	int			errnb;
 
-	if (!(cl->data.function = get_function(cmds[0])))
-		errnb = ERR_WRONG_PARAM;
-	else if (!(cl->data.file = ft_strdup(cmds[1])))
+	// if (!(cl->data.function = get_function(cmds[0])))
+	// 	errnb = ERR_WRONG_PARAM;
+	if (!(cl->data.file = ft_strdup(cmds[1])))
 		errnb = ERR_MALLOC;
 	else
 	{
@@ -74,10 +74,7 @@ int				sv_pasv(char **cmds, t_client *cl, t_server *sv)
 	int		port;
 
 	p = NULL;
-	port = (cl->login.port) ? ft_atoi(cl->login.port) - 1 : ft_atoi(sv->port);
-	// 	return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	// if (cl->data.fd > 0 || cl->data.pid > 0)
-	// 	return (sv_cmd_err(ft_get_error(ERR_TRANSFERT), cmds[0], cl, sv));
+	port = ft_atoi(cl->data.port);
 	while (++port < 65535)
 		if ((p = ft_itoa(port)) && sv_open_port(p, cl))
 		{
@@ -89,4 +86,14 @@ int				sv_pasv(char **cmds, t_client *cl, t_server *sv)
 			ft_strdel(&p);
 	ft_strdel(&p);
 	return (sv_cmd_err(ft_get_error(ERR_OPEN_PORT), cmds[0], cl, sv));
+}
+
+int				sv_pasv_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Passive mode\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }

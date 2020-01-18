@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 18:30:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 23:25:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 20:22:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 ** Example: PORT h1,h2,h3,h4,p1,p2
 */
 
-static int			only_digit(char **s)
+static int		only_digit(char **s)
 {
 	int		i;
 	int		j;
@@ -33,7 +33,7 @@ static int			only_digit(char **s)
 	return (1);
 }
 
-static void			copy_address(char *s, char **addr)
+static void		copy_address(char *s, char **addr)
 {
 	int			i;
 
@@ -48,7 +48,7 @@ static void			copy_address(char *s, char **addr)
 		}
 }
 
-int					sv_port(char **cmds, t_client *cl, t_server *sv)
+int				sv_port(char **cmds, t_client *cl, t_server *sv)
 {
 	char			**info;
 	unsigned int	port;
@@ -64,7 +64,18 @@ int					sv_port(char **cmds, t_client *cl, t_server *sv)
 	}
 	copy_address(cl->login.address, info);
 	port = (ft_atoi(info[4]) << 8) + (unsigned char)ft_atoi(info[5]);
-	cl->login.port = ft_itoa(port);
+	ft_strdel(&cl->data.port);
+	cl->data.port = ft_itoa(port);
 	ft_tabdel(&info);
 	return (sv_cmd_ok("Port Command Accepted", cl, sv));
+}
+
+int				sv_port_help(t_command *cmd, t_client *cl)
+{
+	int		errnb;
+
+	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
+	&& (errnb = sv_client_write(": Change transfert port\n", cl)) == IS_OK)
+		errnb = sv_client_write("\n", cl);
+	return (errnb);
 }
