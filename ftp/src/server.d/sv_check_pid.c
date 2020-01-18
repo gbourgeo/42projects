@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 21:45:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/16 15:56:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ int				sv_check_pid(pid_t *pid, t_client *cl, t_server *sv)
 		return (sv_client_write("Operation stopped / continued.\n", cl));
 	if (*pid == cl->pid_ls)
 		errnb = check_pid_value("ls", status, cl, sv);
-	else if (cl->data.function == sv_put)
-		errnb = check_pid_value("put", status, cl, sv);
-	else if (cl->data.function == sv_get)
-		errnb = check_pid_value("get", status, cl, sv);
+	else if (cl->data.function == sv_retr)
+		errnb = check_pid_value("RETR", status, cl, sv);
+	else if (cl->data.function == sv_stor)
+		errnb = check_pid_value("STOR", status, cl, sv);
 	*pid = 0;
 	return (errnb);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 17:37:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/15 23:05:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,9 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->home = sv_guest_home(sv->users, sv);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
+	cl->data.port = ft_itoa(ft_atoi(sv->port) - 1);
+	cl->data.type = (1 << data_type_ascii);
+	cl->data.byte_size = 8;
 	cl->data.fd = -1;
 	cl->login.member = sv_getuserbyname(sv->users, SV_GUEST_NAME);
 	return (integrate_client(cl, sv));

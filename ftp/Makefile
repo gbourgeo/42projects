@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/11 23:04:14 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/16 16:24:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,28 +60,30 @@ SER_C	= sv_main.c						\
 		sv_free.c						\
 
 SER_C_D	= $(SER_D)commands.d/
-SER_C	+= sv_cwd.c						\
-		sv_cdup.c						\
+SER_C	+= sv_cdup.c					\
 		sv_change_working_directory.c	\
 		sv_check_path.c					\
 		sv_cmd_err.c					\
 		sv_cmd_ok.c						\
-		sv_get.c						\
-		sv_help.c						\
-		sv_ls.c							\
-		sv_mkdir.c						\
-		sv_pasv.c						\
-		sv_port.c						\
-		sv_put.c						\
-		sv_pwd.c						\
-		sv_quit.c						\
-		sv_rmdir.c						\
+		sv_cwd.c						\
+		sv_dele.c						\
 		sv_hdr.c						\
-		sv_password.c					\
+		sv_help.c						\
+		sv_mkd.c						\
+		sv_nlst.c						\
+		sv_pass.c						\
+		sv_pasv.c						\
+		sv_pwd.c						\
+		sv_port.c						\
+		sv_quit.c						\
 		sv_recreate_path.c				\
-		sv_register.c					\
+		sv_regt.c						\
 		sv_rein.c						\
-		sv_unlink.c						\
+		sv_retr.c						\
+		sv_rmd.c						\
+		sv_stor.c						\
+		sv_stou.c						\
+		sv_type.c						\
 		sv_user.c						\
 
 COM_D	= src/common.d/
@@ -120,12 +122,12 @@ $(OBJ_D):
 	mkdir -p $@
 
 $(CLIENT): $(OBJ_X) $(OBJ_C)
-	@make -C $(LIB_DIR)
+	@make -sC $(LIB_DIR)
 	@$(CC) -o $@ $^ $(LIBS) -ltermcap -lncurses
 	@echo "GENERATED: $(CLIENT)"
 
 $(SERVEUR): $(OBJ_X) $(OBJ_S)
-	@make -C $(LIB_DIR)
+	@make -sC $(LIB_DIR)
 	@$(CC) -o $@ $^ $(LIBS)
 	@echo "GENERATED: $(SERVEUR)"
 
@@ -150,11 +152,11 @@ $(OBJ_D)%.o: $(COM_D)%.c | $(OBJ_D)
 	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
 
 clean:
-	@make -C $(LIB_DIR) clean
+	@make -sC $(LIB_DIR) clean
 	@rm -rf $(OBJ_D)
 
 fclean: clean
-	@make -C $(LIB_DIR) fclean
+	@make -sC $(LIB_DIR) fclean
 	@rm -f $(CLIENT)
 	@rm -f $(SERVEUR)
 

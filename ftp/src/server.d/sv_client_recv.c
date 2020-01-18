@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 15:58:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/18 18:55:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,20 @@
 static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 {
 	t_command	*commands;
-	int			i;
-	int			size;
+	long		i;
+	int			errnb;
 
 	commands = sv_commands(0);
 	i = 0;
-	size = sv_getuserrights(cl->login.member);
+	errnb = IS_OK;
 	if (!cmd[0] || !cmd[0][0])
 		return (IS_OK);
-	while (i < size)
+	while (i < (long)sv_commands(1))
 		if (!ft_strcmp(commands[i].name, cmd[0]))
 		{
-			sv_change_working_directory(cl->home, cl->pwd);
-			if (commands[i].func == sv_help)
-				return (commands[i].func((char **)commands, cl, sv));
+			errnb = sv_change_working_directory(cl->home, cl->pwd);
+			if (errnb != IS_OK)
+				return (sv_cmd_err(ft_get_error(errnb), cmd[0], cl, sv));
 			return (commands[i].func(cmd, cl, sv));
 		}
 		else
