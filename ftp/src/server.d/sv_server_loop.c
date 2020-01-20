@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 22:28:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 21:02:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ static void		sv_check_clients(t_client *cl, t_server *sv)
 {
 	while (cl)
 	{
-		if (cl->errnb[0] != IS_OK
-		|| cl->errnb[1] != IS_OK
+		if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 		|| cl->errnb[2] != IS_OK
 		|| (cl->pid_ls > 0
 			&& (cl->errnb[2] = sv_check_pid(&cl->pid_ls, cl, sv)))

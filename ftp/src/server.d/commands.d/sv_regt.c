@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:23:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 17:55:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int					sv_regt(char **cmds, t_client *cl, t_server *sv)
 	return (sv_cmd_ok("Registered new user", cl, sv));
 }
 
-int				sv_regt_help(t_command *cmd, t_client *cl)
+int					sv_regt_help(t_command *cmd, t_client *cl)
 {
 	int		errnb;
 

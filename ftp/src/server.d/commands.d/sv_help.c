@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:29:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 20:04:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static t_command	*sv_command_by_name(char *cmdname, t_client *cl)
 	{
 		if (!ft_strcmp(cmdname, cmd[i].name))
 		{
-			if (sv_getuserrights(cl->login.member) >= cmd[i].rights)
+			if (cl->login.member->rights >= cmd[i].rights)
 				return (cmd + i);
 			return (NULL);
 		}
@@ -66,7 +66,7 @@ int					sv_help(char **cmds, t_client *cl, t_server *sv)
 	{
 		while (i < (long)sv_commands(1) && errnb == IS_OK)
 		{
-			if (sv_getuserrights(cl->login.member) >= cmd[i].rights
+			if (cl->login.member->rights >= cmd[i].rights
 			&& (errnb = sv_client_write(cmd[i].name, cl)) == IS_OK
 			&& (errnb = sv_client_write("\t\t", cl)) == IS_OK
 			&& (errnb = sv_client_write(cmd[i].descrip, cl)) == IS_OK)

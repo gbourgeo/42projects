@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:25:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 17:56:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int			sv_stor(t_client *cl, t_server *sv)
 	return (errnb);
 }
 
-int				sv_stor_help(t_command *cmd, t_client *cl)
+int			sv_stor_help(t_command *cmd, t_client *cl)
 {
 	int		errnb;
 

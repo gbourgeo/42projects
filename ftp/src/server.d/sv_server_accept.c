@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/15 23:05:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 22:57:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static int		integrate_client(t_client *cl, t_server *sv)
 static int		accept_client(int version, int fd, t_server *sv)
 {
 	t_client	*cl;
+	socklen_t	len;
 
 	if (!(cl = ft_memalloc(sizeof(*cl))))
 		return (ERR_MALLOC);
@@ -58,15 +59,17 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->rd.len = CMD_BUFF_SIZE;
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.head;
-	cl->wr.len = 0;
 	cl->home = sv_guest_home(sv->users, sv);
 	cl->pwd = ft_strdup("/");
 	cl->oldpwd = ft_strdup("/");
+	len = sizeof(cl->sockaddr);
+	getsockname(cl->fd, &cl->sockaddr, &len);
 	cl->data.port = ft_itoa(ft_atoi(sv->port) - 1);
 	cl->data.type = (1 << data_type_ascii);
 	cl->data.byte_size = 8;
 	cl->data.fd = -1;
 	cl->login.member = sv_getuserbyname(sv->users, SV_GUEST_NAME);
+	sv_welcome(cl, sv);
 	return (integrate_client(cl, sv));
 }
 

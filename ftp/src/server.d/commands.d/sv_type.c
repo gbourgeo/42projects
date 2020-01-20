@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 22:41:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:26:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 18:33:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,64 +19,80 @@ typedef struct		s_type
 	int			more_arg;
 }					t_type;
 
-static int			sv_second_type(char *type, char *value, t_client *cl)
+static t_type		*sv_firsttype(char type)
 {
-	static t_type	second_arg[] = {
+	static t_type	firsttype[] = {
+		{ 'A', data_type_ascii, 1 }, { 'E', data_type_ebcdic, 1 },
+		{ 'I', data_type_image, 0 }, { 'L', data_type_byte_size, 1 },
+	};
+	long			i;
+
+	i = sizeof(firsttype) / sizeof(firsttype[0]);
+	while (--i >= 0)
+		if (firsttype[i].name == type)
+			return (firsttype + i);
+	return (NULL);
+}
+
+static t_type		*sv_secondtype(char type)
+{
+	static t_type	secondtype[] = {
 		{ 'N', data_type_non_print, 0 }, { 'T', data_type_telnet, 0 },
 		{ 'C', data_type_asa, 0 },
 	};
-	size_t			i;
+	long			i;
 
-	i = 0;
-	if (!value)
-		return (ERR_NB_PARAMS);
-	if (type[0] == 'L')
+	i = sizeof(secondtype) / sizeof(secondtype[0]);
+	while (--i >= 0)
+		if (secondtype[i].name == type)
+			return (secondtype + i);
+	return (NULL);
+}
+
+static int			sv_type_next(t_type *type, char *value, t_client *cl)
+{
+	t_type		*second;
+
+	if (type->name == 'L')
 	{
+		if (!value || !*value)
+			return (ERR_WRONG_PARAM);
 		cl->data.byte_size = ft_atoi(value);
 		return (IS_OK);
 	}
-	if (ft_strlen(value) == 1)
-		while (i < sizeof(second_arg) / sizeof(second_arg[0]))
-		{
-			if (value[0] == second_arg[i].name)
-			{
-				cl->data.type |= (1 << second_arg[i].value);
-				return (IS_OK);
-			}
-			i++;
-		}
+	if (!value || !*value)
+	{
+		cl->data.type |= (1 << data_type_non_print);
+		return (IS_OK);
+	}
+	if (ft_strlen(value) == 1 && (second = sv_secondtype(value[0])))
+	{
+		cl->data.type |= (1 << second->value);
+		return (IS_OK);
+	}
 	return (ERR_WRONG_PARAM);
 }
 
 int					sv_type(char **cmds, t_client *cl, t_server *sv)
 {
-	static t_type	first_arg[] = {
-		{ 'A', data_type_ascii, 1 }, { 'E', data_type_ebcdic, 1 },
-		{ 'I', data_type_image, 0 }, { 'L', data_type_byte_size, 1 },
-	};
-	size_t			i;
+	t_type		*type;
+	int			errnb;
 
-	i = 0;
 	if (!cmds[1])
 		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	if (ft_strlen(cmds[1]) == 1)
-		while (i < sizeof(first_arg) / sizeof(first_arg[0]))
-		{
-			if (cmds[1][0] == first_arg[i].name)
-			{
-				cl->data.type = 0;
-				cl->data.type |= (1 << first_arg[i].value);
-				if (first_arg[i].more_arg)
-					if ((i = sv_second_type(cmds[1], cmds[2], cl)) != IS_OK)
-						return (sv_cmd_err(ft_get_error(i), cmds[0], cl, sv));
+	errnb = ERR_WRONG_PARAM;
+	if (ft_strlen(cmds[1]) == 1 && (type = sv_firsttype(cmds[1][0])))
+	{
+		cl->data.type = 0;
+		cl->data.type |= (1 << type->value);
+		if (type->more_arg)
+			if ((errnb = sv_type_next(type, cmds[2], cl)) == IS_OK)
 				return (sv_cmd_ok("Data type replaced.", cl, sv));
-			}
-			i++;
-		}
-	return (sv_cmd_err(ft_get_error(ERR_WRONG_PARAM), cmds[0], cl, sv));
+	}
+	return (sv_cmd_err(ft_get_error(errnb), cmds[0], cl, sv));
 }
 
-int				sv_type_help(t_command *cmd, t_client *cl)
+int					sv_type_help(t_command *cmd, t_client *cl)
 {
 	int		errnb;
 

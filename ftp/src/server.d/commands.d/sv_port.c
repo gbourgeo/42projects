@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 18:30:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:22:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 21:25:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int				sv_port(char **cmds, t_client *cl, t_server *sv)
 		ft_tabdel(&info);
 		return (sv_cmd_err("Wrong parameter", cmds[0], cl, sv));
 	}
-	copy_address(cl->login.address, info);
+	copy_address(cl->data.address, info);
 	port = (ft_atoi(info[4]) << 8) + (unsigned char)ft_atoi(info[5]);
 	ft_strdel(&cl->data.port);
 	cl->data.port = ft_itoa(port);

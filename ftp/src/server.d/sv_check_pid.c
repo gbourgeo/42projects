@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/16 15:56:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/21 00:46:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,11 @@ t_server *sv)
 	{
 		status = WEXITSTATUS(status);
 		if (status)
-			return (sv_cmd_err(ft_get_error(status), name, cl, sv));
-		if (!ft_strcmp(name, "ls"))
-			return (sv_cmd_ok("Successfully listed file/directory", cl, sv));
-		if (!ft_strcmp(name, "put"))
-			return (sv_cmd_ok("Successfully put file", cl, sv));
-		if (!ft_strcmp(name, "get"))
-			return (sv_cmd_ok("Successfully get file", cl, sv));
-		return (sv_cmd_ok("Successfully done", cl, sv));
+			return (sv_response(cl, " %s:%s", name, ft_get_error(status)));
+		if (name)
+			return (sv_response(cl, "%s Successfully %s",
+			(!ft_strcmp(name, "LIST")) ? "212" : "250", name));
+		return (sv_response(cl, "200 Command complete"));
 	}
 	else if (WIFSIGNALED(status))
 	{
@@ -53,7 +50,7 @@ int				sv_check_pid(pid_t *pid, t_client *cl, t_server *sv)
 	if (WIFSTOPPED(status) || WIFCONTINUED(status))
 		return (sv_client_write("Operation stopped / continued.\n", cl));
 	if (*pid == cl->pid_ls)
-		errnb = check_pid_value("ls", status, cl, sv);
+		errnb = check_pid_value("LIST", status, cl, sv);
 	else if (cl->data.function == sv_retr)
 		errnb = check_pid_value("RETR", status, cl, sv);
 	else if (cl->data.function == sv_stor)
