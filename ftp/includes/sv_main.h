@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 00:16:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/21 01:03:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,7 +273,7 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 */
 
 int					sv_check_option(int option, int value);
-int					sv_check_pid(pid_t *pid, t_client *cl, t_server *sv);
+int					sv_check_pid(pid_t *pid, t_client *cl);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 int					sv_welcome(t_client *cl, t_server *sv);

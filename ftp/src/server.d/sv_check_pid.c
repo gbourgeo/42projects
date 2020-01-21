@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 00:46:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/21 01:03:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 #include <sys/wait.h>
 #include "sv_main.h"
 
-static int		check_pid_value(const char *name, int status, t_client *cl,
-t_server *sv)
+static int		check_pid_value(const char *name, int status, t_client *cl)
 {
 	if (WIFEXITED(status))
 	{
@@ -32,13 +31,13 @@ t_server *sv)
 	else if (WIFSIGNALED(status))
 	{
 		if (HAS_WCOREDUMP && WCOREDUMP(status))
-			return (sv_cmd_err("Operation coredump'ed", name, cl, sv));
-		return (sv_cmd_err("Operation signal'ed", name, cl, sv));
+			return (sv_response(cl, "510 %s Operation coredump'ed", name));
+		return (sv_response(cl, "511 %s Operation signal'ed", name));
 	}
-	return (sv_cmd_err("Unknown error", name, cl, sv));
+	return (sv_response(cl, "512 %s Unknown error", name));
 }
 
-int				sv_check_pid(pid_t *pid, t_client *cl, t_server *sv)
+int				sv_check_pid(pid_t *pid, t_client *cl)
 {
 	pid_t		ret;
 	int			status;
@@ -48,13 +47,13 @@ int				sv_check_pid(pid_t *pid, t_client *cl, t_server *sv)
 	if ((ret = wait4(*pid, &status, WNOHANG, NULL)) <= 0)
 		return ((ret < 0) ? ERR_WAIT : IS_OK);
 	if (WIFSTOPPED(status) || WIFCONTINUED(status))
-		return (sv_client_write("Operation stopped / continued.\n", cl));
+		return (sv_response(cl, "451 Operation stopped / continued.\n", cl));
 	if (*pid == cl->pid_ls)
-		errnb = check_pid_value("LIST", status, cl, sv);
+		errnb = check_pid_value("LIST", status, cl);
 	else if (cl->data.function == sv_retr)
-		errnb = check_pid_value("RETR", status, cl, sv);
+		errnb = check_pid_value("RETR", status, cl);
 	else if (cl->data.function == sv_stor)
-		errnb = check_pid_value("STOR", status, cl, sv);
+		errnb = check_pid_value("STOR", status, cl);
 	*pid = 0;
 	return (errnb);
 }
