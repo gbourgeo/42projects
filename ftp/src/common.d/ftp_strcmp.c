@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_client_timeout.c                                :+:      :+:    :+:   */
+/*   ftp_strcmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/25 02:08:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 16:34:36 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/22 23:10:16 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/22 23:11:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include "sv_main.h"
+#include "libft.h"
+#include "common.h"
 
-t_client			*sv_client_timeout(t_client *cl)
+int			ftp_strcmp(const char *s1, const char *s2)
 {
-	ft_close(&cl->data.fd);
-	cl->errnb[2] = sv_response(cl, "520 connection timeout");
-	return (cl);
+	int		i;
+
+	i = 0;
+	while (s1[i] && s2[i])
+	{
+		if (s1[i] != s2[i] && s1[i] != ft_toupper(s2[i]))
+			return (1);
+		i++;
+	}
+	return !(s1[i] == s2[i]);
 }

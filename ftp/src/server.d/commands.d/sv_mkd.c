@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:18:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/23 00:51:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,36 +43,33 @@ static int		mkdir_opts(char **cmds, int *options, int *i)
 	return ((cmds[*i] && cmds[*i][0]) ? IS_OK : ERR_NB_PARAMS);
 }
 
-static int		mkdir_create(t_mkdir *mk, t_client *cl, t_server *sv)
+static int		mkdir_create(t_mkdir *mk, t_client *cl)
 {
-	char		*ptr;
+	char		*dir;
 	int			errnb;
 
-	(void)sv;
-	if (!(ptr = ft_strdup(mk->cmd[mk->i])))
+	if (!(dir = ft_strdup(mk->cmd[mk->i])))
 		return (ERR_MALLOC);
-	if ((errnb = sv_check_path(&ptr, cl)) != IS_OK)
+	if ((errnb = sv_check_path(&dir, cl)) != IS_OK)
 		return (errnb);
-	if ((errnb = mkdir(ptr, 0777)) != 0 && !(mk->opt & MKDIR_P))
+	if ((errnb = mkdir(dir, 0777)) != 0 && !(mk->opt & MKDIR_P))
 		mk->opt |= MKDIR_ERR;
-	free(ptr);
-	if (errnb == 0 && !(mk->opt & MKDIR_P) && (mk->opt & MKDIR_V))
-		ptr = "created directory: ";
-	else if (errnb != 0 && !(mk->opt & MKDIR_P))
-		ptr = "failed to create: ";
-	else
-		ptr = NULL;
 	errnb = IS_OK;
-	if (ptr)
-		if ((errnb = sv_client_write(mk->cmd[0], cl)) == IS_OK)
-			if ((errnb = sv_client_write(": ", cl)) == IS_OK)
-				if ((errnb = sv_client_write(ptr, cl)) == IS_OK)
-					if ((errnb = sv_client_write(mk->cmd[mk->i], cl)) == IS_OK)
-						errnb = sv_client_write("\n", cl);
+	if (errnb == 0 && !(mk->opt & MKDIR_P) && (mk->opt & MKDIR_V))
+		errnb = sv_response(cl, "257 \"%s\" directory created", dir);
+	else if (errnb != 0 && !(mk->opt & MKDIR_P))
+		errnb = sv_response(cl, "550 failed to create %s", dir);
+	free(dir);
 	return (errnb);
 }
 
-int				sv_mkd(char **cmds, t_client *cl, t_server *sv)
+/*
+** MKD
+** 257
+** 500, 501, 502, 421, 530, 550
+*/
+
+int				sv_mkd(char **cmds, t_client *cl)
 {
 	t_mkdir		mk;
 	int			errnb;
@@ -80,7 +77,7 @@ int				sv_mkd(char **cmds, t_client *cl, t_server *sv)
 
 	mk.cmd = cmds;
 	if ((errnb = mkdir_opts(cmds, &mk.opt, &mk.i)) != IS_OK)
-		return (sv_cmd_err(ft_get_error(errnb), cmds[0], cl, sv));
+		return (sv_response(cl, "501 %s", ft_get_error(errnb)));
 	while (cmds[mk.i])
 	{
 		dir = (cmds[mk.i][0] == '/') ? cmds[mk.i] + 1 : cmds[mk.i];
@@ -88,25 +85,43 @@ int				sv_mkd(char **cmds, t_client *cl, t_server *sv)
 			while (*dir && (dir = ft_strchr(dir, '/')) && *(dir + 1))
 			{
 				*dir = '\0';
-				if ((errnb = mkdir_create(&mk, cl, sv)) != IS_OK)
+				if ((errnb = mkdir_create(&mk, cl)) != IS_OK)
 					return (errnb);
 				*dir++ = '/';
 			}
-		if ((errnb = mkdir_create(&mk, cl, sv)) != IS_OK)
+		if ((errnb = mkdir_create(&mk, cl)) != IS_OK)
 			return (errnb);
 		mk.i++;
 	}
-	if (mk.opt & MKDIR_ERR)
-		return (sv_cmd_err("failed", cmds[0], cl, sv));
-	return (sv_cmd_ok("Created directory", cl, sv));
+	return (errnb);
 }
+
+/*
+** MKD <SP> <chemin d'accès> <CRLF>
+*/
 
 int				sv_mkd_help(t_command *cmd, t_client *cl)
 {
+	static char	*help[] = {
+		"This command causes the directory specified in the pathname",
+		"to be created as a directory (if the pathname is absolute)",
+		"or as a subdirectory of the current working directory (if",
+		"the pathname is relative).",
+		"Options are:",
+		"	-p		Create parent directories without error if they exist",
+		"	-v		Print a message for each directory created",
+	};
+	long	i;
 	int		errnb;
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Create Directory\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
+	i = 0;
+	errnb = sv_response(cl, "214-%s [-vp] <pathname>", cmd->name, cmd->descrip);
+	while (errnb == IS_OK && help[i + 1])
+	{
+		errnb = sv_response(cl, "%s", help[i]);
+		i++;
+	}
+	if (errnb == IS_OK)
+		errnb = sv_response(cl, "214 %s", help[i]);
 	return (errnb);
 }

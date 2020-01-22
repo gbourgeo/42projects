@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 22:57:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/21 16:03:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,7 @@ static int		integrate_client(t_client *cl, t_server *sv)
 	if (FT_CHECK(sv->options, sv_interactive))
 		printf("Client "FTP_YELLOW"%d"FTP_RESET": connected to %s.\n",
 		cl->fd, cl->home);
-	if (FT_CHECK(sv->options, sv_user_mode))
-		cl->errnb[0] = sv_client_write("You must signin to connect...\n", cl);
+	sv_welcome(cl, sv);
 	return (IS_OK);
 }
 
@@ -69,7 +68,6 @@ static int		accept_client(int version, int fd, t_server *sv)
 	cl->data.byte_size = 8;
 	cl->data.fd = -1;
 	cl->login.member = sv_getuserbyname(sv->users, SV_GUEST_NAME);
-	sv_welcome(cl, sv);
 	return (integrate_client(cl, sv));
 }
 

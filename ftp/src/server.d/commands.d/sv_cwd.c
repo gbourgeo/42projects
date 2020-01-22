@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:14:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/23 00:22:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,33 @@ static int		sv_cwd_change(char *cwd, char *cmd, t_client *cl)
 	return (ret);
 }
 
-int				sv_cwd(char **cmds, t_client *cl, t_server *sv)
+int		sv_validpathname(const char *s)
+{
+	int		i;
+
+	i = 0;
+	while (s[i])
+		if (!ft_isalnum(s[i]))
+			return (0);
+		else
+			i++;
+	return (i != 0);
+}
+
+/*
+** CWD
+** 250
+** 500, 501, 502, 421, 530, 550
+*/
+
+int				sv_cwd(char **cmds, t_client *cl)
 {
 	char		cwd[MAXPATHLEN];
 	char		*dup;
 	int			ret;
 
-	if (cmds[1])
-	{
-		if (cmds[1][0] == '-' && cmds[1][1])
-			return (sv_cmd_err("No options allowed.", cmds[0], cl, sv));
-		if (cmds[2])
-			return (sv_cmd_err("Too much parameters.", cmds[0], cl, sv));
-	}
+	if (!cmds[1] || !sv_validpathname(cmds[1]))
+		return (sv_response(cl, "501 Syntax error"));
 	sv_cwd_new(cwd, cmds[1], cl);
 	if (!(dup = ft_strdup(cwd)))
 		return (ERR_MALLOC);
@@ -68,18 +82,37 @@ int				sv_cwd(char **cmds, t_client *cl, t_server *sv)
 	ret = chdir(dup);
 	free(dup);
 	if (ret < 0)
-		return (sv_cmd_err("Invalid directory", cmds[0], cl, sv));
+		return (sv_response(cl, "550 Directory not accessible"));
 	if ((ret = sv_cwd_change(cwd, cmds[1], cl)) != IS_OK)
 		return (ret);
-	return (sv_cmd_ok("Changed directory", cl, sv));
+	return (sv_response(cl, "250 Directory changed to %s", cmds[1]));
 }
+
+/*
+** CWD <SP> <pathname> <CRLF>
+*/
 
 int				sv_cwd_help(t_command *cmd, t_client *cl)
 {
+	static char	*help[] = {
+		"This command allows the user to work with a different",
+		"directory or dataset for file storage or retrieval without",
+		"altering his login or accounting information.  Transfer",
+		"parameters are similarly unchanged.  The argument is a",
+		"pathname specifying a directory or other system dependent",
+		"file group designator.",
+	};
+	long	i;
 	int		errnb;
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Change Working Directory\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
+	i = 0;
+	errnb = sv_response(cl, "214-%s <pathname>", cmd->name, cmd->descrip);
+	while (errnb == IS_OK && help[i + 1])
+	{
+		errnb = sv_response(cl, "%s", help[i]);
+		i++;
+	}
+	if (errnb == IS_OK)
+		errnb = sv_response(cl, "214 %s", help[i]);
 	return (errnb);
 }

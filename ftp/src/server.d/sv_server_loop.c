@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 01:03:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/21 16:35:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void		sv_check_clients(t_client *cl, t_server *sv)
 			cl = sv_client_end(cl, sv);
 		else if (cl->data.fd > 0
 		&& time(NULL) - cl->data.timeout >= TRANSFERT_TIMEOUT)
-			cl = sv_client_timeout(cl, sv);
+			cl = sv_client_timeout(cl);
 		else
 			cl = cl->next;
 	}

@@ -1,21 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_client_timeout.c                                :+:      :+:    :+:   */
+/*   sv_validpathname.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/25 02:08:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 16:34:36 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/21 18:50:12 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/21 18:54:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include "sv_main.h"
 
-t_client			*sv_client_timeout(t_client *cl)
+int			sv_validpathname(const char *s)
 {
-	ft_close(&cl->data.fd);
-	cl->errnb[2] = sv_response(cl, "520 connection timeout");
-	return (cl);
+	int		i;
+
+	i = 0;
+	while (s[i])
+		if (s[i] < 0 || s[i] == '\r' || s[i] == '\n')
+			return (0);
+		else
+			i++;
+	return (i != 0);
 }

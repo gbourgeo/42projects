@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 18:55:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/23 00:12:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include "sv_main.h"
 
-static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
+static int		sv_client_commands(char **cmd, t_client *cl)
 {
 	t_command	*commands;
 	long		i;
@@ -26,16 +26,16 @@ static int		sv_client_commands(char **cmd, t_client *cl, t_server *sv)
 	if (!cmd[0] || !cmd[0][0])
 		return (IS_OK);
 	while (i < (long)sv_commands(1))
-		if (!ft_strcmp(commands[i].name, cmd[0]))
+		if (!ftp_strcmp(commands[i].name, cmd[0]))
 		{
 			errnb = sv_change_working_directory(cl->home, cl->pwd);
 			if (errnb != IS_OK)
-				return (sv_cmd_err(ft_get_error(errnb), cmd[0], cl, sv));
-			return (commands[i].func(cmd, cl, sv));
+				return (sv_response(cl, "550 %s", ft_get_error(errnb)));
+			return (commands[i].func(cmd, cl));
 		}
 		else
 			i++;
-	return (sv_cmd_err(ft_get_error(ERR_COMMAND), cmd[0], cl, sv));
+	return (sv_response(cl, "500 \"%s\" commande non reconnue", cmd[0]));
 }
 
 static void		print_info(char *buff, int size, t_client *cl, t_server *sv)
@@ -67,7 +67,7 @@ static int		sv_buffcpy(t_client *cl, t_server *sv)
 	print_info(buff, i, cl, sv);
 	if ((cmd = ft_split_whitespaces(buff)) == NULL)
 		return (ERR_MALLOC);
-	i = sv_client_commands(cmd, cl, sv);
+	i = sv_client_commands(cmd, cl);
 	ft_tabdel(&cmd);
 	return (i);
 }

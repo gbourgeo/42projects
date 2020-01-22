@@ -6,20 +6,29 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:19:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/23 00:54:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-int				sv_nlst(char **cmds, t_client *cl, t_server *sv)
+/*
+** NLST
+** 125, 150
+** 226, 250
+** 425, 426, 451
+** 450
+** 500, 501, 502, 421, 530
+*/
+
+int				sv_nlst(char **cmds, t_client *cl)
 {
 	char		*cmdpath;
 	int			i;
 	int			errnb;
 
-	if (!(cmdpath = ft_get_command(cmds[0], sv->info.env.path, 0)))
+	if (!(cmdpath = ft_get_command("ls", sv->info.env.path, 0)))
 		return (IS_OK);
 	free(cmds[0]);
 	cmds[0] = cmdpath;
@@ -41,12 +50,34 @@ int				sv_nlst(char **cmds, t_client *cl, t_server *sv)
 	return (IS_OK);
 }
 
+/*
+** NLST [<SP> <pathname>] <CRLF>
+*/
+
 int				sv_nlst_help(t_command *cmd, t_client *cl)
 {
+	static char	*help[] = {
+		"This command causes a directory listing to be sent.",
+		"The pathname should specify a directory or other",
+		"system-specific file group descriptor; a null argument",
+		"implies the current directory.  The server will return",
+		"a stream of names of files and no other information.",
+		"The data will be transferred in ASCII or EBCDIC type",
+		"over the data connection as valid pathname strings",
+		"separated by <CRLF> or <NL>.  (Again the user must",
+		"ensure that the TYPE is correct.)",
+	};
+	long	i;
 	int		errnb;
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Display short listing\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
+	i = 0;
+	errnb = sv_response(cl, "214-%s [<pathname>]", cmd->name, cmd->descrip);
+	while (errnb == IS_OK && help[i + 1])
+	{
+		errnb = sv_response(cl, "%s", help[i]);
+		i++;
+	}
+	if (errnb == IS_OK)
+		errnb = sv_response(cl, "214 %s", help[i]);
 	return (errnb);
 }

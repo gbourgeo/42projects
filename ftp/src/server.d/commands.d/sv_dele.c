@@ -6,68 +6,70 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:18:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/23 00:19:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-static int		unlink_err(char *cmd, char *file, t_client *cl, t_server *sv)
-{
-	int		ret;
+/*
+** DELE
+** 250
+** 450, 550
+** 500, 501, 502, 421, 530
+*/
 
-	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
-		if ((ret = sv_client_write(": ", cl)) == IS_OK)
-			if ((ret = sv_client_write(cmd, cl)) == IS_OK)
-				if ((ret = sv_client_write(": can't remove '", cl)) == IS_OK)
-					if ((ret = sv_client_write(file, cl)) == IS_OK)
-						ret = sv_client_write("'.\n", cl);
-	return (ret);
+int				sv_dele(char **cmds, t_client *cl)
+{
+	char	*path;
+	int		err[2];
+	int		i;
+
+	ft_bzero(err, sizeof(err));
+	i = 0;
+	if (!cmds[1])
+		return (sv_response(cl, "501 Syntax error"));
+	while (cmds[++i] && err[0] == IS_OK)
+	{
+		if (!sv_validpathname(cmds[i]))
+			err[0] = sv_response(cl, "553 \"%s\" filename not allowed", cmds[i]);
+		if (!(path = ft_strdup(cmds[i])))
+			err[0] = sv_response(cl, "552 \"%s\" allocation failed", cmds[i]);
+		else if ((err[0] = sv_check_path(&path, cl)) != IS_OK)
+			err[0] = sv_response(cl, "552 \"%s\" allocation failed", cmds[i]);
+		else if (access(path, F_OK))
+			err[0] = sv_response(cl, "550 \"%s\" file unavailable", cmds[i]);
+		else if (unlink(path))
+			err[0] = sv_response(cl, "450 Unable to remove file %s", cmds[i]);
+		else
+			err[0] = sv_response(cl, "250 \"%s\" file removed", cmds[i]);
+		ft_strdel(&path);
+	}
+	return (err[0]);
 }
 
 /*
-** (int) err[3] means:
-**
-** err[0] -> Did a fatal error occured ?
-** err[1] -> Did the current operation succeed ?
-** err[2] -> Did all the operation succeed ?
+** DELE <SP> <chemin d'accès> <CRLF>
 */
-
-int				sv_dele(char **cmds, t_client *cl, t_server *sv)
-{
-	int		i;
-	char	*path;
-	int		err[3];
-
-	i = 1;
-	ft_bzero(err, sizeof(err));
-	if (!cmds[i] || !cmds[i][0])
-		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	while (cmds[i] && err[0] == IS_OK)
-	{
-		if (!(path = ft_strdup(cmds[i])))
-			return (ERR_MALLOC);
-		if ((err[0] = sv_check_path(&path, cl)) == IS_OK)
-			err[1] = unlink(path);
-		ft_strdel(&path);
-		if (err[1])
-			err[0] = unlink_err(cmds[0], cmds[i], cl, sv);
-		err[2] += err[1];
-		err[1] = 0;
-		i++;
-	}
-	if (err[0] || err[2])
-		return (sv_cmd_err("failed", cmds[0], cl, sv));
-	return (sv_cmd_ok("Removed file", cl, sv));
-}
 
 int				sv_dele_help(t_command *cmd, t_client *cl)
 {
+	static char	*help[] = {
+		"This command causes the file specified in the pathname to be",
+		"deleted at the server site.",
+	};
+	long	i;
 	int		errnb;
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Delete file\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
+	i = 0;
+	errnb = sv_response(cl, "214-%s <pathname>", cmd->name, cmd->descrip);
+	while (errnb == IS_OK && help[i + 1])
+	{
+		errnb = sv_response(cl, "%s", help[i]);
+		i++;
+	}
+	if (errnb == IS_OK)
+		errnb = sv_response(cl, "214 %s", help[i]);
 	return (errnb);
 }
