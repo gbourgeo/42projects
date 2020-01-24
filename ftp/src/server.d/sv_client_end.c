@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/15 17:47:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 21:11:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,13 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 	if (cl->data.pid > 0)
 		return (cl->next);
 	print_info(cl, sv);
-	ft_strdel(&cl->data.port);
-	if (cl->data.fd > 0)
-		close(cl->data.fd);
-	if (cl->data.socket > 0)
-		close(cl->data.socket);
-	ft_strdel(&cl->data.file);
-	if (cl->pid_ls > 0)
-		kill(cl->pid_ls, SIGKILL);
-	close(cl->fd);
+	ft_close(&cl->fd);
 	ft_strdel(&cl->pwd);
 	ft_strdel(&cl->oldpwd);
+	sv_free_login(&cl->login, NULL);
+	sv_free_data(&cl->data);
+	if (cl->pid_ls > 0)
+		kill(cl->pid_ls, SIGKILL);
 	if (cl->prev)
 		cl->prev->next = cl->next;
 	else

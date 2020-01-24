@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/16 15:51:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:25:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 17:55:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int					sv_stou(t_client *cl, t_server *sv)
 	return (IS_OK);
 }
 
-int				sv_stou_help(t_command *cmd, t_client *cl)
+int					sv_stou_help(t_command *cmd, t_client *cl)
 {
 	int		errnb;
 

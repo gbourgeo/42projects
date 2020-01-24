@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/16 16:24:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/22 23:11:25 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,13 +58,15 @@ SER_C	= sv_main.c						\
 		sv_client_timeout.c				\
 		sv_errors.c						\
 		sv_free.c						\
+		sv_validpathname.c				\
+		sv_welcome.c					\
+		sv_response.c					\
+		sv_response_opt.c				\
 
 SER_C_D	= $(SER_D)commands.d/
 SER_C	+= sv_cdup.c					\
 		sv_change_working_directory.c	\
 		sv_check_path.c					\
-		sv_cmd_err.c					\
-		sv_cmd_ok.c						\
 		sv_cwd.c						\
 		sv_dele.c						\
 		sv_hdr.c						\
@@ -81,10 +83,13 @@ SER_C	+= sv_cdup.c					\
 		sv_rein.c						\
 		sv_retr.c						\
 		sv_rmd.c						\
+		sv_rmd_open.c					\
 		sv_stor.c						\
 		sv_stou.c						\
 		sv_type.c						\
 		sv_user.c						\
+		sv_cmd_err.c					\
+		sv_cmd_ok.c						\
 
 COM_D	= src/common.d/
 COM_C	= ft_init.c						\
@@ -95,6 +100,7 @@ COM_C	= ft_init.c						\
 		ft_getenv.c						\
 		ft_strsplit2.c					\
 		ft_strcset.c					\
+		ftp_strcmp.c					\
 		signal_info.c					\
 
 OBJ_D	= obj/

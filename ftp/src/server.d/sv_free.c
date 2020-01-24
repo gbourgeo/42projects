@@ -6,19 +6,28 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 22:27:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 15:48:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 21:16:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "sv_main.h"
 
-void			sv_free_login(t_login *login)
+void			sv_free_data(t_data *data)
+{
+	ft_strdel(&data->port);
+	ft_close(&data->fd);
+	ft_close(&data->socket);
+	ft_strdel(&data->file);
+}
+
+void			sv_free_login(t_login *login, t_server *sv)
 {
 	ft_strdel(&login->user);
-	ft_strdel(&login->password);
-	ft_strdel(&login->account);
+	login->logged = 0;
 	login->member = NULL;
+	if (sv)
+		login->member = sv_getuserbyname(sv->users, SV_GUEST_NAME);
 }
 
 void			sv_free_user(t_user **user)

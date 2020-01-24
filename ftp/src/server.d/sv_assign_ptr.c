@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 15:31:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 15:43:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 21:08:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void				sv_assign_ptr(char **ptr, char **assign, char **table)
+void				sv_assign_ptr(char **ptr, char *assign, char **table)
 {
 	int			i;
 	int			passed;
@@ -20,11 +20,12 @@ void				sv_assign_ptr(char **ptr, char **assign, char **table)
 	i = 0;
 	passed = 0;
 	ft_strdel(ptr);
-	*ptr = *assign;
+	*ptr = assign;
 	if (table)
+	{
 		while (table[i])
 		{
-			if (table[i] == *assign)
+			if (table[i] == assign)
 				passed = 1;
 			else if (passed == 1)
 			{
@@ -33,4 +34,7 @@ void				sv_assign_ptr(char **ptr, char **assign, char **table)
 			}
 			i++;
 		}
+		table[i - 1] = table[i];
+	}
+	ft_puttab(table);
 }

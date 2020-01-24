@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/18 20:21:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/20 17:55:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,34 +23,11 @@ static void		print_info(char *port, t_client *cl, t_server *sv)
 
 typedef int		(*t_func)(t_client *, t_server *);
 
-/*
-** { "mput", NULL, sv_mput }, { "mget", NULL, sv_mget },
-*/
-
-// static t_func	get_function(const char *name)
-// {
-// 	static t_command	cmd[] = { { "put", NULL, sv_put },
-// 		{ "get", NULL, sv_get },
-// 	};
-// 	uint32_t			i;
-
-// 	i = 0;
-// 	while (i < sizeof(cmd) / sizeof(cmd[0]))
-// 	{
-// 		if (!ft_strcmp(cmd[i].name, name))
-// 			return (cmd[i].func);
-// 		i++;
-// 	}
-// 	return (NULL);
-// }
-
 static int		transfert_success(char **cmds, char *p, t_client *cl,
 t_server *sv)
 {
 	int			errnb;
 
-	// if (!(cl->data.function = get_function(cmds[0])))
-	// 	errnb = ERR_WRONG_PARAM;
 	if (!(cl->data.file = ft_strdup(cmds[1])))
 		errnb = ERR_MALLOC;
 	else
