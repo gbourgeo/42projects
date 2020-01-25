@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 23:11:42 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:12:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 18:09:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,13 @@ static void	sv_print_users(t_user *user, t_server *sv)
 void		sv_server_info(t_server *sv)
 {
 	printf(FTP_UNDERLINED"IPv4"FTP_RESET"\t\t"FTP_UNDERLINED);
-	printf("%s\n"FTP_RESET,
-	(sv->ip[sv_v4] > 0) ? FTP_GREEN"ONLINE" : FTP_RED"OFFLINE");
+	printf("%s"FTP_RESET" (%s)\n",
+	(sv->ip[sv_v4] > 0) ? FTP_GREEN"ONLINE" : FTP_RED"OFFLINE",
+	sv->addr[sv_v4]);
 	printf(FTP_UNDERLINED"IPv6"FTP_RESET"\t\t"FTP_UNDERLINED);
-	printf("%s\n"FTP_RESET,
-	(sv->ip[sv_v6] > 0) ? FTP_GREEN"ONLINE" : FTP_RED"OFFLINE");
+	printf("%s"FTP_RESET" (%s)\n",
+	(sv->ip[sv_v6] > 0) ? FTP_GREEN"ONLINE" : FTP_RED"OFFLINE",
+	sv->addr[sv_v6]);
 	printf(FTP_UNDERLINED"Home"FTP_RESET":\t\t\""FTP_BOLD);
 	printf(FTP_PINK"%s"FTP_RESET"\"\n", sv->info.env.home);
 	sv_print_path(sv->info.env.path);

@@ -1,27 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_cmd_ok.c                                        :+:      :+:    :+:   */
+/*   sv_help_print.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/20 00:38:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:13:59 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/24 12:30:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/25 16:47:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int				sv_cmd_ok(const char *str, t_client *cl, t_server *sv)
+int				sv_print_help(t_client *cl, t_command *cmd, char *args,
+char **description)
 {
+	long	i;
 	int		errnb;
 
-	if (FT_CHECK(sv->options, sv_interactive))
-		printf("Client "FTP_GREEN"%d"FTP_RESET": %s.\n", cl->fd, str);
-	if ((errnb = sv_client_write(sv->info.progname, cl)) == IS_OK)
-		if ((errnb = sv_client_write(": ", cl)) == IS_OK)
-			if ((errnb = sv_client_write(str, cl)) == IS_OK)
-				if ((errnb = sv_client_write(".\n", cl)) == IS_OK)
-					errnb = sv_client_write(OK_OUTPUT, cl);
+	i = 0;
+	errnb = sv_response(cl, "\r\nCommand: %s %s\r\n", cmd->name, args);
+	while (errnb == IS_OK && description[i])
+	{
+		errnb = sv_response(cl, "%s", description[i]);
+		i++;
+	}
 	return (errnb);
+
 }

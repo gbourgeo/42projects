@@ -1,39 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_assign_ptr.c                                    :+:      :+:    :+:   */
+/*   sv_validnumber.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/11 15:31:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 15:25:01 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/25 15:05:04 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/25 15:08:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-void				sv_assign_ptr(char **ptr, char *assign, char **table)
+int				sv_validnumber(char **s, int ssize)
 {
-	int			i;
-	int			passed;
+	int		i;
+	int		j;
 
 	i = 0;
-	passed = 0;
-	ft_strdel(ptr);
-	*ptr = assign;
-	if (table)
+	while (i < ssize)
 	{
-		while (table[i])
-		{
-			if (table[i] == assign)
-				passed = 1;
-			else if (passed == 1)
-			{
-				table[i - 1] = table[i];
-				table[i] = NULL;
-			}
-			i++;
-		}
-		table[i - 1] = table[i];
+		j = 0;
+		while (s[i][j])
+			if (!ft_isdigit(s[i][j++]))
+				return (0);
+		if (ft_atoi(s[i]) < 0 || ft_atoi(s[i]) > 255)
+			return (0);
+		i++;
 	}
+	return (1);
 }

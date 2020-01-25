@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/20 21:32:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 17:24:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:26:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int				sv_response(t_client *cl, const char *msg, ...)
 		{
 			if ((errnb = sv_client_nwrite(msg + start, end - start, cl)))
 				break ;
-			if ((opt = sv_response_opt(msg[end + 1])))
+			if ((opt = sv_response_opt((char *)&msg[end + 1])))
 			{
 				errnb = opt->fct(cl, &ap);
 				end++;

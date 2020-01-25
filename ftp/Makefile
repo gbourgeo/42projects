@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/22 23:11:25 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/25 19:51:00 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,6 @@ SER_C	= sv_main.c						\
 		sv_commands.c					\
 		sv_data_accept.c				\
 		sv_get_addr.c					\
-		sv_open_port.c					\
 		sv_params.c						\
 		sv_params_1.c					\
 		sv_params_2.c					\
@@ -51,6 +50,7 @@ SER_C	= sv_main.c						\
 		sv_server_accept.c				\
 		sv_server_close.c				\
 		sv_server_signals.c				\
+		sv_client_init.c				\
 		sv_client_recv.c				\
 		sv_client_send.c				\
 		sv_client_write.c				\
@@ -58,8 +58,8 @@ SER_C	= sv_main.c						\
 		sv_client_timeout.c				\
 		sv_errors.c						\
 		sv_free.c						\
+		sv_validnumber.c				\
 		sv_validpathname.c				\
-		sv_welcome.c					\
 		sv_response.c					\
 		sv_response_opt.c				\
 
@@ -70,13 +70,15 @@ SER_C	+= sv_cdup.c					\
 		sv_cwd.c						\
 		sv_dele.c						\
 		sv_hdr.c						\
+		sv_help_print.c					\
 		sv_help.c						\
 		sv_mkd.c						\
 		sv_nlst.c						\
 		sv_pass.c						\
+		sv_pasv_listen.c				\
 		sv_pasv.c						\
-		sv_pwd.c						\
 		sv_port.c						\
+		sv_pwd.c						\
 		sv_quit.c						\
 		sv_recreate_path.c				\
 		sv_regt.c						\
@@ -87,9 +89,9 @@ SER_C	+= sv_cdup.c					\
 		sv_stor.c						\
 		sv_stou.c						\
 		sv_type.c						\
+		sv_type_hdlr.c					\
 		sv_user.c						\
-		sv_cmd_err.c					\
-		sv_cmd_ok.c						\
+		sv_welcome.c					\
 
 COM_D	= src/common.d/
 COM_C	= ft_init.c						\

@@ -6,69 +6,58 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 18:26:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:37:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "sv_main.h"
+#include "sv_struct.h"
 
-static int		sv_rmdir_end(int errnb, t_rmdir *e, t_client *cl, t_server *sv)
+/*
+** RMD
+** 250
+** 500, 501, 502, 421, 530, 550
+*/
+
+int				sv_rmd(char **cmds, t_client *cl)
 {
-	if (e->path)
-	{
-		if (e->path[0])
-			free(e->path[0]);
-		free(e->path);
-	}
-	if (errnb)
-		return (errnb);
-	if (e->err[0])
-		return (sv_cmd_err("failed", e->cmd, cl, sv));
-	return (sv_cmd_ok("Removed directory", cl, sv));
+	char	*path;
+	int		errnb;
+
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 closing connection"));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 not logged in"));
+	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_NB_PARAMS)));
+	if (!(path = ft_strdup(cmds[1])))
+		return (ERR_MALLOC);
+	if ((errnb = sv_check_path(&path, cl)) != IS_OK)
+		errnb = ERR_MALLOC;
+	else if (access(path, F_OK) != 0)
+		errnb = sv_response(cl, "550 directory not found %s", cmds[1]);
+	else if (rmdir(path) != 0)
+		errnb = sv_response(cl, "550 permission denied for %s", cmds[1]);
+	else
+		errnb = sv_response(cl, "250 \"%s\" directory removed", cmds[1]);
+	ft_strdel(&path);
+	return (errnb);
 }
 
 /*
-** (int) e.err[3] means:
-**
-** err[0] -> Did all the operation succeed ?
-** err[1] -> Did the current operation succeed ?
-** err[2] -> Did a fatal error occured ?
+** RMD  <SP> <pathname> <CRLF>
 */
-
-int				sv_rmd(char **cmds, t_client *cl, t_server *sv)
-{
-	t_rmdir		e;
-	int			i;
-
-	i = 1;
-	ft_bzero(&e, sizeof(e));
-	if (!cmds[i] || !cmds[i][0])
-		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	e.cmd = cmds[0];
-	if (!(e.path = ft_memalloc(sizeof(*e.path) * 2)))
-		return (ERR_MALLOC);
-	while (cmds[i] && e.err[2] == IS_OK)
-	{
-		if (!(e.path[0] = ft_strdup(cmds[i])))
-			return (sv_rmdir_end(ERR_MALLOC, &e, cl, sv));
-		e.path[1] = cmds[i];
-		if ((e.err[2] = sv_check_path(e.path, cl)))
-			return (sv_rmdir_end(e.err[2], &e, cl, sv));
-		sv_rmdir_open(&e, cl, sv);
-		ft_strdel(e.path);
-		e.err[0] += e.err[1];
-		e.err[1] = 0;
-		i++;
-	}
-	return (sv_rmdir_end(e.err[2], &e, cl, sv));
-}
 
 int				sv_rmd_help(t_command *cmd, t_client *cl)
 {
-	int		errnb;
+	static char	*help[] = {
+		"This command causes the directory specified in the pathname",
+		"to be removed as a directory (if the pathname is absolute)",
+		"or as a subdirectory of the current working directory (if",
+		"the pathname is relative).", NULL
+	};
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Remove Directory\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "<pathname>", help));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:22:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 20:16:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,6 @@ static int		sv_cwd_change(char *cwd, char *cmd, t_client *cl)
 	return (ret);
 }
 
-int		sv_validpathname(const char *s)
-{
-	int		i;
-
-	i = 0;
-	while (s[i])
-		if (!ft_isalnum(s[i]))
-			return (0);
-		else
-			i++;
-	return (i != 0);
-}
-
 /*
 ** CWD
 ** 250
@@ -71,21 +58,25 @@ int				sv_cwd(char **cmds, t_client *cl)
 	char		*dup;
 	int			ret;
 
-	if (!cmds[1] || !sv_validpathname(cmds[1]))
-		return (sv_response(cl, "501 Syntax error"));
+	if (cmds[1] && !sv_validpathname(cmds[1]))
+		return (sv_response(cl, "501 missing parameter / syntax error"));
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 closing connection"));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 need to log first"));
 	sv_cwd_new(cwd, cmds[1], cl);
-	if (!(dup = ft_strdup(cwd)))
-		return (ERR_MALLOC);
-	if ((ret = sv_check_path(&dup, cl)) != IS_OK)
-		return (ret);
-	ft_strcpy(cwd, dup + ft_strlen(cl->home) - 1);
+	ret = ERR_MALLOC;
+	if (!(dup = ft_strdup(cwd)) || (ret = sv_check_path(&dup, cl)) != IS_OK)
+		return (sv_response(cl, "550 internal error (%s)", ft_get_error(ret)));
 	ret = chdir(dup);
+	ft_strcpy(cwd, dup + ft_strlen(cl->home) - 1);
 	free(dup);
 	if (ret < 0)
 		return (sv_response(cl, "550 Directory not accessible"));
 	if ((ret = sv_cwd_change(cwd, cmds[1], cl)) != IS_OK)
-		return (ret);
-	return (sv_response(cl, "250 Directory changed to %s", cmds[1]));
+		return (sv_response(cl, "550 internal error (%s)", ft_get_error(ret)));
+	return (sv_response(cl, "250 Directory changed to %s", cwd));
 }
 
 /*
@@ -100,19 +91,10 @@ int				sv_cwd_help(t_command *cmd, t_client *cl)
 		"altering his login or accounting information.  Transfer",
 		"parameters are similarly unchanged.  The argument is a",
 		"pathname specifying a directory or other system dependent",
-		"file group designator.",
+		"file group designator.  No pathname can be passed, if so,",
+		"\"/\" will be the new directory. This command as the \"-\"",
+		"option which change to the previous directory visited.", NULL
 	};
-	long	i;
-	int		errnb;
 
-	i = 0;
-	errnb = sv_response(cl, "214-%s <pathname>", cmd->name, cmd->descrip);
-	while (errnb == IS_OK && help[i + 1])
-	{
-		errnb = sv_response(cl, "%s", help[i]);
-		i++;
-	}
-	if (errnb == IS_OK)
-		errnb = sv_response(cl, "214 %s", help[i]);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "[-] [<pathname>]", help));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/21 15:28:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 16:35:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:26:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int		sv_response_d(t_client *cl, va_list *ap)
 	return (errnb);
 }
 
-t_ropt			*sv_response_opt(char c)
+t_ropt			*sv_response_opt(char *msg)
 {
 	static t_ropt	opt[] = {
 		{ 's', sv_response_s }, { 'd', sv_response_d },
@@ -48,7 +48,7 @@ t_ropt			*sv_response_opt(char c)
 
 	i = sizeof(opt) / sizeof(opt[0]);
 	while (--i >= 0)
-		if (opt[i].value == c)
+		if (opt[i].value == *msg)
 			return (opt + i);
 	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/20 18:24:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 18:26:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 14:32:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,20 @@
 #include <errno.h>
 #include <unistd.h>
 #include "sv_main.h"
+#include "sv_struct.h"
 
-static int		rmdir_err(char *str, t_rmdir *e, t_client *cl, t_server *sv)
+static int		rmdir_err(char *str, t_rmdir *e, t_client *cl)
 {
 	char	*path;
 	int		ret;
 
 	path = e->path[1];
-	if ((ret = sv_client_write(sv->info.progname, cl)) == IS_OK)
-		if ((ret = sv_client_write(": ", cl)) == IS_OK)
-			if ((ret = sv_client_write(e->cmd, cl)) == IS_OK)
-				if ((ret = sv_client_write(": ", cl)) == IS_OK)
-					if ((ret = sv_client_write(str, cl)) == IS_OK)
-						if ((ret = sv_client_write(" '", cl)) == IS_OK)
-							if ((ret = sv_client_write(path, cl)) == IS_OK)
-								ret = sv_client_write("'.\n", cl);
+	ret = sv_response(cl, "550 %s %s", str, path);
 	e->err[1] = 1;
 	return (ret);
 }
 
-static void		rmdir_loop(DIR *dir, t_rmdir *e, t_client *cl, t_server *sv)
+static void		rmdir_loop(DIR *dir, t_rmdir *e, t_client *cl)
 {
 	char		*str;
 
@@ -47,9 +41,9 @@ static void		rmdir_loop(DIR *dir, t_rmdir *e, t_client *cl, t_server *sv)
 			continue ;
 		ft_strncat(e->ptr, e->file->d_name, MAXPATHLEN);
 		if (stat(e->ptr, &e->inf) != 0)
-			e->err[2] = rmdir_err("failed to stat", e, cl, sv);
+			e->err[2] = rmdir_err("failed to stat", e, cl);
 		else if (S_ISDIR(e->inf.st_mode))
-			sv_rmdir_open(e, cl, sv);
+			sv_rmdir_open(e, cl);
 		else
 			e->err[1] = -unlink(e->ptr);
 		e->ptr[ft_strlen(e->ptr) - 1] = '\0';
@@ -58,7 +52,7 @@ static void		rmdir_loop(DIR *dir, t_rmdir *e, t_client *cl, t_server *sv)
 	e->path[0] = str;
 }
 
-void			sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv)
+void			sv_rmdir_open(t_rmdir *e, t_client *cl)
 {
 	DIR			*dir;
 	char		ptr[MAXPATHLEN + 1];
@@ -72,14 +66,14 @@ void			sv_rmdir_open(t_rmdir *e, t_client *cl, t_server *sv)
 		ft_strncpy(e->ptr, e->path[0], MAXPATHLEN);
 		if (e->ptr[ft_strlen(e->ptr) - 1] != '/')
 			ft_strncat(e->ptr, "/", MAXPATHLEN);
-		rmdir_loop(dir, e, cl, sv);
+		rmdir_loop(dir, e, cl);
 		if (!e->file && errno)
-			e->err[2] = rmdir_err("failed to read directory", e, cl, sv);
+			e->err[2] = rmdir_err("failed to read directory", e, cl);
 		else if (rmdir(e->ptr) != 0)
-			e->err[2] = rmdir_err("failed to remove directory", e, cl, sv);
+			e->err[2] = rmdir_err("failed to remove directory", e, cl);
 		closedir(dir);
 	}
 	else
-		e->err[2] = rmdir_err("failed to open directory", e, cl, sv);
+		e->err[2] = rmdir_err("failed to open directory", e, cl);
 	e->ptr = save;
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:19:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:48:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ int					sv_help(char **cmds, t_client *cl)
 		errnb = sv_help_commands(cmds + 1, cl);
 	else
 	{
+		errnb = sv_response(cl, "");
 		while (i < (long)sv_commands(1) && errnb == IS_OK)
 		{
 			if (cl->login.member->rights >= cmd[i].rights
@@ -83,8 +84,8 @@ int					sv_help(char **cmds, t_client *cl)
 		}
 	}
 	if (errnb != IS_OK)
-		return (sv_response(cl, "500 %s", ft_get_error(errnb)));
-	return (sv_response(cl, "211 Help end"));
+		return (sv_response(cl, "\r\n500 %s", ft_get_error(errnb)));
+	return (sv_response(cl, "\r\n211 Help end"));
 }
 
 /*
@@ -100,19 +101,8 @@ int					sv_help_help(t_command *cmd, t_client *cl)
 		"return more specific information as a response. HELP is allowed",
 		"before entering a USER command. The server may use this reply",
 		"to specify site-dependent parameters, e.g., in response to",
-		"HELP SITE.",
+		"HELP SITE.", NULL
 	};
-	long	i;
-	int		errnb;
 
-	i = 0;
-	errnb = sv_response(cl, "214-%s [<commandname>]", cmd->name, cmd->descrip);
-	while (errnb == IS_OK && help[i + 1])
-	{
-		errnb = sv_response(cl, "%s", help[i]);
-		i++;
-	}
-	if (errnb == IS_OK)
-		errnb = sv_response(cl, "214 %s", help[i]);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "[<commandname>]", help));
 }

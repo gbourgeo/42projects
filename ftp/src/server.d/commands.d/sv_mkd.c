@@ -6,12 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:51:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:36:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/stat.h>
 #include "sv_main.h"
+#include "sv_struct.h"
 
 /*
 ** MKDIR options are:
@@ -109,19 +110,8 @@ int				sv_mkd_help(t_command *cmd, t_client *cl)
 		"the pathname is relative).",
 		"Options are:",
 		"	-p		Create parent directories without error if they exist",
-		"	-v		Print a message for each directory created",
+		"	-v		Print a message for each directory created", NULL
 	};
-	long	i;
-	int		errnb;
 
-	i = 0;
-	errnb = sv_response(cl, "214-%s [-vp] <pathname>", cmd->name, cmd->descrip);
-	while (errnb == IS_OK && help[i + 1])
-	{
-		errnb = sv_response(cl, "%s", help[i]);
-		i++;
-	}
-	if (errnb == IS_OK)
-		errnb = sv_response(cl, "214 %s", help[i]);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "[-vp] <pathname>", help));
 }

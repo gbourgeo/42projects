@@ -6,12 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/25 01:28:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 17:41:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/24 21:03:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <time.h>
 #include "sv_main.h"
+#include "sv_struct.h"
 
 int				sv_receive_hdr(int fd, t_hdr *hdr)
 {

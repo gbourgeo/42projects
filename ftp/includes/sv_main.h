@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:13:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 15:18:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,15 +64,6 @@ enum
 };
 
 /*
-** Enumeration for TRANSFERED FILE type
-*/
-enum
-{
-	tf_binary = 1,
-	tf_ascii,
-};
-
-/*
 ** Enumeration for DATA type
 */
 
@@ -86,18 +77,6 @@ enum
 	data_type_telnet,
 	data_type_asa,
 };
-
-/*
-** Packet received for put, get, etc.:
-**	size : Total size of the file
-**	type : BINARY (1) or ASCII (2)
-*/
-
-typedef struct		s_hdr
-{
-	long			size;
-	int				type;
-}					t_hdr;
 
 /*
 ** Users structure
@@ -136,7 +115,6 @@ typedef struct		s_data
 	int				byte_size;
 	int				fd;
 	int				socket;
-	time_t			timeout;
 	pid_t			pid;
 	int				(*function)();
 	char			*file;
@@ -144,13 +122,19 @@ typedef struct		s_data
 
 /*
 ** Client structure
+**
+** int errnb[4] is for:
+** [0]: read errors
+** [1]: write errors
+** [2]: transfert errors
+** [3]: client asked to quit
 */
 
 typedef struct		s_client
 {
 	int				version;
 	int				fd;
-	int				errnb[3];
+	int				errnb[4];
 	int				(*fct_read)();
 	int				(*fct_write)();
 	t_buff			rd;
@@ -179,6 +163,7 @@ typedef struct		s_server
 	int				options;
 	char			*port;
 	int				ip[2];
+	char			addr[2][INET6_ADDRSTRLEN];
 	int				errnb[2];
 	t_user			*users;
 	t_client		*clients;
@@ -186,31 +171,6 @@ typedef struct		s_server
 }					t_server;
 
 struct s_server		g_serv;
-
-/*
-** Command MKDIR structure
-*/
-
-typedef struct		s_mkdir
-{
-	int				opt;
-	int				i;
-	char			**cmd;
-}					t_mkdir;
-
-/*
-** Command RMDIR structure
-*/
-
-typedef struct		s_rmdir
-{
-	char			*cmd;
-	int				err[3];
-	char			**path;
-	struct dirent	*file;
-	char			*ptr;
-	struct stat		inf;
-}					t_rmdir;
 
 /*
 ** Commands structure
@@ -292,6 +252,7 @@ t_user				*sv_getuserbyname(t_user *users, const char *name);
 ** Client functions
 */
 
+int					sv_client_init(t_client *cl, t_server *sv);
 int					sv_client_recv(t_client *cl, t_server *sv);
 int					sv_client_send(t_client *cl);
 int					sv_client_write(const char *str, t_client *cl);
@@ -335,6 +296,7 @@ int					sv_quit(char **cmds, t_client *cl);
 
 int					sv_port(char **cmds, t_client *cl);
 int					sv_pasv(char **cmds, t_client *cl);
+int					sv_pasv_listen(char *port, t_client *cl);
 int					sv_type(char **cmds, t_client *cl);
 // int					sv_stru(char **cmds, t_client *cl);
 // int					sv_mode(char **cmds, t_client *cl);
@@ -343,10 +305,9 @@ int					sv_type(char **cmds, t_client *cl);
 ** FTP Service Commands
 */
 
-int					sv_retr(t_client *cl);
-int					sv_receive_hdr(int fd, t_hdr *hdr);
-int					sv_stor(t_client *cl);
-int					sv_stou(t_client *cl);
+int					sv_retr(char **cmds, t_client *cl);
+int					sv_stor(char **cmds, t_client *cl);
+int					sv_stou(char **cmds, t_client *cl);
 // int					sv_appe(t_client *cl);
 // int					sv_allo(t_client *cl);
 // int					sv_rest(t_client *cl);
@@ -355,7 +316,6 @@ int					sv_stou(t_client *cl);
 // int					sv_abor(t_client *cl);
 int					sv_dele(char **cmds, t_client *cl);
 int					sv_rmd(char **cmds, t_client *cl);
-void				sv_rmdir_open(t_rmdir *e, t_client *cl);
 int					sv_mkd(char **cmds, t_client *cl);
 int					sv_pwd(char **cmds, t_client *cl);
 int					sv_list(char **cmds, t_client *cl);
@@ -372,7 +332,6 @@ int					sv_help(char **cmds, t_client *cl);
 
 int					sv_regt(char **cmds, t_client *cl);
 // int					sv_signin(char **cmds, t_client *cl);
-int					sv_open_port(char *port, t_client *cl);
 
 /*
 ** Commands Help
@@ -399,12 +358,12 @@ int					sv_nlst_help(t_command *cmd, t_client *cl);
 int					sv_help_help(t_command *cmd, t_client *cl);
 int					sv_regt_help(t_command *cmd, t_client *cl);
 
-int					sv_validpathname(const char *s);
+int					sv_print_help(t_client *cl, t_command *cmd, char *args,
+					char **description);
 
+int					sv_validpathname(const char *s);
+int					sv_validnumber(char **s, int ssize);
 int					sv_response(t_client *cl, const char *msg, ...);
-// int					sv_cmd_err(const char *str, const char *cmd, t_client *cl,
-// 					t_server *sv);
-// int					sv_cmd_ok(const char *str, t_client *cl, t_server *sv);
 
 int					sv_send_info(char *file, char *path, int fd, t_server *sv);
 

@@ -6,98 +6,84 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 22:41:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 18:33:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 20:01:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-
-typedef struct		s_type
-{
-	char		name;
-	int			value;
-	int			more_arg;
-}					t_type;
+#include "sv_struct.h"
 
 static t_type		*sv_firsttype(char type)
 {
 	static t_type	firsttype[] = {
-		{ 'A', data_type_ascii, 1 }, { 'E', data_type_ebcdic, 1 },
-		{ 'I', data_type_image, 0 }, { 'L', data_type_byte_size, 1 },
+		{ 'A', data_type_ascii, sv_type_ae },
+		{ 'E', data_type_ebcdic, sv_type_ae },
+		{ 'I', data_type_image, NULL },
+		{ 'L', data_type_byte_size, sv_type_l },
 	};
 	long			i;
 
 	i = sizeof(firsttype) / sizeof(firsttype[0]);
 	while (--i >= 0)
-		if (firsttype[i].name == type)
+		if (firsttype[i].name == type || firsttype[i].name + 32 == type)
 			return (firsttype + i);
 	return (NULL);
 }
 
-static t_type		*sv_secondtype(char type)
-{
-	static t_type	secondtype[] = {
-		{ 'N', data_type_non_print, 0 }, { 'T', data_type_telnet, 0 },
-		{ 'C', data_type_asa, 0 },
-	};
-	long			i;
+/*
+** TYPE
+** 200
+** 500, 501, 504, 421, 530
+*/
 
-	i = sizeof(secondtype) / sizeof(secondtype[0]);
-	while (--i >= 0)
-		if (secondtype[i].name == type)
-			return (secondtype + i);
-	return (NULL);
-}
-
-static int			sv_type_next(t_type *type, char *value, t_client *cl)
-{
-	t_type		*second;
-
-	if (type->name == 'L')
-	{
-		if (!value || !*value)
-			return (ERR_WRONG_PARAM);
-		cl->data.byte_size = ft_atoi(value);
-		return (IS_OK);
-	}
-	if (!value || !*value)
-	{
-		cl->data.type |= (1 << data_type_non_print);
-		return (IS_OK);
-	}
-	if (ft_strlen(value) == 1 && (second = sv_secondtype(value[0])))
-	{
-		cl->data.type |= (1 << second->value);
-		return (IS_OK);
-	}
-	return (ERR_WRONG_PARAM);
-}
-
-int					sv_type(char **cmds, t_client *cl, t_server *sv)
+int					sv_type(char **cmds, t_client *cl)
 {
 	t_type		*type;
 	int			errnb;
 
-	if (!cmds[1])
-		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
+	if (!cmds[1] || !cmds[1][0])
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_NB_PARAMS)));
 	errnb = ERR_WRONG_PARAM;
 	if (ft_strlen(cmds[1]) == 1 && (type = sv_firsttype(cmds[1][0])))
 	{
 		cl->data.type = 0;
 		cl->data.type |= (1 << type->value);
-		if (type->more_arg)
-			if ((errnb = sv_type_next(type, cmds[2], cl)) == IS_OK)
-				return (sv_cmd_ok("Data type replaced.", cl, sv));
+		if (!type->handler || (errnb = type->handler(cmds[2], cl)) == IS_OK)
+			return (sv_response(cl, "200 type set to %s", cmds[1]));
 	}
-	return (sv_cmd_err(ft_get_error(errnb), cmds[0], cl, sv));
+	return (sv_response(cl, "501 %s", ft_get_error(errnb)));
 }
+
+/*
+** TYPE <SP> <type-code> <CRLF>
+*/
 
 int					sv_type_help(t_command *cmd, t_client *cl)
 {
-	int		errnb;
+	static char	*help[] = {
+		"The argument specifies the representation type as described",
+		"in the Section on Data Representation and Storage.  Several",
+		"types take a second parameter.  The first parameter is",
+		"denoted by a single Telnet character, as is the second",
+		"Format parameter for ASCII and EBCDIC; the second parameter",
+		"for local byte is a decimal integer to indicate Bytesize.",
+		"The parameters are separated by a <SP> (Space, ASCII code 32).",
+		"",
+		"The following codes are assigned for type:",
+		"",
+		"				\\    /",
+		"	A - ASCII |    | N - Non-print",
+		"				|-><-| T - Telnet format effectors",
+		"	E - EBCDIC|    | C - Carriage Control (ASA)",
+		"				/    \\",
+		"	I - Image",
+		"",
+		"	L <byte size> - Local byte Byte size",
+		"The default representation type is ASCII Non-print.  If the",
+		"Format parameter is changed, and later just the first",
+		"argument is changed, Format then returns to the Non-print",
+		"default.", NULL
+	};
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Type of transfert\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "<type-code>", help));
 }

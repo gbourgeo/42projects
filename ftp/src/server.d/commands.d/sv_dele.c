@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:19:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:35:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,19 +57,8 @@ int				sv_dele_help(t_command *cmd, t_client *cl)
 {
 	static char	*help[] = {
 		"This command causes the file specified in the pathname to be",
-		"deleted at the server site.",
+		"deleted at the server site.", NULL
 	};
-	long	i;
-	int		errnb;
 
-	i = 0;
-	errnb = sv_response(cl, "214-%s <pathname>", cmd->name, cmd->descrip);
-	while (errnb == IS_OK && help[i + 1])
-	{
-		errnb = sv_response(cl, "%s", help[i]);
-		i++;
-	}
-	if (errnb == IS_OK)
-		errnb = sv_response(cl, "214 %s", help[i]);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "<pathname>", help));
 }

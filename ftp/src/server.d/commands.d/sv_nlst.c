@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:54:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:36:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@ int				sv_nlst(char **cmds, t_client *cl)
 	int			i;
 	int			errnb;
 
-	if (!(cmdpath = ft_get_command("ls", sv->info.env.path, 0)))
-		return (IS_OK);
+	// if (!(cmdpath = ft_get_command("ls", sv->info.env.path, 0)))
+	// 	return (IS_OK);
+	cmdpath = ft_strdup("/bin/ls");
 	free(cmds[0]);
 	cmds[0] = cmdpath;
 	i = 0;
@@ -65,19 +66,8 @@ int				sv_nlst_help(t_command *cmd, t_client *cl)
 		"The data will be transferred in ASCII or EBCDIC type",
 		"over the data connection as valid pathname strings",
 		"separated by <CRLF> or <NL>.  (Again the user must",
-		"ensure that the TYPE is correct.)",
+		"ensure that the TYPE is correct.)", NULL
 	};
-	long	i;
-	int		errnb;
 
-	i = 0;
-	errnb = sv_response(cl, "214-%s [<pathname>]", cmd->name, cmd->descrip);
-	while (errnb == IS_OK && help[i + 1])
-	{
-		errnb = sv_response(cl, "%s", help[i]);
-		i++;
-	}
-	if (errnb == IS_OK)
-		errnb = sv_response(cl, "214 %s", help[i]);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "[<pathname>]", help));
 }

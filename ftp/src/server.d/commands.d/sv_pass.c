@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 15:19:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 21:22:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 20:24:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,49 @@
 
 /*
 ** PASSWORD (PASS) : MOT DE PASSE
+** PASS
+** 230
+** 202
+** 530
+** 500, 501, 503, 421
+** 332
 */
 
-int				sv_pass(char **cmds, t_client *cl, t_server *sv)
+int				sv_pass(char **cmds, t_client *cl)
 {
+	t_server	*sv;
 	t_user		*member;
 
-	if (!cmds[1])
-		return (sv_cmd_err(ft_get_error(ERR_NB_PARAMS), cmds[0], cl, sv));
-	if (FT_CHECK(sv->options, sv_user_mode))
-	{
-		if (!(member = sv_getuserbyname(sv->users, cl->login.user))
-		|| (!ft_strequ(member->pass, cmds[1])))
-			return (sv_cmd_err("Invalid username/password", cmds[0], cl, sv));
-		cl->login.logged = 1;
-		cl->login.member = member;
-	}
-	return (sv_cmd_ok("Password received", cl, sv));
+	sv = &g_serv;
+	if (!FT_CHECK(sv->options, sv_user_mode))
+		return (sv_response(cl, "202 server not in user-only mode"));
+	if (!cmds[1] || !sv_validpathname(cmds[1]))
+		return (sv_response(cl, "501 missing parameter / syntax error"));
+	if (!cl->login.user)
+		return (sv_response(cl, "503 user undefined"));
+	if (!(member = sv_getuserbyname(sv->users, cl->login.user))
+	|| (!ft_strequ(member->pass, cmds[1])))
+		return (sv_response(cl, "530 invalid username / password"));
+	cl->login.logged = 1;
+	cl->login.member = member;
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 closing connection"));
+	return (sv_response(cl, "230 user %s logged in", member->name));
 }
+
+/*
+** PASS <SP> <mot de passe> <CRLF>
+*/
 
 int				sv_pass_help(t_command *cmd, t_client *cl)
 {
-	int		errnb;
+	static char	*help[] = {
+		"The argument field is a Telnet string specifying the user's",
+		"password.  This command must be immediately preceded by the",
+		"user name command, and, for some sites, completes the user's",
+		"identification for access control.", NULL
+	};
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Password to give\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "", help));
 }

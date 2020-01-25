@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/05 23:52:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 18:30:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,40 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <ifaddrs.h>
+#ifdef __linux__
+# include <linux/if.h>
+#endif
 #include "sv_main.h"
+
+static int		sv_getipaddress(int sock, int version, t_server *sv)
+{
+	struct ifaddrs	*interface;
+	struct ifaddrs	*tmp;
+
+	if (getifaddrs(&interface) == 0)
+	{
+		tmp = interface;
+		while (tmp != NULL)
+			if (tmp->ifa_addr && !(tmp->ifa_flags & IFF_LOOPBACK)
+			&& ((version == sv_v4 && tmp->ifa_addr->sa_family == AF_INET)
+			|| (version == sv_v6 && tmp->ifa_addr->sa_family == AF_INET6)))
+			{
+				if (getnameinfo(tmp->ifa_addr, (version == sv_v4)
+				? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+				sv->addr[version], sizeof(sv->addr[version]), NULL, 0,
+				NI_NUMERICHOST) != 0)
+					break ;
+				freeifaddrs(interface);
+				return (sock);
+			}
+			else
+				tmp = tmp->ifa_next;
+	}
+	freeifaddrs(interface);
+	close(sock);
+	return (-1);
+}
 
 static int		sv_findsocket(struct addrinfo *p, int ip, t_server *sv)
 {
@@ -35,7 +68,7 @@ static int		sv_findsocket(struct addrinfo *p, int ip, t_server *sv)
 	|| !setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, &ip, sizeof(ip)))
 		if (!setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)))
 			if (!bind(sock, p->ai_addr, p->ai_addrlen))
-				return (sock);
+				return (sv_getipaddress(sock, ip, sv));
 	close(sock);
 	return (-1);
 }

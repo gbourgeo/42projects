@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_open_port.c                                     :+:      :+:    :+:   */
+/*   sv_pasv_listen.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 01:09:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/04 19:33:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/24 12:59:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static int		init_addrinfo(struct addrinfo **results, char *port)
 	return (1);
 }
 
-int				sv_open_port(char *port, t_client *cl)
+int				sv_pasv_listen(char *port, t_client *cl)
 {
 	struct addrinfo	*results;
 	struct addrinfo	*p;

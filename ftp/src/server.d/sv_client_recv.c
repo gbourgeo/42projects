@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:12:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 15:23:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int		sv_client_commands(char **cmd, t_client *cl)
 		}
 		else
 			i++;
-	return (sv_response(cl, "500 \"%s\" commande non reconnue", cmd[0]));
+	return (sv_response(cl, "500 \"%s\" unknown command", cmd[0]));
 }
 
 static void		print_info(char *buff, int size, t_client *cl, t_server *sv)

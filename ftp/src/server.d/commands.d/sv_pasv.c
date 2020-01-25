@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 17:55:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 20:48:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,63 +14,92 @@
 #include <sys/select.h>
 #include "sv_main.h"
 
-static void		print_info(char *port, t_client *cl, t_server *sv)
+static int		sv_pasv_success(char *port, t_client *cl)
 {
-	if (!FT_CHECK(sv->options, sv_interactive))
-		return ;
-	printf("Client \x1B[33m%d\x1B[0m: DATA port %s open.\n", cl->fd, port);
-}
+	char	addr[INET6_ADDRSTRLEN];
+	int		i;
+	int		errnb;
 
-typedef int		(*t_func)(t_client *, t_server *);
-
-static int		transfert_success(char **cmds, char *p, t_client *cl,
-t_server *sv)
-{
-	int			errnb;
-
-	if (!(cl->data.file = ft_strdup(cmds[1])))
-		errnb = ERR_MALLOC;
-	else
+	i = 0;
+	ft_strcpy(addr, g_serv.addr[cl->version]);
+	while (addr[i])
 	{
-		cl->data.timeout = time(NULL);
-		if ((errnb = sv_client_write(p, cl)) == IS_OK)
-			errnb = sv_client_write(" : Port open for transfert\n", cl);
-		print_info(p, cl, sv);
+		if ((cl->version == sv_v4 && addr[i] == '.')
+		|| (cl->version == sv_v6 && addr[i] == ':'))
+			addr[i] = ',';
+		i++;
 	}
-	ft_strdel(&p);
+	errnb = sv_response(cl, "227 =%s,%s,%s", addr, port, port);
+	if (FT_CHECK(g_serv.options, sv_interactive))
+		printf("Client \x1B[33m%d\x1B[0m: DATA port %s:%s open.\n",
+		cl->fd, addr, port);
+	free(port);
 	return (errnb);
 }
 
-/*
-** PASSIVE (PASV) : MODE PASSIF
-*/
-
-int				sv_pasv(char **cmds, t_client *cl, t_server *sv)
+static int		sv_pasv_open(t_client *cl)
 {
 	char	*p;
 	int		port;
 
 	p = NULL;
-	port = ft_atoi(cl->data.port);
+	port = 1023;
 	while (++port < 65535)
-		if ((p = ft_itoa(port)) && sv_open_port(p, cl))
+		if ((p = ft_itoa(port)) && sv_pasv_listen(p, cl))
 		{
 			if (cl->data.fd >= FD_SETSIZE)
+			{
+				ft_close(&cl->data.fd);
 				break ;
-			return (transfert_success(cmds, p, cl, sv));
+			}
+			return (sv_pasv_success(p, cl));
 		}
 		else
 			ft_strdel(&p);
 	ft_strdel(&p);
-	return (sv_cmd_err(ft_get_error(ERR_OPEN_PORT), cmds[0], cl, sv));
+	return (sv_response(cl, "530 %s", ft_get_error(ERR_OPEN_PORT)));
 }
 
-int				sv_pasv_help(t_command *cmd, t_client *cl)
+/*
+** PASSIVE (PASV) : MODE PASSIF
+** PASV
+** 227
+** 500, 501, 502, 421, 530
+*/
+
+int				sv_pasv(char **cmds, t_client *cl)
 {
 	int		errnb;
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Passive mode\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
-	return (errnb);
+	if (cmds[1])
+		return (sv_response(cl, "500 syntax error"));
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 closing connection"));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 need to log first"));
+	if (cl->data.fd > 0)
+	{
+		if ((errnb = sv_response(cl, "226 closing data connection")))
+			return (errnb);
+		ft_close(&cl->data.fd);
+	}
+	return (sv_pasv_open(cl));
+}
+
+/*
+** PASV <CRLF>
+*/
+
+int				sv_pasv_help(t_command *cmd, t_client *cl)
+{
+	static char	*help[] = {
+		"This command requests the server to \"listen\" on a data",
+		"port (which is not its default data port) and to wait for a",
+		"connection rather than initiate one upon receipt of a",
+		"transfer command.  The response to this command includes the",
+		"host and port address this server is listening on.", NULL
+	};
+
+	return (sv_print_help(cl, cmd, "", help));
 }

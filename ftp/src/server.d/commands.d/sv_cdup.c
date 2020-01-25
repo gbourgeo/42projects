@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 17:53:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/23 00:11:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 20:03:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,19 +30,8 @@ int				sv_cdup_help(t_command *cmd, t_client *cl)
 		"This command is a special case of CWD, and is included to",
 		"simplify the implementation of programs for transferring",
 		"directory trees between operating systems having different",
-		"syntaxes for naming the parent directory.",
+		"syntaxes for naming the parent directory.", NULL
 	};
-	long	i;
-	int		errnb;
 
-	i = 0;
-	errnb = sv_response(cl, "214-%s", cmd->name, cmd->descrip);
-	while (errnb == IS_OK && help[i + 1])
-	{
-		errnb = sv_response(cl, "%s", help[i]);
-		i++;
-	}
-	if (errnb == IS_OK)
-		errnb = sv_response(cl, "214 %s", help[i]);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "", help));
 }

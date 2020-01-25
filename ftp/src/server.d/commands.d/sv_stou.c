@@ -6,25 +6,39 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/16 15:51:56 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 17:55:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/25 16:37:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
 
-int					sv_stou(t_client *cl, t_server *sv)
+/*
+** STOU
+** 125, 150
+**   (110)
+**   226, 250
+**   425, 426, 451, 551, 552
+** 532, 450, 452, 553
+** 500, 501, 421, 530
+*/
+
+int					sv_stou(char **cmds, t_client *cl)
 {
-	(void)cl;
-	(void)sv;
-	return (IS_OK);
+	return (sv_response(cl, "502 %s unimplemented command", cmds[0]));
 }
+
+/*
+** STOU <CRLF>
+*/
 
 int					sv_stou_help(t_command *cmd, t_client *cl)
 {
-	int		errnb;
+	static char	*help[] = {
+		"This command behaves like STOR except that the resultant",
+		"file is to be created in the current directory under a name",
+		"unique to that directory.  The 250 Transfer Started response",
+		"must include the name generated.", NULL
+	};
 
-	if ((errnb = sv_client_write(cmd->name, cl)) == IS_OK
-	&& (errnb = sv_client_write(": Store 'Unique' file\n", cl)) == IS_OK)
-		errnb = sv_client_write("\n", cl);
-	return (errnb);
+	return (sv_print_help(cl, cmd, "", help));
 }
