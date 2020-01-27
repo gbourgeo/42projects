@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:51:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 15:39:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,16 @@ typedef struct		s_data
 	int				byte_size;
 	int				fd;
 	int				socket;
-	pid_t			pid;
+	// pid_t			pid;
 	int				(*function)();
 	char			*file;
 }					t_data;
+
+typedef struct		s_pid
+{
+	pid_t			pid;
+	struct s_pid	*next;
+}					t_pid;
 
 /*
 ** Client structure
@@ -144,8 +150,8 @@ typedef struct		s_client
 	char			*oldpwd;
 	struct sockaddr	sockaddr;
 	t_login			login;
-	pid_t			pid_ls;
 	t_data			data;
+	t_pid			*pids;
 	struct s_client	*prev;
 	struct s_client	*next;
 }					t_client;

@@ -6,13 +6,16 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/21 15:29:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 02:41:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 15:13:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SV_STRUCT_H
 # define SV_STRUCT_H
 
+/*
+** Sv_response() options structure
+*/
 
 typedef struct	s_response_options
 {
@@ -54,9 +57,9 @@ void				sv_rmdir_open(t_rmdir *e, t_client *cl);
 
 typedef struct		s_type
 {
-	char		name;
-	int			value;
-	int			(*handler)();
+	char			name;
+	int				value;
+	int				(*handler)();
 }					t_type;
 
 int					sv_type_ae(char *value, t_client *cl);

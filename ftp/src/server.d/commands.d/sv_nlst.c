@@ -6,14 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 03:21:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 15:48:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-int done(char **cmds,t_client *cl)
+static int 		done(char **cmds,t_client *cl)
 {
 	char		*cmdpath;
 	int			i;
@@ -33,6 +33,13 @@ int done(char **cmds,t_client *cl)
 		return (ERR_FORK);
 	else if (cl->pid_ls == 0)
 	{
+		if (!(path = (cmds[1]) ? ft_strdup(cmds[1]) : ft_strdup(".")))
+			return (sv_response(cl, "552 internal error (memory alloc. failed)"));
+		if (sv_check_path(&path, cl) != IS_OK)
+			errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
+		else if (access(path, F_OK) != 0)
+			errnb = sv_response(cl, "550 directory/file not found %s",
+		path + ft_strlen(cl->home) - 1);
 		close(STDERR_FILENO);
 		if (dup2(cl->fd, STDOUT_FILENO) < 0)
 			exit(ERR_DUP2);
@@ -62,15 +69,11 @@ int				sv_nlst(char **cmds, t_client *cl)
 		return (sv_response(cl, "421 closing connection"));
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		return (sv_response(cl, "530 not logged in"));
-	if (!(path = (cmds[1]) ? ft_strdup(cmds[1]) : ft_strdup(".")))
-		return (sv_response(cl, "552 internal error (memory alloc. failed)"));
-	if (sv_check_path(&path, cl) != IS_OK)
-		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
-	else if (access(path, F_OK) != 0)
-		errnb = sv_response(cl, "550 directory/file not found %s",
-		path + ft_strlen(cl->home) - 1);
-	else
-		;
+	else if (cl->data.fd <= 0 && cl->data.socket <= 0)
+		return (sv_response(cl, "425 no data connection established"));
+	else if ((errnb = sv_new_pid(cmds, cl, done)) != IS_OK)
+		errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
+	ft_strdel(&path);
 	return (errnb);
 }
 
