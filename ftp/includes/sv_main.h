@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 15:39:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 18:40:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,16 +115,10 @@ typedef struct		s_data
 	int				byte_size;
 	int				fd;
 	int				socket;
-	// pid_t			pid;
 	int				(*function)();
+	pid_t			pid;
 	char			*file;
 }					t_data;
-
-typedef struct		s_pid
-{
-	pid_t			pid;
-	struct s_pid	*next;
-}					t_pid;
 
 /*
 ** Client structure
@@ -151,7 +145,6 @@ typedef struct		s_client
 	struct sockaddr	sockaddr;
 	t_login			login;
 	t_data			data;
-	t_pid			*pids;
 	struct s_client	*prev;
 	struct s_client	*next;
 }					t_client;
@@ -239,7 +232,8 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 */
 
 int					sv_check_option(int option, int value);
-int					sv_check_pid(pid_t *pid, t_client *cl);
+int					sv_new_pid(char **cmds, t_client *cl, int (*hdlr)());
+int					sv_check_pid(t_client *cl);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 int					sv_welcome(t_client *cl, t_server *sv);

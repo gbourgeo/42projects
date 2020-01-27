@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/26 17:08:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 19:55:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int		sv_pasv_open(t_client *cl)
 	int		port;
 
 	p = NULL;
-	port = 1023;
+	port = 1024;
 	while (++port < 65535)
 		if ((p = ft_itoa(port)) && sv_pasv_listen(p, cl))
 		{

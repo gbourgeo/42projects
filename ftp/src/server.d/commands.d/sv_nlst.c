@@ -6,48 +6,37 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 15:48:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 20:19:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-static int 		done(char **cmds,t_client *cl)
-{
-	char		*cmdpath;
-	int			i;
-	int			errnb;
+// static int 		done(char *arg, t_client *cl)
+// {
+// 	char		**cmds;
+// 	int			i;
+// 	int			errnb;
 
-	// if (!(cmdpath = ft_get_command("ls", sv->info.env.path, 0)))
-	// 	return (IS_OK);
-	cmdpath = ft_strdup("/bin/ls");
-	free(cmds[0]);
-	cmds[0] = cmdpath;
-	i = 0;
-	while (cmds[++i])
-		if ((errnb = sv_check_path(&cmds[i], cl)) != IS_OK)
-			return (errnb);
-	cl->pid_ls = fork();
-	if (cl->pid_ls < 0)
-		return (ERR_FORK);
-	else if (cl->pid_ls == 0)
-	{
-		if (!(path = (cmds[1]) ? ft_strdup(cmds[1]) : ft_strdup(".")))
-			return (sv_response(cl, "552 internal error (memory alloc. failed)"));
-		if (sv_check_path(&path, cl) != IS_OK)
-			errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
-		else if (access(path, F_OK) != 0)
-			errnb = sv_response(cl, "550 directory/file not found %s",
-		path + ft_strlen(cl->home) - 1);
-		close(STDERR_FILENO);
-		if (dup2(cl->fd, STDOUT_FILENO) < 0)
-			exit(ERR_DUP2);
-		execve(cmds[0], cmds, NULL);
-		exit(ERR_EXECV);
-	}
-	return (IS_OK);
-}
+// 	i = 0;
+// 	if (!(cmds = malloc(sizeof(*cmds) * 3)) || !(cmds[0] = ft_strdup("/bin/ls"))
+// 	|| sv_check_path(&arg, cl) != IS_OK)
+// 		return (ERR_MALLOC);
+// 	else if (access(arg, F_OK) != 0)
+// 		errnb = ERR_INVALID_PARAM;
+// 	else if (dup2(cl->data.socket, STDOUT_FILENO) < 0)
+// 		errnb = ERR_DUP2;
+// 	else
+// 	{
+// 		close(STDERR_FILENO);
+// 		cmds[1] = arg;
+// 		execve(cmds[0], cmds, NULL);
+// 	}
+// 	ft_tabdel(&cmds);
+// 	return (ERR_EXECV);
+// }
+
 /*
 ** NLST
 ** 125, 150
@@ -62,17 +51,18 @@ int				sv_nlst(char **cmds, t_client *cl)
 	char	*path;
 	int		errnb;
 
-	if (cmds[1] && !sv_validpathname(cmds[1]))
+	if (cmds[1] && (!sv_validpathname(cmds[1]) || cmds[2]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
 	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
 		return (sv_response(cl, "421 closing connection"));
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		return (sv_response(cl, "530 not logged in"));
-	else if (cl->data.fd <= 0 && cl->data.socket <= 0)
+	if (cl->data.fd <= 0 && cl->data.socket <= 0)
 		return (sv_response(cl, "425 no data connection established"));
-	else if ((errnb = sv_new_pid(cmds, cl, done)) != IS_OK)
-		errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
+	// else if ((errnb = sv_new_pid(cmds, cl, done)) != IS_OK)
+	// 	errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
+	errnb = IS_OK;
 	ft_strdel(&path);
 	return (errnb);
 }

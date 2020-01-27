@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:56:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 19:39:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ t_client		*sv_client_end(t_client *cl, t_server *sv)
 	ft_strdel(&cl->oldpwd);
 	sv_free_login(&cl->login, NULL);
 	sv_free_data(&cl->data);
-	if (cl->pid_ls > 0)
-		kill(cl->pid_ls, SIGKILL);
 	if (cl->prev)
 		cl->prev->next = cl->next;
 	else

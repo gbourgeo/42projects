@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 01:03:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 18:42:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,23 +37,18 @@ static int		check_pid_value(const char *name, int status, t_client *cl)
 	return (sv_response(cl, "512 %s Unknown error", name));
 }
 
-int				sv_check_pid(pid_t *pid, t_client *cl)
+int				sv_check_pid(t_client *cl)
 {
 	pid_t		ret;
 	int			status;
 	int			errnb;
 
 	errnb = IS_OK;
-	if ((ret = wait4(*pid, &status, WNOHANG, NULL)) <= 0)
+	if ((ret = wait4(cl->data.pid, &status, WNOHANG, NULL)) <= 0)
 		return ((ret < 0) ? ERR_WAIT : IS_OK);
 	if (WIFSTOPPED(status) || WIFCONTINUED(status))
 		return (sv_response(cl, "451 Operation stopped / continued.\n", cl));
-	if (*pid == cl->pid_ls)
-		errnb = check_pid_value("LIST", status, cl);
-	else if (cl->data.function == sv_retr)
-		errnb = check_pid_value("RETR", status, cl);
-	else if (cl->data.function == sv_stor)
-		errnb = check_pid_value("STOR", status, cl);
-	*pid = 0;
+	if (ret == cl->data.pid)
+		errnb = check_pid_value("TEST", status, cl);
 	return (errnb);
 }

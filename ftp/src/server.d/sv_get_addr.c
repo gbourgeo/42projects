@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 01:48:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 18:30:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 18:19:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,11 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <ifaddrs.h>
+# include <ifaddrs.h>
 #ifdef __linux__
 # include <linux/if.h>
+#else
+# include <net/if.h>
 #endif
 #include "sv_main.h"
 

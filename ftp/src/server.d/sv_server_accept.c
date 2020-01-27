@@ -6,12 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:57:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 18:32:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <sys/select.h>
+#include <arpa/inet.h>
 #include "sv_main.h"
 
 static int		accept_client(int version, int fd, t_server *sv)
@@ -31,8 +32,8 @@ static int		accept_client(int version, int fd, t_server *sv)
 		cl->next->prev = cl;
 	sv->clients = cl;
 	if (FT_CHECK(sv->options, sv_interactive))
-		printf("Client "FTP_YELLOW"%d"FTP_RESET": connected to %s.\n",
-		cl->fd, cl->home);
+		printf("Client "FTP_YELLOW"%d"FTP_RESET": %d connected to %s.\n",
+		cl->fd, version, cl->home);
 	sv_welcome(cl, sv);
 	return (IS_OK);
 }
