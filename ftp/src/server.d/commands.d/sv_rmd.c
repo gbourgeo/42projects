@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:55:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 02:54:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,18 @@ int				sv_rmd(char **cmds, t_client *cl)
 	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_NB_PARAMS)));
 	if (!(path = ft_strdup(cmds[1])))
-		return (ERR_MALLOC);
-	if ((errnb = sv_check_path(&path, cl)) != IS_OK)
-		errnb = ERR_MALLOC;
+		return (sv_response(cl, "552 internal error (memory alloc. failed)"));
+	if (sv_check_path(&path, cl) != IS_OK)
+		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
 	else if (access(path, F_OK) != 0)
-		errnb = sv_response(cl, "550 directory not found %s", cmds[1]);
+		errnb = sv_response(cl, "550 directory not found %s",
+		path + ft_strlen(cl->home) - 1);
 	else if (rmdir(path) != 0)
-		errnb = sv_response(cl, "550 permission denied for %s", cmds[1]);
+		errnb = sv_response(cl, "550 permission denied for %s",
+		path + ft_strlen(cl->home) - 1);
 	else
-		errnb = sv_response(cl, "250 \"%s\" directory removed", cmds[1]);
+		errnb = sv_response(cl, "250 \"%s\" directory removed",
+		path + ft_strlen(cl->home) - 1);
 	ft_strdel(&path);
 	return (errnb);
 }

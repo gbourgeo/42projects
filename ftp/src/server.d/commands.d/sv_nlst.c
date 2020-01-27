@@ -6,23 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:53:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 03:21:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-/*
-** NLST
-** 125, 150
-** 226, 250
-** 425, 426, 451
-** 450
-** 500, 501, 502, 421, 530
-*/
-
-int				sv_nlst(char **cmds, t_client *cl)
+int done(char **cmds,t_client *cl)
 {
 	char		*cmdpath;
 	int			i;
@@ -50,6 +41,38 @@ int				sv_nlst(char **cmds, t_client *cl)
 	}
 	return (IS_OK);
 }
+/*
+** NLST
+** 125, 150
+** 226, 250
+** 425, 426, 451
+** 450
+** 500, 501, 502, 421, 530
+*/
+
+int				sv_nlst(char **cmds, t_client *cl)
+{
+	char	*path;
+	int		errnb;
+
+	if (cmds[1] && !sv_validpathname(cmds[1]))
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 closing connection"));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 not logged in"));
+	if (!(path = (cmds[1]) ? ft_strdup(cmds[1]) : ft_strdup(".")))
+		return (sv_response(cl, "552 internal error (memory alloc. failed)"));
+	if (sv_check_path(&path, cl) != IS_OK)
+		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
+	else if (access(path, F_OK) != 0)
+		errnb = sv_response(cl, "550 directory/file not found %s",
+		path + ft_strlen(cl->home) - 1);
+	else
+		;
+	return (errnb);
+}
 
 /*
 ** NLST [<SP> <pathname>] <CRLF>
@@ -58,15 +81,18 @@ int				sv_nlst(char **cmds, t_client *cl)
 int				sv_nlst_help(t_command *cmd, t_client *cl)
 {
 	static char	*help[] = {
-		"This command causes a directory listing to be sent.",
-		"The pathname should specify a directory or other",
-		"system-specific file group descriptor; a null argument",
-		"implies the current directory.  The server will return",
-		"a stream of names of files and no other information.",
-		"The data will be transferred in ASCII or EBCDIC type",
-		"over the data connection as valid pathname strings",
-		"separated by <CRLF> or <NL>.  (Again the user must",
-		"ensure that the TYPE is correct.)", NULL
+		"This command causes a list to be sent from the server to the",
+		"passive DTP.  If the pathname specifies a directory or other",
+		"group of files, the server should transfer a list of files",
+		"in the specified directory.  If the pathname specifies a",
+		"file then the server should send current information on the",
+		"file.  A null argument implies the user's current working or",
+		"default directory.  The data transfer is over the data",
+		"connection in type ASCII or type EBCDIC.  (The user must",
+		"ensure that the TYPE is appropriately ASCII or EBCDIC).",
+		"Since the information on a file may vary widely from system",
+		"to system, this information may be hard to use automatically",
+		"in a program, but may be quite useful to a human user.", NULL
 	};
 
 	return (sv_print_help(cl, cmd, "[<pathname>]", help));

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/21 15:29:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:51:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 02:41:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,6 @@ typedef struct		s_hdr
 int					sv_receive_hdr(int fd, t_hdr *hdr);
 
 /*
-** Command MKDIR structure
-*/
-
-typedef struct		s_mkdir
-{
-	int				opt;
-	int				i;
-	char			**cmd;
-}					t_mkdir;
-
-/*
 ** Command RMDIR structure
 */
 
@@ -71,6 +60,7 @@ typedef struct		s_type
 }					t_type;
 
 int					sv_type_ae(char *value, t_client *cl);
+int					sv_type_i(char *value, t_client *cl);
 int					sv_type_l(char *value, t_client *cl);
 
 # endif

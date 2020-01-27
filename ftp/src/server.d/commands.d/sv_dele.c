@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:53:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/27 01:07:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,30 +23,30 @@
 int				sv_dele(char **cmds, t_client *cl)
 {
 	char	*path;
-	int		err[2];
 	int		i;
+	int		errnb;
 
-	ft_bzero(err, sizeof(err));
+	path = NULL;
 	i = 0;
-	if (!cmds[1])
-		return (sv_response(cl, "501 Syntax error"));
-	while (cmds[++i] && err[0] == IS_OK)
-	{
-		if (!sv_validpathname(cmds[i]))
-			err[0] = sv_response(cl, "553 \"%s\" filename not allowed", cmds[i]);
-		if (!(path = ft_strdup(cmds[i])))
-			err[0] = sv_response(cl, "552 \"%s\" allocation failed", cmds[i]);
-		else if ((err[0] = sv_check_path(&path, cl)) != IS_OK)
-			err[0] = sv_response(cl, "552 \"%s\" allocation failed", cmds[i]);
-		else if (access(path, F_OK))
-			err[0] = sv_response(cl, "550 \"%s\" file unavailable", cmds[i]);
-		else if (unlink(path))
-			err[0] = sv_response(cl, "450 Unable to remove file %s", cmds[i]);
-		else
-			err[0] = sv_response(cl, "250 \"%s\" file removed", cmds[i]);
-		ft_strdel(&path);
-	}
-	return (err[0]);
+	errnb = IS_OK;
+	if (!cmds[1] && !sv_validpathname(cmds[i]))
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 closing connection"));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 need to log first"));
+	if (!(path = ft_strdup(cmds[i]))
+	|| (errnb = sv_check_path(&path, cl)) != IS_OK)
+		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
+	else if (access(path, F_OK))
+		errnb = sv_response(cl, "550 \"%s\" file unavailable", cmds[i]);
+	else if (unlink(path))
+		errnb = sv_response(cl, "450 Unable to remove file %s", cmds[i]);
+	else
+		errnb = sv_response(cl, "250 \"%s\" file removed", cmds[i]);
+	ft_strdel(&path);
+	return (errnb);
 }
 
 /*

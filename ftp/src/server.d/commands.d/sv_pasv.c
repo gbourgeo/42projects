@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:54:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/26 17:08:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,12 @@
 static int		sv_pasv_success(char *port, t_client *cl)
 {
 	char	addr[INET6_ADDRSTRLEN];
+	short	nb;
 	int		i;
 	int		errnb;
 
-	i = 0;
 	ft_strcpy(addr, g_serv.addr[cl->version]);
+	i = 0;
 	while (addr[i])
 	{
 		if ((cl->version == sv_v4 && addr[i] == '.')
@@ -29,7 +30,9 @@ static int		sv_pasv_success(char *port, t_client *cl)
 			addr[i] = ',';
 		i++;
 	}
-	errnb = sv_response(cl, "227 =%s,%s,%s", addr, port, port);
+	nb = (short)ft_atoi(port) << 8;
+	errnb = sv_response(cl, "227 =%s,%d,%d (%s)",
+	addr, ft_atoi(port) >> 8, nb >> 8, port);
 	if (FT_CHECK(g_serv.options, sv_interactive))
 		printf("Client \x1B[33m%d\x1B[0m: DATA port %s:%s open.\n",
 		cl->fd, addr, port);

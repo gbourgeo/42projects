@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 18:30:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:54:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/26 16:51:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,28 @@ static void		copy_address(char *s, char **addr)
 		}
 }
 
+static int		sv_port_check(char *cmd, t_client *cl, char ***info, int *err)
+{
+	*err = IS_OK;
+	if (!cmd || !cmd[0])
+		*err = sv_response(cl, "501 syntax error %s", cmd);
+	else if (!(*info = ft_strsplit(cmd, ',')))
+		*err = sv_response(cl, "500 internal error (memory alloc. failed)");
+	else if (ft_tablen(*info) != 6 || !sv_validnumber(*info, 6))
+	{
+		ft_tabdel(info);
+		*err = sv_response(cl, "501 syntax error %s", cmd);
+	}
+	else if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		*err = sv_response(cl, "421 closing connection");
+	else if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		*err = sv_response(cl, "530 need to log first");
+	else
+		return (1);
+	return (0);
+}
+
 /*
 ** PORT
 ** 200
@@ -37,22 +59,10 @@ int				sv_port(char **cmds, t_client *cl)
 {
 	char			**info;
 	unsigned int	port;
+	int				errnb;
 
-	if (!cmds[1] || !cmds[1][0])
-		return (sv_response(cl, "501 %s", ft_get_error(ERR_WRONG_PARAM)));
-	if (!(info = ft_strsplit(cmds[1], ',')))
-		return (sv_response(cl, "500 internal error (%s)",
-		ft_get_error(ERR_MALLOC)));
-	if (ft_tablen(info) != 6 || !sv_validnumber(info, 6))
-	{
-		ft_tabdel(&info);
-		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
-	}
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
-	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
-		return (sv_response(cl, "530 need to log first"));
+	if (!sv_port_check(*(cmds + 1), cl, &info, &errnb))
+		return (errnb);
 	copy_address(cl->data.address, info);
 	port = (ft_atoi(info[4]) << 8) + (unsigned char)ft_atoi(info[5]);
 	ft_strdel(&cl->data.port);
