@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 18:40:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 21:02:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,10 +109,10 @@ typedef struct		s_login
 
 typedef struct		s_data
 {
-	char			address[INET6_ADDRSTRLEN];
-	char			*port;
 	int				type;
 	int				byte_size;
+	char			address[INET6_ADDRSTRLEN];
+	char			*port;
 	int				fd;
 	int				socket;
 	int				(*function)();
