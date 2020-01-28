@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 01:07:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:37:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,16 @@ int				sv_dele(char **cmds, t_client *cl)
 	path = NULL;
 	i = 0;
 	errnb = IS_OK;
-	if (!cmds[1] && !sv_validpathname(cmds[i]))
-		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 Please login with USER and PASS."));
 	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
-	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
-		return (sv_response(cl, "530 need to log first"));
+		return (sv_response(cl, "421 Closing connection"));
+	if (!cmds[1] && !sv_validpathname(cmds[i]))
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
 	if (!(path = ft_strdup(cmds[i]))
 	|| (errnb = sv_check_path(&path, cl)) != IS_OK)
-		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
+		errnb = sv_response(cl, "552 Internal error (memory alloc. failed)");
 	else if (access(path, F_OK))
 		errnb = sv_response(cl, "550 \"%s\" file unavailable", cmds[i]);
 	else if (unlink(path))

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:55:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:45:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,13 @@
 
 int				sv_user(char **cmds, t_client *cl)
 {
-	if (FT_CHECK(g_serv.options, sv_user_mode) && cl->login.user)
-		return (sv_response(cl, "530 login authentification failed"));
-	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))
-		return (sv_response(cl, "501 %s", ft_get_error(ERR_WRONG_PARAM)));
 	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
 		return (sv_response(cl, "421 closing connection"));
 	sv_free_login(&cl->login, &g_serv);
 	sv_assign_ptr(&cl->login.user, cmds[1], cmds);
 	if (FT_CHECK(g_serv.options, sv_user_mode))
-		return (sv_response(cl, "331 password requiered for %s", cmds[1]));
+		return (sv_response(cl, "331 Please specify the password", cmds[1]));
 	return (sv_response(cl, "230 %s OK", cmds[1]));
 }
 

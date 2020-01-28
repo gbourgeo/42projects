@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 20:19:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:46:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,15 @@ int				sv_nlst(char **cmds, t_client *cl)
 	char	*path;
 	int		errnb;
 
-	if (cmds[1] && (!sv_validpathname(cmds[1]) || cmds[2]))
-		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 Please login with USER and PASS."));
 	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
-	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
-		return (sv_response(cl, "530 not logged in"));
-	if (cl->data.fd <= 0 && cl->data.socket <= 0)
-		return (sv_response(cl, "425 no data connection established"));
+		return (sv_response(cl, "421 Closing connection"));
+	if (cmds[1] && (!sv_validpathname(cmds[1]) || cmds[2]))
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (!cl->data.port || (cl->data.fd <= 0 && cl->data.socket <= 0))
+		return (sv_response(cl, "425 No data connection established"));
 	// else if ((errnb = sv_new_pid(cmds, cl, done)) != IS_OK)
 	// 	errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
 	errnb = IS_OK;

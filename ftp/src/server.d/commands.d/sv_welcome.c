@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/20 21:29:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/21 17:25:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:00:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ int			sv_welcome(t_client *cl, t_server *sv)
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 	svinfo = (FT_CHECK(sv->options, sv_user_mode)) ?
-	"This is a private system - No anonymous login" :
-	"This is a public system - Anonymous login granted";
+	"This is a private system - No guest login" :
+	"This is a public system - Guest login granted";
 	if ((errnb = sv_response(cl, "220-Welcome to GBO FTP Server.")) == IS_OK
 	&& (errnb = sv_response(cl, "You are user %d of %d allowed.",
 	sv->connected, CLIENTS_MAX)) == IS_OK

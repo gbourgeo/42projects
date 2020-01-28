@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 19:55:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:46:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,13 @@ int				sv_pasv(char **cmds, t_client *cl)
 {
 	int		errnb;
 
-	if (cmds[1])
-		return (sv_response(cl, "500 syntax error"));
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 Please login with USER and PASS."));
 	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
-	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
-		return (sv_response(cl, "530 need to log first"));
+		return (sv_response(cl, "421 Closing connection"));
+	if (cmds[1])
+		return (sv_response(cl, "500 syntax error"));
 	if (cl->data.fd > 0)
 	{
 		if ((errnb = sv_response(cl, "226 closing data connection")))

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 15:19:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:54:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:40:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,21 +28,17 @@ int				sv_pass(char **cmds, t_client *cl)
 	t_user		*member;
 
 	sv = &g_serv;
-	if (!FT_CHECK(sv->options, sv_user_mode))
-		return (sv_response(cl, "202 server not in user-only mode"));
-	if (!cmds[1] || !sv_validpathname(cmds[1]))
-		return (sv_response(cl, "501 missing parameter / syntax error"));
-	if (!cl->login.user)
-		return (sv_response(cl, "503 user undefined"));
-	if (!(member = sv_getuserbyname(sv->users, cl->login.user))
-	|| (!ft_strequ(member->pass, cmds[1])))
-		return (sv_response(cl, "530 invalid username / password"));
-	cl->login.logged = 1;
-	cl->login.member = member;
 	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
-	return (sv_response(cl, "230 user %s logged in", member->name));
+		return (sv_response(cl, "421 Closing connection"));
+	if (!cl->login.user)
+		return (sv_response(cl, "503 Undefined USER"));
+	if (!(member = sv_getuserbyname(sv->users, cl->login.user))
+	|| (!ft_strequ(member->pass, cmds[1])))
+		return (sv_response(cl, "530 Loggin incorrect"));
+	cl->login.logged = 1;
+	cl->login.member = member;
+	return (sv_response(cl, "230 User %s logged in", member->name));
 }
 
 /*

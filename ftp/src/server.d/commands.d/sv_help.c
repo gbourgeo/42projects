@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:53:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 17:37:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,23 +34,23 @@ static t_command	*sv_command_by_name(char *cmdname, t_client *cl)
 
 static int			sv_help_commands(char **cmds, t_client *cl)
 {
+	t_command	*cmd;
 	int			i;
 	int			errnb;
-	t_command	*cmd;
 
 	i = 0;
-	errnb = IS_OK;
-	while (cmds[i] && errnb == IS_OK)
+	if ((errnb = sv_response(cl, "214-Help start")) != IS_OK)
+		return (errnb);
+	while (cmds[i])
 	{
-		if (!sv_validpathname(cmds[i]))
-			errnb = sv_response(cl, "553 \"%s\" filename not allowed", cmds[i]);
-		else if ((cmd = sv_command_by_name(cmds[i], cl)) == NULL)
-			errnb = sv_response(cl, " \"%s\" invalid command", cmds[i]);
-		else
-			errnb = cmd->help(cmd, cl);
+		if (!sv_validpathname(cmds[i])
+		|| !(cmd = sv_command_by_name(cmds[i], cl)))
+			return (sv_response(cl, "553 \"%s\" invalid command", cmds[i]));
+		if ((errnb = cmd->help(cmd, cl)) != IS_OK)
+			return (sv_response(cl, "500 %s", ft_get_error(errnb)));
 		i++;
 	}
-	return (errnb);
+	return (sv_response(cl, "214 Help OK"));
 }
 
 /*
@@ -65,27 +65,28 @@ int					sv_help(char **cmds, t_client *cl)
 	int			errnb;
 	long		i;
 
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 Closing connection"));
 	cmd = sv_commands(0);
-	errnb = sv_response(cl, "211-Help start");
 	i = 0;
 	if (cmds[1])
-		errnb = sv_help_commands(cmds + 1, cl);
-	else
+		return (sv_help_commands(cmds + 1, cl));
+	errnb = sv_response(cl, "214-The following commands are recognized:");
+	while (i < (long)sv_commands(1) && errnb == IS_OK)
 	{
-		errnb = sv_response(cl, "");
-		while (i < (long)sv_commands(1) && errnb == IS_OK)
-		{
-			if (cl->login.member->rights >= cmd[i].rights
-			&& (errnb = sv_client_write(cmd[i].name, cl)) == IS_OK
-			&& (errnb = sv_client_write("\t\t", cl)) == IS_OK
-			&& (errnb = sv_client_write(cmd[i].descrip, cl)) == IS_OK)
-				errnb = sv_client_write("\n", cl);
-			i++;
-		}
+		if (cl->login.member->rights >= cmd[i].rights
+		&& (errnb = sv_client_write(" ", cl)) == IS_OK)
+			errnb = sv_client_write(cmd[i].name, cl);
+		if (!((i + 1) % 10))
+			errnb = sv_client_write("\r\n", cl);
+		else if (ft_strlen(cmd[i].name) < 4)
+			errnb = sv_client_write(" ", cl);
+		i++;
 	}
 	if (errnb != IS_OK)
 		return (sv_response(cl, "\r\n500 %s", ft_get_error(errnb)));
-	return (sv_response(cl, "\r\n211 Help end"));
+	return (sv_response(cl, "\r\n214 Help OK"));
 }
 
 /*
