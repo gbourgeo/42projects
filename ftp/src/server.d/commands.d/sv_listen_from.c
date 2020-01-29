@@ -1,41 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_data_accept.c                                   :+:      :+:    :+:   */
+/*   sv_listen_from.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:47:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 18:11:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 18:00:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-int					sv_data_accept(t_client *cl, t_server *sv)
+int					sv_listen_from(t_client *cl)
 {
 	struct sockaddr	csin;
 	socklen_t		len;
-	// int				errnb;
 
-	(void)sv;
+	ft_close(&cl->data.socket);
 	len = sizeof(csin);
-	if ((cl->data.socket = accept(cl->data.fd, &csin, &len)) < 0)
+	if ((cl->data.socket = accept(cl->data.pasv_fd, &csin, &len)) < 0)
 		return ((cl->version == sv_v4) ? ERR_ACCEPT_V4 : ERR_ACCEPT_V6);
-	// cl->data.pid = fork();
-	// if (cl->data.pid < 0)
-	// 	return (ERR_FORK);
-	// if (cl->data.pid == 0)
-	// {
-	// 	errnb = cl->data.function(cl, sv);
-	// 	sv_server_end(sv, 0);
-	// 	exit(errnb);
-	// }
-	ft_strdel(&cl->data.file);
-	close(cl->data.fd);
-	cl->data.fd = -1;
-	close(cl->data.socket);
-	cl->data.socket = -1;
+	ft_close(&cl->data.pasv_fd);
 	return (IS_OK);
 }

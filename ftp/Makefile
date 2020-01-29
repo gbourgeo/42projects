@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/27 19:40:07 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/29 19:24:16 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,6 @@ SER_C	= sv_main.c						\
 		sv_assign_ptr.c					\
 		sv_check_pid.c					\
 		sv_commands.c					\
-		sv_data_accept.c				\
 		sv_get_addr.c					\
 		sv_params.c						\
 		sv_params_1.c					\
@@ -67,12 +66,15 @@ SER_C_D	= $(SER_D)commands.d/
 SER_C	+= sv_cdup.c					\
 		sv_change_working_directory.c	\
 		sv_check_path.c					\
+		sv_connect_to.c					\
 		sv_cwd.c						\
 		sv_dele.c						\
 		sv_hdr.c						\
 		sv_help_print.c					\
 		sv_help.c						\
+		sv_listen_from.c				\
 		sv_mkd.c						\
+		sv_new_pid.c					\
 		sv_nlst.c						\
 		sv_pass.c						\
 		sv_pasv_listen.c				\
@@ -119,7 +121,7 @@ CC		= /usr/bin/gcc
 CFLAGS	= -Wall -Werror -Wextra
 CFLAGS	+= -std=c11 -Wmissing-prototypes -pedantic -pedantic-errors -g3
 
-ifeq ($(LEAKS),)
+ifeq ($(LEAKS),"yes")
 CFLAGS	+= -fsanitize=address -fsanitize=undefined
 LIBS	+= -fsanitize=address -fsanitize=undefined
 endif
@@ -141,7 +143,7 @@ $(SERVEUR): $(OBJ_X) $(OBJ_S)
 
 $(OBJ_C): includes/cl_main.h includes/common.h
 
-$(OBJ_S): includes/sv_main.h includes/common.h
+$(OBJ_S): includes/sv_main.h includes/common.h includes/sv_struct.h
 
 $(OBJ_D)%.o: $(CLI_D)%.c
 	@echo "Compile: $<"
@@ -149,7 +151,7 @@ $(OBJ_D)%.o: $(CLI_D)%.c
 
 $(OBJ_D)%.o: $(SER_D)%.c
 	@echo "Compile: $<"
-	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
+	$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
 
 $(OBJ_D)%.o: $(SER_C_D)%.c
 	@echo "Compile: $<"

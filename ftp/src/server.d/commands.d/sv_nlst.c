@@ -6,36 +6,55 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 17:46:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 19:16:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-// static int 		done(char *arg, t_client *cl)
-// {
-// 	char		**cmds;
-// 	int			i;
-// 	int			errnb;
+static int		fill_command(char **cmd, char **arg, t_client *cl)
+{
+	struct stat		buf;
 
-// 	i = 0;
-// 	if (!(cmds = malloc(sizeof(*cmds) * 3)) || !(cmds[0] = ft_strdup("/bin/ls"))
-// 	|| sv_check_path(&arg, cl) != IS_OK)
-// 		return (ERR_MALLOC);
-// 	else if (access(arg, F_OK) != 0)
-// 		errnb = ERR_INVALID_PARAM;
-// 	else if (dup2(cl->data.socket, STDOUT_FILENO) < 0)
-// 		errnb = ERR_DUP2;
-// 	else
-// 	{
-// 		close(STDERR_FILENO);
-// 		cmds[1] = arg;
-// 		execve(cmds[0], cmds, NULL);
-// 	}
-// 	ft_tabdel(&cmds);
-// 	return (ERR_EXECV);
-// }
+	if (arg[1])
+	{
+		if (sv_check_path(&arg[1], cl) != IS_OK)
+			return (ERR_MALLOC);
+		if (stat(arg[1], &buf) != 0)
+			return (ERR_WRONG_PARAM);
+		cmd[2] = arg[1] + ft_strlen(cl->home);
+	}
+	return (IS_OK);
+}
+
+static int 		sv_nlst_exec(char **arg, t_client *cl)
+{
+	char		**cmd;
+	int			errnb;
+
+	errnb = IS_OK;
+	if (!(cmd = ft_memalloc(sizeof(*cmd) * 4)))
+		return (ERR_MALLOC);
+	if (!(cmd[0] = ft_strdup("/bin/ls")) || !(cmd[1] = ft_strdup("-p")))
+		errnb = ERR_MALLOC;
+	else if ((errnb = fill_command(cmd, arg, cl)) == IS_OK)
+	{
+		ft_puttab(cmd);
+		if (dup2(cl->data.socket, STDOUT_FILENO) < 0)
+			errnb = ERR_DUP2;
+		else
+		{
+			close(STDERR_FILENO);
+			execve(cmd[0], cmd, NULL);
+			errnb = ERR_EXECV;
+		}
+	}
+	ft_strdel(&cmd[0]);
+	ft_strdel(&cmd[1]);
+	ft_strdel(cmd);
+	return (errnb);
+}
 
 /*
 ** NLST
@@ -48,7 +67,6 @@
 
 int				sv_nlst(char **cmds, t_client *cl)
 {
-	char	*path;
 	int		errnb;
 
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
@@ -58,12 +76,10 @@ int				sv_nlst(char **cmds, t_client *cl)
 		return (sv_response(cl, "421 Closing connection"));
 	if (cmds[1] && (!sv_validpathname(cmds[1]) || cmds[2]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
-	if (!cl->data.port || (cl->data.fd <= 0 && cl->data.socket <= 0))
-		return (sv_response(cl, "425 No data connection established"));
-	// else if ((errnb = sv_new_pid(cmds, cl, done)) != IS_OK)
-	// 	errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
-	errnb = IS_OK;
-	ft_strdel(&path);
+	if (!cl->data.port && cl->data.pasv_fd < 0 && cl->data.socket < 0)
+		return (sv_response(cl, "425 Use PORT or PASV first"));
+	if ((errnb = sv_new_pid(cmds, cl, sv_nlst_exec)) != IS_OK)
+		errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
 	return (errnb);
 }
 

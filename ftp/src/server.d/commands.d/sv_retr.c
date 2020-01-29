@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 16:37:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 16:54:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int				sv_retr(char **cmds, t_client *cl)
 		return (errnb);
 	}
 	// Ouverture du canal de données
-	if (cl->data.fd <= 0)
+	if (cl->data.pasv_fd <= 0)
 		return (sv_response(cl, "425 connection not established"));
 	if ((errnb = sv_response(cl, "125 ready for transfert")) == IS_OK
 	// Verification de fichier

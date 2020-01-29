@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/10 19:17:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 19:39:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ const char			*ft_get_error(int errnb)
 		"invalid username/password", "failed to change working directory",
 		"invalid command", "user already registered", "write failed",
 		"users file not found", "get_next_line failed",
-		"A transfert is already in progress", "Unable to open port",
+		"connection failed", "Unable to open port",
 		"DATA header corrupted", "transfert timed out", "lseek failed",
 		"mmap failed", "fstat failed", "not valid file", "no server found",
 		"ncurse: init main win failed", "ncurse: init text box failed",

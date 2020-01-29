@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 22:55:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 16:54:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <sys/select.h>
 #include "sv_main.h"
 
-static int		sv_pasv_success(char *port, t_client *cl)
+static int				sv_pasv_success(char *port, t_client *cl)
 {
 	char	addr[INET6_ADDRSTRLEN];
 	short	nb;
@@ -30,7 +30,7 @@ static int		sv_pasv_success(char *port, t_client *cl)
 			addr[i] = ',';
 		i++;
 	}
-	nb = (short)ft_atoi(port) << 8;
+	nb = (unsigned short)ft_atoi(port) << 8;
 	errnb = sv_response(cl, "227 =%s,%d,%d (%s)",
 	addr, ft_atoi(port) >> 8, nb >> 8, port);
 	if (FT_CHECK(g_serv.options, sv_interactive))
@@ -53,7 +53,7 @@ static unsigned char	sv_random(void)
 	return (c[0] ^ c[1] ^ c[2] ^ c[3]);
 }
 
-static int		sv_pasv_open(t_client *cl)
+static int				sv_pasv_open(t_client *cl)
 {
 	unsigned short	port;
 	double			nport;
@@ -69,9 +69,9 @@ static int		sv_pasv_open(t_client *cl)
 		return (sv_response(cl, "500 Internal error (memory alloc. failed)"));
 	if (!sv_pasv_listen(p, cl))
 		return (sv_response(cl, "530 %s", ft_get_error(ERR_OPEN_PORT)));
-	if (cl->data.fd < FD_SETSIZE)
+	if (cl->data.pasv_fd < FD_SETSIZE)
 		return (sv_pasv_success(p, cl));
-	ft_close(&cl->data.fd);
+	ft_close(&cl->data.pasv_fd);
 	return (sv_response(cl, "530 Internal error (select max fd reached)"));
 }
 
@@ -82,10 +82,10 @@ static int		sv_pasv_open(t_client *cl)
 ** 500, 501, 502, 421, 530
 */
 
-int				sv_pasv(char **cmds, t_client *cl)
+int						sv_pasv(char **cmds, t_client *cl)
 {
 	ft_strdel(&cl->data.port);
-	ft_close(&cl->data.fd);
+	ft_close(&cl->data.pasv_fd);
 	ft_close(&cl->data.socket);
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		return (sv_response(cl, "530 Please login with USER and PASS"));
@@ -103,7 +103,7 @@ int				sv_pasv(char **cmds, t_client *cl)
 ** PASV <CRLF>
 */
 
-int				sv_pasv_help(t_command *cmd, t_client *cl)
+int						sv_pasv_help(t_command *cmd, t_client *cl)
 {
 	static char	*help[] = {
 		"This command requests the server to \"listen\" on a data",

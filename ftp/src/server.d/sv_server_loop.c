@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 18:42:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 17:04:02 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static void		sv_check_clients(t_client *cl, t_server *sv)
 {
 	while (cl)
 	{
-		if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-		|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK
-		|| (cl->data.pid > 0 && (cl->errnb[2] = sv_check_pid(cl)) != IS_OK))
+		if ((cl->data.pid > 0 && (cl->errnb[2] = sv_check_pid(cl)) != IS_OK)
+		|| cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+		|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
 			cl = sv_client_end(cl, sv);
 		// else if (cl->data.fd > 0
 		// && time(NULL) - cl->data.timeout >= TRANSFERT_TIMEOUT)
@@ -49,10 +49,10 @@ static int		sv_init_fd(fd_set *fdr, fd_set *fdw, t_server *sv)
 		FD_SET(cl->fd, fdw);
 		if (cl->fd > max)
 			max = cl->fd;
-		if (cl->data.fd > 0)
-			FD_SET(cl->data.fd, fdr);
-		if (cl->data.fd > max)
-			max = cl->data.fd;
+		if (cl->data.pasv_fd > 0)
+			FD_SET(cl->data.pasv_fd, fdr);
+		if (cl->data.pasv_fd > max)
+			max = cl->data.pasv_fd;
 		cl = cl->next;
 	}
 	return (max);
@@ -77,9 +77,9 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 			cl->errnb[1] = cl->fct_write(cl, sv);
 		if (FD_ISSET(cl->fd, fdr) || FD_ISSET(cl->fd, fdw))
 			ret--;
-		if (cl->data.fd > 0 && FD_ISSET(cl->data.fd, fdr))
+		if (cl->data.pasv_fd > 0 && FD_ISSET(cl->data.pasv_fd, fdr))
 		{
-			cl->errnb[2] = sv_data_accept(cl, sv);
+			cl->errnb[2] = sv_listen_from(cl);
 			ret--;
 		}
 		cl = cl->next;

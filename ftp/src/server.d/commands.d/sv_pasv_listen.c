@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 01:09:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/24 12:59:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 16:53:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,25 +57,25 @@ int				sv_pasv_listen(char *port, t_client *cl)
 	struct addrinfo	*results;
 	struct addrinfo	*p;
 
-	cl->data.fd = -1;
+	cl->data.pasv_fd = -1;
 	if (!init_addrinfo(&results, port))
 		return (0);
 	p = results;
-	while (p && cl->data.fd < 0)
+	while (p && cl->data.pasv_fd < 0)
 	{
 		if (cl->version == sv_v4 && p->ai_family == AF_INET)
-			cl->data.fd = open_findsocket(p, cl->version);
+			cl->data.pasv_fd = open_findsocket(p, cl->version);
 		else if (cl->version == sv_v6 && p->ai_family == AF_INET6)
-			cl->data.fd = open_findsocket(p, cl->version);
+			cl->data.pasv_fd = open_findsocket(p, cl->version);
 		p = p->ai_next;
 	}
 	freeaddrinfo(results);
-	if (cl->data.fd < 0)
+	if (cl->data.pasv_fd < 0)
 		return (0);
-	if (listen(cl->data.fd, 1) < 0)
+	if (listen(cl->data.pasv_fd, 1) < 0)
 	{
-		close(cl->data.fd);
-		cl->data.fd = -1;
+		close(cl->data.pasv_fd);
+		cl->data.pasv_fd = -1;
 		return (0);
 	}
 	return (1);

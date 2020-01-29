@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 22:27:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 18:22:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 16:52:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 void			sv_free_data(t_data *data)
 {
 	ft_strdel(&data->port);
-	ft_close(&data->fd);
+	ft_close(&data->pasv_fd);
 	ft_close(&data->socket);
 	ft_strdel(&data->file);
 }

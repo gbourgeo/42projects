@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 21:02:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 16:48:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ typedef struct		s_data
 	int				byte_size;
 	char			address[INET6_ADDRSTRLEN];
 	char			*port;
-	int				fd;
+	int				pasv_fd;
 	int				socket;
 	int				(*function)();
 	pid_t			pid;
@@ -262,7 +262,6 @@ t_client			*sv_client_timeout(t_client *cl);
 int					sv_check_path(char **path, t_client *cl);
 char				*sv_recreate_path(char *path);
 int					sv_change_working_directory(char *home, char *pwd);
-int					sv_data_accept(t_client *cl, t_server *sv);
 
 /*
 ** Errors handler
@@ -363,6 +362,8 @@ int					sv_print_help(t_client *cl, t_command *cmd, char *args,
 
 int					sv_validpathname(const char *s);
 int					sv_validnumber(char **s, int ssize);
+int					sv_connect_to(int *fd, t_client *cl);
+int					sv_listen_from(t_client *cl);
 int					sv_response(t_client *cl, const char *msg, ...);
 
 int					sv_send_info(char *file, char *path, int fd, t_server *sv);

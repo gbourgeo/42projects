@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/22 23:11:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 19:39:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@
 
 # define DATA_BUFF_SIZE		2048
 
-# define ERR_OUTPUT	"\x0f\xff>ERROR\n"
-# define OK_OUTPUT	"\x0f\x01>SUCCESS\n"
+# define ERR_OUTPUT			"\x0f\xff>ERROR\n"
+# define OK_OUTPUT			"\x0f\x01>SUCCESS\n"
 
 enum
 {
@@ -91,7 +91,7 @@ enum
 	ERR_WRITE = 30,
 	ERR_USER_FILE,
 	ERR_GETNEXTLINE,
-	ERR_TRANSFERT,
+	ERR_CONNECT_TO,
 	ERR_OPEN_PORT,
 	ERR_DATA_HDR = 35,
 	ERR_TIMEOUT,

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 18:42:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 18:01:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,18 @@
 
 static int		check_pid_value(const char *name, int status, t_client *cl)
 {
+	cl->data.pid = -1;
+	ft_close(&cl->data.pasv_fd);
+	ft_close(&cl->data.socket);
 	if (WIFEXITED(status))
 	{
 		status = WEXITSTATUS(status);
 		if (status)
-			return (sv_response(cl, " %s:%s", name, ft_get_error(status)));
+			return (sv_response(cl, "512 Internal error (%s)", ft_get_error(status)));
 		if (name)
-			return (sv_response(cl, "%s Successfully %s",
+			return (sv_response(cl, "%s %s OK",
 			(!ft_strcmp(name, "LIST")) ? "212" : "250", name));
-		return (sv_response(cl, "200 Command complete"));
+		return (sv_response(cl, "200 Command OK"));
 	}
 	else if (WIFSIGNALED(status))
 	{

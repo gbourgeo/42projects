@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 18:30:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 22:55:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 19:40:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ static void		copy_address(char *s, char **addr)
 	i = 0;
 	*s = 0;
 	if (addr)
-		while (addr[i])
+		while (addr[i + 2])
 		{
 			ft_strcat(s, addr[i++]);
-			if (addr[i])
+			if (addr[i + 2])
 				ft_strcat(s, ".");
 		}
 }
@@ -36,13 +36,13 @@ static int		sv_port_check(char *cmd, t_client *cl, char ***info, int *err)
 	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
 		*err = sv_response(cl, "421 Closing connection");
 	else if (!cmd || !cmd[0])
-		*err = sv_response(cl, "501 Syntax error %s", cmd);
+		*err = sv_response(cl, "500 Syntax error");
 	else if (!(*info = ft_strsplit(cmd, ',')))
 		*err = sv_response(cl, "500 Internal error (memory alloc. failed)");
 	else if (ft_tablen(*info) != 6 || !sv_validnumber(*info, 6))
 	{
 		ft_tabdel(info);
-		*err = sv_response(cl, "501 Syntax error %s", cmd);
+		*err = sv_response(cl, "500 Syntax error");
 	}
 	else
 		return (1);
@@ -62,13 +62,15 @@ int				sv_port(char **cmds, t_client *cl)
 	int				errnb;
 
 	ft_strdel(&cl->data.port);
-	ft_close(&cl->data.fd);
+	ft_close(&cl->data.pasv_fd);
 	ft_close(&cl->data.socket);
 	if (!sv_port_check(*(cmds + 1), cl, &info, &errnb))
 		return (errnb);
 	copy_address(cl->data.address, info);
 	port = (ft_atoi(info[4]) << 8) + (unsigned char)ft_atoi(info[5]);
 	ft_tabdel(&info);
+	if (port < 1024 || port > 65536)
+		return (sv_response(cl, "500 Syntax error"));
 	if (!(cl->data.port = ft_itoa(port)))
 		return (sv_response(cl, "500 Internal error (memory alloc. failed)"));
 	return (sv_response(cl, "200 Port changed to %s", cl->data.port));

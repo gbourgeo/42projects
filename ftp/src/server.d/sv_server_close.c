@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 17:13:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/06 18:13:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/29 19:50:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void		send_err(int errnb, t_client *cl, t_server *sv)
 	int			len;
 
 	error = ft_get_error(errnb);
-	len = ft_strlen(sv->info.progname) + ft_strlen(error) + 3;
+	len = ft_strlen(sv->info.progname) + ft_strlen(error) + 4;
 	if (!(msg = malloc(len)))
 		return ;
 	ft_strcpy(msg, sv->info.progname);
