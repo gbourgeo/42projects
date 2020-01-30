@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_commands.c                                      :+:      :+:    :+:   */
+/*   ft_ringbuffcpy.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/30 14:14:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 14:21:51 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/01/30 13:50:02 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/01/30 14:35:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cl_main.h"
+#include "common.h"
 
-t_command				*cl_commands(int getsize)
+char			*ft_ringbuffcpy(char *buff, int size, t_buff *ring)
 {
-	static t_command	cmd[] = {
-		{ "?", cl_help },
-		{ "cd", cl_cd },
-		{ "ls", cl_ls },
-		{ "rm", cl_rm },
-		{ "mkd", cl_mkd },
-		{ "exit", cl_quit },
-		{ "get", cl_get },
-		{ "put", cl_put },
-		{ "pwd", cl_pwd },
-	};
+	int			i;
 
-	if (getsize)
-		return (long *)(sizeof(cmd) / sizeof(cmd[0]));
-	return (cmd);
+	i = 0;
+	while (ring->head != ring->tail && i < size)
+	{
+		buff[i++] = *ring->head++;
+		if (ring->head >= ring->buff + CMD_BUFF_SIZE)
+			ring->head = ring->buff;
+	}
+	if (++ring->head >= ring->buff + CMD_BUFF_SIZE)
+		ring->head = ring->buff;
+	buff[i] = '\0';
+	return (buff);
 }

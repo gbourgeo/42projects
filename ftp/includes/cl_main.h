@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/10 19:19:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 14:59:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ typedef struct		s_client
 struct s_client		client;
 
 /*
-** Client Options structure
+** Client Binary Options Structure
 */
 
 typedef struct		s_opt
@@ -118,6 +118,16 @@ typedef struct		s_param
 	size_t			size;
 	int				i;
 }					t_param;
+
+/*
+** Client Commands Structtre
+*/
+
+typedef struct		s_command
+{
+	const char		*name;
+	int				(*func)();
+}					t_command;
 
 /*
 ** Client functions
@@ -148,6 +158,10 @@ int					cl_server_send(t_client *cl);
 
 void				cl_prompt(t_client *cl);
 
+int					cl_client_commands(t_client *cl);
+int					cl_client_send(char *buf, t_client *cl);
+t_command			*cl_commands(int getsize);
+
 /*
 ** commands
 */
@@ -165,7 +179,7 @@ int					cl_rmdir(char **cmds, t_client *cl);
 int					cl_unlink(char **cmds, t_client *cl);
 int					cl_mget_mput(char **cmds, t_client *cl);
 
-int					cl_commands(char **args, t_client *cl);
+
 void				cl_change_pwds(char *pwd, t_client *cl);
 char				*cl_getcwd(char *dir, char *lpwd);
 int					cl_check_server(int ffd, t_client *cl, char *f);

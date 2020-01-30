@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 18:51:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 18:52:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 14:58:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int			cl_server_send(t_client *cl)
+int				cl_server_send(t_client *cl)
 {
 	(void)cl;
 	return (IS_OK);

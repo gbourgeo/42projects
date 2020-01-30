@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:56:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 14:03:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ static int		sv_client_commands(char **cmd, t_client *cl)
 	commands = sv_commands(0);
 	i = 0;
 	errnb = IS_OK;
-	if (!cmd[0] || !cmd[0][0])
-		return (IS_OK);
 	while (i < (long)sv_commands(1))
 		if (!ftp_strcmp(commands[i].name, cmd[0]))
 		{
@@ -35,41 +33,22 @@ static int		sv_client_commands(char **cmd, t_client *cl)
 		}
 		else
 			i++;
-	return (sv_response(cl, "500 \"%s\" unknown command", cmd[0]));
+	return (sv_response(cl, "500 Unknown command"));
 }
 
-static void		print_info(char *buff, int size, t_client *cl, t_server *sv)
+static int		sv_client_precommands(t_client *cl)
 {
-	if (!FT_CHECK(sv->options, sv_interactive))
-		return ;
-	printf("Client "FTP_YELLOW"%d"FTP_RESET" :\"", cl->fd);
-	fflush(stdout);
-	write(1, buff, size);
-	printf("\"\n");
-}
-
-static int		sv_buffcpy(t_client *cl, t_server *sv)
-{
-	char		buff[CMD_BUFF_SIZE + 1];
 	char		**cmd;
-	int			i;
+	int			errnb;
 
-	i = 0;
-	while (cl->rd.head != cl->rd.tail)
-	{
-		buff[i++] = *cl->rd.head++;
-		if (cl->rd.head >= cl->rd.buff + CMD_BUFF_SIZE)
-			cl->rd.head = cl->rd.buff;
-	}
-	if (++cl->rd.head >= cl->rd.buff + CMD_BUFF_SIZE)
-		cl->rd.head = cl->rd.buff;
-	buff[i] = '\0';
-	print_info(buff, i, cl, sv);
-	if ((cmd = ft_split_whitespaces(buff)) == NULL)
-		return (ERR_MALLOC);
-	i = sv_client_commands(cmd, cl);
+	if (!(cmd = ft_ringbuffcpy(&cl->rd)))
+		return (sv_response(cl, "500 Internal error (memory alloc. failed)"));
+	if (!cmd[0] || !cmd[0][0])
+		errnb = IS_OK;
+	else
+		errnb = sv_client_commands(cmd, cl);
 	ft_tabdel(&cmd);
-	return (i);
+	return (errnb);
 }
 
 int				sv_client_recv(t_client *cl, t_server *sv)
@@ -77,6 +56,7 @@ int				sv_client_recv(t_client *cl, t_server *sv)
 	int		ret;
 	int		errnb;
 
+	(void)sv;
 	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (ret <= 0)
 		return (sv_recv_error(ret));
@@ -84,7 +64,7 @@ int				sv_client_recv(t_client *cl, t_server *sv)
 	{
 		if (*cl->rd.tail == '\n')
 		{
-			if ((errnb = sv_buffcpy(cl, sv)) != IS_OK)
+			if ((errnb = sv_client_precommands(cl)) != IS_OK)
 				return (errnb);
 		}
 		if (++cl->rd.tail >= cl->rd.buff + CMD_BUFF_SIZE)

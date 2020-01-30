@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/10 18:40:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 14:13:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ int					cl_stdin_read(t_client *cl)
 			if (cl->rd.len)
 			{
 				write(STDIN_FILENO, "\n", 1);
+				cl_client_commands(cl);
 				write(STDIN_FILENO, cl->rd.buff, cl->rd.len);
 				write(STDIN_FILENO, "\n", 1);
 				cl_prompt(cl);
