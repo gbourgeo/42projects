@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 14:13:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 18:26:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,13 @@ int					cl_stdin_read(t_client *cl)
 	int			ret;
 	char		buff[12];
 	int			i;
+	int			errnb;
 
 	ret = read(STDIN_FILENO, buff, sizeof(buff));
 	if (ret <= 0)
 		return (ERR_READ);
 	i = 0;
+	errnb = IS_OK;
 	while (i < ret)
 	{
 		if (*buff == 3) // CTRL+C
@@ -59,9 +61,9 @@ int					cl_stdin_read(t_client *cl)
 			if (cl->rd.len)
 			{
 				write(STDIN_FILENO, "\n", 1);
-				cl_client_commands(cl);
-				write(STDIN_FILENO, cl->rd.buff, cl->rd.len);
-				write(STDIN_FILENO, "\n", 1);
+				errnb = cl_client_commands(cl);
+				// write(STDIN_FILENO, cl->rd.buff, cl->rd.len);
+				// write(STDIN_FILENO, "\n", 1);
 				cl_prompt(cl);
 				cl->rd.len = 0;
 			}
@@ -82,5 +84,5 @@ int					cl_stdin_read(t_client *cl)
 		}
 		i++;
 	}
-	return (IS_OK);
+	return (errnb);
 }

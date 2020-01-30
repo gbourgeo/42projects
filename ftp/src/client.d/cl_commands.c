@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 14:14:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 14:21:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 18:11:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,16 @@ t_command				*cl_commands(int getsize)
 	static t_command	cmd[] = {
 		{ "?", cl_help },
 		{ "cd", cl_cd },
-		{ "ls", cl_ls },
-		{ "rm", cl_rm },
-		{ "mkd", cl_mkd },
-		{ "exit", cl_quit },
+		{ "quit", cl_quit },
 		{ "get", cl_get },
+		{ "ls", cl_ls },
+		{ "mkd", cl_mkd },
 		{ "put", cl_put },
 		{ "pwd", cl_pwd },
+		{ "rm", cl_rm },
 	};
 
 	if (getsize)
-		return (long *)(sizeof(cmd) / sizeof(cmd[0]));
+		return (t_command *)(sizeof(cmd) / sizeof(cmd[0]));
 	return (cmd);
 }

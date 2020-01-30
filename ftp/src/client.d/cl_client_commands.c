@@ -6,16 +6,18 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 14:59:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 18:43:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-static int		cl_client_getcmd(char *buf, int size, char **cmd, t_client *cl)
+static int		cl_client_getcmd(char *buf, char **cmd, t_client *cl)
 {
 	t_command	*cmds;
 	long		i;
+	char		**table;
+	int			errnb;
 
 	cmds = cl_commands(0);
 	i = 0;
@@ -23,12 +25,15 @@ static int		cl_client_getcmd(char *buf, int size, char **cmd, t_client *cl)
 	{
 		if (!ftp_strcmp(cmds[i].name, cmd[0]))
 		{
-			cmds[i].func(buf, size, cmd);
-			break ;
+			if (!(table = ft_split_whitespaces(buf)))
+				return (ERR_MALLOC);
+			errnb = cmds[i].func(table, cl);
+			ft_tabdel(&table);
+			return (errnb);
 		}
 		i++;
 	}
-	return (cl_client_send(buf, cl));
+	return (cl_server_send(buf, ft_strlen(buf), cl));
 }
 
 int				cl_client_commands(t_client *cl)
@@ -43,7 +48,7 @@ int				cl_client_commands(t_client *cl)
 	if (!cmd[0] || !cmd[0][0])
 		errnb = IS_OK;
 	else
-		errnb = cl_client_getcmd(buff, sizeof(buff), cmd, cl);
+		errnb = cl_client_getcmd(buff, cmd, cl);
 	ft_tabdel(&cmd);
 	return (errnb);
 }

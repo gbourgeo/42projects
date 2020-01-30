@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 14:03:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/30 18:24:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,12 @@ static int		sv_client_commands(char **cmd, t_client *cl)
 
 static int		sv_client_precommands(t_client *cl)
 {
+	char		buff[CMD_BUFF_SIZE + 1];
 	char		**cmd;
 	int			errnb;
 
-	if (!(cmd = ft_ringbuffcpy(&cl->rd)))
+	ft_ringbuffcpy(buff, sizeof(buff), &cl->rd);
+	if (!(cmd = ft_split_whitespaces(buff)))
 		return (sv_response(cl, "500 Internal error (memory alloc. failed)"));
 	if (!cmd[0] || !cmd[0][0])
 		errnb = IS_OK;

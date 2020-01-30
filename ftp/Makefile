@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/30 14:22:43 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/01/30 18:24:51 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,9 @@ CLI_C	= cl_main.c						\
 		cl_client_commands.c			\
 		cl_client_end.c					\
 		cl_client_loop.c				\
-		cl_client_signals.c				\
 		cl_client_read.c				\
+		cl_client_signals.c				\
+		cl_client_send.c				\
 		cl_commands.c					\
 		cl_get_addrinfo.c				\
 		cl_ncurses.c					\
@@ -28,6 +29,17 @@ CLI_C	= cl_main.c						\
 		cl_server_recv.c				\
 		cl_server_send.c				\
 		cl_terminal_init.c				\
+
+CLI_C_D = $(CLI_D)commands.d/
+CLI_C += cl_cd.c						\
+		cl_get.c						\
+		cl_help.c						\
+		cl_ls.c							\
+		cl_mkd.c						\
+		cl_put.c						\
+		cl_pwd.c						\
+		cl_quit.c						\
+		cl_rm.c							\
 
 SERVEUR	= server
 SER_D	= src/server.d/
@@ -152,9 +164,13 @@ $(OBJ_D)%.o: $(CLI_D)%.c
 	@echo "Compile: $<"
 	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
 
+$(OBJ_D)%.o: $(CLI_C_D)%.c
+	@echo "Compile: $<"
+	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
+
 $(OBJ_D)%.o: $(SER_D)%.c
 	@echo "Compile: $<"
-	$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
+	@$(CC) $(CFLAGS) -o $@ -c $< $(HDRS)
 
 $(OBJ_D)%.o: $(SER_C_D)%.c
 	@echo "Compile: $<"

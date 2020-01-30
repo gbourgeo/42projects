@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 21:04:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 19:53:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/01/28 22:59:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,11 @@
 
 int				sv_pwd(char **cmds, t_client *cl)
 {
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 Closing connection"));
 	if (cmds[1])
-		return (sv_response(cl, "501 %s", ft_get_error(ERR_WRONG_PARAM)));
+		return (sv_response(cl, "500 Syntax error"));
 	return (sv_response(cl, "257 \"%s\" is the current directory", cl->pwd));
 }
 
