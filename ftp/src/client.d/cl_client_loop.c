@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 04:58:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 15:28:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,6 @@ int					cl_client_loop(t_client *cl)
 	timeout.tv_usec = 0;
 	while (check_errors(cl) == IS_OK)
 	{
-		wmove(cl->ncu.textwin, 0, 0);
 		wrefresh(cl->ncu.textwin);
 		max = init_fdset(&fds[0], &fds[1], cl);
 		ret = select(max + 1, &fds[0], &fds[1], NULL, &timeout);

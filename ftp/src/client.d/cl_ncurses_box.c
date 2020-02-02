@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:28:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 21:43:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 16:50:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int			create_c_text(t_client *cl)
 	cl->ncu.textwin = subwin(cl->ncu.textbox, y - 2, x - 2, LINES - y + 1, 1);
 	if (!cl->ncu.textwin)
 		return (ERR_NCURSE_CHATWIN);
+	keypad(cl->ncu.textwin, TRUE);
 	wmove(cl->ncu.textwin, 0, 0);
 	wrefresh(cl->ncu.textwin);
 	return (IS_OK);

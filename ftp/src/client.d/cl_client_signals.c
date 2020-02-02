@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 06:26:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 04:24:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 15:45:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ static void		cl_sig_hdlr(int sig)
 	cl = &g_cl;
 	wattron(cl->ncu.chatwin, COLOR_PAIR(CL_RED));
 	wprintw(cl->ncu.chatwin, "\n********************");
-	wattron(cl->ncu.chatwin, COLOR_PAIR(CL_WHITE));
+	wattron(cl->ncu.chatwin, COLOR_PAIR(CLIENT_TEXT_COLOR));
 	wprintw(cl->ncu.chatwin, " Signal ");
 	wattron(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
 	wprintw(cl->ncu.chatwin, "%s", get_signal_name(sig));
-	wattron(cl->ncu.chatwin, COLOR_PAIR(CL_WHITE));
+	wattron(cl->ncu.chatwin, COLOR_PAIR(CLIENT_TEXT_COLOR));
 	wprintw(cl->ncu.chatwin, " received ");
 	wattron(cl->ncu.chatwin, COLOR_PAIR(CL_RED));
 	wprintw(cl->ncu.chatwin, "********************\n");

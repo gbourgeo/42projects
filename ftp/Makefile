@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/02 02:28:17 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/02 15:19:06 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,12 +16,12 @@ CLI_C	= cl_main.c						\
 		cl_client_commands.c			\
 		cl_client_end.c					\
 		cl_client_loop.c				\
-		cl_client_read.c				\
 		cl_client_signals.c				\
 		cl_commands.c					\
 		cl_get_addrinfo.c				\
 		cl_ncurses.c					\
 		cl_ncurses_box.c				\
+		cl_ncurses_read.c				\
 		cl_ncurses_write.c				\
 		cl_params_get.c					\
 		cl_params.c						\

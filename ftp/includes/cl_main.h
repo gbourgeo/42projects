@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 04:41:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 19:05:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ enum
 	CLIENT_DFLT_COLOR,
 	CLIENT_TITLE_COLOR,
 	CLIENT_TEXT_COLOR,
-	CL_WHITE,
 	CL_RED,
 	CL_GREEN,
 	CL_BLUE,
@@ -99,6 +98,7 @@ typedef struct		s_client
 	int				success;
 	t_buff			rd;
 	t_buff			wr;
+	size_t			pos;
 }					t_client;
 
 struct s_client		g_cl;
@@ -124,7 +124,17 @@ typedef struct		s_param
 }					t_param;
 
 /*
-** Client Commands Structtre
+** Ncurses getch
+*/
+
+typedef struct		s_read
+{
+	int				value;
+	int				(*hdlr)(t_client *);
+}					t_read;
+
+/*
+** Client Commands Structure
 */
 
 typedef struct		s_command
@@ -164,7 +174,7 @@ int					cl_client_commands(t_client *cl);
 t_command			*cl_commands(int getsize);
 
 /*
-** commands
+** Commands
 */
 
 int					cl_help(char **cmds, t_client *cl);

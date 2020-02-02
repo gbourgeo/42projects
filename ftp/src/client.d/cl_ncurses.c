@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:11:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 04:17:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 16:51:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,11 @@ static void		cl_resize_window(int sig)
 static void		cl_init_pairs(void)
 {
 	init_color(CLIENT_DFLT_BCKGD, 100, 100, 100);
-	init_color(CLIENT_COLOR_RED, 50, 10, 10);
+	init_color(CLIENT_COLOR_RED, 100, 0, 0);
 	init_pair(CLIENT_DFLT_COLOR, COLOR_BLACK, CLIENT_DFLT_BCKGD);
 	init_pair(CLIENT_TITLE_COLOR, COLOR_YELLOW, -1);
 	init_pair(CLIENT_TEXT_COLOR, COLOR_WHITE, -1);
-	init_pair(CL_WHITE, COLOR_WHITE, -1);
-	init_pair(CL_RED, CLIENT_COLOR_RED, -1);
+	init_pair(CL_RED, COLOR_RED, -1);
 	init_pair(CL_GREEN, COLOR_GREEN, -1);
 	init_pair(CL_BLUE, COLOR_BLUE, -1);
 }
@@ -54,7 +53,7 @@ int				cl_ncurses_init(t_client *cl)
 		return (ERR_NCURSE_MAIN);
 	noecho();
 	cbreak();
-	keypad(cl->ncu.main, TRUE);
+	// raw(); // Desactivate signals
 	start_color();
 	use_default_colors();
 	clear();
