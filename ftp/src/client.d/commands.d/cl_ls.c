@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 18:40:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/01 21:52:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int				cl_ls(char **cmds, t_client *cl)
 {
-	
+	(void)cmds;
+	(void)cl;
 	return (IS_OK);
 }

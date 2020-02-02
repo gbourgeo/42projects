@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:17:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/10 19:18:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 03:13:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include "common.h"
 
-void		print_signal_info(int sig, int interactive)
+const char	*get_signal_name(int sig)
 {
 	static char	*signame[] = {
 		NULL, "SIGHUP", "SIGINT", "SIGQUIT", "SIGILL", "SIGTRAP", "SIGABRT",
@@ -33,14 +33,18 @@ void		print_signal_info(int sig, int interactive)
 		"SIGRTMAX-4", "SIGRTMAX-3", "SIGRTMAX-2", "SIGRTMAX-1", "SIGRTMAX",
 	};
 
+	if (sig > 0 && sig < (int)(sizeof(signame) / sizeof(signame[0])))
+		return (signame[sig]);
+	return ("UNKNOWN");
+}
+
+void		print_signal_info(int sig, int interactive)
+{
 	if (!interactive)
 		return ;
 	dprintf(STDERR_FILENO, "\n"FTP_RED"********************"FTP_RESET);
 	dprintf(STDERR_FILENO, " Signal "FTP_BOLD""FTP_BLUE);
-	if (sig > 0 && sig < (int)(sizeof(signame) / sizeof(signame[0])))
-		dprintf(STDERR_FILENO, "%s", signame[sig]);
-	else
-		dprintf(STDERR_FILENO, "%d", sig);
+	dprintf(STDERR_FILENO, "%s", get_signal_name(sig));
 	dprintf(STDERR_FILENO, FTP_RESET" received ");
 	dprintf(STDERR_FILENO, FTP_RED"********************"FTP_RESET"\n");
 }

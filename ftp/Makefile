@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/01/30 18:24:51 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/02 02:28:17 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,17 +18,17 @@ CLI_C	= cl_main.c						\
 		cl_client_loop.c				\
 		cl_client_read.c				\
 		cl_client_signals.c				\
-		cl_client_send.c				\
 		cl_commands.c					\
 		cl_get_addrinfo.c				\
 		cl_ncurses.c					\
 		cl_ncurses_box.c				\
+		cl_ncurses_write.c				\
 		cl_params_get.c					\
 		cl_params.c						\
 		cl_params_1.c					\
 		cl_server_recv.c				\
 		cl_server_send.c				\
-		cl_terminal_init.c				\
+		cl_server_write.c				\
 
 CLI_C_D = $(CLI_D)commands.d/
 CLI_C += cl_cd.c						\
@@ -136,7 +136,8 @@ CC		= /usr/bin/gcc
 CFLAGS	= -Wall -Werror -Wextra
 CFLAGS	+= -std=c11 -Wmissing-prototypes -pedantic -pedantic-errors -g3
 
-ifeq ($(LEAKS),"yes")
+ifeq ($(LEAKS),1)
+$(echo "Sanitizing")
 CFLAGS	+= -fsanitize=address -fsanitize=undefined
 LIBS	+= -fsanitize=address -fsanitize=undefined
 endif

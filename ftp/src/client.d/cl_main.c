@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 14:53:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 02:58:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,16 +62,13 @@ int					main(int ac, char **av, char **environ)
 	int			errnb;
 
 	(void)ac;
-	cl = &client;
+	cl = &g_cl;
 	errno = 0;
 	if ((errnb = ft_init(cl, sizeof(*cl), environ, av[0])) == IS_OK)
 		if ((errnb = cl_params_get(av, cl)) == IS_OK)
 			if ((errnb = cl_client_signals(cl)) == IS_OK)
-				if ((errnb = cl_terminal_init(cl)) == IS_OK)
-					if ((errnb = cl_get_addrinfo(cl)) == IS_OK)
-						errnb = cl_client_loop(cl);
-	if (FT_CHECK(cl->options, cl_interactive) && errnb != IS_OK)
-		ft_putendl(FTP_RED"ERROR"FTP_RESET);
+				if ((errnb = cl_ncurses_init(cl)) == IS_OK)
+					errnb = cl_client_loop(cl);
 	cl_client_end(cl);
 	if (errnb != IS_OK)
 		if (ft_error(errnb, &cl->info) == 2)

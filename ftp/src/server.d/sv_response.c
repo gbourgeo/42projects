@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/20 21:32:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:57:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 04:51:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int				sv_response(t_client *cl, const char *msg, ...)
 	}
 	if (errnb == IS_OK
 	&& (errnb = sv_client_nwrite(msg + start, end - start, cl)) == IS_OK)
-		errnb = sv_client_write("\r\n", cl);
+		errnb = sv_client_write("\n", cl);
 	va_end(ap);
 	return (errnb);
 }

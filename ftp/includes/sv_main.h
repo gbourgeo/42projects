@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:48:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/01 20:46:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,6 @@
 # include "libft.h"
 # include "common.h"
 
-# ifndef MSG_NOSIGNAL
-#  define MSG_NOSIGNAL 0
-# endif
 # ifndef WCOREDUMP
 #  define HAS_WCOREDUMP 0
 # else

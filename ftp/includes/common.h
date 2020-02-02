@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 14:35:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 03:17:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 
 # ifdef __linux__
 #  define NSIG _NSIG
+# endif
+# ifndef MSG_NOSIGNAL
+#  define MSG_NOSIGNAL 0
 # endif
 
 # define FTP_RESET		"\x1B[0m"
@@ -52,9 +55,6 @@
 */
 
 # define DATA_BUFF_SIZE		2048
-
-# define ERR_OUTPUT			"\x0f\xff>ERROR\n"
-# define OK_OUTPUT			"\x0f\x01>SUCCESS\n"
 
 enum
 {
@@ -142,6 +142,7 @@ typedef struct		s_buff
 	size_t			len;
 }					t_buff;
 
+const char			*get_signal_name(int sig);
 void				print_signal_info(int sig, int interactive);
 int					ft_check_option(int option, int value);
 

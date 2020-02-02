@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:59:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/08 14:45:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 02:34:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,4 @@ int				cl_param_h(char **av, int *i, t_client *cl)
 	(void)i;
 	(void)cl;
 	return (ERR_HELP);
-}
-
-int				cl_param_n(char **av, int *i, t_client *cl)
-{
-	(void)av;
-	(void)i;
-	cl->options |= (1 << cl_ncurses);
-	return (IS_OK);
 }

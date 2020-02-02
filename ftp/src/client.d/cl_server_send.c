@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 18:51:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 18:47:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 00:26:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,26 @@ static int	cl_send_error(int errnb)
 /*
 ** Function to send commands to the Server.
 */
-
-int			cl_server_send(t_client *cl)
+#include <unistd.h>
+int			cl_server_send(int fd, t_buff *ring)
 {
+	int		ret;
+
+	if (ring->len == 0)
+		return (IS_OK);
+printf("Sending :\n");
+write(1, ring->head, (ring->head < ring->tail) ? ring->tail - ring->head : ring->buff + sizeof(ring->buff) - ring->head);
+	if (ring->head < ring->tail)
+		ret = send(fd, ring->head, ring->tail - ring->head,
+		MSG_DONTWAIT | MSG_NOSIGNAL);
+	else
+		ret = send(fd, ring->head,
+		ring->buff + sizeof(ring->buff) - ring->head,
+		MSG_DONTWAIT | MSG_NOSIGNAL);
+	if (ret <= 0)
+		return (cl_send_error(ret));
+	if ((ring->head += ret) >= ring->buff + sizeof(ring->buff))
+		ring->head = ring->buff;
+	ring->len -= ret;
 	return (IS_OK);
 }

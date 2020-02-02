@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 18:52:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 04:41:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@
 enum
 {
 	cl_interactive = 0,
-	cl_ncurses,
 };
 
 /*
@@ -44,9 +43,14 @@ enum
 enum
 {
 	CLIENT_DFLT_BCKGD = 1,
+	CLIENT_COLOR_RED,
 	CLIENT_DFLT_COLOR,
 	CLIENT_TITLE_COLOR,
 	CLIENT_TEXT_COLOR,
+	CL_WHITE,
+	CL_RED,
+	CL_GREEN,
+	CL_BLUE,
 };
 
 typedef struct		s_ncu
@@ -60,12 +64,6 @@ typedef struct		s_ncu
 	WINDOW			*textwin;
 }					t_ncu;
 
-typedef struct		s_term
-{
-	int				fd;
-	struct termios	info;
-}					t_term;
-
 /*
 ** Server related structure
 */
@@ -77,6 +75,7 @@ typedef struct		s_server
 	int				get_data;
 	int				fd_file;
 	char			*pwd;
+	t_buff			rd;
 	t_buff			wr;
 }					t_server;
 
@@ -93,16 +92,16 @@ typedef struct		s_client
 	int				options;
 	char			*port;
 	char			*addr;
-	t_term			term;
 	t_ncu			ncu;
 	t_server		server;
 	int				errnb[4];
 	char			*pwd;
 	int				success;
 	t_buff			rd;
+	t_buff			wr;
 }					t_client;
 
-struct s_client		client;
+struct s_client		g_cl;
 
 /*
 ** Client Binary Options Structure
@@ -146,7 +145,6 @@ int					cl_param_h(char **av, int *i, t_client *cl);
 int					cl_param_n(char **av, int *i, t_client *cl);
 void				cl_client_end(t_client *cl);
 int					cl_get_addrinfo(t_client *cl);
-int					cl_terminal_init(t_client *cl);
 int					cl_pchar(int nb);
 char				*cl_tgetstr(char *t);
 
@@ -157,12 +155,10 @@ int					create_c_text(t_client *cl);
 void				cl_ncurses_end(t_client *cl);
 int					cl_client_loop(t_client *cl);
 int					cl_ncurses_read(t_client *cl);
-int					cl_stdin_read(t_client *cl);
-int					cl_server_recv(t_client *cl);
-int					cl_server_send(t_client *cl);
-int					cl_server_write(char *buf, int size, t_client *cl);
-
-void				cl_prompt(t_client *cl);
+int					cl_ncurses_write(t_buff *ring, t_client *cl);
+int					cl_server_recv(t_buff *ring, t_server *sv, t_client *cl);
+int					cl_server_send(int fd, t_buff *ring);
+int					cl_server_write(const char *buf, int size, t_server *sv);
 
 int					cl_client_commands(t_client *cl);
 t_command			*cl_commands(int getsize);

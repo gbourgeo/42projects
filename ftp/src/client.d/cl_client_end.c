@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 18:40:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 02:29:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,6 @@ void			cl_ncurses_end(t_client *cl)
 	ft_memset(&cl->ncu, 0, sizeof(cl->ncu));
 }
 
-static void		cl_term_end(t_client *cl)
-{
-	if (cl->term.fd <= 0)
-		return ;
-	tputs(cl_tgetstr("ei"), 1, cl_pchar);
-	tcsetattr(cl->term.fd, TCSANOW, &cl->term.info);
-	close(cl->term.fd);
-}
-
 void			cl_client_end(t_client *cl)
 {
 	int		i;
@@ -60,8 +51,5 @@ void			cl_client_end(t_client *cl)
 	ft_close(&cl->server.fd_file);
 	ft_strdel(&cl->server.pwd);
 	ft_strdel(&cl->pwd);
-	if (FT_CHECK(cl->options, cl_ncurses))
-		cl_ncurses_end(cl);
-	else
-		cl_term_end(cl);
+	cl_ncurses_end(cl);
 }

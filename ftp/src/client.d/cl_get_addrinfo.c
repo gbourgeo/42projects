@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 23:31:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/11 14:55:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/02 04:55:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <netdb.h>
 #include "cl_main.h"
 
-static int		init_addrinfo(struct addrinfo **res, t_client *cl)
+static int		init_addrinfo(int *fd, struct addrinfo **res, t_client *cl)
 {
 	struct addrinfo	hints;
 
@@ -29,7 +29,7 @@ static int		init_addrinfo(struct addrinfo **res, t_client *cl)
 	hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(cl->addr, cl->port, &hints, res))
 		return (ERR_GETADDR);
-	cl->server.fd = -1;
+	*fd = -1;
 	return (IS_OK);
 }
 
@@ -40,7 +40,7 @@ static int		connect_to(int *fd, t_client *cl)
 	int				errnb;
 	int				on;
 
-	if ((errnb = init_addrinfo(&results, cl)) != IS_OK)
+	if ((errnb = init_addrinfo(fd, &results, cl)) != IS_OK)
 		return (errnb);
 	tmp = results;
 	while (tmp && *fd < 0)
@@ -66,14 +66,17 @@ int				cl_get_addrinfo(t_client *cl)
 {
 	int			errnb;
 
-	if (FT_CHECK(cl->options, cl_interactive))
+	wprintw(cl->ncu.chatwin, "Connection to %s:%s... ",
+	cl->addr, cl->port);
+	errnb = connect_to(&cl->server.fd_ctrl, cl);
+	if (errnb == IS_OK)
 	{
-		printf("Initialising connection to "FTP_LIGHT_BLUE"%s"FTP_RESET
-		":"FTP_YELLOW"%s"FTP_RESET"... ", cl->addr, cl->port);
-		fflush(stdout);
+		wattron(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
+		wprintw(cl->ncu.chatwin, "OK\n");
+		wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
 	}
-	errnb = connect_to(&cl->server.fd, cl);
-	if (FT_CHECK(cl->options, cl_interactive) && errnb == IS_OK)
-		ft_putendl(FTP_GREEN"OK"FTP_RESET);
+	else
+		wprintw(cl->ncu.chatwin, "\n");
+	wrefresh(cl->ncu.chatwin);
 	return (errnb);
 }
