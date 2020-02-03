@@ -6,15 +6,16 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 18:17:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 16:02:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int				cl_get(char **cmds, t_client *cl)
+int				cl_get(char *buf, char **cmd, t_client *cl)
 {
-	(void)cmds;
+	(void)buf;
+	(void)cmd;
 	(void)cl;
 	return (IS_OK);
 }

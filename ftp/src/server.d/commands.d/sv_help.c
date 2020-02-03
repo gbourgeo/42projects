@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 17:37:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 16:10:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,14 +79,14 @@ int					sv_help(char **cmds, t_client *cl)
 		&& (errnb = sv_client_write(" ", cl)) == IS_OK)
 			errnb = sv_client_write(cmd[i].name, cl);
 		if (!((i + 1) % 10))
-			errnb = sv_client_write("\r\n", cl);
+			errnb = sv_client_write("\n", cl);
 		else if (ft_strlen(cmd[i].name) < 4)
 			errnb = sv_client_write(" ", cl);
 		i++;
 	}
 	if (errnb != IS_OK)
-		return (sv_response(cl, "\r\n500 %s", ft_get_error(errnb)));
-	return (sv_response(cl, "\r\n214 Help OK"));
+		return (sv_response(cl, "\n500 %s", ft_get_error(errnb)));
+	return (sv_response(cl, "\n214 Help OK"));
 }
 
 /*

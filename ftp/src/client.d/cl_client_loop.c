@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 15:28:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 17:30:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int			init_fdset(fd_set *r, fd_set *w, t_client *cl)
 static void			check_fdset(fd_set *r, fd_set *w, int ret, t_client *cl)
 {
 	if (FD_ISSET(STDIN_FILENO, r) && ret-- > 0)
-		cl->errnb[0] = cl_ncurses_read(cl);
+		cl->errnb[0] = cl_ncurses_read(&cl->rd, cl);
 	if (FD_ISSET(STDIN_FILENO, w) && ret-- > 0)
 		cl->errnb[1] = cl_ncurses_write(&cl->wr, cl);
 	if (cl->server.fd_ctrl > 0 && ret > 0)

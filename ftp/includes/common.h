@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 03:17:32 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 17:04:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ typedef struct		s_buff
 	char			*head;
 	char			*tail;
 	char			buff[CMD_BUFF_SIZE];
-	size_t			len;
+	int				len;
 }					t_buff;
 
 const char			*get_signal_name(int sig);

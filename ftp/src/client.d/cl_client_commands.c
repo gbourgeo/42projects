@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 19:08:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 15:55:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int		cl_client_getcmd(char *buf, char **cmd, t_client *cl)
 	while (i < (long)cl_commands(1))
 	{
 		if (!ftp_strcmp(cmds[i].name, cmd[0]))
-			return (cmds[i].func(cmd, cl));
+			return (cmds[i].func(buf, cmd, cl));
 		i++;
 	}
 	return (cl_server_write(buf, ft_strlen(buf), &cl->server));

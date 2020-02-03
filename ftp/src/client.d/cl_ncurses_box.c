@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:28:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 16:50:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 17:07:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ int			create_s_list(t_client *cl)
 	cl->ncu.listwin = subwin(cl->ncu.listbox, y - 2, x - 2, 1, COLS - x + 1);
 	if (!cl->ncu.listwin)
 		return (ERR_NCURSE_LISTWIN);
+	scrollok(cl->ncu.listwin, TRUE);
 	return (IS_OK);
 }
 

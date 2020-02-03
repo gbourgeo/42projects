@@ -6,15 +6,16 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/30 18:19:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 16:02:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int				cl_put(char **cmds, t_client *cl)
+int				cl_put(char *buf, char **cmd, t_client *cl)
 {
-	(void)cmds;
+	(void)buf;
+	(void)cmd;
 	(void)cl;
 	return (IS_OK);
 }
