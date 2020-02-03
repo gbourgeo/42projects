@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 16:51:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 00:05:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,16 +134,6 @@ typedef struct		s_read
 }					t_read;
 
 /*
-** Client Commands Structure
-*/
-
-typedef struct		s_command
-{
-	const char		*name;
-	int				(*func)(char *, char **, t_client *);
-}					t_command;
-
-/*
 ** Client functions
 */
 
@@ -177,14 +167,27 @@ t_command			*cl_commands(int getsize);
 ** Commands
 */
 
-int					cl_help(char *buf, char **cmd, t_client *cl);
+int					cl_help_local(char *buf, char **cmd, t_client *cl);
 int					cl_cd(char *buf, char **cmd, t_client *cl);
 int					cl_quit(char *buf, char **cmd, t_client *cl);
 int					cl_get(char *buf, char **cmd, t_client *cl);
+int					cl_help(char *buf, char **cmd, t_client *cl);
 int					cl_ls(char *buf, char **cmd, t_client *cl);
 int					cl_mkdir(char *buf, char **cmd, t_client *cl);
 int					cl_put(char *buf, char **cmd, t_client *cl);
 int					cl_pwd(char *buf, char **cmd, t_client *cl);
 int					cl_rm(char *buf, char **cmd, t_client *cl);
+
+int					cl_help_print(t_command *cmd, char **descrip, t_client *cl);
+int					cl_help_local_help(t_command *cmd, t_client *cl);
+int					cl_cd_help(t_command *cmd, t_client *cl);
+int					cl_quit_help(t_command *cmd, t_client *cl);
+int					cl_get_help(t_command *cmd, t_client *cl);
+int					cl_help_help(t_command *cmd, t_client *cl);
+int					cl_ls_help(t_command *cmd, t_client *cl);
+int					cl_mkdir_help(t_command *cmd, t_client *cl);
+int					cl_put_help(t_command *cmd, t_client *cl);
+int					cl_pwd_help(t_command *cmd, t_client *cl);
+int					cl_rm_help(t_command *cmd, t_client *cl);
 
 #endif

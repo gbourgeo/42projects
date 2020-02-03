@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 14:14:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 16:00:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 00:08:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,16 @@
 t_command				*cl_commands(int getsize)
 {
 	static t_command	cmd[] = {
-		{ "?", cl_help },
-		{ "cd", cl_cd },
-		{ "quit", cl_quit },
-		{ "get", cl_get },
-		{ "ls", cl_ls },
-		{ "mkdir", cl_mkdir },
-		{ "put", cl_put },
-		{ "pwd", cl_pwd },
-		{ "rm", cl_rm },
+		{ "?", "Help about local commands", cl_help_local_help, cl_help_local, 0 },
+		{ "cd", "Change working directory", cl_cd_help, cl_cd, 0 },
+		{ "quit", "Quit the client", cl_quit_help, cl_quit, 0 },
+		{ "get", "Get file from server", cl_get_help, cl_get, 0 },
+		{ "help", "Help about server commands", cl_help_help, cl_help, 0 },
+		{ "ls", "List files or directory", cl_ls_help, cl_ls, 0 },
+		{ "mkdir", "Create directory", cl_mkdir_help, cl_mkdir, 0 },
+		{ "put", "Put file to server", cl_put_help, cl_put, 0 },
+		{ "pwd", "Print working directory", cl_pwd_help, cl_pwd, 0 },
+		{ "rm", "Remove file from server", cl_rm_help, cl_rm, 0 },
 	};
 
 	if (getsize)

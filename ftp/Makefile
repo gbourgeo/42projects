@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/02 15:19:06 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/04 00:22:51 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,8 @@ CLI_C	= cl_main.c						\
 CLI_C_D = $(CLI_D)commands.d/
 CLI_C += cl_cd.c						\
 		cl_get.c						\
+		cl_help_local.c					\
+		cl_help_print.c					\
 		cl_help.c						\
 		cl_ls.c							\
 		cl_mkd.c						\

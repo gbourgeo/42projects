@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/01 20:46:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 20:45:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,19 +167,6 @@ typedef struct		s_server
 }					t_server;
 
 struct s_server		g_serv;
-
-/*
-** Commands structure
-*/
-
-typedef struct		s_command
-{
-	const char		*name;
-	const char		*descrip;
-	int				(*help)();
-	int				(*func)();
-	int				rights;
-}					t_command;
 
 /*
 ** Server Options structure

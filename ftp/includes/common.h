@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 17:04:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/03 20:45:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,19 @@ typedef struct		s_buff
 	char			buff[CMD_BUFF_SIZE];
 	int				len;
 }					t_buff;
+
+/*
+** Commands structure
+*/
+
+typedef struct		s_command
+{
+	const char		*name;
+	const char		*descrip;
+	int				(*help)();
+	int				(*func)();
+	int				rights;
+}					t_command;
 
 const char			*get_signal_name(int sig);
 void				print_signal_info(int sig, int interactive);
