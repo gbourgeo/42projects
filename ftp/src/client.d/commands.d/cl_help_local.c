@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:40:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:31:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 00:37:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int			cl_help_command(char **cmd, t_client *cl)
 	return (errnb);
 }
 
-static char			*get_padding(t_command *cmds)
+static char			*padding(t_command *cmds)
 {
 	static char	space[] = "          ";
 	int			len;
@@ -81,7 +81,7 @@ int					cl_help_local(char *buf, char **cmd, t_client *cl)
 	errnb = wprintw(cl->ncu.chatwin, "Commands recognized:\n");
 	while (i < (int)cl_commands(1) && errnb == OK)
 	{
-		errnb = wprintw(cl->ncu.chatwin, " %s%s", cmds[i].name, get_padding(cmds));
+		errnb = wprintw(cl->ncu.chatwin, " %s%s", cmds[i].name, padding(cmds));
 		i++;
 	}
 	errnb = wprintw(cl->ncu.chatwin, "\n");
@@ -89,7 +89,7 @@ int					cl_help_local(char *buf, char **cmd, t_client *cl)
 	return ((errnb == OK) ? IS_OK : ERR_WRITE);
 }
 
-int					cl_help_local_help(t_command *cmd, t_client *cl)
+int					cl_help_loc_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
 		"", NULL

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 17:32:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 00:36:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ static int			cl_backspace(t_buff *ring, t_client *cl)
 {
 	if (ring->len > 0)
 	{
-		mvwdelch(cl->ncu.textwin, getcury(cl->ncu.textwin), getcurx(cl->ncu.textwin) - 1);
+		mvwdelch(cl->ncu.textwin, getcury(cl->ncu.textwin),
+		getcurx(cl->ncu.textwin) - 1);
 		wrefresh(cl->ncu.textwin);
 		if (--ring->tail < ring->buff)
 			ring->tail = ring->buff + sizeof(ring->buff);
@@ -119,7 +120,6 @@ static int			cl_key_right(t_buff *ring, t_client *cl)
 	wrefresh(cl->ncu.chatwin);
 	return (IS_OK);
 }
-
 
 int					cl_ncurses_read(t_buff *ring, t_client *cl)
 {
