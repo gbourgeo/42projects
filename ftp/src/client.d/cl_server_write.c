@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:08:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 17:31:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 16:43:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int			cl_server_write(const char *buf, int len, t_server *sv)
+int		cl_server_write(const char *buf, int len, t_server *sv, t_client *cl)
 {
 	int		i;
 	int		errnb;
@@ -24,7 +24,7 @@ int			cl_server_write(const char *buf, int len, t_server *sv)
 		if (sv->wr.tail >= sv->wr.buff + sizeof(sv->wr.buff))
 			sv->wr.tail = sv->wr.buff;
 		if (sv->wr.len++ >= (int)sizeof(sv->wr.buff))
-			if ((errnb = cl_server_send(sv->fd_ctrl, &sv->wr)) != IS_OK)
+			if ((errnb = cl_server_send(&sv->wr, sv->fd_ctrl, cl)) != IS_OK)
 				return (errnb);
 	}
 	return (IS_OK);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:40:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:37:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 15:20:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,24 +45,25 @@ static int			cl_help_command(char **cmd, t_client *cl)
 	return (errnb);
 }
 
-static char			*padding(t_command *cmds)
+static char			*padding(int pos, t_command *cmds)
 {
 	static char	space[] = "          ";
+	long		i;
 	int			len;
-	int			i;
 	int			max;
 
 	i = 0;
 	max = 0;
-	if ((i + 1) % 10 == 0)
+	if ((pos + 1) % 8 == 0)
 		return ("\n");
-	while (i < (int)cl_commands(1))
+	while (i < (long)cl_commands(1))
 	{
 		if ((len = ft_strlen(cmds[i].name)) > max)
 			max = len;
 		i++;
 	}
 	ft_memset(space, ' ', sizeof(space));
+	len = ft_strlen(cmds[pos].name);
 	space[max - len + 1] = '\0';
 	return (space);
 }
@@ -70,7 +71,7 @@ static char			*padding(t_command *cmds)
 int					cl_help_local(char *buf, char **cmd, t_client *cl)
 {
 	t_command		*cmds;
-	int				i;
+	long			i;
 	int				errnb;
 
 	(void)buf;
@@ -79,9 +80,10 @@ int					cl_help_local(char *buf, char **cmd, t_client *cl)
 		return (cl_help_command(cmd, cl));
 	i = 0;
 	errnb = wprintw(cl->ncu.chatwin, "Commands recognized:\n");
-	while (i < (int)cl_commands(1) && errnb == OK)
+	while (i < (long)cl_commands(1) && errnb == OK)
 	{
-		errnb = wprintw(cl->ncu.chatwin, " %s%s", cmds[i].name, padding(cmds));
+		errnb = wprintw(cl->ncu.chatwin, " %s%s",
+		cmds[i].name, padding(i,cmds));
 		i++;
 	}
 	errnb = wprintw(cl->ncu.chatwin, "\n");

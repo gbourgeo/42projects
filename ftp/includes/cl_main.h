@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:34:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 19:44:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,10 @@ typedef struct		s_server
 	int				fd_data;
 	int				get_data;
 	int				fd_file;
-	char			*pwd;
-	t_buff			rd;
 	t_buff			wr;
+	int				wait_response;
+	char			cmd[CMD_BUFF_SIZE];
+	char			response[CMD_BUFF_SIZE];
 }					t_server;
 
 /*
@@ -93,12 +94,10 @@ typedef struct		s_client
 	char			*addr;
 	t_ncu			ncu;
 	t_server		server;
-	int				errnb[4];
-	char			*pwd;
-	int				success;
+	int				errnb[5];
 	t_buff			rd;
 	t_buff			wr;
-	int				pos;
+	int				(*fct)();
 }					t_client;
 
 struct s_client		g_cl;
@@ -156,12 +155,14 @@ void				cl_ncurses_end(t_client *cl);
 int					cl_client_loop(t_client *cl);
 int					cl_ncurses_read(t_buff *ring, t_client *cl);
 int					cl_ncurses_write(t_buff *ring, t_client *cl);
-int					cl_server_recv(t_buff *ring, t_server *sv, t_client *cl);
-int					cl_server_send(int fd, t_buff *ring);
-int					cl_server_write(const char *buf, int size, t_server *sv);
+int					cl_server_recv(t_buff *ring, int fd, t_client *cl);
+int					cl_server_send(t_buff *ring, int fd, t_client *cl);
+int					cl_server_write(const char *buf, int size, t_server *sv, t_client *cl);
 
 int					cl_client_commands(t_client *cl);
 t_command			*cl_commands(int getsize);
+int					cl_response(t_server *sv, t_client *cl);
+char				*cl_ringbuffcat(char *buff, int size, t_buff *ring);
 
 /*
 ** Commands
@@ -169,6 +170,7 @@ t_command			*cl_commands(int getsize);
 
 int					cl_help_local(char *buf, char **cmd, t_client *cl);
 int					cl_cd(char *buf, char **cmd, t_client *cl);
+int					cl_clear(char *buf, char **cmd, t_client *cl);
 int					cl_quit(char *buf, char **cmd, t_client *cl);
 int					cl_get(char *buf, char **cmd, t_client *cl);
 int					cl_help(char *buf, char **cmd, t_client *cl);
@@ -181,6 +183,7 @@ int					cl_rm(char *buf, char **cmd, t_client *cl);
 int					cl_help_print(t_command *cmd, char **descrip, t_client *cl);
 int					cl_help_loc_help(t_command *cmd, t_client *cl);
 int					cl_cd_help(t_command *cmd, t_client *cl);
+int					cl_clear_help(t_command *cmd, t_client *cl);
 int					cl_quit_help(t_command *cmd, t_client *cl);
 int					cl_get_help(t_command *cmd, t_client *cl);
 int					cl_help_help(t_command *cmd, t_client *cl);

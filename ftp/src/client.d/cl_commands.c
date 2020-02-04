@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 14:14:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:34:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 15:21:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ t_command				*cl_commands(int getsize)
 	static t_command	cmd[] = {
 		{ "?", "Help of local commands", cl_help_loc_help, cl_help_local, 0 },
 		{ "cd", "Change working directory", cl_cd_help, cl_cd, 0 },
+		{ "clear", "Clear chat screen", cl_clear_help, cl_clear, 0 },
 		{ "quit", "Quit the client", cl_quit_help, cl_quit, 0 },
 		{ "get", "Get file from server", cl_get_help, cl_get, 0 },
 		{ "help", "Help of server commands", cl_help_help, cl_help, 0 },

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:36:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 18:51:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,10 @@ static int			cl_lf(t_buff *ring, t_client *cl)
 	if (ring->len > 0)
 	{
 		errnb = cl_client_commands(cl);
+		ft_bzero(ring->buff, sizeof(ring->buff));
+		ring->head = ring->buff;
+		ring->tail = ring->buff;
 		ring->len = 0;
-		cl->pos = 0;
 		werase(cl->ncu.textwin);
 		wrefresh(cl->ncu.textwin);
 	}
@@ -42,30 +44,26 @@ static int			cl_lf(t_buff *ring, t_client *cl)
 
 static int			cl_backspace(t_buff *ring, t_client *cl)
 {
-	if (ring->len > 0)
+	if (ring->tail > ring->head)
 	{
+		ring->tail--;
+		ft_strcpy(ring->tail, ring->tail + 1);
+		ring->len--;
 		mvwdelch(cl->ncu.textwin, getcury(cl->ncu.textwin),
 		getcurx(cl->ncu.textwin) - 1);
 		wrefresh(cl->ncu.textwin);
-		if (--ring->tail < ring->buff)
-			ring->tail = ring->buff + sizeof(ring->buff);
-		*ring->tail = '\0';
-		ring->len--;
-		cl->pos--;
 	}
 	return (IS_OK);
 }
 
 static int			cl_key_dc(t_buff *ring, t_client *cl)
 {
-	if (ring->len > 0 && cl->pos != ring->len)
+	if (*ring->tail)
 	{
+		ft_strcpy(ring->tail, ring->tail + 1);
+		ring->len--;
 		wdelch(cl->ncu.textwin);
 		wrefresh(cl->ncu.textwin);
-		// if (--ring->tail < ring->buff)
-		// 	ring->tail = ring->buff + sizeof(ring->buff);
-		// *ring->tail = '\0';
-		// ring->len--;
 	}
 	return (IS_OK);
 }
@@ -80,7 +78,6 @@ static int			cl_default(int ret, t_buff *ring, t_client *cl)
 			wprintw(cl->ncu.textwin, "%c", ret);
 			wrefresh(cl->ncu.textwin);
 			ring->len++;
-			cl->pos++;
 		}
 		return (IS_OK);
 	}

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:19:37 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 16:08:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 16:45:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,5 @@ int				cl_quit(char *buf, char **cmd, t_client *cl)
 		i++;
 	}
 	ft_strncat(buf, "\n", CMD_BUFF_SIZE);
-	return (cl_server_write(buf, ft_strlen(buf), &cl->server));
+	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
 }

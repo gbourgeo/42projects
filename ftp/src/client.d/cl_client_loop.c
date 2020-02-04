@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 17:30:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 19:40:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,18 @@
 
 static int			client_init(t_client *cl)
 {
-	if (!(cl->server.pwd = ft_strdup("/")))
-		return (ERR_MALLOC);
-	if (!(cl->pwd = getcwd(NULL, 0)))
-		return (ERR_MALLOC);
-	cl->success = 1;
 	cl->rd.head = cl->rd.buff;
 	cl->rd.tail = cl->rd.buff;
+	cl->rd.len = 0;
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.buff;
 	cl->wr.len = sizeof(cl->wr.buff);
 	cl->server.wr.head = cl->server.wr.buff;
 	cl->server.wr.tail = cl->server.wr.buff;
+	cl->server.wr.len = 0;
+	cl->server.wait_response = 0;
+	ft_bzero(cl->server.cmd, sizeof(cl->server.cmd));
+	ft_bzero(cl->server.response, sizeof(cl->server.response));
 	return (IS_OK);
 }
 
@@ -60,9 +60,11 @@ static void			check_fdset(fd_set *r, fd_set *w, int ret, t_client *cl)
 	if (cl->server.fd_ctrl > 0 && ret > 0)
 	{
 		if (FD_ISSET(cl->server.fd_ctrl, r) && ret-- > 0)
-			cl->errnb[2] = cl_server_recv(&cl->wr, &cl->server, cl);
+			cl->errnb[2] = cl_server_recv(&cl->wr, cl->server.fd_ctrl, cl);
 		if (FD_ISSET(cl->server.fd_ctrl, w) && ret-- > 0)
-			cl->errnb[3] = cl_server_send(cl->server.fd_ctrl, &cl->server.wr);
+			cl->errnb[3] = cl_server_send(&cl->server.wr, cl->server.fd_ctrl, cl);
+		if (cl->server.wait_response)
+			cl->errnb[4] = cl_response(&cl->server, cl);
 	}
 	// if (cl->server.fd_data > 0 && cl->server.get_data)
 	// {

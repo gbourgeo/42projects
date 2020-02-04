@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:33:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 16:44:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int		cl_client_getcmd(char *buf, char **cmd, t_client *cl)
 			return (cmds[i].func(buf, cmd, cl));
 		i++;
 	}
-	return (cl_server_write(buf, ft_strlen(buf), &cl->server));
+	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
 }
 
 int				cl_client_commands(t_client *cl)

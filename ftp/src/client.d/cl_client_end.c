@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 02:29:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 17:03:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,5 @@ void			cl_client_end(t_client *cl)
 	ft_close(&cl->server.fd_ctrl);
 	ft_close(&cl->server.fd_data);
 	ft_close(&cl->server.fd_file);
-	ft_strdel(&cl->server.pwd);
-	ft_strdel(&cl->pwd);
 	cl_ncurses_end(cl);
 }

@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_cd.c                                            :+:      :+:    :+:   */
+/*   cl_clear.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/30 18:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 16:44:19 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/04 15:22:08 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/04 15:24:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int				cl_cd(char *buf, char **cmd, t_client *cl)
+int					cl_clear(char *buf, char **cmd, t_client *cl)
 {
-	int		i;
+	(void)buf;
+	(void)cmd;
+	wclear(cl->ncu.chatwin);
+	wrefresh(cl->ncu.chatwin);
+	return (IS_OK);
+}
 
-	i = 1;
-	ft_strcpy(buf, "CWD");
-	while (cmd[i])
-	{
-		ft_strncat(buf, " ", CMD_BUFF_SIZE);
-		ft_strncat(buf, cmd[i], CMD_BUFF_SIZE);
-		i++;
-	}
-	ft_strncat(buf, "\n", CMD_BUFF_SIZE);
-	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
+int					cl_clear_help(t_command *cmd, t_client *cl)
+{
+	static char		*help[] = {
+		"", NULL
+	};
+
+	return (cl_help_print(cmd, help, cl));
 }

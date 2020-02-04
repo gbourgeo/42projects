@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 18:51:48 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 17:33:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 16:42:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,11 @@ static int	cl_send_error(int errnb)
 ** Function to send commands to the Server.
 */
 
-int			cl_server_send(int fd, t_buff *ring)
+int			cl_server_send(t_buff *ring, int fd, t_client *cl)
 {
 	int		ret;
 
+	(void)cl;
 	if (ring->len == 0)
 		return (IS_OK);
 	if (ring->head < ring->tail)

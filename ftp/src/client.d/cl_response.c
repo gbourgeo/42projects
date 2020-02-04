@@ -1,29 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_cd.c                                            :+:      :+:    :+:   */
+/*   cl_response.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/30 18:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 16:44:19 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/04 19:17:13 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/04 19:38:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int				cl_cd(char *buf, char **cmd, t_client *cl)
+int				cl_response(t_server *sv, t_client *cl)
 {
-	int		i;
+	int			i;
 
-	i = 1;
-	ft_strcpy(buf, "CWD");
-	while (cmd[i])
-	{
-		ft_strncat(buf, " ", CMD_BUFF_SIZE);
-		ft_strncat(buf, cmd[i], CMD_BUFF_SIZE);
-		i++;
-	}
-	ft_strncat(buf, "\n", CMD_BUFF_SIZE);
-	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
+	i = 0;
+	while (sv->response[i])
+		if (sv->response[i] == '\n')
+		{
+			wprintw(cl->ncu.listwin, "%s", sv->response);
+			wrefresh(cl->ncu.listwin);
+			sv->wait_response = 0;
+			ft_bzero(sv->response, sizeof(sv->response));
+			break ;
+		}
+		else
+			i++;
+	return (IS_OK);
 }
