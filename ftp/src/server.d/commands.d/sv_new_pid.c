@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 15:56:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 19:56:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 22:18:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ int				sv_new_pid(char **cmds, t_client *cl, int (*hdlr)())
 	}
 	ft_strdel(&cl->data.port);
 	ft_close(&cl->data.pasv_fd);
+	ft_close(&cl->data.socket);
 	return (IS_OK);
 }

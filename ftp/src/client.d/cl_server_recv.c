@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:48:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 19:44:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 22:33:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@ int				cl_server_recv(t_buff *ring, int fd, t_client *cl)
 {
 	int			ret;
 
-// wprintw(cl->ncu.chatwin, "RING: %d %p %p\n", ring->len, ring->head, ring->tail);
-// wrefresh(cl->ncu.chatwin);
 	ret = recv(fd, ring->tail, ring->len, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (ret <= 0)
 		return (cl_recv_error(ret));

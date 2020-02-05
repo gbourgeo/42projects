@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 17:04:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 22:27:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static void		sv_check_clients(t_client *cl, t_server *sv)
 {
 	while (cl)
 	{
-		if ((cl->data.pid > 0 && (cl->errnb[2] = sv_check_pid(cl)) != IS_OK)
+		if ((cl->data.pid > 0 && (cl->errnb[3] = sv_check_pid(cl)) != IS_OK)
 		|| cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-		|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		|| cl->errnb[2] != IS_OK)
 			cl = sv_client_end(cl, sv);
 		// else if (cl->data.fd > 0
 		// && time(NULL) - cl->data.timeout >= TRANSFERT_TIMEOUT)
@@ -63,25 +63,21 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 	t_client	*cl;
 
 	cl = sv->clients;
-	if (sv->ip[sv_v4] > 0 && FD_ISSET(sv->ip[sv_v4], fdr))
+	if (sv->ip[sv_v4] > 0 && FD_ISSET(sv->ip[sv_v4], fdr) && ret-- > 0)
 		if ((sv->errnb[0] = sv_server_accept(sv_v4, sv)) != IS_OK)
 			sv_server_close(sv_v4, 1, sv);
-	if (sv->ip[sv_v6] > 0 && FD_ISSET(sv->ip[sv_v6], fdr))
+	if (sv->ip[sv_v6] > 0 && FD_ISSET(sv->ip[sv_v6], fdr) && ret-- > 0)
 		if ((sv->errnb[1] = sv_server_accept(sv_v6, sv)) != IS_OK)
 			sv_server_close(sv_v6, 1, sv);
 	while (cl && ret)
 	{
-		if (FD_ISSET(cl->fd, fdr))
-			cl->errnb[0] = cl->fct_read(cl, sv);
-		if (FD_ISSET(cl->fd, fdw))
-			cl->errnb[1] = cl->fct_write(cl, sv);
-		if (FD_ISSET(cl->fd, fdr) || FD_ISSET(cl->fd, fdw))
-			ret--;
-		if (cl->data.pasv_fd > 0 && FD_ISSET(cl->data.pasv_fd, fdr))
-		{
+		if (FD_ISSET(cl->fd, fdr) && ret-- > 0)
+			cl->errnb[0] = cl->fct_read(cl);
+		if (FD_ISSET(cl->fd, fdw) && ret-- > 0)
+			cl->errnb[1] = cl->fct_write(cl);
+		if (cl->data.pasv_fd > 0
+		&& FD_ISSET(cl->data.pasv_fd, fdr) && ret-- > 0)
 			cl->errnb[2] = sv_listen_from(cl);
-			ret--;
-		}
 		cl = cl->next;
 	}
 }

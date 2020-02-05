@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:11:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 00:35:11 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 17:17:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void		cl_resize_window(int sig)
 static void		cl_init_pairs(void)
 {
 	init_color(CLIENT_DFLT_BCKGD, 100, 100, 100);
-	init_color(CLIENT_COLOR_RED, 100, 0, 0);
+	init_color(CLIENT_COLOR_RED, 50, 0, 50);
 	init_pair(CLIENT_DFLT_COLOR, COLOR_BLACK, CLIENT_DFLT_BCKGD);
 	init_pair(CLIENT_TITLE_COLOR, COLOR_YELLOW, -1);
 	init_pair(CLIENT_TEXT_COLOR, COLOR_WHITE, -1);

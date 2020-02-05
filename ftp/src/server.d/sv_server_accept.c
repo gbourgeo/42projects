@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 05:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 18:32:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 16:44:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,13 @@ int				sv_server_accept(int version, t_server *sv)
 		return ((version == sv_v4) ? ERR_ACCEPT_V4 : ERR_ACCEPT_V6);
 	if (fd >= FD_SETSIZE)
 	{
-		send(fd, "421 Server Busy. Come back later !\r\n", 36, 0);
+		send(fd, "421 Server Busy. Come back later !\n", 36, 0);
 		close(fd);
 		return (IS_OK);
 	}
 	if (sv->connected + 1 == CLIENTS_MAX)
 	{
-		send(fd, "421 Server Full. Come back later !\r\n", 36, 0);
+		send(fd, "421 Server Full. Come back later !\n", 36, 0);
 		close(fd);
 		return (IS_OK);
 	}

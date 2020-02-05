@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 23:18:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:30:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 22:23:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,18 @@
 
 static void		print_info(t_client *cl, t_server *sv)
 {
+	int			i;
+
+	i = 0;
 	if (!FT_CHECK(sv->options, sv_interactive))
 		return ;
-	if (cl->errnb[0] > 0)
-		printf("Client "FTP_BOLD""FTP_RED"%d"FTP_RESET": %s\n",
-		cl->fd, ft_get_error(cl->errnb[0]));
-	if (cl->errnb[1] > 0)
-		printf("Client "FTP_BOLD""FTP_RED"%d"FTP_RESET": %s\n",
-		cl->fd, ft_get_error(cl->errnb[1]));
-	if (cl->errnb[2] > 0)
-		printf("Client "FTP_BOLD""FTP_RED"%d"FTP_RESET": %s\n",
-		cl->fd, ft_get_error(cl->errnb[2]));
-	if (cl->errnb[3] > 0)
-		printf("Client "FTP_BOLD""FTP_RED"%d"FTP_RESET": %s\n",
-		cl->fd, ft_get_error(cl->errnb[3]));
+	while (i < (int)(sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+	{
+		if (cl->errnb[i] > 0)
+			printf("Client "FTP_BOLD""FTP_RED"%d"FTP_RESET": %s (%d)\n",
+			cl->fd, ft_get_error(cl->errnb[i]), i);
+		i++;
+	}
 }
 
 t_client		*sv_client_end(t_client *cl, t_server *sv)

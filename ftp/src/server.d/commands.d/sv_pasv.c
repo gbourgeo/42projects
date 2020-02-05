@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:54:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 16:51:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,26 @@
 
 static int				sv_pasv_success(char *port, t_client *cl)
 {
-	char	addr[INET6_ADDRSTRLEN];
-	short	nb;
-	int		i;
-	int		errnb;
+	char			addr[INET6_ADDRSTRLEN];
+	unsigned short	nb;
+	int				i;
+	int				errnb;
 
-	ft_strcpy(addr, g_serv.addr[cl->version]);
 	i = 0;
-	while (addr[i])
+	while (g_serv.addr[cl->version][i])
 	{
 		if ((cl->version == sv_v4 && addr[i] == '.')
 		|| (cl->version == sv_v6 && addr[i] == ':'))
 			addr[i] = ',';
+		else
+			addr[i] = g_serv.addr[cl->version][i];
 		i++;
 	}
-	nb = (unsigned short)ft_atoi(port) << 8;
+	nb = ft_atoi(port) << 8;
 	errnb = sv_response(cl, "227 =%s,%d,%d (%s)",
 	addr, ft_atoi(port) >> 8, nb >> 8, port);
 	if (FT_CHECK(g_serv.options, sv_interactive))
-		printf("Client \x1B[33m%d\x1B[0m: DATA port %s:%s open.\n",
+		printf("Client \x1B[33m%d\x1B[0m: DATA address %s port %s open.\n",
 		cl->fd, addr, port);
 	free(port);
 	return (errnb);

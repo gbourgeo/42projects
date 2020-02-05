@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 19:44:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 17:21:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ typedef struct		s_server
 	int				wait_response;
 	char			cmd[CMD_BUFF_SIZE];
 	char			response[CMD_BUFF_SIZE];
+	int				(*fct)();
 }					t_server;
 
 /*
@@ -92,12 +93,12 @@ typedef struct		s_client
 	int				options;
 	char			*port;
 	char			*addr;
+	int				version;
 	t_ncu			ncu;
 	t_server		server;
-	int				errnb[5];
+	int				errnb[6];
 	t_buff			rd;
 	t_buff			wr;
-	int				(*fct)();
 }					t_client;
 
 struct s_client		g_cl;
@@ -143,7 +144,7 @@ int					cl_param_i(char **av, int *i, t_client *cl);
 int					cl_param_h(char **av, int *i, t_client *cl);
 int					cl_param_n(char **av, int *i, t_client *cl);
 void				cl_client_end(t_client *cl);
-int					cl_get_addrinfo(t_client *cl);
+int					cl_get_addrinfo(int *fd, char *addr, char *port, t_client *cl);
 int					cl_pchar(int nb);
 char				*cl_tgetstr(char *t);
 
@@ -158,6 +159,7 @@ int					cl_ncurses_write(t_buff *ring, t_client *cl);
 int					cl_server_recv(t_buff *ring, int fd, t_client *cl);
 int					cl_server_send(t_buff *ring, int fd, t_client *cl);
 int					cl_server_write(const char *buf, int size, t_server *sv, t_client *cl);
+int					cl_server_recv_data(t_server *sv, t_client *cl);
 
 int					cl_client_commands(t_client *cl);
 t_command			*cl_commands(int getsize);
@@ -175,6 +177,8 @@ int					cl_quit(char *buf, char **cmd, t_client *cl);
 int					cl_get(char *buf, char **cmd, t_client *cl);
 int					cl_help(char *buf, char **cmd, t_client *cl);
 int					cl_ls(char *buf, char **cmd, t_client *cl);
+int					cl_ls_next(t_server *sv, t_client *cl);
+int					cl_ls_end(t_server *sv, t_client *cl);
 int					cl_mkdir(char *buf, char **cmd, t_client *cl);
 int					cl_put(char *buf, char **cmd, t_client *cl);
 int					cl_pwd(char *buf, char **cmd, t_client *cl);

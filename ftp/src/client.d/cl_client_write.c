@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 23:02:45 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 23:16:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 19:21:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ int		cl_client_write(const char *buf, t_buff *ring, t_client *cl)
 			if (ring->len > 0)
 			{
 				*ring->tail++ = buf[i++];
+				if (ring->tail >= ring->buff + sizeof(ring->buff))
+					ring->tail = ring->buff;
 				ring->len--;
 			}
 			else if ((errnb = cl_ncurses_write(ring, cl)) != IS_OK)

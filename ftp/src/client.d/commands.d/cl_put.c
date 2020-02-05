@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 16:02:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/04 22:49:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,4 +18,13 @@ int				cl_put(char *buf, char **cmd, t_client *cl)
 	(void)cmd;
 	(void)cl;
 	return (IS_OK);
+}
+
+int					cl_put_help(t_command *cmd, t_client *cl)
+{
+	static char		*help[] = {
+		"", NULL
+	};
+
+	return (cl_help_print(cmd, help, cl));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 23:20:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 16:18:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 22:27:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ static int		sv_client_precommands(t_client *cl)
 	int			errnb;
 
 	ft_ringbuffcpy(buff, sizeof(buff), &cl->rd);
-printf("RECV: %s\n", buff);
 	if (!(cmd = ft_split_whitespaces(buff)))
 		return (sv_response(cl, "500 Internal error (memory alloc. failed)"));
 	if (!cmd[0] || !cmd[0][0])
@@ -54,12 +53,11 @@ printf("RECV: %s\n", buff);
 	return (errnb);
 }
 
-int				sv_client_recv(t_client *cl, t_server *sv)
+int				sv_client_recv(t_client *cl)
 {
 	int		ret;
 	int		errnb;
 
-	(void)sv;
 	ret = recv(cl->fd, cl->rd.tail, cl->rd.len, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (ret <= 0)
 		return (sv_recv_error(ret));

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 19:40:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 19:25:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,18 @@ static int			init_fdset(fd_set *r, fd_set *w, t_client *cl)
 	{
 		FD_SET(cl->server.fd_ctrl, r);
 		FD_SET(cl->server.fd_ctrl, w);
+		if (cl->server.fd_ctrl > max)
+			max = cl->server.fd_ctrl;
 	}
-	if (cl->server.fd_ctrl > max)
-		max = cl->server.fd_ctrl;
+	if (cl->server.fd_data > 0)
+	{
+		if (cl->server.get_data)
+			FD_SET(cl->server.fd_data, r);
+		else
+			FD_SET(cl->server.fd_data, w);
+		if (cl->server.fd_data > max)
+			max = cl->server.fd_data;
+	}
 	return (max);
 }
 
@@ -66,13 +75,13 @@ static void			check_fdset(fd_set *r, fd_set *w, int ret, t_client *cl)
 		if (cl->server.wait_response)
 			cl->errnb[4] = cl_response(&cl->server, cl);
 	}
-	// if (cl->server.fd_data > 0 && cl->server.get_data)
-	// {
-	// 	if (FD_ISSET(cl->server.fd_data, r))
-	// 		cl->errnb[1] = cl_server_recv_data(cl);
-		// if (FD_ISSET(cl->server.fd_data, w))
+	if (cl->server.fd_data > 0 && ret > 0)
+	{
+		if (FD_ISSET(cl->server.fd_data, r) && ret--)
+			cl->errnb[5] = cl_server_recv_data(&cl->server, cl);
+		// if (FD_ISSET(cl->server.fd_data, w) && ret--)
 		// 	cl->errnb[2] = cl_server_send(cl);
-	// }
+	}
 }
 
 static int			check_errors(t_client *cl)
@@ -95,6 +104,7 @@ static int			check_errors(t_client *cl)
 			if (cl->errnb[i - 1] == ERR_DISCONNECT)
 				ft_close(&cl->server.fd_ctrl);
 			cl->errnb[i - 1] = IS_OK;
+			while (1) ;
 		}
 	return (IS_OK);
 }
@@ -106,7 +116,7 @@ int					cl_client_loop(t_client *cl)
 	int				max;
 	int				ret;
 
-	cl->errnb[0] = cl_get_addrinfo(cl);
+	cl->errnb[0] = cl_get_addrinfo(&cl->server.fd_ctrl, cl->addr, cl->port, cl);
 	cl->errnb[1] = client_init(cl);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;

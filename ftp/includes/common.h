@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 20:45:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 02:26:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@
 ** may lead on undefined behaviours depending on the system.
 */
 
-# define DATA_BUFF_SIZE		2048
+# define DATA_BUFF_SIZE		65536
 
 enum
 {

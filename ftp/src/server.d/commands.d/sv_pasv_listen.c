@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 01:09:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:53:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 16:37:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ static int		init_addrinfo(struct addrinfo **results, char *port)
 	struct addrinfo hints;
 
 	ft_memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_PASSIVE;
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(NULL, port, &hints, results))
 		return (0);

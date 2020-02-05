@@ -1,30 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_help_print.c                                    :+:      :+:    :+:   */
+/*   cl_server_recv_data.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/03 22:57:40 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 22:49:47 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/05 02:21:30 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/05 22:35:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <errno.h>
+#include <sys/socket.h>
 #include "cl_main.h"
 
-int				cl_help_print(t_command *cmd, char **descrip, t_client *cl)
+static int		cl_recv_error(int *fd)
 {
-	int			i;
+	if (errno == EAGAIN || errno == EWOULDBLOCK)
+		return (IS_OK);
+	ft_close(fd);
+	return (IS_OK);
+}
+
+int				cl_server_recv_data(t_server *sv, t_client *cl)
+{
+	char		buff[DATA_BUFF_SIZE];
+	int			ret;
 	int			err;
 
-	i = 0;
-	if ((err = wprintw(cl->ncu.chatwin, "Command: %s - %s\n",
-	cmd->name, cmd->descrip)) == OK)
-		while (descrip[i] && err == OK)
-		{
-			err = wprintw(cl->ncu.chatwin, "\t%s\n", descrip[i]);
-			i++;
-		}
+	ret = recv(sv->fd_data, buff, sizeof(buff), MSG_DONTWAIT | MSG_NOSIGNAL);
+	if (ret <= 0)
+		return (cl_recv_error(&sv->fd_data));
+	err = wprintw(cl->ncu.chatwin, "%.*s", ret, buff);
 	wrefresh(cl->ncu.chatwin);
 	return ((err == OK) ? IS_OK : ERR_WRITE);
 }

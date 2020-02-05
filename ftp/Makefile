@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/04 19:43:11 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/05 16:56:47 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ CLI_C	= cl_main.c						\
 		cl_server_recv.c				\
 		cl_server_send.c				\
 		cl_server_write.c				\
+		cl_server_recv_data.c			\
 
 CLI_C_D = $(CLI_D)commands.d/
 CLI_C += cl_cd.c						\
@@ -134,7 +135,7 @@ OBJ_X	= $(addprefix $(OBJ_D), $(COM_C:.c=.o))
 
 LIB_DIR	= libft/
 
-HDRS	= -I includes/ -I $(LIB_DIR)includes/
+HDRS	= -I includes/ -I $(LIB_DIR)includes/ -I ~/.brew/opt/ncurses
 LIBS	= -L $(LIB_DIR) -lft
 
 CC		= /usr/bin/gcc
@@ -154,7 +155,7 @@ $(OBJ_D):
 
 $(CLIENT): $(OBJ_X) $(OBJ_C)
 	@make -sC $(LIB_DIR)
-	@$(CC) -o $@ $^ $(LIBS) -ltermcap -lncurses
+	@$(CC) -o $@ $^ $(LIBS) -lncurses
 	@echo "GENERATED: $(CLIENT)"
 
 $(SERVEUR): $(OBJ_X) $(OBJ_S)

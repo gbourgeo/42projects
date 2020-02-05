@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 23:31:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 04:55:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/05 17:20:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <netdb.h>
 #include "cl_main.h"
 
-static int		init_addrinfo(int *fd, struct addrinfo **res, t_client *cl)
+static int		init_addrinfo(struct addrinfo **res, char *addr, char *port)
 {
 	struct addrinfo	hints;
 
@@ -27,32 +27,31 @@ static int		init_addrinfo(int *fd, struct addrinfo **res, t_client *cl)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo(cl->addr, cl->port, &hints, res))
+	if (getaddrinfo(addr, port, &hints, res))
 		return (ERR_GETADDR);
-	*fd = -1;
 	return (IS_OK);
 }
 
-static int		connect_to(int *fd, t_client *cl)
+static int		cl_connect_to(int *fd, char *addr, char *port, t_client *cl)
 {
 	struct addrinfo	*results;
 	struct addrinfo	*tmp;
 	int				errnb;
 	int				on;
 
-	if ((errnb = init_addrinfo(fd, &results, cl)) != IS_OK)
+	if ((errnb = init_addrinfo(&results, addr, port)) != IS_OK)
 		return (errnb);
 	tmp = results;
-	while (tmp && *fd < 0)
+	while (tmp)
 	{
 		*fd = socket(tmp->ai_family, tmp->ai_socktype, tmp->ai_protocol);
-		if (*fd == -1)
-			continue ;
-		if (connect(*fd, tmp->ai_addr, tmp->ai_addrlen) == 0)
+		if (*fd > 0 && connect(*fd, tmp->ai_addr, tmp->ai_addrlen) == 0)
 			break ;
 		ft_close(fd);
 		tmp = tmp->ai_next;
 	}
+	if (*fd > 0 && tmp)
+		cl->version = (tmp->ai_family == AF_INET) ? 0 : 1;
 	freeaddrinfo(results);
 	if (*fd < 0)
 		return (ERR_NO_SERVER);
@@ -62,17 +61,23 @@ static int		connect_to(int *fd, t_client *cl)
 	return (IS_OK);
 }
 
-int				cl_get_addrinfo(t_client *cl)
+int				cl_get_addrinfo(int *fd, char *addr, char *port, t_client *cl)
 {
 	int			errnb;
 
-	wprintw(cl->ncu.chatwin, "Connection to %s:%s... ",
-	cl->addr, cl->port);
-	errnb = connect_to(&cl->server.fd_ctrl, cl);
-	if (errnb == IS_OK)
+	*fd = -1;
+	wprintw(cl->ncu.chatwin, "Connection to ");
+	wattron(cl->ncu.chatwin, A_UNDERLINE);
+	wprintw(cl->ncu.chatwin, "%s", addr);
+	wattroff(cl->ncu.chatwin, A_UNDERLINE);
+	wprintw(cl->ncu.chatwin, " port ");
+	wattron(cl->ncu.chatwin, A_UNDERLINE);
+	wprintw(cl->ncu.chatwin, "%s", port);
+	wattroff(cl->ncu.chatwin, A_UNDERLINE);
+	if ((errnb = cl_connect_to(fd, addr, port, cl)) == IS_OK)
 	{
 		wattron(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
-		wprintw(cl->ncu.chatwin, "OK\n");
+		wprintw(cl->ncu.chatwin, " OK\n");
 		wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
 	}
 	else
