@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 22:27:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:49:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,22 @@
 
 static void		sv_check_clients(t_client *cl, t_server *sv)
 {
+	int			i;
+
 	while (cl)
 	{
-		if ((cl->data.pid > 0 && (cl->errnb[3] = sv_check_pid(cl)) != IS_OK)
-		|| cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-		|| cl->errnb[2] != IS_OK)
-			cl = sv_client_end(cl, sv);
-		// else if (cl->data.fd > 0
-		// && time(NULL) - cl->data.timeout >= TRANSFERT_TIMEOUT)
-		// 	cl = sv_client_timeout(cl);
-		else
+		i = 0;
+		if (cl->data.pid > 0)
+			cl->errnb[3] = sv_check_pid(cl);
+		while (i < (int)(sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+			if (cl->errnb[i] != IS_OK)
+			{
+				cl = sv_client_end(cl, sv);
+				break ;
+			}
+			else
+				i++;
+		if (i == (int)(sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 			cl = cl->next;
 	}
 }

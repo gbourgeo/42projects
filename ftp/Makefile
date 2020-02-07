@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/05 16:56:47 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/07 20:16:49 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,7 @@ CLI_C += cl_cd.c						\
 		cl_pwd.c						\
 		cl_quit.c						\
 		cl_rm.c							\
+		cl_rmdir.c						\
 
 SERVEUR	= server
 SER_D	= src/server.d/
@@ -89,12 +90,13 @@ SER_C	+= sv_cdup.c					\
 		sv_connect_to.c					\
 		sv_cwd.c						\
 		sv_dele.c						\
-		sv_hdr.c						\
 		sv_help_print.c					\
 		sv_help.c						\
+		sv_list.c						\
 		sv_listen_from.c				\
 		sv_mkd.c						\
 		sv_new_pid.c					\
+		sv_nlst_exec.c					\
 		sv_nlst.c						\
 		sv_pass.c						\
 		sv_pasv_listen.c				\

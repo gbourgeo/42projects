@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:54:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:42:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,19 @@
 #include "sv_main.h"
 #include "sv_struct.h"
 
-static int		sv_retr_sendfile(char *data, size_t size, int fd)
+static int		sv_retr_exec(char *opt, char **cmds, t_client *cl)
 {
 	size_t	sent;
 	int		ret;
 	int		errnb;
 
-	errnb = IS_OK;
+	(void)opt;
+	(void)cmds;
 	sent = 0;
-	while (sent < size)
-		if ((ret = send(fd, data + sent, size - sent,
-		MSG_DONTWAIT | MSG_NOSIGNAL)) <= 0)
+	errnb = IS_OK;
+	while (sent < cl->data.fsize)
+		if ((ret = send(cl->data.socket, cl->data.file + sent,
+		cl->data.fsize - sent, MSG_DONTWAIT | MSG_NOSIGNAL)) <= 0)
 		{
 			if ((errnb = sv_send_error(ret)) != IS_OK)
 				return (errnb);
@@ -38,29 +40,25 @@ static int		sv_retr_sendfile(char *data, size_t size, int fd)
 	return (errnb);
 }
 
-static int		sv_retr_getfile(char *file, void **map, t_hdr *hdr)
+static int		sv_retr_open_file(char *file, t_data *data)
 {
 	struct stat	buf;
 	int			fd;
 	int			errnb;
 
 	errnb = IS_OK;
-	*map = MAP_FAILED;
-	ft_memset(hdr, -1, sizeof(*hdr));
 	if ((fd = open(file, O_RDONLY)) < 0)
 		return (ERR_OPEN);
 	if (fstat(fd, &buf) < 0)
 		errnb = ERR_FSTAT;
 	else if (!S_ISREG(buf.st_mode))
 		errnb = ERR_NOT_REGULAR_FILE;
-	else if ((hdr->size = lseek(fd, 0, SEEK_END)) < 0
+	else if ((data->fsize = lseek(fd, 0, SEEK_END)) < 0
 	|| lseek(fd, 0, SEEK_SET) < 0)
 		errnb = ERR_LSEEK;
-	else if ((*map = mmap(NULL, hdr->size, PROT_READ, MAP_PRIVATE, fd, 0))
+	else if ((data->file = mmap(NULL, data->fsize, PROT_READ, MAP_PRIVATE, fd, 0))
 	== MAP_FAILED)
 		errnb = ERR_MMAP;
-	// else
-	// 	hdr->type = cl->data.type;
 	ft_close(&fd);
 	return (errnb);
 }
@@ -77,28 +75,25 @@ static int		sv_retr_getfile(char *file, void **map, t_hdr *hdr)
 
 int				sv_retr(char **cmds, t_client *cl)
 {
-	t_hdr		hdr;
-	void		*file;
 	int			errnb;
 
-	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))
-		return (sv_response(cl, "501 %s",
-		ft_get_error((cmds[1]) ? ERR_INVALID_PARAM : ERR_NB_PARAMS)));
+	cl->data.file = MAP_FAILED;
+	cl->data.fsize = -1;
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 Please login with USER and PASS."));
+	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
+	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+		return (sv_response(cl, "421 Closing connection"));
+	if (cmds[1] && (!sv_validpathname(cmds[1]) || cmds[2]))
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (!cl->data.port && cl->data.pasv_fd < 0 && cl->data.socket < 0)
+		return (sv_response(cl, "425 Use PORT or PASV first"));
 	// Verification du chemin / fichier
-	if ((errnb = sv_check_path(&cmds[1], cl)) != IS_OK)
-	{
-		sv_response(cl, "451 internal error");
-		return (errnb);
-	}
-	// Ouverture du canal de données
-	if (cl->data.pasv_fd <= 0)
-		return (sv_response(cl, "425 connection not established"));
-	if ((errnb = sv_response(cl, "125 ready for transfert")) == IS_OK
-	// Verification de fichier
-	&& (errnb = sv_check_path(&cmds[1], cl)) == IS_OK
-	&& (errnb = sv_retr_getfile(cmds[1], &file, &hdr)) == IS_OK
-	&& (errnb = sv_retr_sendfile((char *)&hdr, sizeof(hdr), cl->data.socket)) == IS_OK)
-		errnb = sv_retr_sendfile(file, hdr.size, cl->data.socket);
+	if ((errnb = sv_check_path(&cmds[1], cl)) != IS_OK
+	|| (errnb = sv_retr_open_file(cmds[1], &cl->data)) != IS_OK
+	// || (errnb = sv_response(cl, "125 Ready for transfert")) != IS_OK
+	|| (errnb = sv_new_pid(cmds, cl, NULL, sv_retr_exec)) != IS_OK)
+		errnb = sv_response(cl, "451 Internal error (%s)", ft_get_error(errnb));
 	return (errnb);
 }
 

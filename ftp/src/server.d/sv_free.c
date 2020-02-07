@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 22:27:23 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:52:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:27:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/mman.h>
 #include "libft.h"
 #include "sv_main.h"
 
@@ -18,7 +19,9 @@ void			sv_free_data(t_data *data)
 	ft_strdel(&data->port);
 	ft_close(&data->pasv_fd);
 	ft_close(&data->socket);
-	ft_strdel(&data->file);
+	if (data->file != MAP_FAILED)
+		munmap(data->file, data->fsize);
+	data->fsize = -1;
 }
 
 void			sv_free_login(t_login *login, t_server *sv)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 22:28:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:45:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ typedef struct		s_data
 	int				(*function)();
 	pid_t			pid;
 	char			*file;
+	size_t			fsize;
 }					t_data;
 
 /*
@@ -131,7 +132,7 @@ typedef struct		s_client
 {
 	int				version;
 	int				fd;
-	int				errnb[4];
+	int				errnb[5];
 	int				(*fct_read)();
 	int				(*fct_write)();
 	t_buff			rd;
@@ -216,7 +217,7 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 */
 
 int					sv_check_option(int option, int value);
-int					sv_new_pid(char **cmds, t_client *cl, int (*hdlr)());
+int					sv_new_pid(char **cmds, t_client *cl, char *opt, int (*hdlr)());
 int					sv_check_pid(t_client *cl);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
@@ -341,6 +342,8 @@ int					sv_nlst_help(t_command *cmd, t_client *cl);
 int					sv_help_help(t_command *cmd, t_client *cl);
 int					sv_regt_help(t_command *cmd, t_client *cl);
 
+
+int 				sv_nlst_exec(char *opt, char **arg, t_client *cl);
 int					sv_print_help(t_client *cl, t_command *cmd, char *args,
 					char **description);
 

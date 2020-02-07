@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:40:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 15:20:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/06 19:13:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int			cl_help_command(char **cmd, t_client *cl)
 	while (cmd[i] && errnb == IS_OK)
 	{
 		if ((cmds = cl_command_by_name(cmd[i])) != NULL)
-			errnb = cmds[i].help(cmds, cl);
+			errnb = cmds->help(cmds, cl);
 		i++;
 	}
 	return (errnb);

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 15:46:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:54:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:45:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int				sv_quit(char **cmds, t_client *cl)
 {
 	if (cmds[1])
 		return (sv_response(cl, "500 syntax error"));
-	cl->errnb[3] = ERR_DISCONNECT;
+	cl->errnb[4] = ERR_DISCONNECT;
 	return (sv_response(cl, "221 closing connection"));
 }
 

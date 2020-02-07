@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 19:25:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:43:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@ static int			client_init(t_client *cl)
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.buff;
 	cl->wr.len = sizeof(cl->wr.buff);
+	cl->server.fd_data = -1;
+	cl->server.receive_data = 0;
+	cl->server.fd_file = -1;
 	cl->server.wr.head = cl->server.wr.buff;
 	cl->server.wr.tail = cl->server.wr.buff;
 	cl->server.wr.len = 0;
@@ -50,7 +53,7 @@ static int			init_fdset(fd_set *r, fd_set *w, t_client *cl)
 	}
 	if (cl->server.fd_data > 0)
 	{
-		if (cl->server.get_data)
+		if (cl->server.receive_data)
 			FD_SET(cl->server.fd_data, r);
 		else
 			FD_SET(cl->server.fd_data, w);
@@ -60,24 +63,24 @@ static int			init_fdset(fd_set *r, fd_set *w, t_client *cl)
 	return (max);
 }
 
-static void			check_fdset(fd_set *r, fd_set *w, int ret, t_client *cl)
+static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 {
-	if (FD_ISSET(STDIN_FILENO, r) && ret-- > 0)
+	if (FD_ISSET(STDIN_FILENO, r))
 		cl->errnb[0] = cl_ncurses_read(&cl->rd, cl);
-	if (FD_ISSET(STDIN_FILENO, w) && ret-- > 0)
+	if (FD_ISSET(STDIN_FILENO, w))
 		cl->errnb[1] = cl_ncurses_write(&cl->wr, cl);
-	if (cl->server.fd_ctrl > 0 && ret > 0)
+	if (cl->server.fd_ctrl > 0)
 	{
-		if (FD_ISSET(cl->server.fd_ctrl, r) && ret-- > 0)
+		if (FD_ISSET(cl->server.fd_ctrl, r))
 			cl->errnb[2] = cl_server_recv(&cl->wr, cl->server.fd_ctrl, cl);
-		if (FD_ISSET(cl->server.fd_ctrl, w) && ret-- > 0)
+		if (FD_ISSET(cl->server.fd_ctrl, w))
 			cl->errnb[3] = cl_server_send(&cl->server.wr, cl->server.fd_ctrl, cl);
 		if (cl->server.wait_response)
 			cl->errnb[4] = cl_response(&cl->server, cl);
 	}
-	if (cl->server.fd_data > 0 && ret > 0)
+	if (cl->server.fd_data > 0)
 	{
-		if (FD_ISSET(cl->server.fd_data, r) && ret--)
+		if (FD_ISSET(cl->server.fd_data, r))
 			cl->errnb[5] = cl_server_recv_data(&cl->server, cl);
 		// if (FD_ISSET(cl->server.fd_data, w) && ret--)
 		// 	cl->errnb[2] = cl_server_send(cl);
@@ -86,25 +89,23 @@ static void			check_fdset(fd_set *r, fd_set *w, int ret, t_client *cl)
 
 static int			check_errors(t_client *cl)
 {
-	unsigned long		i;
+	int		i;
 
-	i = 0;
-	while (i++ < sizeof(cl->errnb) / sizeof(cl->errnb[0]))
-		// if (cl->errnb[i] == ERR_DISCONNECT)
-		// 	return (ERR_DISCONNECT);
-		// else
-		if (cl->errnb[i - 1] != IS_OK)
+	i = -1;
+	while (++i < (int)(sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+		if (cl->errnb[i] == ERR_DISCONNECT)
+			return (ERR_DISCONNECT);
+		else if (cl->errnb[i] != IS_OK)
 		{
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_RED));
 			wprintw(cl->ncu.chatwin, "**ERROR: ");
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
-			wprintw(cl->ncu.chatwin, "%s\n", ft_get_error(cl->errnb[i - 1]));
+			wprintw(cl->ncu.chatwin, "%s\n", ft_get_error(cl->errnb[i]));
 			wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
 			wrefresh(cl->ncu.chatwin);
-			if (cl->errnb[i - 1] == ERR_DISCONNECT)
+			if (cl->errnb[i] == ERR_DISCONNECT)
 				ft_close(&cl->server.fd_ctrl);
-			cl->errnb[i - 1] = IS_OK;
-			while (1) ;
+			cl->errnb[i] = IS_OK;
 		}
 	return (IS_OK);
 }
@@ -128,7 +129,7 @@ int					cl_client_loop(t_client *cl)
 		if (ret < 0)
 			return (ERR_SELECT);
 		if (ret > 0)
-			check_fdset(&fds[0], &fds[1], ret, cl);
+			check_fdset(&fds[0], &fds[1], cl);
 	}
 	return (ERR_DISCONNECT);
 }

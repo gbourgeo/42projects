@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/21 15:29:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 15:13:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:16:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,6 @@ typedef struct	s_response_options
 }				t_ropt;
 
 t_ropt			*sv_response_opt(char *msg);
-
-/*
-** Packet received for put, get, etc.:
-**	size : Total size of the file
-**	type : BINARY (1) or ASCII (2)
-*/
-
-typedef struct		s_hdr
-{
-	long			size;
-	int				type;
-}					t_hdr;
-
-int					sv_receive_hdr(int fd, t_hdr *hdr);
 
 /*
 ** Command RMDIR structure

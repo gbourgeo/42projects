@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:58:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/20 20:04:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/06 19:07:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 /*
 ** { "APPE", "Append data to file.", sv_appe_help, sv_appe, 3 },
-** { "LIST", "Current working directory catalog.", sv_list_help, sv_list, 3 },
 ** { "NOOP", "Sends OK.", sv_noop_help, sv_noop, 3 },
 ** { "RNFR", "File to be renamed.", sv_rnfr_help, sv_rnfr, 3 },
 ** { "RNTO", "File new name.", sv_rnto_help, sv_rnto, 3 },
@@ -30,6 +29,7 @@ t_command			*sv_commands(int getsize)
 		{ "HELP", "Display available commands.", sv_help_help, sv_help, 0 },
 		{ "MKD", "Create directory on server.", sv_mkd_help, sv_mkd, 2 },
 		{ "NLST", "Short catalog.", sv_nlst_help, sv_nlst, 1 },
+		{ "LIST", "File listing.", sv_list_help, sv_list, 3 },
 		{ "PASS", "Give the user password.", sv_pass_help, sv_pass, 0 },
 		{ "PASV", "Server enters passive mode.", sv_pasv_help, sv_pasv, 2 },
 		{ "PORT", "Specify Data port to open.", sv_port_help, sv_port, 2 },

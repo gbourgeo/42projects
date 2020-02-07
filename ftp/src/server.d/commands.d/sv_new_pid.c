@@ -6,24 +6,24 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 15:56:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 22:18:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:27:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "sv_main.h"
 
-static int		sv_preprocess(char **cmds, t_client *cl, int (*hdlr)())
+static int	sv_preprocess(char **cmds, t_client *cl, char *opt, int (*hdlr)())
 {
 	int			errnb;
 
 	if (cl->data.port
 	&& (errnb = sv_connect_to(&cl->data.socket, cl)) != IS_OK)
 		return (errnb);
-	return (hdlr(cmds, cl));
+	return (hdlr(opt, cmds, cl));
 }
 
-int				sv_new_pid(char **cmds, t_client *cl, int (*hdlr)())
+int			sv_new_pid(char **cmds, t_client *cl, char *opt, int (*hdlr)())
 {
 	int			errnb;
 
@@ -36,13 +36,11 @@ int				sv_new_pid(char **cmds, t_client *cl, int (*hdlr)())
 		return (ERR_FORK);
 	if (cl->data.pid == 0)
 	{
-		errnb = sv_preprocess(cmds, cl, hdlr);
+		errnb = sv_preprocess(cmds, cl, opt ,hdlr);
 		ft_tabdel(&cmds);
 		sv_server_end(&g_serv, 0);
 		exit(errnb);
 	}
-	ft_strdel(&cl->data.port);
-	ft_close(&cl->data.pasv_fd);
-	ft_close(&cl->data.socket);
+	sv_free_data(&cl->data);
 	return (IS_OK);
 }

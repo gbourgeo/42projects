@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 17:21:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/07 20:35:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ typedef struct		s_server
 {
 	int				fd_ctrl;
 	int				fd_data;
-	int				get_data;
+	int				receive_data;
 	int				fd_file;
 	t_buff			wr;
 	int				wait_response;
@@ -177,12 +177,11 @@ int					cl_quit(char *buf, char **cmd, t_client *cl);
 int					cl_get(char *buf, char **cmd, t_client *cl);
 int					cl_help(char *buf, char **cmd, t_client *cl);
 int					cl_ls(char *buf, char **cmd, t_client *cl);
-int					cl_ls_next(t_server *sv, t_client *cl);
-int					cl_ls_end(t_server *sv, t_client *cl);
 int					cl_mkdir(char *buf, char **cmd, t_client *cl);
 int					cl_put(char *buf, char **cmd, t_client *cl);
 int					cl_pwd(char *buf, char **cmd, t_client *cl);
 int					cl_rm(char *buf, char **cmd, t_client *cl);
+int					cl_rmdir(char *buf, char **cmd, t_client *cl);
 
 int					cl_help_print(t_command *cmd, char **descrip, t_client *cl);
 int					cl_help_loc_help(t_command *cmd, t_client *cl);
@@ -196,5 +195,6 @@ int					cl_mkdir_help(t_command *cmd, t_client *cl);
 int					cl_put_help(t_command *cmd, t_client *cl);
 int					cl_pwd_help(t_command *cmd, t_client *cl);
 int					cl_rm_help(t_command *cmd, t_client *cl);
+int					cl_rmdir_help(t_command *cmd, t_client *cl);
 
 #endif
