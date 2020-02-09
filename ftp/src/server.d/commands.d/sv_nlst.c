@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 15:23:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/06 19:01:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:59:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ int				sv_nlst(char **cmds, t_client *cl)
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
 	if (!cl->data.port && cl->data.pasv_fd < 0 && cl->data.socket < 0)
 		return (sv_response(cl, "425 Use PORT or PASV first"));
-	if ((errnb = sv_new_pid(cmds, cl, "-p", sv_nlst_exec)) != IS_OK)
+	cl->data.function = sv_nlst_exec;
+	if ((errnb = sv_new_pid(cmds, cl, "-p")) != IS_OK)
 		errnb = sv_response(cl, "552 internal error (%s)", ft_get_error(errnb));
 	return (errnb);
 }

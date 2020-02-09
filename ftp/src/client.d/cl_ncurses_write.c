@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:05:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 18:59:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 00:40:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int				cl_ncurses_write(t_buff *ring, t_client *cl)
 			ret = wprintw(cl->ncu.chatwin, "%.*s",
 			ring->buff + sizeof(ring->buff) - ring->head, ring->head);
 		wrefresh(cl->ncu.chatwin);
+		if (cl->server.wait_response)
+			cl_ringbuffcat(cl->server.response, sizeof(cl->server.response), ring);
 	}
 	if (ring->tail >= ring->buff + sizeof(ring->buff))
 		ring->tail = ring->buff;

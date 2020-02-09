@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/04 22:49:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:22:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int				cl_help(char *buf, char **cmd, t_client *cl)
 	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
 }
 
-int					cl_help_help(t_command *cmd, t_client *cl)
+int				cl_help_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
 		"", NULL

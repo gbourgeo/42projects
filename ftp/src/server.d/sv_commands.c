@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 18:58:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/06 19:07:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:39:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,5 @@ t_command			*sv_commands(int getsize)
 		{ "REGT", "Register a new account.", sv_regt_help, sv_regt, 3 },
 	};
 
-	if (getsize)
-		return (t_command *)(sizeof(cmds) / sizeof(cmds[0]));
-	return (cmds);
+	return ((getsize) ? (t_command *)(sizeof(cmds) / sizeof(cmds[0])) : cmds);
 }

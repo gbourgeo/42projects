@@ -6,30 +6,24 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:40:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 02:10:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-static int		cl_get_end(t_server *sv)
-{
-	ft_close(&sv->fd_data);
-	sv->receive_data = 0;
-	sv->wait_response = 0;
-	ft_bzero(sv->response, sizeof(sv->response));
-	ft_bzero(sv->cmd, sizeof(sv->cmd));
-	sv->fct = NULL;
-	return (IS_OK);
-}
+// static int		cl_get_end(t_server *sv)
+// {
+// 	return (cl_close_data(sv));
+// }
 
 int				cl_get(char *buf, char **cmd, t_client *cl)
 {
 	int			i;
 	int			errnb;
 
-	i = 1;
 	(void)buf;
+	i = 1;
 	ft_strcpy(cl->server.cmd, "RETR");
 	while (cmd[i])
 	{
@@ -41,12 +35,12 @@ int				cl_get(char *buf, char **cmd, t_client *cl)
 	if ((errnb = cl_server_write("PASV\n", 5, &cl->server, cl)) != IS_OK)
 		return (errnb);
 	cl->server.receive_data = 1;
-	cl->server.wait_response = 1;
-	cl->server.fct = cl_get_end;
+	cl->server.wait_response = 2;
+	cl->server.filename = ft_strdup(cmd[1]);
 	return (errnb);
 }
 
-int					cl_get_help(t_command *cmd, t_client *cl)
+int				cl_get_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
 		"", NULL

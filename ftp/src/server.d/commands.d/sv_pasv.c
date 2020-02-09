@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 11:14:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 16:51:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 20:01:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static int				sv_pasv_success(char *port, t_client *cl)
 			addr[i] = g_serv.addr[cl->version][i];
 		i++;
 	}
+	addr[i] = '\0';
 	nb = ft_atoi(port) << 8;
 	errnb = sv_response(cl, "227 =%s,%d,%d (%s)",
 	addr, ft_atoi(port) >> 8, nb >> 8, port);

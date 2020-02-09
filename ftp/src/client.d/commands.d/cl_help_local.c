@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:40:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/06 19:13:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:24:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int					cl_help_local(char *buf, char **cmd, t_client *cl)
 	while (i < (long)cl_commands(1) && errnb == OK)
 	{
 		errnb = wprintw(cl->ncu.chatwin, " %s%s",
-		cmds[i].name, padding(i,cmds));
+		cmds[i].name, padding(i, cmds));
 		i++;
 	}
 	errnb = wprintw(cl->ncu.chatwin, "\n");

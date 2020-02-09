@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:43:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 04:34:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 static int			client_init(t_client *cl)
 {
+	cl->printtowin = cl->ncu.chatwin;
 	cl->rd.head = cl->rd.buff;
 	cl->rd.tail = cl->rd.buff;
 	cl->rd.len = 0;
@@ -25,11 +26,12 @@ static int			client_init(t_client *cl)
 	cl->wr.len = sizeof(cl->wr.buff);
 	cl->server.fd_data = -1;
 	cl->server.receive_data = 0;
-	cl->server.fd_file = -1;
+	cl->server.wait_response = 0;
+	cl->server.filename = NULL;
+	cl->server.filefd = -1;
 	cl->server.wr.head = cl->server.wr.buff;
 	cl->server.wr.tail = cl->server.wr.buff;
 	cl->server.wr.len = 0;
-	cl->server.wait_response = 0;
 	ft_bzero(cl->server.cmd, sizeof(cl->server.cmd));
 	ft_bzero(cl->server.response, sizeof(cl->server.response));
 	return (IS_OK);
@@ -74,7 +76,8 @@ static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 		if (FD_ISSET(cl->server.fd_ctrl, r))
 			cl->errnb[2] = cl_server_recv(&cl->wr, cl->server.fd_ctrl, cl);
 		if (FD_ISSET(cl->server.fd_ctrl, w))
-			cl->errnb[3] = cl_server_send(&cl->server.wr, cl->server.fd_ctrl, cl);
+			cl->errnb[3] = cl_server_send(&cl->server.wr, cl->server.fd_ctrl,
+			cl);
 		if (cl->server.wait_response)
 			cl->errnb[4] = cl_response(&cl->server, cl);
 	}
@@ -82,8 +85,6 @@ static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 	{
 		if (FD_ISSET(cl->server.fd_data, r))
 			cl->errnb[5] = cl_server_recv_data(&cl->server, cl);
-		// if (FD_ISSET(cl->server.fd_data, w) && ret--)
-		// 	cl->errnb[2] = cl_server_send(cl);
 	}
 }
 
@@ -98,7 +99,7 @@ static int			check_errors(t_client *cl)
 		else if (cl->errnb[i] != IS_OK)
 		{
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_RED));
-			wprintw(cl->ncu.chatwin, "**ERROR: ");
+			wprintw(cl->ncu.chatwin, "**ERROR**: ");
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
 			wprintw(cl->ncu.chatwin, "%s\n", ft_get_error(cl->errnb[i]));
 			wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
@@ -119,8 +120,11 @@ int					cl_client_loop(t_client *cl)
 
 	cl->errnb[0] = cl_get_addrinfo(&cl->server.fd_ctrl, cl->addr, cl->port, cl);
 	cl->errnb[1] = client_init(cl);
+	cl->printtowin = cl->ncu.slistwin;
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
+	cl->errnb[1] = cl_nlst(NULL, NULL, cl);
+	cl->server.wait_response = 2;
 	while (check_errors(cl) == IS_OK)
 	{
 		wrefresh(cl->ncu.textwin);

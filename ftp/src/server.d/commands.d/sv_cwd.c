@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/14 14:18:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 17:37:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:28:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ int				sv_cwd(char **cmds, t_client *cl)
 		return (sv_response(cl, "501 Missing parameter / syntax error"));
 	sv_cwd_new(cwd, cmds[1], cl);
 	ret = ERR_MALLOC;
-	if (!(dup = ft_strdup(cwd)) || (ret = sv_check_path(&dup, cl)) != IS_OK)
+	if (!(dup = ft_strdup(cwd))
+	|| (ret = sv_check_path(&dup, cl)) != IS_OK)
 		return (sv_response(cl, "550 Internal error (%s)", ft_get_error(ret)));
 	ret = chdir(dup);
 	ft_strcpy(cwd, dup + ft_strlen(cl->home) - 1);

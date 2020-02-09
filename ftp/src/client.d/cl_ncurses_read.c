@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 18:37:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:19:59 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,16 @@
 #include <term.h>
 #include <curses.h>
 #include "cl_main.h"
+
+static int			cl_ctrl_c(t_buff *ring, t_client *cl)
+{
+	(void)cl;
+	ring->head = ring->tail;
+	ring->len = 0;
+	wclear(cl->ncu.textwin);
+	wrefresh(cl->ncu.textwin);
+	return (IS_OK);
+}
 
 static int			cl_ctrl_d(t_buff *ring, t_client *cl)
 {
@@ -31,6 +41,11 @@ static int			cl_lf(t_buff *ring, t_client *cl)
 	errnb = IS_OK;
 	if (ring->len > 0)
 	{
+		if (ring->len < (int)sizeof(ring->buff))
+		{
+			*ring->tail++ = '\0';
+			ring->len++;
+		}
 		errnb = cl_client_commands(cl);
 		ft_bzero(ring->buff, sizeof(ring->buff));
 		ring->head = ring->buff;
@@ -121,7 +136,7 @@ static int			cl_key_right(t_buff *ring, t_client *cl)
 int					cl_ncurses_read(t_buff *ring, t_client *cl)
 {
 	static t_read	ch[] = {
-		{ 4, cl_ctrl_d }, { 10, cl_lf },
+		{ 3, cl_ctrl_c }, { 4, cl_ctrl_d }, { 10, cl_lf },
 		{ 127, cl_backspace }, { KEY_DC, cl_key_dc },
 		{ KEY_UP, cl_key_up }, { KEY_DOWN, cl_key_down },
 		{ KEY_LEFT, cl_key_left }, { KEY_RIGHT, cl_key_right },

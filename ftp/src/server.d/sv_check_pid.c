@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 18:01:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 02:33:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,8 @@ static int		check_pid_value(const char *name, int status, t_client *cl)
 	{
 		status = WEXITSTATUS(status);
 		if (status)
-			return (sv_response(cl, "512 Internal error (%s)", ft_get_error(status)));
-		if (name)
-			return (sv_response(cl, "%s %s OK",
-			(!ft_strcmp(name, "LIST")) ? "212" : "250", name));
-		return (sv_response(cl, "200 Command OK"));
+			return (sv_response(cl, "512 Error (%s)", ft_get_error(status)));
+		return (sv_response(cl, "%s", name));
 	}
 	else if (WIFSIGNALED(status))
 	{
@@ -52,6 +49,13 @@ int				sv_check_pid(t_client *cl)
 	if (WIFSTOPPED(status) || WIFCONTINUED(status))
 		return (sv_response(cl, "451 Operation stopped / continued.\n", cl));
 	if (ret == cl->data.pid)
-		errnb = check_pid_value("TEST", status, cl);
+	{
+		if (cl->data.function == sv_nlst_exec)
+			errnb = check_pid_value("212 List OK", status, cl);
+		else if (cl->data.function == sv_retr_exec)
+			errnb = check_pid_value("250 Tranfert OK", status, cl);
+		else
+			errnb = check_pid_value("200 Command OK", status, cl);
+	}
 	return (errnb);
 }

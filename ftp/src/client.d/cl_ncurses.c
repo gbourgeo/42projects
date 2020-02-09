@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:11:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 17:17:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 02:27:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,14 @@ int				cl_ncurses_init(t_client *cl)
 		return (ERR_NCURSE_MAIN);
 	noecho();
 	cbreak();
-	// raw(); // Desactivate signals
+	raw();
 	start_color();
 	use_default_colors();
 	clear();
 	cl_init_pairs();
 	if ((errnb = create_s_text(cl)) == IS_OK)
 		if ((errnb = create_s_list(cl)) == IS_OK)
-			errnb = create_c_text(cl);
+			if ((errnb = create_c_list(cl)) == IS_OK)
+				errnb = create_c_text(cl);
 	return (errnb);
 }

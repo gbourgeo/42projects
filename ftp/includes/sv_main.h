@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:45:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:58:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 */
 
 int					sv_check_option(int option, int value);
-int					sv_new_pid(char **cmds, t_client *cl, char *opt, int (*hdlr)());
+int					sv_new_pid(char **cmds, t_client *cl, char *opt);
 int					sv_check_pid(t_client *cl);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
@@ -247,6 +247,7 @@ t_client			*sv_client_timeout(t_client *cl);
 int					sv_check_path(char **path, t_client *cl);
 char				*sv_recreate_path(char *path);
 int					sv_change_working_directory(char *home, char *pwd);
+int					sv_check_err(int errnb[], int size);
 
 /*
 ** Errors handler
@@ -263,59 +264,60 @@ t_command			*sv_commands(int getsize);
 
 /*
 ** Acces Control Commands
+** int					sv_acct(char **cmds, t_client *cl);
+** int					sv_smnt(char **cmds, t_client *cl);
 */
 
 int					sv_user(char **cmds, t_client *cl);
 int					sv_pass(char **cmds, t_client *cl);
-// int					sv_acct(char **cmds, t_client *cl);
 int					sv_cwd(char **cmds, t_client *cl);
 int					sv_cdup(char **cmds, t_client *cl);
-// int					sv_smnt(char **cmds, t_client *cl);
 int					sv_rein(char **cmds, t_client *cl);
 int					sv_quit(char **cmds, t_client *cl);
 
 /*
 ** Transfert Parameter Commands
+** int					sv_stru(char **cmds, t_client *cl);
+** int					sv_mode(char **cmds, t_client *cl);
 */
 
 int					sv_port(char **cmds, t_client *cl);
 int					sv_pasv(char **cmds, t_client *cl);
 int					sv_pasv_listen(char *port, t_client *cl);
 int					sv_type(char **cmds, t_client *cl);
-// int					sv_stru(char **cmds, t_client *cl);
-// int					sv_mode(char **cmds, t_client *cl);
 
 /*
 ** FTP Service Commands
+** int					sv_appe(t_client *cl);
+** int					sv_allo(t_client *cl);
+** int					sv_rest(t_client *cl);
+** int					sv_rnfr(t_client *cl);
+** int					sv_rnto(t_client *cl);
+** int					sv_abor(t_client *cl);
+** int					sv_site(char **cmds, t_client *cl);
+** int					sv_syst(char **cmds, t_client *cl);
+** int					sv_stat(char **cmds, t_client *cl);
+** int					sv_noop(char **cmds, t_client *cl);
 */
 
 int					sv_retr(char **cmds, t_client *cl);
 int					sv_stor(char **cmds, t_client *cl);
 int					sv_stou(char **cmds, t_client *cl);
-// int					sv_appe(t_client *cl);
-// int					sv_allo(t_client *cl);
-// int					sv_rest(t_client *cl);
-// int					sv_rnfr(t_client *cl);
-// int					sv_rnto(t_client *cl);
-// int					sv_abor(t_client *cl);
 int					sv_dele(char **cmds, t_client *cl);
 int					sv_rmd(char **cmds, t_client *cl);
 int					sv_mkd(char **cmds, t_client *cl);
 int					sv_pwd(char **cmds, t_client *cl);
 int					sv_list(char **cmds, t_client *cl);
 int					sv_nlst(char **cmds, t_client *cl);
-// int					sv_site(char **cmds, t_client *cl);
-// int					sv_syst(char **cmds, t_client *cl);
-// int					sv_stat(char **cmds, t_client *cl);
 int					sv_help(char **cmds, t_client *cl);
-// int					sv_noop(char **cmds, t_client *cl);
+int					sv_nlst_exec(char *opt, char **arg, t_client *cl);
+int					sv_retr_exec(char *opt, char **cmds, t_client *cl);
 
 /*
 ** Special Commands
 */
 
 int					sv_regt(char **cmds, t_client *cl);
-// int					sv_signin(char **cmds, t_client *cl);
 
 /*
 ** Commands Help
@@ -341,9 +343,6 @@ int					sv_list_help(t_command *cmd, t_client *cl);
 int					sv_nlst_help(t_command *cmd, t_client *cl);
 int					sv_help_help(t_command *cmd, t_client *cl);
 int					sv_regt_help(t_command *cmd, t_client *cl);
-
-
-int 				sv_nlst_exec(char *opt, char **arg, t_client *cl);
 int					sv_print_help(t_client *cl, t_command *cmd, char *args,
 					char **description);
 
@@ -352,10 +351,5 @@ int					sv_validnumber(char **s, int ssize);
 int					sv_connect_to(int *fd, t_client *cl);
 int					sv_listen_from(t_client *cl);
 int					sv_response(t_client *cl, const char *msg, ...);
-
-int					sv_send_info(char *file, char *path, int fd, t_server *sv);
-
-int					sv_handle_dir(char *dir, t_server *sv);
-int					sv_handle_file(char *file, t_server *sv);
 
 #endif

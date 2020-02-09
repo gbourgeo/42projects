@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 19:17:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:24:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 04:44:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,40 +47,46 @@ static int			cl_response_parse(t_server *sv, t_client *cl)
 	char			*port;
 	int				errnb;
 
-	if (sv->fd_data > 0)
-		return (ERR_CONNECT_TO);
-	if (!ft_isdigit(sv->response[0]) || sv->response[0] != '2'
-	|| !ft_isdigit(sv->response[1]) || !ft_isdigit(sv->response[2])
-	|| sv->response[3] != ' '
-	|| !(port = cl_addrcpy(addr, sv->response + 5, cl->version)))
-		return (IS_OK);
-	if ((errnb = cl_get_addrinfo(&sv->fd_data, addr, port, cl)) == IS_OK)
-		errnb = cl_server_write(sv->cmd, ft_strlen(sv->cmd), &cl->server, cl);
-	sv->wait_response = 2;
-	ft_bzero(sv->response, sizeof(sv->response));
-	ft_bzero(sv->cmd, sizeof(sv->cmd));
-	free(port);
+	errnb = IS_OK;
+	if (ft_isdigit(sv->response[0]) && ft_isdigit(sv->response[1])
+	&& ft_isdigit(sv->response[2]) && sv->response[3] == ' ')
+	{
+		if (sv->response[0] > '2')
+			return (cl_close_data(sv, 0, cl));
+		if (ft_atoi(sv->response) == 227)
+		{
+			if (!(port = cl_addrcpy(addr, sv->response + 5, cl->version)))
+				errnb = ERR_MALLOC;
+			else if ((errnb = cl_get_addrinfo(&sv->fd_data, addr, port, cl)) == IS_OK)
+				errnb = cl_server_write(sv->cmd, ft_strlen(sv->cmd), &cl->server,
+				cl);
+			ft_bzero(sv->cmd, sizeof(sv->cmd));
+			ft_strdel(&port);
+		}
+		sv->wait_response--;
+	}
+	ft_strcpy(sv->response, sv->response + ft_strlen(sv->response) + 1);
 	return (errnb);
 }
 
-int				cl_response(t_server *sv, t_client *cl)
+int					cl_response(t_server *sv, t_client *cl)
 {
-	int			i;
+	int				i;
+	int				errnb;
 
 	i = 0;
-	while (sv->response[i])
+	errnb = IS_OK;
+	while (sv->response[i] && errnb == IS_OK)
 		if (sv->response[i] == '\n')
 		{
 			sv->response[i] = '\0';
-			wprintw(cl->ncu.listwin, "%s\n", sv->response);
-			wrefresh(cl->ncu.listwin);
-			if (!sv->fct)
-				return (IS_OK);
-			if (sv->wait_response == 2)
-				return (sv->fct(&cl->server));
-			return (cl_response_parse(&cl->server, cl));
+			if (sv->wait_response <= 0)
+				errnb = cl_close_data(&cl->server, 0, cl);
+			else
+				errnb = cl_response_parse(&cl->server, cl);
+			i = 0;
 		}
 		else
 			i++;
-	return (IS_OK);
+	return (errnb);
 }

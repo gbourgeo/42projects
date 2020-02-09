@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_help_print.c                                    :+:      :+:    :+:   */
+/*   cl_client_close.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/24 12:30:44 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/08 18:27:36 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/08 18:04:41 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/09 04:29:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include "cl_main.h"
 
-int				sv_print_help(t_client *cl, t_command *cmd, char *args,
-char **description)
+int				cl_close_data(t_server *sv, int end, t_client *cl)
 {
-	long	i;
-	int		errnb;
-
-	i = 0;
-	errnb = sv_response(cl, " Command: %s %s", cmd->name, args);
-	while (errnb == IS_OK && description[i])
-	{
-		errnb = sv_response(cl, "\t%s", description[i]);
-		i++;
-	}
-	errnb = sv_response(cl, "");
-	return (errnb);
+	cl->printtowin = cl->ncu.chatwin;
+	if (end)
+		ft_close(&sv->fd_ctrl);
+	ft_close(&sv->fd_data);
+	sv->receive_data = 0;
+	sv->wait_response = 0;
+	ft_strdel(&sv->filename);
+	ft_close(&sv->filefd);
+	ft_bzero(sv->response, sizeof(sv->response));
+	ft_bzero(sv->cmd, sizeof(sv->cmd));
+	return (IS_OK);
 }

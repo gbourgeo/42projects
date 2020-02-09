@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/06 18:57:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:02:59 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:34:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static int		fill_command(char **cmd, char **arg, t_client *cl)
 	return (IS_OK);
 }
 
-int 			sv_nlst_exec(char *opt, char **arg, t_client *cl)
+int				sv_nlst_exec(char *opt, char **arg, t_client *cl)
 {
 	char		**cmd;
 	int			errnb;
@@ -36,7 +36,8 @@ int 			sv_nlst_exec(char *opt, char **arg, t_client *cl)
 	errnb = IS_OK;
 	if (!(cmd = ft_memalloc(sizeof(*cmd) * 4)))
 		return (ERR_MALLOC);
-	if (!(cmd[0] = ft_strdup("/bin/ls")) || !(cmd[1] = ft_strdup(opt)))
+	if (!(cmd[0] = ft_strdup("/bin/ls"))
+	|| !(cmd[1] = ft_strdup(opt)))
 		errnb = ERR_MALLOC;
 	else if ((errnb = fill_command(cmd, arg, cl)) == IS_OK)
 	{

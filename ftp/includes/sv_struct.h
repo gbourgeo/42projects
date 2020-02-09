@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/21 15:29:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:16:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:47:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,24 @@
 ** Sv_response() options structure
 */
 
-typedef struct	s_response_options
+typedef struct		s_response_options
 {
-	char		value;
-	int			(*fct)();
-}				t_ropt;
+	char	value;
+	int		(*fct)();
+}					t_ropt;
 
-t_ropt			*sv_response_opt(char *msg);
+t_ropt				*sv_response_opt(char *msg);
+
+/*
+** Command CDUP structure
+*/
+
+typedef struct		s_cdup
+{
+	char	*cmd;
+	char	*arg;
+	char	*null;
+}					t_cdup;
 
 /*
 ** Command RMDIR structure
@@ -43,13 +54,13 @@ void				sv_rmdir_open(t_rmdir *e, t_client *cl);
 
 typedef struct		s_type
 {
-	char			name;
-	int				value;
-	int				(*handler)();
+	char	name;
+	int		value;
+	int		(*handler)();
 }					t_type;
 
 int					sv_type_ae(char *value, t_client *cl);
 int					sv_type_i(char *value, t_client *cl);
 int					sv_type_l(char *value, t_client *cl);
 
-# endif
+#endif

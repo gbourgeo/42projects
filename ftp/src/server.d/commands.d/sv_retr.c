@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:42:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 01:48:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "sv_main.h"
 #include "sv_struct.h"
 
-static int		sv_retr_exec(char *opt, char **cmds, t_client *cl)
+int				sv_retr_exec(char *opt, char **cmds, t_client *cl)
 {
 	size_t	sent;
 	int		ret;
@@ -56,8 +56,8 @@ static int		sv_retr_open_file(char *file, t_data *data)
 	else if ((data->fsize = lseek(fd, 0, SEEK_END)) < 0
 	|| lseek(fd, 0, SEEK_SET) < 0)
 		errnb = ERR_LSEEK;
-	else if ((data->file = mmap(NULL, data->fsize, PROT_READ, MAP_PRIVATE, fd, 0))
-	== MAP_FAILED)
+	else if ((data->file = mmap(NULL, data->fsize, PROT_READ,
+	MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 		errnb = ERR_MMAP;
 	ft_close(&fd);
 	return (errnb);
@@ -79,20 +79,19 @@ int				sv_retr(char **cmds, t_client *cl)
 
 	cl->data.file = MAP_FAILED;
 	cl->data.fsize = -1;
+	cl->data.function = sv_retr_exec;
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		return (sv_response(cl, "530 Please login with USER and PASS."));
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 		return (sv_response(cl, "421 Closing connection"));
 	if (cmds[1] && (!sv_validpathname(cmds[1]) || cmds[2]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
 	if (!cl->data.port && cl->data.pasv_fd < 0 && cl->data.socket < 0)
 		return (sv_response(cl, "425 Use PORT or PASV first"));
-	// Verification du chemin / fichier
 	if ((errnb = sv_check_path(&cmds[1], cl)) != IS_OK
 	|| (errnb = sv_retr_open_file(cmds[1], &cl->data)) != IS_OK
-	// || (errnb = sv_response(cl, "125 Ready for transfert")) != IS_OK
-	|| (errnb = sv_new_pid(cmds, cl, NULL, sv_retr_exec)) != IS_OK)
+	|| (errnb = sv_response(cl, "125 Ready for transfert")) != IS_OK
+	|| (errnb = sv_new_pid(cmds, cl, NULL)) != IS_OK)
 		errnb = sv_response(cl, "451 Internal error (%s)", ft_get_error(errnb));
 	return (errnb);
 }

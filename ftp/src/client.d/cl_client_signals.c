@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 06:26:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 15:45:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/09 02:26:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void		cl_timeout(t_client *cl)
 
 	start = time(NULL);
 	end = start;
-	while (end - start < 2)
+	while (end - start < 1)
 	{
 		wprintw(cl->ncu.chatwin, "Quitting in %d", 1 - (end - start));
 		wrefresh(cl->ncu.chatwin);

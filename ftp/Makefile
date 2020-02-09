@@ -6,13 +6,14 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/07 20:16:49 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/09 03:24:07 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CLIENT	= client
 CLI_D	= src/client.d/
 CLI_C	= cl_main.c						\
+		cl_client_close.c				\
 		cl_client_commands.c			\
 		cl_client_end.c					\
 		cl_client_loop.c				\
@@ -42,6 +43,7 @@ CLI_C += cl_cd.c						\
 		cl_help.c						\
 		cl_ls.c							\
 		cl_mkd.c						\
+		cl_nlst.c						\
 		cl_put.c						\
 		cl_pwd.c						\
 		cl_quit.c						\
@@ -86,6 +88,7 @@ SER_C	= sv_main.c						\
 SER_C_D	= $(SER_D)commands.d/
 SER_C	+= sv_cdup.c					\
 		sv_change_working_directory.c	\
+		sv_check_err.c					\
 		sv_check_path.c					\
 		sv_connect_to.c					\
 		sv_cwd.c						\

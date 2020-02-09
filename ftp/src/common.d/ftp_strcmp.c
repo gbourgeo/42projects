@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 23:10:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:52:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:24:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,5 +24,5 @@ int			ftp_strcmp(const char *s1, const char *s2)
 			return (1);
 		i++;
 	}
-	return !(s1[i] == s2[i]);
+	return (!(s1[i] == s2[i]));
 }

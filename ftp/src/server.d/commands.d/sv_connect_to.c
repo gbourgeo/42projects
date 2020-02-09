@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 15:43:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 19:52:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:27:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ static int		init_addrinfo(struct addrinfo **res, t_client *cl, int *fd)
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	printf("Connecting to %s %s\n", cl->data.address, cl->data.port);
 	if (getaddrinfo(cl->data.address, cl->data.port, &hints, res))
 		return (ERR_GETADDR);
 	*fd = -1;
@@ -47,12 +46,10 @@ int				sv_connect_to(int *fd, t_client *cl)
 	while (tmp && *fd < 0)
 	{
 		*fd = socket(tmp->ai_family, tmp->ai_socktype, tmp->ai_protocol);
-		printf("%d, %d \n", *fd, tmp->ai_family);
 		if (*fd == -1)
 			continue ;
 		if (connect(*fd, tmp->ai_addr, tmp->ai_addrlen) == 0)
 			break ;
-		perror("connect");
 		ft_close(fd);
 		tmp = tmp->ai_next;
 	}

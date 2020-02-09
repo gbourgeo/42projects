@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/24 15:00:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 16:51:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:38:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ int				sv_client_init(t_client *cl, t_server *sv)
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.head;
 	cl->home = sv_guest_home(sv->users, sv);
-	if (!(cl->pwd = ft_strdup("/")) || !(cl->oldpwd = ft_strdup("/")))
+	if (!(cl->pwd = ft_strdup("/"))
+	|| !(cl->oldpwd = ft_strdup("/")))
 		return (ERR_MALLOC);
 	len = sizeof(cl->sockaddr);
 	getsockname(cl->fd, &cl->sockaddr, &len);

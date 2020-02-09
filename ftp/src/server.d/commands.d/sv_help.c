@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:31:05 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/03 16:10:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/08 18:32:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,7 @@ int					sv_help(char **cmds, t_client *cl)
 	int			errnb;
 	long		i;
 
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 		return (sv_response(cl, "421 Closing connection"));
 	cmd = sv_commands(0);
 	i = 0;
