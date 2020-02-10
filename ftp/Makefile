@@ -6,22 +6,26 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/09 03:24:07 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/10 22:13:21 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CLIENT	= client
 CLI_D	= src/client.d/
 CLI_C	= cl_main.c						\
-		cl_client_close.c				\
 		cl_client_commands.c			\
 		cl_client_end.c					\
 		cl_client_loop.c				\
 		cl_client_signals.c				\
 		cl_commands.c					\
 		cl_get_addrinfo.c				\
+		cl_get_userinfo.c				\
+		cl_get_username.c				\
+		cl_get_userpass.c				\
 		cl_ncurses.c					\
 		cl_ncurses_box.c				\
+		cl_ncurses_keys.c				\
+		cl_ncurses_keys2.c				\
 		cl_ncurses_read.c				\
 		cl_ncurses_write.c				\
 		cl_params_get.c					\
@@ -29,14 +33,17 @@ CLI_C	= cl_main.c						\
 		cl_params_1.c					\
 		cl_response.c					\
 		cl_ringbuffcat.c				\
+		cl_server_close.c				\
+		cl_server_recv_data.c			\
 		cl_server_recv.c				\
 		cl_server_send.c				\
 		cl_server_write.c				\
-		cl_server_recv_data.c			\
 
 CLI_C_D = $(CLI_D)commands.d/
-CLI_C += cl_cd.c						\
+CLI_C += cl_bslash.c					\
+		cl_cd.c							\
 		cl_clear.c						\
+		cl_exit.c						\
 		cl_get.c						\
 		cl_help_local.c					\
 		cl_help_print.c					\

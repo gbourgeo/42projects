@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/08 18:58:27 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 18:53:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ int					sv_save_user(t_user *user, t_client *cl, t_server *sv);
 
 int					sv_check_option(int option, int value);
 int					sv_new_pid(char **cmds, t_client *cl, char *opt);
-int					sv_check_pid(t_client *cl);
+int					sv_check_pid(t_client *cl, t_server *sv);
 int					sv_init_sig(t_server *sv);
 int					sv_server_accept(int version, t_server *sv);
 int					sv_welcome(t_client *cl, t_server *sv);
@@ -349,7 +349,7 @@ int					sv_print_help(t_client *cl, t_command *cmd, char *args,
 int					sv_validpathname(const char *s);
 int					sv_validnumber(char **s, int ssize);
 int					sv_connect_to(int *fd, t_client *cl);
-int					sv_listen_from(t_client *cl);
+int					sv_listen_from(t_client *cl, t_server *sv);
 int					sv_response(t_client *cl, const char *msg, ...);
 
 #endif

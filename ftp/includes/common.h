@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 02:26:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 21:55:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,9 @@ enum
 	ERR_TCSETATTR,
 	ERR_QUIT,
 	ERR_TERM_NOT_DEFINED,
-	ERR_TERM_DATABASE,
+	ERR_TERM_DATABASE = 55,
 	ERR_TERM_NOT_FOUND,
+	ERR_PIPE,
 };
 
 typedef struct		s_env

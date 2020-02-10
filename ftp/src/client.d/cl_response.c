@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 19:17:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 04:44:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 22:16:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,15 @@ static int			cl_response_parse(t_server *sv, t_client *cl)
 	&& ft_isdigit(sv->response[2]) && sv->response[3] == ' ')
 	{
 		if (sv->response[0] > '2')
-			return (cl_close_data(sv, 0, cl));
+			return (cl_server_close(sv, 0, cl));
 		if (ft_atoi(sv->response) == 227)
 		{
 			if (!(port = cl_addrcpy(addr, sv->response + 5, cl->version)))
 				errnb = ERR_MALLOC;
-			else if ((errnb = cl_get_addrinfo(&sv->fd_data, addr, port, cl)) == IS_OK)
-				errnb = cl_server_write(sv->cmd, ft_strlen(sv->cmd), &cl->server,
-				cl);
+			else if ((errnb = cl_get_addrinfo(&sv->fd_data, addr, port, cl))
+			== IS_OK)
+				errnb = cl_server_write(sv->cmd, ft_strlen(sv->cmd),
+				&cl->server, cl);
 			ft_bzero(sv->cmd, sizeof(sv->cmd));
 			ft_strdel(&port);
 		}
@@ -81,7 +82,7 @@ int					cl_response(t_server *sv, t_client *cl)
 		{
 			sv->response[i] = '\0';
 			if (sv->wait_response <= 0)
-				errnb = cl_close_data(&cl->server, 0, cl);
+				errnb = cl_server_close(&cl->server, 0, cl);
 			else
 				errnb = cl_response_parse(&cl->server, cl);
 			i = 0;

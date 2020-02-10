@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:45:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/07 20:49:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 18:53:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void		sv_check_clients(t_client *cl, t_server *sv)
 	{
 		i = 0;
 		if (cl->data.pid > 0)
-			cl->errnb[3] = sv_check_pid(cl);
+			cl->errnb[3] = sv_check_pid(cl, sv);
 		while (i < (int)(sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 			if (cl->errnb[i] != IS_OK)
 			{
@@ -83,7 +83,7 @@ static void		sv_check_fd(int ret, fd_set *fdr, fd_set *fdw, t_server *sv)
 			cl->errnb[1] = cl->fct_write(cl);
 		if (cl->data.pasv_fd > 0
 		&& FD_ISSET(cl->data.pasv_fd, fdr) && ret-- > 0)
-			cl->errnb[2] = sv_listen_from(cl);
+			cl->errnb[2] = sv_listen_from(cl, sv);
 		cl = cl->next;
 	}
 }

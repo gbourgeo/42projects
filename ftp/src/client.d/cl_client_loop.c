@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 04:34:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 21:59:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <term.h>
 #include "cl_main.h"
 
-static int			client_init(t_client *cl)
+static int			cl_client_init(t_client *cl)
 {
 	cl->printtowin = cl->ncu.chatwin;
 	cl->rd.head = cl->rd.buff;
@@ -94,8 +94,8 @@ static int			check_errors(t_client *cl)
 
 	i = -1;
 	while (++i < (int)(sizeof(cl->errnb) / sizeof(cl->errnb[0])))
-		if (cl->errnb[i] == ERR_DISCONNECT)
-			return (ERR_DISCONNECT);
+		if (cl->errnb[i] == ERR_QUIT)
+			return (ERR_QUIT);
 		else if (cl->errnb[i] != IS_OK)
 		{
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_RED));
@@ -105,7 +105,7 @@ static int			check_errors(t_client *cl)
 			wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
 			wrefresh(cl->ncu.chatwin);
 			if (cl->errnb[i] == ERR_DISCONNECT)
-				ft_close(&cl->server.fd_ctrl);
+				cl_server_close(&cl->server, 1, cl);
 			cl->errnb[i] = IS_OK;
 		}
 	return (IS_OK);
@@ -118,12 +118,13 @@ int					cl_client_loop(t_client *cl)
 	int				max;
 	int				ret;
 
-	cl->errnb[0] = cl_get_addrinfo(&cl->server.fd_ctrl, cl->addr, cl->port, cl);
-	cl->errnb[1] = client_init(cl);
-	cl->printtowin = cl->ncu.slistwin;
+	cl->errnb[0] = cl_get_userinfo(&cl->server, cl);
+	cl->errnb[1] = cl_get_addrinfo(&cl->server.fd_ctrl, cl->addr, cl->port, cl);
+	cl->errnb[2] = cl_client_init(cl);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
-	cl->errnb[1] = cl_nlst(NULL, NULL, cl);
+	cl->errnb[3] = cl_nlst(NULL, NULL, cl);
+	cl->printtowin = cl->ncu.slistwin;
 	cl->server.wait_response = 2;
 	while (check_errors(cl) == IS_OK)
 	{
@@ -135,5 +136,5 @@ int					cl_client_loop(t_client *cl)
 		if (ret > 0)
 			check_fdset(&fds[0], &fds[1], cl);
 	}
-	return (ERR_DISCONNECT);
+	return (ERR_QUIT);
 }

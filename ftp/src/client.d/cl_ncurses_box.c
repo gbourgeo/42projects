@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:28:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 02:25:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 22:15:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,8 @@ int			create_s_list(t_client *cl)
 	x = COLS * 1 / 3;
 	x += (COLS % x) ? 1 : 0;
 	y = (LINES * 1 / 10);
-	if ((y = LINES - ((y < 3) ? 3 : y)) < 3)
+	if ((y = (LINES - ((y < 3) ? 3 : y)) / 2) < 3)
 		y = 3;
-	else
-		y /= 2;
 	if (!(cl->ncu.slistbox = subwin(cl->ncu.main, y, x, 0, COLS - x)))
 		return (ERR_NCURSE_LISTBOX);
 	box(cl->ncu.slistbox, 0, 0);
@@ -79,10 +77,8 @@ int			create_c_list(t_client *cl)
 	x = COLS * 1 / 3;
 	x += (COLS % x) ? 1 : 0;
 	y = (LINES * 1 / 10);
-	if ((y = LINES - ((y < 3) ? 3 : y)) < 3)
+	if ((y = (LINES - ((y < 3) ? 3 : y)) / 2) < 3)
 		y = 3;
-	else
-		y /= 2;
 	if (!(cl->ncu.clistbox = subwin(cl->ncu.main, y + 1, x, y, COLS - x)))
 		return (ERR_NCURSE_LISTBOX);
 	box(cl->ncu.clistbox, 0, 0);
@@ -92,7 +88,8 @@ int			create_c_list(t_client *cl)
 	wattroff(cl->ncu.clistbox, COLOR_PAIR(CLIENT_TITLE_COLOR));
 	mvwaddch(cl->ncu.clistbox, 0, (x * 0.5) + 6, ACS_LTEE);
 	wrefresh(cl->ncu.clistbox);
-	cl->ncu.clistwin = subwin(cl->ncu.clistbox, y - 2, x - 2, y + 1, COLS - x + 1);
+	cl->ncu.clistwin = subwin(cl->ncu.clistbox, y - 2, x - 2, y + 1,
+	COLS - x + 1);
 	if (!cl->ncu.clistwin)
 		return (ERR_NCURSE_LISTWIN);
 	scrollok(cl->ncu.clistwin, TRUE);
@@ -115,7 +112,5 @@ int			create_c_text(t_client *cl)
 	if (!cl->ncu.textwin)
 		return (ERR_NCURSE_CHATWIN);
 	keypad(cl->ncu.textwin, TRUE);
-	wmove(cl->ncu.textwin, 0, 0);
-	wrefresh(cl->ncu.textwin);
 	return (IS_OK);
 }

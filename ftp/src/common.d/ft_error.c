@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 19:39:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 21:55:55 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static const char	*get_error_next(int errnb)
 		"ncurse: init chat win failed", "read failed", "open terminal failed",
 		"tcgetattr failed", "tcsetattr failed", "Quit",
 		"Specify a terminal type", "Could not access the termcap data base",
-		"Terminal type is not defined",
+		"Terminal type is not defined", "client exited", "pipe failed",
 	};
 
 	if (errnb < (int)(sizeof(errors) / sizeof(errors[0])))
@@ -58,7 +58,7 @@ static const char	*get_error_next(int errnb)
 const char			*ft_get_error(int errnb)
 {
 	static const char	*errors[] = {
-		"Disconnected", "-- Help", "Missing parameter",
+		"Coucou", "-- Help", "Missing parameter",
 		"Wrong parameter", "Invalid parameter",
 		"parameter contains non digit characters",
 		"too much paramaters given", "getaddrinfo failed",
@@ -66,7 +66,7 @@ const char			*ft_get_error(int errnb)
 		"setsockopt failed", "listen(AF_INET) failed", "open failed",
 		"listen(AF_INET6) failed", "malloc failed", "select failed",
 		"accept IP_V4 failed", "accept IP_V6 failed", "recv failed",
-		"disconnected", "signal received", "wait failed",
+		"disconnected from server", "signal received", "wait failed",
 		"fork failed", "dup2 failed", "execv failed", "send failed",
 		"invalid username/password", "failed to change working directory",
 		"invalid command", "user already registered", "write failed",

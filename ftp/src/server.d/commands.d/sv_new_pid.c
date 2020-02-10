@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 15:56:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 02:32:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/10 19:03:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@ int			sv_new_pid(char **cmds, t_client *cl, char *opt)
 		sv_server_end(&g_serv, 0);
 		exit(errnb);
 	}
+	if (FT_CHECK(g_serv.options, sv_interactive))
+		printf("Client "FTP_GREEN"%d"FTP_RESET": DATA transfert started...\n",
+		cl->fd);
 	sv_free_data(&cl->data);
 	return (IS_OK);
 }
