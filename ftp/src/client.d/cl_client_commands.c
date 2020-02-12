@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 21:54:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/12 19:16:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ static int		cl_client_getcmd(char *buf, int size, char **cmd, t_client *cl)
 			return (cmds[i].func(buf, cmd, cl));
 		i++;
 	}
+	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin,
+	(char *[]){ "250 ", NULL }, cl->precmd);
 	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
 }
 

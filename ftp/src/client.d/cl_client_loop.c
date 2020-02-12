@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 21:59:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/12 23:42:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <term.h>
 #include "cl_main.h"
+#include "cl_struct.h"
 
 static int			cl_client_init(t_client *cl)
 {
@@ -78,7 +79,7 @@ static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 		if (FD_ISSET(cl->server.fd_ctrl, w))
 			cl->errnb[3] = cl_server_send(&cl->server.wr, cl->server.fd_ctrl,
 			cl);
-		if (cl->server.wait_response)
+		if (cl->server.wait_response > 0)
 			cl->errnb[4] = cl_response(&cl->server, cl);
 	}
 	if (cl->server.fd_data > 0)
@@ -121,13 +122,12 @@ int					cl_client_loop(t_client *cl)
 	cl->errnb[0] = cl_get_userinfo(&cl->server, cl);
 	cl->errnb[1] = cl_get_addrinfo(&cl->server.fd_ctrl, cl->addr, cl->port, cl);
 	cl->errnb[2] = cl_client_init(cl);
+	cl->errnb[3] = cl_pre_command(&cl->precmd, &cl->server, cl);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
-	cl->errnb[3] = cl_nlst(NULL, NULL, cl);
-	cl->printtowin = cl->ncu.slistwin;
-	cl->server.wait_response = 2;
 	while (check_errors(cl) == IS_OK)
 	{
+		cl->precmd = cl_pre_cmd_exec(cl->precmd, &cl->server, cl);
 		wrefresh(cl->ncu.textwin);
 		max = init_fdset(&fds[0], &fds[1], cl);
 		ret = select(max + 1, &fds[0], &fds[1], NULL, &timeout);

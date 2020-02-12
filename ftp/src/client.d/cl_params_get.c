@@ -6,11 +6,12 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:36:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/10 18:35:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/11 16:41:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
+#include "cl_struct.h"
 
 static int		only_digit(const char *s)
 {

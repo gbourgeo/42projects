@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 22:12:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/11 16:41:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <term.h>
 #include <curses.h>
 #include "cl_main.h"
+#include "cl_struct.h"
 
 static int			cl_default(int ret, t_buff *ring, t_client *cl)
 {

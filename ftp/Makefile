@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/10 22:13:21 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/12 22:11:15 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ CLI_C	= cl_main.c						\
 		cl_params_get.c					\
 		cl_params.c						\
 		cl_params_1.c					\
+		cl_pre_command.c				\
 		cl_response.c					\
 		cl_ringbuffcat.c				\
 		cl_server_close.c				\
@@ -40,7 +41,8 @@ CLI_C	= cl_main.c						\
 		cl_server_write.c				\
 
 CLI_C_D = $(CLI_D)commands.d/
-CLI_C += cl_bslash.c					\
+CLI_C += cl_bslash_cd.c					\
+		cl_bslash.c						\
 		cl_cd.c							\
 		cl_clear.c						\
 		cl_exit.c						\
@@ -49,7 +51,7 @@ CLI_C += cl_bslash.c					\
 		cl_help_print.c					\
 		cl_help.c						\
 		cl_ls.c							\
-		cl_mkd.c						\
+		cl_mkdir.c						\
 		cl_nlst.c						\
 		cl_put.c						\
 		cl_pwd.c						\
@@ -175,7 +177,7 @@ $(SERVEUR): $(OBJ_X) $(OBJ_S)
 	@$(CC) -o $@ $^ $(LIBS)
 	@echo "GENERATED: $(SERVEUR)"
 
-$(OBJ_C): includes/cl_main.h includes/common.h
+$(OBJ_C): includes/cl_main.h includes/common.h includes/cl_struct.h
 
 $(OBJ_S): includes/sv_main.h includes/common.h includes/sv_struct.h
 

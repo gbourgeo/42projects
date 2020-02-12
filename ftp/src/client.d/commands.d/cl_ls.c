@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 02:56:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/11 21:21:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int				cl_ls(char *buf, char **cmd, t_client *cl)
 		return (errnb);
 	cl->server.receive_data = 1;
 	cl->server.wait_response = 1;
+	ft_strclr(cl->server.response);
 	return (errnb);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 22:12:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/12 23:53:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,6 @@
 # include "common.h"
 
 /*
-** # define COMMANDS "help", "ls", "pwd", "cd", "get", "put", "lcd", "mkdir"
-** # define CMD_PLUS "rmdir", "unlink", "mget", "mput"
-** # define FUNCTIONS cl_help, cl_ls_pwd, cl_ls_pwd, cl_cd, cl_get, cl_put,
-** cl_lcd
-** # define FUNC_PLUS cl_mkdir, cl_rmdir, cl_unlink, cl_mget_mput, cl_mget_mput
-*/
-
-/*
 ** Enumeration for CLIENT options
 */
 
@@ -37,7 +29,7 @@ enum
 };
 
 /*
-** Ncurses related structure
+** Ncurses related enum
 */
 
 enum
@@ -85,6 +77,19 @@ typedef struct		s_server
 }					t_server;
 
 /*
+** Command to be launched at starting loop structure
+*/
+
+typedef struct		s_pre_commands
+{
+	WINDOW					*printtowin;
+	char					**code;
+	int						nb_response;
+	t_buff					wr;
+	struct s_pre_commands	*next;
+}					t_cmd;
+
+/*
 ** Client main structure (global)
 */
 
@@ -101,6 +106,7 @@ typedef struct		s_client
 	t_ncu			ncu;
 	WINDOW			*printtowin;
 	t_server		server;
+	t_cmd			*precmd;
 	int				errnb[6];
 	t_buff			rd;
 	t_buff			wr;
@@ -109,59 +115,32 @@ typedef struct		s_client
 struct s_client		g_cl;
 
 /*
-** Client Binary Options Structure
-*/
-
-typedef struct		s_opt
-{
-	char			c;
-	const char		*str;
-	const char		*param;
-	const char		*description;
-	int				(*function)(char **, int *, t_client *);
-}					t_opt;
-
-typedef struct		s_param
-{
-	t_opt			*opts;
-	size_t			size;
-	int				i;
-}					t_param;
-
-/*
-** Ncurses getch
-*/
-
-typedef struct		s_read
-{
-	int				value;
-	int				(*hdlr)();
-}					t_read;
-
-/*
 ** Client functions
 */
 
 int					cl_client_commands(t_buff *ring, t_client *cl);
 int					cl_client_signals(t_client *cl);
 int					cl_params_get(char **av, t_client *cl);
-t_opt				*cl_params(int getsize);
 int					cl_param_i(char **av, int *i, t_client *cl);
 int					cl_param_h(char **av, int *i, t_client *cl);
 int					cl_param_n(char **av, int *i, t_client *cl);
-void				cl_client_end(t_client *cl);
-int					cl_get_addrinfo(int *fd, char *addr, char *port,
-t_client *cl);
-int					cl_get_userinfo(t_server *sv, t_client *cl);
-int					cl_get_username(char buff[], t_server *sv, t_client *cl);
-int					cl_get_userpass(char buff[], t_server *sv, t_client *cl);
 
 int					cl_ncurses_init(t_client *cl);
 int					create_s_text(t_client *cl);
 int					create_s_list(t_client *cl);
 int					create_c_list(t_client *cl);
 int					create_c_text(t_client *cl);
+
+int					cl_get_addrinfo(int *fd, char *addr, char *port,
+t_client *cl);
+int					cl_get_userinfo(t_server *sv, t_client *cl);
+int					cl_get_username(t_server *sv, t_client *cl);
+int					cl_get_userpass(t_server *sv, t_client *cl);
+
+void				cl_client_end(t_client *cl);
 void				cl_ncurses_end(t_client *cl);
+void				cl_precmd_end(t_cmd *cmd, int all);
+
 int					cl_client_loop(t_client *cl);
 int					cl_ncurses_read(t_buff *ring, t_client *cl);
 int					cl_ncurses_write(t_buff *ring, t_client *cl);
@@ -172,6 +151,11 @@ int					cl_server_send(t_buff *ring, int fd, t_client *cl);
 int					cl_server_write(const char *buf, int size, t_server *sv,
 t_client *cl);
 
+int					cl_pre_command(t_cmd **cmds, t_server *sv, t_client *cl);
+t_cmd				*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl);
+t_cmd				*cl_new_command(const char *name, WINDOW *win, char **code,
+					t_cmd *next);
+
 t_command			*cl_commands(int getsize);
 int					cl_response(t_server *sv, t_client *cl);
 char				*cl_ringbuffcat(char *buff, int size, t_buff *ring);
@@ -181,6 +165,7 @@ char				*cl_ringbuffcat(char *buff, int size, t_buff *ring);
 */
 
 int					cl_bslash(char *buf, int size, char **cmd, t_client *cl);
+int					cl_bslash_cd(char *buf, int sz, char **cmd, t_client *cl);
 int					cl_cd(char *buf, char **cmd, t_client *cl);
 int					cl_clear(char *buf, char **cmd, t_client *cl);
 int					cl_exit(char *buf, char **cmd, t_client *cl);

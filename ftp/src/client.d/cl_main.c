@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:37:59 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 02:58:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/11 16:09:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include "cl_main.h"
+#include "cl_struct.h"
 
 static void			print_params(t_opt *opts, size_t size)
 {

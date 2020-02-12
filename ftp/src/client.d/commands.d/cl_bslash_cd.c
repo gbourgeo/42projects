@@ -1,26 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_params.c                                        :+:      :+:    :+:   */
+/*   cl_bslash_cd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/05 22:38:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 16:41:41 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/12 16:37:17 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/12 17:13:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
-#include "cl_struct.h"
 
-t_opt			*cl_params(int getsize)
+int			cl_bslash_cd(char *buf, int sz, char **cmd, t_client *cl)
 {
-	static t_opt	opt[] = {
-		{ 'i', NULL, NULL, "Interactive client.", cl_param_i },
-		{ 'h', "-help", NULL, "Print help and exit.", cl_param_h },
-	};
-
-	if (getsize)
-		return (t_opt *)(sizeof(opt) / sizeof(opt[0]));
-	return (opt);
+	(void)buf;
+	(void)sz;
+	(void)cmd;
+	(void)cl;
+	return (IS_OK);
 }

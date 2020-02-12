@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_mkd.c                                           :+:      :+:    :+:   */
+/*   cl_mkdir.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/08 18:22:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/12 19:25:51 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int				cl_mkdir(char *buf, char **cmd, t_client *cl)
 		i++;
 	}
 	ft_strncat(buf, "\n", CMD_BUFF_SIZE);
+	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin,
+	(char *[]){ "257 ", NULL }, cl->precmd);
 	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
 }
 

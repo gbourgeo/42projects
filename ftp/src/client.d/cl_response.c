@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 19:17:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 22:16:30 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/11 21:21:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static char			*cl_addrcpy(char addr[], char str[], int version)
 	char			*nb2;
 
 	i = 0;
-	while (str[i])
+	while (str[i] && i < INET6_ADDRSTRLEN - 1)
 	{
 		if (str[i] == ',')
 			addr[i] = (version == 0) ? '.' : ':';
@@ -66,28 +66,17 @@ static int			cl_response_parse(t_server *sv, t_client *cl)
 		}
 		sv->wait_response--;
 	}
-	ft_strcpy(sv->response, sv->response + ft_strlen(sv->response) + 1);
 	return (errnb);
 }
 
 int					cl_response(t_server *sv, t_client *cl)
 {
-	int				i;
 	int				errnb;
 
-	i = 0;
 	errnb = IS_OK;
-	while (sv->response[i] && errnb == IS_OK)
-		if (sv->response[i] == '\n')
-		{
-			sv->response[i] = '\0';
-			if (sv->wait_response <= 0)
-				errnb = cl_server_close(&cl->server, 0, cl);
-			else
-				errnb = cl_response_parse(&cl->server, cl);
-			i = 0;
-		}
-		else
-			i++;
+	if (sv->wait_response == 0)
+		errnb = cl_server_close(&cl->server, 0, cl);
+	else if (ft_strchr(sv->response, '\n'))
+		errnb = cl_response_parse(&cl->server, cl);
 	return (errnb);
 }
