@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/09 02:56:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 21:21:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:45:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,10 @@ int				cl_nlst(char *buf, char **cmd, t_client *cl)
 int				cl_nlst_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command prints a short listing of the current directory or",
+		"the file / directory pointed as first argument on the server.",
+		" This command is usefull for a complete get or put of a",
+		"directory.", NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));

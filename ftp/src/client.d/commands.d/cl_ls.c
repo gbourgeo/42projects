@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 21:21:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:43:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ int				cl_ls(char *buf, char **cmd, t_client *cl)
 int				cl_ls_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command list the current directory filesystem or the",
+		"file / directory as first argument.", NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));

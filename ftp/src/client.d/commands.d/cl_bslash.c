@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 19:28:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 17:10:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:38:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,10 @@ int					cl_bslash(char *buf, int size, char **cmd, t_client *cl)
 int					cl_bslash_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command allow the client to launch commands on his ",
+		"own machine, allowing to manipulate his local filesystem.",
+		"  All commands present in the PATH variable are usable.",
+		"  Examples: \\ls, \\cd, \\mkdir, \\cat, etc.", NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));

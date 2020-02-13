@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 21:54:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/14 00:03:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,7 @@ int					cl_nlst(char *buf, char **cmd, t_client *cl);
 int					cl_put(char *buf, char **cmd, t_client *cl);
 int					cl_pwd(char *buf, char **cmd, t_client *cl);
 int					cl_quit(char *buf, char **cmd, t_client *cl);
+int					cl_refresh(char *buf, char **cmd, t_client *cl);
 int					cl_rm(char *buf, char **cmd, t_client *cl);
 int					cl_rmdir(char *buf, char **cmd, t_client *cl);
 
@@ -195,6 +196,7 @@ int					cl_nlst_help(t_command *cmd, t_client *cl);
 int					cl_put_help(t_command *cmd, t_client *cl);
 int					cl_pwd_help(t_command *cmd, t_client *cl);
 int					cl_quit_help(t_command *cmd, t_client *cl);
+int					cl_refresh_help(t_command *cmd, t_client *cl);
 int					cl_rm_help(t_command *cmd, t_client *cl);
 int					cl_rmdir_help(t_command *cmd, t_client *cl);
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/12 19:25:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:43:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ int				cl_mkdir(char *buf, char **cmd, t_client *cl)
 int				cl_mkdir_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command creates a new directory specified as first",
+		"argument to the command.", NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));

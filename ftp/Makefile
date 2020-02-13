@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/13 21:54:45 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/14 00:07:50 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,6 +57,7 @@ CLI_C += cl_bslash_cd.c					\
 		cl_put.c						\
 		cl_pwd.c						\
 		cl_quit.c						\
+		cl_refresh.c					\
 		cl_rm.c							\
 		cl_rmdir.c						\
 

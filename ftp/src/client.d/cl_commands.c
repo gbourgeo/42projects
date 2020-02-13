@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 14:14:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 18:08:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/14 00:09:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ t_command				*cl_commands(int getsize)
 		{ "nlst", "List files or directory", cl_nlst_help, cl_nlst, 0 },
 		{ "put", "Put file to server", cl_put_help, cl_put, 0 },
 		{ "pwd", "Print working directory", cl_pwd_help, cl_pwd, 0 },
+		{ "refresh", "Refresh list Windows", cl_refresh_help, cl_refresh, 0 },
 		{ "rm", "Remove file from server", cl_rm_help, cl_rm, 0 },
 		{ "rmdir", "Remove directory from server", cl_rmdir_help, cl_rmdir, 0 },
 	};

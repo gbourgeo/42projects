@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 16:35:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 16:42:13 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:40:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int					cl_exit(char *buf, char **cmd, t_client *cl)
 int					cl_exit_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command allws the user to quit clearly the server and ",
+		"the client.", NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));

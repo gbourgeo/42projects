@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/06 19:15:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/12 19:26:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:47:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ int				cl_rmdir(char *buf, char **cmd, t_client *cl)
 int				cl_rmdir_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command allows the user to erase a directory in the server.",
+		NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));

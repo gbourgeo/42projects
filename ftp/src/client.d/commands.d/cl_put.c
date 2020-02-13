@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/08 18:22:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 23:45:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int				cl_put(char *buf, char **cmd, t_client *cl)
 int				cl_put_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
-		"", NULL
+		"This command allows the user to send a file to the server.", NULL
 	};
 
 	return (cl_help_print(cmd, help, cl));
