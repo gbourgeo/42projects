@@ -1,30 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_freetab.c                                       :+:      :+:    :+:   */
+/*   cl_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/30 22:46:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 04:13:03 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/13 21:52:20 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/13 21:54:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#include "cl_main.h"
 
-void			ft_freetab(char ***table)
+int				is_valid_response(char res[])
 {
-	char		**ptr;
-
-	if (table && (ptr = *table))
-	{
-		while (*ptr)
-		{
-			free(*ptr);
-			*ptr = NULL;
-			ptr++;
-		}
-		free(*table);
-		*table = NULL;
-	}
+	return (ft_isdigit(res[0]) && ft_isdigit(res[1]) && ft_isdigit(res[2])
+	&& res[3] == ' ');
 }

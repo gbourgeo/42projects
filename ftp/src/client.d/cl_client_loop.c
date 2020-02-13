@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/12 23:42:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 18:22:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ static int			check_errors(t_client *cl)
 			return (ERR_QUIT);
 		else if (cl->errnb[i] != IS_OK)
 		{
+			ft_strcpy(cl->server.response, "500 Error\n");
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_RED));
 			wprintw(cl->ncu.chatwin, "**ERROR**: ");
 			wattron(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));

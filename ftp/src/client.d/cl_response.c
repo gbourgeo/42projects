@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 19:17:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 21:21:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 18:21:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static char			*cl_addrcpy(char addr[], char str[], int version)
 	char			*nb2;
 
 	i = 0;
-	while (str[i] && i < INET6_ADDRSTRLEN - 1)
+	while (str[i] && i < INET6_ADDRSTRLEN)
 	{
 		if (str[i] == ',')
 			addr[i] = (version == 0) ? '.' : ':';
@@ -43,7 +43,7 @@ static char			*cl_addrcpy(char addr[], char str[], int version)
 
 static int			cl_response_parse(t_server *sv, t_client *cl)
 {
-	char			addr[INET6_ADDRSTRLEN];
+	char			addr[INET6_ADDRSTRLEN + 1];
 	char			*port;
 	int				errnb;
 

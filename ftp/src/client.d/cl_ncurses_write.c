@@ -6,13 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:05:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 23:14:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 21:59:53 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-static void		cl_get_response(char *stop, t_buff *ring, t_server *sv)
+static void		cl_get_response(char *stop, t_buff *ring, t_server *sv,
+t_client *cl)
 {
 	int			i;
 
@@ -24,6 +25,17 @@ static void		cl_get_response(char *stop, t_buff *ring, t_server *sv)
 			ring->head = ring->buff;
 	}
 	sv->response[i] = '\0';
+	if (is_valid_response(sv->response))
+	{
+		wattron(cl->ncu.chatwin,
+		(sv->response[0] <= '3') ? COLOR_PAIR(CL_GREEN) : COLOR_PAIR(CL_RED));
+		if (sv->response[0] <= '3')
+			wprintw(cl->ncu.chatwin, "SUCCESS ");
+		else
+			wprintw(cl->ncu.chatwin, "ERROR ");
+		wattroff(cl->ncu.chatwin,
+		(sv->response[0] <= 3) ? COLOR_PAIR(CL_GREEN) : COLOR_PAIR(CL_RED));
+	}
 }
 
 int				cl_ncurses_write(t_buff *ring, t_client *cl)
@@ -38,7 +50,7 @@ int				cl_ncurses_write(t_buff *ring, t_client *cl)
 		{
 			if (*ptr++ == '\n')
 			{
-				cl_get_response(ptr, ring, &cl->server);
+				cl_get_response(ptr, ring, &cl->server, cl);
 				wprintw(cl->ncu.chatwin, "%s", cl->server.response);
 				wrefresh(cl->ncu.chatwin);
 			}

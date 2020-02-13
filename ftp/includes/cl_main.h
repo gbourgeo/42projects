@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/12 23:53:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 21:54:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ int					cl_get_userpass(t_server *sv, t_client *cl);
 
 void				cl_client_end(t_client *cl);
 void				cl_ncurses_end(t_client *cl);
-void				cl_precmd_end(t_cmd *cmd, int all);
+t_cmd				*cl_precmd_end(t_cmd *cmd, int all);
 
 int					cl_client_loop(t_client *cl);
 int					cl_ncurses_read(t_buff *ring, t_client *cl);
@@ -211,5 +211,11 @@ int					cl_key_up(t_buff *ring, t_client *cl);
 int					cl_key_down(t_buff *ring, t_client *cl);
 int					cl_key_left(t_buff *ring, t_client *cl);
 int					cl_key_right(t_buff *ring, t_client *cl);
+
+/*
+** Utils
+*/
+
+int					is_valid_response(char res[]);
 
 #endif

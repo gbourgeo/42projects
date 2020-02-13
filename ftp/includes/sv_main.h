@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 18:53:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 03:48:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ typedef struct		s_data
 	int				(*function)();
 	pid_t			pid;
 	char			*file;
-	size_t			fsize;
+	ssize_t			fsize;
 }					t_data;
 
 /*

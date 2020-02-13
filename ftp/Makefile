@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/12 22:11:15 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/13 21:54:45 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ CLI_C	= cl_main.c						\
 		cl_server_recv.c				\
 		cl_server_send.c				\
 		cl_server_write.c				\
+		cl_utils.c						\
 
 CLI_C_D = $(CLI_D)commands.d/
 CLI_C += cl_bslash_cd.c					\

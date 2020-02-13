@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 01:48:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 03:49:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 int				sv_retr_exec(char *opt, char **cmds, t_client *cl)
 {
-	size_t	sent;
+	ssize_t	sent;
 	int		ret;
 	int		errnb;
 

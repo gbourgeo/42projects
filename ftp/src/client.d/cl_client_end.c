@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/12 23:58:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/13 19:02:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,18 @@ void			cl_ncurses_end(t_client *cl)
 	ft_memset(&cl->ncu, 0, sizeof(cl->ncu));
 }
 
-void			cl_precmd_end(t_cmd *cmd, int all)
+t_cmd		*cl_precmd_end(t_cmd *cmd, int all)
 {
+	t_cmd	*next;
+
 	if (!cmd)
-		return ;
-	if (all && cmd->next)
-		cl_precmd_end(cmd->next, 1);
+		return (NULL);
+	next = cmd->next;
+	if (all)
+		cl_precmd_end(next, 1);
 	ft_tabdel(&cmd->code);
 	free(cmd);
+	return (next);
 }
 
 void			cl_client_end(t_client *cl)
