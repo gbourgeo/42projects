@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 21:55:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 03:29:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ static const char	*get_error_next(int errnb)
 		"ncurse: init chat win failed", "read failed", "open terminal failed",
 		"tcgetattr failed", "tcsetattr failed", "Quit",
 		"Specify a terminal type", "Could not access the termcap data base",
-		"Terminal type is not defined", "client exited", "pipe failed",
+		"Terminal type is not defined", "pipe failed",
+		"Already connected to a server",
 	};
 
 	if (errnb < (int)(sizeof(errors) / sizeof(errors[0])))

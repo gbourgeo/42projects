@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 16:35:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:40:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:30:20 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,5 @@ int					cl_exit_help(t_command *cmd, t_client *cl)
 		"the client.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "", help, cl));
 }

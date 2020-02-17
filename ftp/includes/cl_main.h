@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/14 00:03:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 06:02:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <signal.h>
 # include <ncurses.h>
 # include <termios.h>
+# include <sys/types.h>
 # include "libft.h"
 # include "common.h"
 
@@ -58,6 +59,19 @@ typedef struct		s_ncu
 }					t_ncu;
 
 /*
+** Command to be launched at starting loop structure
+*/
+
+typedef struct		s_precmd
+{
+	WINDOW			*printtowin;
+	char			**code;
+	int				nb_response;
+	t_buff			wr;
+	struct s_precmd	*next;
+}					t_cmd;
+
+/*
 ** Server related structure
 */
 
@@ -75,19 +89,6 @@ typedef struct		s_server
 	char			cmd[CMD_BUFF_SIZE];
 	char			response[CMD_BUFF_SIZE];
 }					t_server;
-
-/*
-** Command to be launched at starting loop structure
-*/
-
-typedef struct		s_pre_commands
-{
-	WINDOW					*printtowin;
-	char					**code;
-	int						nb_response;
-	t_buff					wr;
-	struct s_pre_commands	*next;
-}					t_cmd;
 
 /*
 ** Client main structure (global)
@@ -125,6 +126,7 @@ int					cl_param_i(char **av, int *i, t_client *cl);
 int					cl_param_h(char **av, int *i, t_client *cl);
 int					cl_param_n(char **av, int *i, t_client *cl);
 
+int					cl_init(char **environ, t_env *env);
 int					cl_ncurses_init(t_client *cl);
 int					create_s_text(t_client *cl);
 int					create_s_list(t_client *cl);
@@ -142,6 +144,7 @@ void				cl_ncurses_end(t_client *cl);
 t_cmd				*cl_precmd_end(t_cmd *cmd, int all);
 
 int					cl_client_loop(t_client *cl);
+int					cl_client_pid(pid_t pid, t_client *cl);
 int					cl_ncurses_read(t_buff *ring, t_client *cl);
 int					cl_ncurses_write(t_buff *ring, t_client *cl);
 int					cl_server_close(t_server *sv, int end, t_client *cl);
@@ -164,10 +167,11 @@ char				*cl_ringbuffcat(char *buff, int size, t_buff *ring);
 ** Commands
 */
 
-int					cl_bslash(char *buf, int size, char **cmd, t_client *cl);
-int					cl_bslash_cd(char *buf, int sz, char **cmd, t_client *cl);
+int					cl_bslash(char **cmd, t_client *cl);
+int					cl_bslash_cd(char **cmd, t_client *cl);
 int					cl_cd(char *buf, char **cmd, t_client *cl);
 int					cl_clear(char *buf, char **cmd, t_client *cl);
+int					cl_connect(char *buf, char **cmd, t_client *cl);
 int					cl_exit(char *buf, char **cmd, t_client *cl);
 int					cl_get(char *buf, char **cmd, t_client *cl);
 int					cl_help(char *buf, char **cmd, t_client *cl);
@@ -185,11 +189,13 @@ int					cl_rmdir(char *buf, char **cmd, t_client *cl);
 int					cl_bslash_help(t_command *cmd, t_client *cl);
 int					cl_cd_help(t_command *cmd, t_client *cl);
 int					cl_clear_help(t_command *cmd, t_client *cl);
+int					cl_connect_help(t_command *cmd, t_client *cl);
 int					cl_exit_help(t_command *cmd, t_client *cl);
 int					cl_get_help(t_command *cmd, t_client *cl);
 int					cl_help_help(t_command *cmd, t_client *cl);
 int					cl_help_loc_help(t_command *cmd, t_client *cl);
-int					cl_help_print(t_command *cmd, char **descri, t_client *cl);
+int					cl_help_print(t_command *cmd, char *args, char **descri,
+					t_client *cl);
 int					cl_ls_help(t_command *cmd, t_client *cl);
 int					cl_mkdir_help(t_command *cmd, t_client *cl);
 int					cl_nlst_help(t_command *cmd, t_client *cl);

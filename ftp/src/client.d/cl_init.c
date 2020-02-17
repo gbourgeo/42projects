@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   file_error.c                                       :+:      :+:    :+:   */
+/*   cl_init.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2014/05/14 18:33:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/16 20:50:20 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/17 04:51:10 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/17 05:01:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "cl_main.h"
-#include "libft.h"
 
-int				file_error(char *msg, t_envi *e, int caller, int do_send)
+int				cl_init(char **environ, t_env *env)
 {
-	if (caller == CLIENT || (caller == SERVER && e->success == 1))
+	char		*ptr;
+
+	if ((ptr = ft_getenv("HOME=", environ)))
 	{
-		ft_putstr("\033[31m");
-		ft_putstr(msg);
-		ft_putstr("\033[0m");
-		ft_putchar('\n');
+		ft_strdel(&env->home);
+		env->home = ptr;
 	}
-	if (do_send)
-		send(e->fd, msg, ft_strlen(msg), 0);
-	return (1);
+	if (!(env->pwd = ft_getenv("PWD=", environ)))
+		env->pwd = getcwd(NULL, 0);
+	if (!(env->oldpwd = ft_getenv("OLDPWD=", environ)))
+		env->oldpwd = getcwd(NULL, 0);
+	if (!env->home || !env->pwd || !env->oldpwd)
+		return (ERR_MALLOC);
+	return (IS_OK);
 }

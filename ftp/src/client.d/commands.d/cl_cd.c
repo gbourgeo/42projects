@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:15:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/14 00:05:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:29:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,5 @@ int				cl_cd_help(t_command *cmd, t_client *cl)
 		"working directory.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "[<directory_name>]", help, cl));
 }

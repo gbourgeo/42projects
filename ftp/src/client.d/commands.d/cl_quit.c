@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:19:37 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:46:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:33:08 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,5 @@ int				cl_quit_help(t_command *cmd, t_client *cl)
 		"is connected to.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "", help, cl));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 19:02:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 06:13:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ t_cmd		*cl_precmd_end(t_cmd *cmd, int all)
 
 	if (!cmd)
 		return (NULL);
-	next = cmd->next;
 	if (all)
-		cl_precmd_end(next, 1);
+		(void)cl_precmd_end(cmd->next, 1);
+	next = cmd->next;
 	ft_tabdel(&cmd->code);
 	free(cmd);
 	return (next);
@@ -56,8 +56,10 @@ void			cl_client_end(t_client *cl)
 	int		i;
 
 	i = 0;
-	ft_freestr(&cl->info.env.path);
-	ft_freestr(&cl->info.env.home);
+	ft_strdel(&cl->info.env.path);
+	ft_strdel(&cl->info.env.home);
+	ft_strdel(&cl->info.env.pwd);
+	ft_strdel(&cl->info.env.oldpwd);
 	while (i < NSIG)
 	{
 		if (cl->sig[i] != SIG_ERR)

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:40:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:42:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:31:11 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,5 +98,5 @@ int					cl_help_loc_help(t_command *cmd, t_client *cl)
 		"by the client to communicate or not with the server.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "[<command_name>]", help, cl));
 }

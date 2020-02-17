@@ -6,12 +6,18 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 19:28:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:38:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 06:26:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define _DEFAULT_SOURCE
+#endif
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
 #include <unistd.h>
-#include "get_next_line.h"
 #include "cl_main.h"
 
 static void			cl_bslash_child(int fds[2], char **cmd, t_client *cl)
@@ -19,14 +25,14 @@ static void			cl_bslash_child(int fds[2], char **cmd, t_client *cl)
 	int			ret;
 	char		*path;
 
-	ret = IS_OK;
+	ret = ERR_MALLOC;
 	path = NULL;
 	close(fds[0]);
 	dup2(fds[1], STDOUT_FILENO);
 	dup2(fds[1], STDERR_FILENO);
-	if (*ft_strcpy(cmd[0], cmd[0] + 1))
-		if ((path = ft_get_command(cmd[0], getenv("PATH"), 0)))
-			ret = execve(path, cmd, NULL);
+	ft_strcpy(cmd[0], cmd[0] + 1);
+	if ((path = ft_get_command(cmd[0], cl->info.env.path, 0)))
+		ret = execve(path, cmd, NULL);
 	close(fds[1]);
 	ft_strdel(&path);
 	ft_tabdel(&cmd);
@@ -34,27 +40,56 @@ static void			cl_bslash_child(int fds[2], char **cmd, t_client *cl)
 	exit(ret);
 }
 
-static int			cl_bslash_father(int fds[], char *buf, int size, t_client *cl)
+static int		cl_pid_ret(int status, const char *msg, t_client *cl)
 {
-	int			ret;
-
-	while ((ret = read(fds[0], buf, size)) > 0)
-		wprintw(cl->printtowin, "%.*s", ret, buf);
-	wrefresh(cl->printtowin);
-	// cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin,
-	// (char *[]){ "", NULL }, cl->precmd);
-	return ((ret == 0) ? IS_OK : ERR_READ);
+	wattron(cl->ncu.chatwin, COLOR_PAIR((status) ? CL_RED : CL_GREEN));
+	wprintw(cl->ncu.chatwin, "%s ", (status) ? "ERROR" : "SUCCESS");
+	wattroff(cl->ncu.chatwin, COLOR_PAIR((status) ? CL_RED : CL_GREEN));
+	wprintw(cl->ncu.chatwin, "%s %d", msg, status);
+	wprintw(cl->ncu.chatwin, "\n");
+	wrefresh(cl->ncu.chatwin);
+	return (IS_OK);
 }
 
-int					cl_bslash(char *buf, int size, char **cmd, t_client *cl)
+static int			cl_bslash_father(int fd, int pid, t_client *cl)
+{
+	char		buf[CMD_BUFF_SIZE];
+	int			ret;
+	int			status;
+
+	while ((ret = read(fd, buf, sizeof(buf))) > 0)
+		wprintw(cl->printtowin, "%.*s", ret, buf);
+	wrefresh(cl->printtowin);
+	if (ret < 0)
+		return (ERR_READ);
+	if ((ret = wait4(pid, &status, 0, NULL)) < 0)
+		return (ERR_WAIT);
+	if (ret != pid)
+		return (cl_pid_ret(ret, "Different child caught", cl));
+	if (WIFSTOPPED(status) || WIFCONTINUED(status))
+		return (cl_pid_ret(status, "Operation stopped / continued.", cl));
+	if (WIFEXITED(status))
+		return (cl_pid_ret(WEXITSTATUS(status), "Command returned", cl));
+	else if (WIFSIGNALED(status))
+	{
+		if (HAS_WCOREDUMP && WCOREDUMP(status))
+			return (cl_pid_ret(status, "Operation coredump'ed", cl));
+		return (cl_pid_ret(status, "Operation signal'ed", cl));
+	}
+	return (cl_pid_ret(status, "Unknown error", cl));
+}
+
+int					cl_bslash(char **cmd, t_client *cl)
 {
 	int			fds[2];
 	pid_t		pid;
 	int			errnb;
 
 	errnb = IS_OK;
+	if (!cmd[0][1])
+		return (IS_OK);
 	if (!ft_strcmp(cmd[0], "\\cd"))
-		return (cl_bslash_cd(buf, size, cmd, cl));
+		return (cl_bslash_cd(cmd, cl));
 	if (pipe(fds))
 		return (ERR_PIPE);
 	pid = fork();
@@ -64,7 +99,7 @@ int					cl_bslash(char *buf, int size, char **cmd, t_client *cl)
 		cl_bslash_child(fds, cmd, cl);
 	close(fds[1]);
 	if (errnb == IS_OK)
-		errnb = cl_bslash_father(fds, buf, size, cl);
+		errnb = cl_bslash_father(fds[0], pid, cl);
 	close(fds[0]);
 	cl->printtowin = cl->ncu.chatwin;
 	return (errnb);
@@ -79,5 +114,5 @@ int					cl_bslash_help(t_command *cmd, t_client *cl)
 		"  Examples: \\ls, \\cd, \\mkdir, \\cat, etc.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "(All PATH binaries)", help, cl));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 21:55:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 04:52:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,12 @@
 # endif
 # ifndef MSG_NOSIGNAL
 #  define MSG_NOSIGNAL 0
+# endif
+
+# ifndef WCOREDUMP
+#  define HAS_WCOREDUMP 0
+# else
+#  define HAS_WCOREDUMP 1
 # endif
 
 # define FTP_RESET		"\x1B[0m"
@@ -116,12 +122,15 @@ enum
 	ERR_TERM_DATABASE = 55,
 	ERR_TERM_NOT_FOUND,
 	ERR_PIPE,
+	ERR_ALREADY_CONNECTED,
 };
 
 typedef struct		s_env
 {
 	char			*path;
 	char			*home;
+	char			*pwd;
+	char			*oldpwd;
 }					t_env;
 
 typedef struct		s_common

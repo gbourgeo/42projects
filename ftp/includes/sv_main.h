@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 03:48:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 03:45:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,6 @@
 # include <sys/stat.h>
 # include "libft.h"
 # include "common.h"
-
-# ifndef WCOREDUMP
-#  define HAS_WCOREDUMP 0
-# else
-#  define HAS_WCOREDUMP 1
-# endif
 
 # define SV_USERS_FILE		".sv_users"
 # define SV_GUEST_NAME		"guest"

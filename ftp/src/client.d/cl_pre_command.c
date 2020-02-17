@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/11 16:24:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/14 00:18:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 05:35:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ t_cmd			*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl)
 	i = cmds->nb_response;
 	if (cmds->nb_response == ft_tablen(cmds->code))
 		return (cl_precmd_end(cmds, 0));
-	if (is_valid_response(sv->response))
+	if (!cmds->code[i][0] || is_valid_response(sv->response))
 	{
 		if (cmds->code[i][0] && sv->response[0] - cmds->code[i][0] > 0)
 			return (cl_precmd_end(cmds, 0));

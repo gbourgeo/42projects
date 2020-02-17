@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:19:02 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:46:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:33:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,5 @@ int				cl_pwd_help(t_command *cmd, t_client *cl)
 		"server.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "", help, cl));
 }

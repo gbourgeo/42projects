@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/06 19:15:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:47:38 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:33:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,5 @@ int				cl_rmdir_help(t_command *cmd, t_client *cl)
 		NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "<directory_name>", help, cl));
 }

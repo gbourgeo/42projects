@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 22:16:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:30:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,5 @@ int				cl_get_help(t_command *cmd, t_client *cl)
 		"", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "<filename / filepath>", help, cl));
 }

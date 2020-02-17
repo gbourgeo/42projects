@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:42:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:31:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,5 @@ int				cl_help_help(t_command *cmd, t_client *cl)
 		"This command print the server help.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "[<command_name>]", help, cl));
 }

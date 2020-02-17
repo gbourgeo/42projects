@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/09 02:56:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:45:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:32:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,5 +45,5 @@ int				cl_nlst_help(t_command *cmd, t_client *cl)
 		"directory.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "[<file_name / directory_name>]", help, cl));
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/14 00:03:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/14 00:14:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:33:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,5 @@ int					cl_refresh_help(t_command *cmd, t_client *cl)
 		"Window and the \"Client List\" Window.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "", help, cl));
 }

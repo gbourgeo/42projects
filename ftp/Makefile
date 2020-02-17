@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/14 00:07:50 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/17 05:59:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ CLI_C	= cl_main.c						\
 		cl_get_userinfo.c				\
 		cl_get_username.c				\
 		cl_get_userpass.c				\
+		cl_init.c						\
 		cl_ncurses.c					\
 		cl_ncurses_box.c				\
 		cl_ncurses_keys.c				\
@@ -45,6 +46,7 @@ CLI_C_D = $(CLI_D)commands.d/
 CLI_C += cl_bslash_cd.c					\
 		cl_bslash.c						\
 		cl_cd.c							\
+		cl_connect.c					\
 		cl_clear.c						\
 		cl_exit.c						\
 		cl_get.c						\

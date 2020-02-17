@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:19:49 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:47:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:33:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,5 @@ int				cl_rm_help(t_command *cmd, t_client *cl)
 		"This command allows the user to erase a file in the server.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "<file_name>", help, cl));
 }

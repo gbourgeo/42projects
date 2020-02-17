@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:43:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:32:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,5 @@ int				cl_mkdir_help(t_command *cmd, t_client *cl)
 		"argument to the command.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "<directory_name>", help, cl));
 }

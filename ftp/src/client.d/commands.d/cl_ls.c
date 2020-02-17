@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 23:43:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 02:32:03 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,5 +42,5 @@ int				cl_ls_help(t_command *cmd, t_client *cl)
 		"file / directory as first argument.", NULL
 	};
 
-	return (cl_help_print(cmd, help, cl));
+	return (cl_help_print(cmd, "[<file_name / directory_name>]", help, cl));
 }
