@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 02:21:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 04:27:00 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 16:46:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int				cl_server_recv_data(t_server *sv, t_client *cl)
 	if (sv->filename != NULL)
 	{
 		if (sv->filefd < 0
-		&& (sv->filefd = open(sv->filename, O_CREAT | O_TRUNC | O_WRONLY)) < 0)
+		&& (sv->filefd = open(sv->filename, O_CREAT | O_TRUNC | O_WRONLY, 0644)) < 0)
 			return (cl_recv_error(-1, sv, cl));
 		err = (write(sv->filefd, buff, ret) != ret) ? ERR : OK;
 	}
