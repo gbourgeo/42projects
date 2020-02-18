@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 16:41:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 21:03:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int					cl_ncurses_read(t_buff *ring, t_client *cl)
 {
 	static t_read	ch[] = {
 		{ 3, cl_ctrl_c }, { 4, cl_ctrl_d }, { 10, cl_lf },
-		{ 127, cl_backspace }, { KEY_DC, cl_key_dc },
+		{ KEY_BACKSPACE, cl_backspace }, { KEY_DC, cl_key_dc },
 		{ KEY_UP, cl_key_up }, { KEY_DOWN, cl_key_down },
 		{ KEY_LEFT, cl_key_left }, { KEY_RIGHT, cl_key_right },
 	};

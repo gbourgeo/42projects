@@ -6,9 +6,12 @@
      By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+          
                                                   +#+#+#+#+#+   +#+             
      Created: 2014/06/13 03:20:56 by gbourgeo          #+#    #+#               
-     Updated: 2014/06/18 12:47:09 by gbourgeo         ###   ########.fr         
+     Updated: 2020/02/18 05:06:07 by gbourgeo         ###   ########.fr         
                                                                                 
 ********************************************************************************
-TERMCAPS
-- bloquer les deplacements de souris || historique + edition de lignes
+NCURSES
+- historique + edition de lignes
 - auto-completion
+
+PRE COMMANDS
+- Séparer les codes de réponses des codes la commande à lancer.

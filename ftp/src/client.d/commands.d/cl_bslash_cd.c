@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/12 16:37:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 05:41:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 16:16:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ int			cl_bslash_cd(char **cmd, t_client *cl)
 	wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
 	wprintw(cl->ncu.chatwin, " Changed directory to \"%s\"\n", pwd);
 	wrefresh(cl->ncu.chatwin);
-	cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin,
-	(char *[]){ "", NULL }, cl->precmd);
+	cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin, "", "",
+	cl->precmd);
 	return (IS_OK);
 }

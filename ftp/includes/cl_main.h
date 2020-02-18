@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 06:02:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 16:15:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,8 @@ typedef struct		s_ncu
 typedef struct		s_precmd
 {
 	WINDOW			*printtowin;
-	char			**code;
-	int				nb_response;
+	char			*precode;
+	char			*code;
 	t_buff			wr;
 	struct s_precmd	*next;
 }					t_cmd;
@@ -141,7 +141,7 @@ int					cl_get_userpass(t_server *sv, t_client *cl);
 
 void				cl_client_end(t_client *cl);
 void				cl_ncurses_end(t_client *cl);
-t_cmd				*cl_precmd_end(t_cmd *cmd, int all);
+t_cmd				*cl_precmd_end(t_cmd *cmd, int all, t_client *cl);
 
 int					cl_client_loop(t_client *cl);
 int					cl_client_pid(pid_t pid, t_client *cl);
@@ -156,8 +156,8 @@ t_client *cl);
 
 int					cl_pre_command(t_cmd **cmds, t_server *sv, t_client *cl);
 t_cmd				*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl);
-t_cmd				*cl_new_command(const char *name, WINDOW *win, char **code,
-					t_cmd *next);
+t_cmd				*cl_new_command(const char *name, WINDOW *win,
+					char *precode, char *code, t_cmd *next);
 
 t_command			*cl_commands(int getsize);
 int					cl_response(t_server *sv, t_client *cl);

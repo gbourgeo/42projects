@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 02:30:52 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 16:18:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ int				cl_get(char *buf, char **cmd, t_client *cl)
 	cl->server.receive_data = 1;
 	cl->server.wait_response = 2;
 	cl->server.filename = ft_strdup(cmd[1]);
+	cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin, "212", "",
+	cl->precmd);
 	return (errnb);
 }
 

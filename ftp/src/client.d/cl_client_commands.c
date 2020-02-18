@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 06:22:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 04:53:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ int				cl_client_commands(t_buff *ring, t_client *cl)
 	if (cmd[0] && cmd[0][0])
 		errnb = cl_client_exec_cmd(buff, cmd, cl);
 	ft_tabdel(&cmd);
+	ft_strclr(cl->server.response);
 	return (errnb);
 }

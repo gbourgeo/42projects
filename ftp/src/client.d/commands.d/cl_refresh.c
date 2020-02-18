@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/14 00:03:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 02:33:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 16:20:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ int					cl_refresh(char *buf, char **cmd, t_client *cl)
 	(void)cmd;
 	wprintw(cl->ncu.chatwin, "Refreshing...\n");
 	wrefresh(cl->ncu.chatwin);
-	cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin,
-	(char *[]){ "", NULL }, cl->precmd);
-	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin,
-	(char *[]){ "", "227 ", NULL }, cl->precmd);
+	cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin, "", "",
+	cl->precmd);
+	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin, "", "22",
+	cl->precmd);
 	return (IS_OK);
 }
 

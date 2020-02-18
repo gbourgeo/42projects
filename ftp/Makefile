@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/17 05:59:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/18 15:56:12 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ CLI_C	= cl_main.c						\
 		cl_params_get.c					\
 		cl_params.c						\
 		cl_params_1.c					\
+		cl_pre_command_exec.c			\
 		cl_pre_command.c				\
 		cl_response.c					\
 		cl_ringbuffcat.c				\

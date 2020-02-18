@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 02:21:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 23:15:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 04:27:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,13 @@ static int		cl_recv_error(int ret, t_server *sv, t_client *cl)
 		wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
 		wrefresh(cl->ncu.chatwin);
 	}
-	wrefresh(cl->printtowin);
-	cl_server_close(sv, 0, cl);
+	ft_close(&sv->fd_data);
+	sv->receive_data = 0;
+	sv->wait_response = 0;
+	ft_strdel(&sv->filename);
+	ft_close(&sv->filefd);
+	ft_bzero(sv->response, sizeof(sv->response));
+	ft_bzero(sv->cmd, sizeof(sv->cmd));
 	return (IS_OK);
 }
 

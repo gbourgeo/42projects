@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 19:28:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 06:26:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/17 20:35:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ int					cl_bslash(char **cmd, t_client *cl)
 	if (errnb == IS_OK)
 		errnb = cl_bslash_father(fds[0], pid, cl);
 	close(fds[0]);
-	cl->printtowin = cl->ncu.chatwin;
 	return (errnb);
 }
 
