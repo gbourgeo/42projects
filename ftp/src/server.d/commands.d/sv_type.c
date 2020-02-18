@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 22:41:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 01:03:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 16:51:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,11 @@ int					sv_type_help(t_command *cmd, t_client *cl)
 		"for local byte is a decimal integer to indicate Bytesize.",
 		"The parameters are separated by a <SP> (Space, ASCII code 32).", "",
 		"The following codes are assigned for type:", "",
-		"				\\    /",
+		"		  \\    /",
 		"	A - ASCII |    | N - Non-print",
-		"				|-><-| T - Telnet format effectors",
+		"		  |-><-| T - Telnet format effectors",
 		"	E - EBCDIC|    | C - Carriage Control (ASA)",
-		"				/    \\",
+		"		  /    \\",
 		"	I - Image", "",
 		"	L <byte size> - Local byte Byte size", "",
 		"The default representation type is ASCII Non-print.  If the",
