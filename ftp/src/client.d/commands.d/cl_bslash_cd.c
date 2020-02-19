@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/12 16:37:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 16:16:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 00:04:54 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static int		cd_get_pwd(char *pwd, char *cmd, t_env *env)
 	return (IS_OK);
 }
 
-int			cl_bslash_cd(char **cmd, t_client *cl)
+int				cl_bslash_cd(char **cmd, t_client *cl)
 {
 	char	pwd[MAXPATHLEN + 1];
 	int		errnb;

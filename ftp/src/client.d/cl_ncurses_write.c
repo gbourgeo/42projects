@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:05:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 21:59:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 01:08:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,16 @@ t_client *cl)
 		(sv->response[0] <= 3) ? COLOR_PAIR(CL_GREEN) : COLOR_PAIR(CL_RED));
 	}
 }
-
+#include<unistd.h>
 int				cl_ncurses_write(t_buff *ring, t_client *cl)
 {
-	char	*ptr;
-	int		ret;
+	char		*ptr;
+	int			i;
 
 	ptr = ring->head;
-	ret = OK;
+	i = (ring->tail >= ring->buff + sizeof(ring->buff)) ? 1 : 0;
 	if (ring->tail != ring->head)
-		while (ptr != ring->tail - (ring->tail == ring->buff + sizeof(ring->buff)))
+		while (ptr != ring->tail - i)
 		{
 			if (*ptr++ == '\n')
 			{
@@ -60,10 +60,8 @@ int				cl_ncurses_write(t_buff *ring, t_client *cl)
 	if (ring->tail >= ring->buff + sizeof(ring->buff))
 		ring->tail = ring->buff;
 	if (ring->tail >= ring->head)
-		ring->len = ring->buff + sizeof(ring->buff) - ring->tail;
+		ring->len = (ring->buff + sizeof(ring->buff)) - ring->tail;
 	else
 		ring->len = ring->head - ring->tail - 1;
-	if (ret == ERR)
-		return (ERR_WRITE);
 	return (IS_OK);
 }

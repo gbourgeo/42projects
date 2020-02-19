@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 19:28:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 20:35:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 00:07:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include "cl_main.h"
 
-static void			cl_bslash_child(int fds[2], char **cmd, t_client *cl)
+static void		cl_bslash_child(int fds[2], char **cmd, t_client *cl)
 {
 	int			ret;
 	char		*path;
@@ -51,7 +51,7 @@ static int		cl_pid_ret(int status, const char *msg, t_client *cl)
 	return (IS_OK);
 }
 
-static int			cl_bslash_father(int fd, int pid, t_client *cl)
+static int		cl_bslash_father(int fd, int pid, t_client *cl)
 {
 	char		buf[CMD_BUFF_SIZE];
 	int			ret;
@@ -79,7 +79,7 @@ static int			cl_bslash_father(int fd, int pid, t_client *cl)
 	return (cl_pid_ret(status, "Unknown error", cl));
 }
 
-int					cl_bslash(char **cmd, t_client *cl)
+int				cl_bslash(char **cmd, t_client *cl)
 {
 	int			fds[2];
 	pid_t		pid;
@@ -104,7 +104,7 @@ int					cl_bslash(char **cmd, t_client *cl)
 	return (errnb);
 }
 
-int					cl_bslash_help(t_command *cmd, t_client *cl)
+int				cl_bslash_help(t_command *cmd, t_client *cl)
 {
 	static char		*help[] = {
 		"This command allow the client to launch commands on his ",

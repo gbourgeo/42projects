@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 21:03:06 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/18 23:13:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@
 #include <curses.h>
 #include "cl_main.h"
 #include "cl_struct.h"
+
+#define FTP_BACKSPACE 127
+#ifdef __linux__
+# define FTP_BACKSPACE KEY_BACKSPACE
+#endif
 
 static int			cl_default(int ret, t_buff *ring, t_client *cl)
 {
@@ -39,7 +44,7 @@ int					cl_ncurses_read(t_buff *ring, t_client *cl)
 {
 	static t_read	ch[] = {
 		{ 3, cl_ctrl_c }, { 4, cl_ctrl_d }, { 10, cl_lf },
-		{ KEY_BACKSPACE, cl_backspace }, { KEY_DC, cl_key_dc },
+		{ FTP_BACKSPACE, cl_backspace }, { KEY_DC, cl_key_dc },
 		{ KEY_UP, cl_key_up }, { KEY_DOWN, cl_key_down },
 		{ KEY_LEFT, cl_key_left }, { KEY_RIGHT, cl_key_right },
 	};
