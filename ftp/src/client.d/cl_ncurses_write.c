@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:05:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 01:08:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 01:13:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ t_client *cl)
 		(sv->response[0] <= 3) ? COLOR_PAIR(CL_GREEN) : COLOR_PAIR(CL_RED));
 	}
 }
-#include<unistd.h>
+
 int				cl_ncurses_write(t_buff *ring, t_client *cl)
 {
 	char		*ptr;
