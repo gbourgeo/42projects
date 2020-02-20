@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   pf_x.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:23:46 by root             ###   ########.fr       */
+/*   Updated: 2020/02/20 21:37:44 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 
-static ULL		get_modifier(t_dt *data, int *len)
+static unsigned long long		get_modifier(t_dt *data, int *len)
 {
 	if (data->flag.len_modifier & ARG_Z && (*len = 16))
 		return (va_arg(data->ap, unsigned long long));
@@ -30,7 +30,7 @@ static ULL		get_modifier(t_dt *data, int *len)
 	return (va_arg(data->ap, int));
 }
 
-static void		get_data(t_dt *data, t_av *av, int *len)
+static void						get_data(t_dt *data, t_av *av, int *len)
 {
 	av->ui = get_modifier(data, len);
 	av->s = ft_itoa_base(av->ui, 16);
@@ -45,7 +45,7 @@ static void		get_data(t_dt *data, t_av *av, int *len)
 		write_str(data, (*data->tail == 'x') ? "0x" : "0X", 2);
 }
 
-static void		print_ox(t_dt *data, t_av *av)
+static void						print_ox(t_dt *data, t_av *av)
 {
 	int			len;
 
@@ -63,7 +63,7 @@ static void		print_ox(t_dt *data, t_av *av)
 		write_char(data, '0');
 }
 
-void			pf_x(t_dt *data)
+void							pf_x(t_dt *data)
 {
 	t_av		av;
 	int			len;

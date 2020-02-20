@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pf_p.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:33:04 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:23:32 by root             ###   ########.fr       */
+/*   Updated: 2020/02/20 21:37:06 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 static void	get_data(t_dt *data, t_av *av, int *len)
 {
-	av->ui = va_arg(data->ap, ULL);
+	av->ui = va_arg(data->ap, unsigned long long);
 	av->s = ft_itoa_base(av->ui, 16);
 	av->len = ft_strlen(av->s);
 	*len = (data->flag.precision > av->len) ? data->flag.precision : av->len;

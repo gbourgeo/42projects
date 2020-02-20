@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pf_routine.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/21 07:20:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 07:20:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:33:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,9 @@ static void		print_flag(t_dt *data)
 
 int				pf_routine(t_dt *data)
 {
-	static void	(*func[])(t_dt *) = { PRINTF_FUNC1, PRINTF_FUNC2 };
+	static void	(*func[])(t_dt *) = {
+		pf_s, pf_s, pf_p, pf_di, pf_di, pf_di, pf_o, pf_o,
+		pf_u, pf_u, pf_x, pf_x, pf_c, pf_c, pf_percent, };
 	char		*ptr;
 
 	while (*data->tail)

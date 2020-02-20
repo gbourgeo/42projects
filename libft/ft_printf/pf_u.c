@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   pf_u.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:39 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:23:22 by root             ###   ########.fr       */
+/*   Updated: 2020/02/20 21:37:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 
-static ULL		get_modifier(t_dt *data)
+static unsigned long long		get_modifier(t_dt *data)
 {
 	if (*data->tail == 'U')
 		return (va_arg(data->ap, unsigned long));
@@ -32,7 +32,7 @@ static ULL		get_modifier(t_dt *data)
 	return (va_arg(data->ap, unsigned int));
 }
 
-void			pf_u(t_dt *data)
+void							pf_u(t_dt *data)
 {
 	t_av		av;
 	int			len;
