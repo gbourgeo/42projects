@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:28:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 18:25:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 20:51:41 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,5 +112,6 @@ int			create_c_text(t_client *cl)
 	if (!cl->ncu.textwin)
 		return (ERR_NCURSE_CHATWIN);
 	keypad(cl->ncu.textwin, TRUE);
+	notimeout(cl->ncu.textwin, FALSE);
 	return (IS_OK);
 }

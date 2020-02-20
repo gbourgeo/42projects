@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 18:27:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:00:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include "libft.h"
 # include "common.h"
 
-# define CL_HIST_SIZE	20
+# define CL_HIST_SIZE	3
 # define CL_HIST_FILE	".ftphist"
 
 /*

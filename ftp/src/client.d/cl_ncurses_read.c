@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 18:19:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:01:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ int					cl_ncurses_read(t_buff *ring, t_client *cl)
 	int				ret;
 
 	ret = wgetch(cl->ncu.textwin);
-wprintw(cl->ncu.chatwin, "%d ", ret);
-wrefresh(cl->ncu.chatwin);
+// wprintw(cl->ncu.chatwin, "%d ", ret);
+// wrefresh(cl->ncu.chatwin);
 	if (ret == ERR)
 		return (ERR_READ);
 	i = 0;
