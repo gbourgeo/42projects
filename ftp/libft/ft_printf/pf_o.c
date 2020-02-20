@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   pf_o.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:14:53 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:23:36 by root             ###   ########.fr       */
+/*   Updated: 2020/02/20 21:36:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 
-static ULL	get_modifier(t_dt *data)
+static unsigned long long	get_modifier(t_dt *data)
 {
 	if (*data->tail == 'O')
 		return (va_arg(data->ap, unsigned long long));
@@ -32,7 +32,7 @@ static ULL	get_modifier(t_dt *data)
 	return (va_arg(data->ap, unsigned int));
 }
 
-static void	print_zero_space(t_dt *data, t_av *av)
+static void					print_zero_space(t_dt *data, t_av *av)
 {
 	int		len;
 
@@ -50,7 +50,7 @@ static void	print_zero_space(t_dt *data, t_av *av)
 		write_char(data, '0');
 }
 
-void		pf_o(t_dt *data)
+void						pf_o(t_dt *data)
 {
 	t_av	av;
 	int		len;

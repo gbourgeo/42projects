@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_base_printf.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/21 07:20:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/09/21 07:20:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:39:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,7 @@
 # include <stdlib.h>
 
 # define PRINTF_BUFF_SIZE	1028
-# define ULL				unsigned long long
-# define LL					long long
 # define PRINTF_ARGS		"sSpdDioOuUxXcC%"
-# define PRINTF_FUNC1		pf_s, pf_s, pf_p, pf_di, pf_di, pf_di, pf_o, pf_o
-# define PRINTF_FUNC2		pf_u, pf_u, pf_x, pf_x, pf_c, pf_c, pf_percent
 # define ARG_H				0x00001
 # define ARG_HH				0x00002
 # define ARG_L				0x00010
@@ -33,9 +29,9 @@
 
 typedef struct		s_av
 {
-	ULL				ui;
-	char			*s;
-	int				len;
+	unsigned long long	ui;
+	char				*s;
+	int					len;
 }					t_av;
 
 typedef struct		s_args
@@ -82,7 +78,8 @@ void				write_char(t_dt *data, unsigned char c);
 void				write_wchar(t_dt *data, wchar_t *w, int *len);
 
 char				*ft_strtoupper(char *s);
-char				*ft_itoa_base(ULL nb, ULL base);
+char				*ft_itoa_base(unsigned long long nb,
+unsigned long long base);
 unsigned char		ft_atouc(char *str);
 
 #endif

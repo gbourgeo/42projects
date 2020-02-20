@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 21:01:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:26:01 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ static int			cl_default(int ret, t_buff *ring, t_client *cl)
 			*ring->tail++ = ret;
 			ring->len++;
 			wprintw(cl->ncu.textwin, "%s", ring->tail - 1);
-			wmove(cl->ncu.textwin, getcury(cl->ncu.textwin), ring->tail - ring->buff);
+			wmove(cl->ncu.textwin, getcury(cl->ncu.textwin),
+				ring->tail - ring->buff);
 			wrefresh(cl->ncu.textwin);
 		}
 		return (IS_OK);
@@ -54,8 +55,6 @@ int					cl_ncurses_read(t_buff *ring, t_client *cl)
 	int				ret;
 
 	ret = wgetch(cl->ncu.textwin);
-// wprintw(cl->ncu.chatwin, "%d ", ret);
-// wrefresh(cl->ncu.chatwin);
 	if (ret == ERR)
 		return (ERR_READ);
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 02:21:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 22:39:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:26:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ int				cl_server_recv_data(t_server *sv, t_client *cl)
 	char		buff[DATA_BUFF_SIZE];
 	int			err;
 
-	sv->ret = recv(sv->fd_data, buff, sizeof(buff), MSG_DONTWAIT | MSG_NOSIGNAL);
+	sv->ret = recv(sv->fd_data, buff, sizeof(buff),
+		MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (sv->ret <= 0)
 		return (cl_recv_error(sv));
 	if (sv->filename != NULL)

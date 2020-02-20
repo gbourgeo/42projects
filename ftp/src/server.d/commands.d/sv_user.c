@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 01:53:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/12 18:04:08 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 21:30:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int				sv_user(char **cmds, t_client *cl)
 		return (sv_response(cl, "421 closing connection"));
 	if (!cmds[1])
 		return (sv_response(cl, "501 Missing parameter"));
-	if (/*!FT_CHECK(g_serv.options, sv_user_mode) || */cl->login.logged)
+	if (cl->login.logged)
 		return (sv_response(cl, "230 User logged in"));
 	sv_free_login(&cl->login, &g_serv);
 	sv_assign_ptr(&cl->login.user, cmds[1], cmds);

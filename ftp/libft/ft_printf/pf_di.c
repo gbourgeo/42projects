@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   pf_di.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/16 04:22:17 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:23:39 by root             ###   ########.fr       */
+/*   Updated: 2020/02/20 21:39:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 
-static ULL	get_modifier(t_dt *data)
+static unsigned long long	get_modifier(t_dt *data)
 {
 	if (*data->tail == 'D')
 		return (va_arg(data->ap, unsigned long long));
@@ -32,7 +32,7 @@ static ULL	get_modifier(t_dt *data)
 	return (va_arg(data->ap, int));
 }
 
-static void	pf_di_c(t_dt *data, t_av *av, char c)
+static void					pf_di_c(t_dt *data, t_av *av, char c)
 {
 	int		len;
 
@@ -60,7 +60,7 @@ static void	pf_di_c(t_dt *data, t_av *av, char c)
 	}
 }
 
-static void	pf_di_noc(t_dt *data, t_av *av)
+static void					pf_di_noc(t_dt *data, t_av *av)
 {
 	int		len;
 
@@ -86,16 +86,16 @@ static void	pf_di_noc(t_dt *data, t_av *av)
 	}
 }
 
-void		pf_di(t_dt *data)
+void						pf_di(t_dt *data)
 {
 	t_av	av;
 	char	c;
 
 	av.ui = get_modifier(data);
-	av.s = ft_itoa_base(((LL)av.ui < 0) ? av.ui * -1 : av.ui, 10);
+	av.s = ft_itoa_base(((long long)av.ui < 0) ? av.ui * -1 : av.ui, 10);
 	av.len = ft_strlen(av.s);
 	c = '\0';
-	if ((LL)av.ui < 0)
+	if ((long long)av.ui < 0)
 		c = '-';
 	else if (data->flag.plus)
 		c = '+';
