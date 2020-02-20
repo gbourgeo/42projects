@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 16:15:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 22:54:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ typedef struct		s_server
 	int				wait_response;
 	char			*filename;
 	int				filefd;
+	int				ret;
 	t_buff			wr;
 	char			cmd[CMD_BUFF_SIZE];
 	char			response[CMD_BUFF_SIZE];
@@ -108,7 +109,7 @@ typedef struct		s_client
 	WINDOW			*printtowin;
 	t_server		server;
 	t_cmd			*precmd;
-	int				errnb[6];
+	int				errnb[7];
 	t_buff			rd;
 	t_buff			wr;
 }					t_client;
@@ -147,9 +148,11 @@ int					cl_client_loop(t_client *cl);
 int					cl_client_pid(pid_t pid, t_client *cl);
 int					cl_ncurses_read(t_buff *ring, t_client *cl);
 int					cl_ncurses_write(t_buff *ring, t_client *cl);
-int					cl_server_close(t_server *sv, int end, t_client *cl);
+void				cl_server_close_data(t_server *sv);
+void				cl_server_close(t_server *sv, t_client *cl);
 int					cl_server_recv_data(t_server *sv, t_client *cl);
 int					cl_server_recv(t_buff *ring, int fd, t_client *cl);
+int					cl_server_send_data(t_server *sv, t_client *cl);
 int					cl_server_send(t_buff *ring, int fd, t_client *cl);
 int					cl_server_write(const char *buf, int size, t_server *sv,
 t_client *cl);

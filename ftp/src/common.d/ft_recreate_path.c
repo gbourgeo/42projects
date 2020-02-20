@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_recreate_path.c                                 :+:      :+:    :+:   */
+/*   ft_recreate_path.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 22:39:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/26 02:01:37 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:32:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include "libft.h"
+#include "common.h"
 
 static char		*search_back(char *head, char *path)
 {
@@ -21,7 +22,7 @@ static char		*search_back(char *head, char *path)
 	return (head);
 }
 
-char			*sv_recreate_path(char *path)
+char			*ft_recreate_path(char *path)
 {
 	char	*head;
 	char	*tail;

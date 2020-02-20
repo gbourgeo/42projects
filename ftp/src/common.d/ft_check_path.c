@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sv_check_path.c                                    :+:      :+:    :+:   */
+/*   ft_check_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 03:08:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/31 02:35:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:25:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sv_main.h"
+#include "libft.h"
+#include "common.h"
 
 static char		*setup_path(char *path, char *pwd)
 {
@@ -34,7 +35,7 @@ static char		*setup_path(char *path, char *pwd)
 	return (ret);
 }
 
-int				sv_check_path(char **path, t_client *cl)
+int				ft_check_path(char **path, char *pwd, char *home)
 {
 	char		*pth;
 	char		*tmp;
@@ -45,13 +46,13 @@ int				sv_check_path(char **path, t_client *cl)
 		return (IS_OK);
 	do_setup = (pth[0] != '/');
 	if (do_setup)
-		if (!(pth = setup_path(*path, cl->pwd)))
+		if (!(pth = setup_path(*path, pwd)))
 			return (ERR_MALLOC);
-	pth = sv_recreate_path(pth);
-	if (cl->home[ft_strlen(cl->home) - 1] != '/')
-		tmp = ft_strjoin(cl->home, pth);
+	pth = ft_recreate_path(pth);
+	if (home[ft_strlen(home) - 1] != '/')
+		tmp = ft_strjoin(home, pth);
 	else
-		tmp = ft_strjoin(cl->home, pth + 1);
+		tmp = ft_strjoin(home, pth + 1);
 	if (do_setup)
 		free(pth);
 	if (!tmp)

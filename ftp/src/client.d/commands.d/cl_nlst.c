@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/09 02:56:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 02:32:34 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 00:56:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int				cl_nlst(char *buf, char **cmd, t_client *cl)
 
 	i = 1;
 	(void)buf;
-	ft_strcpy(cl->server.cmd, "NLST\n");
+	ft_strcpy(cl->server.cmd, "NLST");
 	if (cmd)
 		while (cmd[i])
 		{
@@ -31,7 +31,7 @@ int				cl_nlst(char *buf, char **cmd, t_client *cl)
 	if ((errnb = cl_server_write("PASV\n", 5, &cl->server, cl)) != IS_OK)
 		return (errnb);
 	cl->server.receive_data = 1;
-	cl->server.wait_response = 1;
+	cl->server.wait_response = 2;
 	ft_strclr(cl->server.response);
 	return (errnb);
 }

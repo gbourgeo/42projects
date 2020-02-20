@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 03:45:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:26:36 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,8 +238,6 @@ int					sv_client_write(const char *str, t_client *cl);
 int					sv_client_nwrite(const char *str, int len, t_client *cl);
 t_client			*sv_client_end(t_client *cl, t_server *sv);
 t_client			*sv_client_timeout(t_client *cl);
-int					sv_check_path(char **path, t_client *cl);
-char				*sv_recreate_path(char *path);
 int					sv_change_working_directory(char *home, char *pwd);
 int					sv_check_err(int errnb[], int size);
 

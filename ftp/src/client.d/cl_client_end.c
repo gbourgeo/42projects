@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 23:56:07 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 22:56:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ void			cl_client_end(t_client *cl)
 		i++;
 	}
 	ft_close(&cl->server.fd_ctrl);
-	cl_server_close(&cl->server, 1, cl);
-	cl_precmd_end(cl->precmd, 1, cl);
+	cl_server_close(&cl->server, cl);
 	cl_ncurses_end(cl);
 }

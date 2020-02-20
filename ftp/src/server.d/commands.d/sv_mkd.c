@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 17:38:10 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:47:56 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ int				sv_mkd(char **cmds, t_client *cl)
 		return (sv_response(cl, "421 Closing connection"));
 	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
-	if (!(dir = ft_strdup(cmds[1])) || sv_check_path(&dir, cl) != IS_OK)
+	if (!(dir = ft_strdup(cmds[1]))
+	|| ft_check_path(&dir, cl->pwd, cl->home) != IS_OK)
 		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
 	else if (mkdir(dir, 0777) != 0)
 		errnb = sv_response(cl, "550 Failed to create %s",

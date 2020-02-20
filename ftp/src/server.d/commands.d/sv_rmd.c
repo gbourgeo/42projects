@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 02:54:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:49:19 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int				sv_rmd(char **cmds, t_client *cl)
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_NB_PARAMS)));
 	if (!(path = ft_strdup(cmds[1])))
 		return (sv_response(cl, "552 internal error (memory alloc. failed)"));
-	if (sv_check_path(&path, cl) != IS_OK)
+	if (ft_check_path(&path, cl->pwd, cl->home) != IS_OK)
 		errnb = sv_response(cl, "552 internal error (memory alloc. failed)");
 	else if (access(path, F_OK) != 0)
 		errnb = sv_response(cl, "550 directory not found %s",

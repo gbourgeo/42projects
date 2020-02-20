@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/31 04:51:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 23:19:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:47:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int				sv_dele(char **cmds, t_client *cl)
 	if (!cmds[1] && !sv_validpathname(cmds[1]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
 	if (!(path = ft_strdup(cmds[1]))
-	|| (errnb = sv_check_path(&path, cl)) != IS_OK)
+	|| (errnb = ft_check_path(&path, cl->pwd, cl->home)) != IS_OK)
 		errnb = sv_response(cl, "552 Internal error (memory alloc. failed)");
 	else if (access(path, F_OK))
 		errnb = sv_response(cl, "550 \"%s\" file unavailable", cmds[1]);

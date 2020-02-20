@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/06 18:57:58 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/08 18:34:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:48:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int		fill_command(char **cmd, char **arg, t_client *cl)
 
 	if (arg[1])
 	{
-		if (sv_check_path(&arg[1], cl) != IS_OK)
+		if (ft_check_path(&arg[1], cl->pwd, cl->home) != IS_OK)
 			return (ERR_MALLOC);
 		if (stat(arg[1], &buf) != 0)
 			return (ERR_WRONG_PARAM);

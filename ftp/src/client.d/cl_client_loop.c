@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 23:30:57 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 22:56:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,11 @@ static int			cl_client_init(t_client *cl)
 	cl->wr.tail = cl->wr.buff;
 	cl->wr.len = sizeof(cl->wr.buff);
 	cl->server.fd_data = -1;
-	cl->server.receive_data = 0;
+	cl->server.receive_data = -1;
 	cl->server.wait_response = 0;
 	cl->server.filename = NULL;
 	cl->server.filefd = -1;
+	cl->server.ret = 0;
 	cl->server.wr.head = cl->server.wr.buff;
 	cl->server.wr.tail = cl->server.wr.buff;
 	cl->server.wr.len = 0;
@@ -84,8 +85,16 @@ static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 	}
 	if (cl->server.fd_data > 0)
 	{
-		if (FD_ISSET(cl->server.fd_data, r))
+		if (cl->server.receive_data > 0 && FD_ISSET(cl->server.fd_data, r))
 			cl->errnb[5] = cl_server_recv_data(&cl->server, cl);
+// wprintw(cl->ncu.chatwin, "RECV: fd:%d recv:%d %p %p\n",
+// cl->server.fd_data, cl->server.receive_data, (void*)r, (void*)w);
+// wrefresh(cl->ncu.chatwin);
+		if (cl->server.receive_data == 0 && FD_ISSET(cl->server.fd_data, w))
+			cl->errnb[6] = cl_server_send_data(&cl->server, cl);
+// wprintw(cl->ncu.chatwin, "SEND: fd:%d recv:%d %p %p\n",
+// cl->server.fd_data, cl->server.receive_data, (void*)r, (void*)w);
+// wrefresh(cl->ncu.chatwin);
 	}
 }
 
@@ -107,9 +116,11 @@ static int			check_errors(t_client *cl)
 			wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_BLUE));
 			wrefresh(cl->ncu.chatwin);
 			if (cl->errnb[i] == ERR_DISCONNECT)
-				cl_server_close(&cl->server, 1, cl);
+				cl_server_close(&cl->server, cl);
 			cl->errnb[i] = IS_OK;
 		}
+	if (cl->server.ret < 0)
+		cl_server_close_data(&cl->server);
 	return (IS_OK);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 21:11:34 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/12/21 23:44:20 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:45:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define _POSIX_C_SOURCE 200809L
 #endif
 #include <unistd.h>
+#include "common.h"
 #include "sv_main.h"
 
 static int		param_p_new_home(const char *path, t_server *sv)
@@ -34,7 +35,7 @@ static int		param_p_new_home(const char *path, t_server *sv)
 	if (!ptr)
 		return (ERR_MALLOC);
 	ft_strdel(&sv->info.env.home);
-	sv->info.env.home = sv_recreate_path(ptr);
+	sv->info.env.home = ft_recreate_path(ptr);
 	return (IS_OK);
 }
 

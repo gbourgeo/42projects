@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:09:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/13 03:49:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:48:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int				sv_retr(char **cmds, t_client *cl)
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
 	if (!cl->data.port && cl->data.pasv_fd < 0 && cl->data.socket < 0)
 		return (sv_response(cl, "425 Use PORT or PASV first"));
-	if ((errnb = sv_check_path(&cmds[1], cl)) != IS_OK
+	if ((errnb = ft_check_path(&cmds[1], cl->pwd, cl->home)) != IS_OK
 	|| (errnb = sv_retr_open_file(cmds[1], &cl->data)) != IS_OK
 	|| (errnb = sv_response(cl, "125 Ready for transfert")) != IS_OK
 	|| (errnb = sv_new_pid(cmds, cl, NULL)) != IS_OK)

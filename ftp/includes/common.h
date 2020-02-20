@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 23:30:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/19 18:27:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,10 +179,10 @@ char				**ft_strsplit2(char const *s, char c);
 void				ft_close(int *fd);
 int					ftp_strcmp(const char *s1, const char *s2);
 char				*ft_ringbuffcpy(char *buff, int size, t_buff *ring);
+int					ft_check_path(char **path, char *pwd, char *home);
+char				*ft_recreate_path(char *path);
 
 char				*ft_strndup(const char *s1, int size);
-char				*ft_get_path(char *dest, char *home, char *lpwd,
-					char *oldpwd);
 char				*ft_get_command(char *cmd, char *paths, int n);
 void				ft_putendn(int nb);
 void				ft_signals(void);
