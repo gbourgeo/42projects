@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 01:25:47 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 14:00:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ static int		cl_put_open_file(char *filepath, t_server *sv, t_env *env)
 	ft_close(&sv->filefd);
 	if (!(sv->filename = ft_strdup(filepath)))
 		return (ERR_MALLOC);
-	if ((errnb = ft_check_path(&sv->filename, env->pwd, env->home)) == IS_OK)
-		if ((sv->filefd = open(sv->filename, O_RDONLY) < 0))
+	if ((errnb = ft_check_path(&sv->filename, env->pwd, "/")) == IS_OK)
+	{
+		if ((sv->filefd = open(sv->filename, O_RDONLY)) < 0)
 			errnb = ERR_OPEN;
-wprintw(g_cl.ncu.chatwin, "FILE TO PUT: %s\n", sv->filename);
-wrefresh(g_cl.ncu.chatwin);
+	}
 	ft_strdel(&sv->filename);
 	return (errnb);
 }
@@ -49,8 +49,8 @@ int				cl_put(char *buf, char **cmd, t_client *cl)
 		return (errnb);
 	cl->server.receive_data = 0;
 	cl->server.wait_response = 2;
-	// cl->precmd = cl_new_command("NLST", cl->ncu.slistwin, "2", "22",
-	// cl->precmd);
+	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin, "2", "22",
+	cl->precmd);
 	return (errnb);
 }
 

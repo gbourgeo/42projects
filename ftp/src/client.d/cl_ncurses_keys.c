@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 22:09:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 22:10:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 18:00:49 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int			cl_ctrl_c(t_buff *ring, t_client *cl)
 	ring->head = ring->buff;
 	ring->tail = ring->buff;
 	ring->len = 0;
+	ft_strclr(ring->buff);
 	wclear(cl->ncu.textwin);
 	wrefresh(cl->ncu.textwin);
 	return (IS_OK);
@@ -38,11 +39,14 @@ int			cl_lf(t_buff *ring, t_client *cl)
 	errnb = IS_OK;
 	if (ring->len > 0)
 	{
+		ring->tail = ring->buff + ring->len;
 		*ring->tail++ = '\0';
 		errnb = cl_client_commands(ring, cl);
 		ring->head = ring->buff;
 		ring->tail = ring->buff;
 		ring->len = 0;
+		cl->hist = cl_history_add(ring->buff, cl->hist);
+		ft_strclr(ring->buff);
 		werase(cl->ncu.textwin);
 		wrefresh(cl->ncu.textwin);
 	}

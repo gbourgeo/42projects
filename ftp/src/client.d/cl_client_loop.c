@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 22:56:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 17:59:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,14 +87,8 @@ static void			check_fdset(fd_set *r, fd_set *w, t_client *cl)
 	{
 		if (cl->server.receive_data > 0 && FD_ISSET(cl->server.fd_data, r))
 			cl->errnb[5] = cl_server_recv_data(&cl->server, cl);
-// wprintw(cl->ncu.chatwin, "RECV: fd:%d recv:%d %p %p\n",
-// cl->server.fd_data, cl->server.receive_data, (void*)r, (void*)w);
-// wrefresh(cl->ncu.chatwin);
 		if (cl->server.receive_data == 0 && FD_ISSET(cl->server.fd_data, w))
 			cl->errnb[6] = cl_server_send_data(&cl->server, cl);
-// wprintw(cl->ncu.chatwin, "SEND: fd:%d recv:%d %p %p\n",
-// cl->server.fd_data, cl->server.receive_data, (void*)r, (void*)w);
-// wrefresh(cl->ncu.chatwin);
 	}
 }
 

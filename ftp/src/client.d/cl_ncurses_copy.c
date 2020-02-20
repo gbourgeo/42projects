@@ -1,32 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cl_init.c                                          :+:      :+:    :+:   */
+/*   cl_ncurses_copy.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/17 04:51:10 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 15:52:11 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/02/20 15:42:42 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/02/20 15:43:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
+#include "libft.h"
 #include "cl_main.h"
 
-int				cl_init(char **environ, t_env *env)
+void			cl_ncurses_copy(char *s)
 {
-	char		*ptr;
+	int			i;
 
-	if ((ptr = ft_getenv("HOME=", environ)))
-	{
-		ft_strdel(&env->home);
-		env->home = ptr;
-	}
-	if (!(env->pwd = ft_getenv("PWD=", environ)))
-		env->pwd = getcwd(NULL, 0);
-	if (!(env->oldpwd = ft_getenv("OLDPWD=", environ)))
-		env->oldpwd = getcwd(NULL, 0);
-	if (!env->home || !env->pwd || !env->oldpwd)
-		return (ERR_MALLOC);
-	return (IS_OK);
+	i = ft_strlen(s) + 1;
+	s[i] = '\0';
+	while (--i > 0)
+		s[i] = s[i - 1];
 }

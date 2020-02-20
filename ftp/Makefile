@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/19 18:36:24 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/20 18:32:34 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ CLI_D	= src/client.d/
 CLI_C	= cl_main.c						\
 		cl_client_commands.c			\
 		cl_client_end.c					\
+		cl_client_history.c				\
 		cl_client_loop.c				\
 		cl_client_signals.c				\
 		cl_commands.c					\
@@ -25,6 +26,7 @@ CLI_C	= cl_main.c						\
 		cl_init.c						\
 		cl_ncurses.c					\
 		cl_ncurses_box.c				\
+		cl_ncurses_copy.c				\
 		cl_ncurses_keys.c				\
 		cl_ncurses_keys2.c				\
 		cl_ncurses_read.c				\

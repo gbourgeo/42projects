@@ -6,13 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 22:56:09 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/20 17:37:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <term.h>
 #include <curses.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include "cl_main.h"
 
 void			cl_ncurses_end(t_client *cl)
@@ -72,7 +73,34 @@ void			cl_client_end(t_client *cl)
 			signal(i, cl->sig[i]);
 		i++;
 	}
-	ft_close(&cl->server.fd_ctrl);
 	cl_server_close(&cl->server, cl);
+	cl_history_end(cl->hist);
 	cl_ncurses_end(cl);
+}
+
+void			cl_history_end(t_hist *hist)
+{
+	t_hist		*ptr;
+	int			fd;
+
+	if (!(ptr = hist))
+		return ;
+	if ((fd = open(CL_HIST_FILE, O_CREAT | O_TRUNC | O_WRONLY, 0644)) < 0)
+		return ;
+	while (ptr->next)
+		ptr = ptr->next;
+	while (ptr)
+	{
+		if (ptr->line && *ptr->line)
+			ft_putendl_fd(ptr->line, fd);
+		ptr = ptr->prev;
+	}
+	ft_close(&fd);
+	while (ptr)
+	{
+		hist = ptr->next;
+		ft_strdel(&ptr->line);
+		free(ptr);
+		ptr = hist;
+	}
 }
