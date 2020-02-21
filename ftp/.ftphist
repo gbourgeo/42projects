@@ -1,2 +1,4 @@
-hello
-ls
+put Makefile
+refresh
+\cat test/g/Makefile
+exit

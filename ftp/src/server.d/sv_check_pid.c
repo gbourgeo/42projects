@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 02:21:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/10 18:55:35 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 15:28:35 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 # define _DEFAULT_SOURCE
 #endif
 #include <sys/wait.h>
+#include <sys/mman.h>
 #include "sv_main.h"
 
 static int		check_pid_value(const char *name, int status, t_client *cl)
 {
 	cl->data.pid = -1;
-	ft_close(&cl->data.pasv_fd);
-	ft_close(&cl->data.socket);
+	sv_free_data(&cl->data);
 	if (WIFEXITED(status))
 	{
 		status = WEXITSTATUS(status);

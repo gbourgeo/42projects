@@ -6,70 +6,47 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:55:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 16:02:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <errno.h>
 #include <unistd.h>
-#include <sys/mman.h>
+#include <fcntl.h>
 #include "sv_main.h"
 #include "sv_struct.h"
 
-// static int		put_buff(char **buff, long *size, t_hdr *hdr)
-// {
-// 	if ((*buff = malloc(hdr->size)) != NULL)
-// 		*size = hdr->size;
-// 	else if ((*buff = malloc(65000)) != NULL)
-// 		*size = 65000;
-// 	else
-// 		return (ERR_MALLOC);
-// 	return (IS_OK);
-// }
+int			sv_stor_exec(char *opt, char **cmds, t_client *cl)
+{
+	char	buff[DATA_BUFF_SIZE];
+	int		ret;
 
-// static int		put_receive(int fd, t_data *data, t_hdr *hdr)
-// {
-// 	char	*buff;
-// 	long	size;
-// 	int		ret;
-// 	int		received;
-// 	int		errnb;
+	(void)opt;
+	(void)cmds;
+	errno = 0;
+	while (1)
+	{
+		ret = recv(cl->data.socket, buff, sizeof(buff),
+			MSG_DONTWAIT | MSG_NOSIGNAL);
+		if (ret == 0 || errno == ECONNRESET || errno == EPIPE)
+			break ;
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+			continue ;
+		if (ret < 0)
+			return (ERR_RECV);
+		if (write(cl->data.ffd, buff, ret) != ret)
+			return (ERR_WRITE);
+	}
+	return (IS_OK);
+}
 
-// 	received = 0;
-// 	if ((errnb = put_buff(&buff, &size, hdr)) != IS_OK)
-// 		return (errnb);
-// 	while (received < hdr->size && errnb == IS_OK)
-// 	{
-// 		ret = recv(data->socket, buff, size, MSG_DONTWAIT | MSG_NOSIGNAL);
-// 		if (ret <= 0)
-// 			errnb = sv_recv_error(ret);
-// 		else if (write(fd, buff, ret) != ret)
-// 			errnb = ERR_WRITE;
-// 		else
-// 			received += ret;
-// 	}
-// 	free(buff);
-// 	return (errnb);
-// }
-
-// static int		put_type(int type)
-// {
-// 	if (type == tf_binary)
-// 		return (0755);
-// 	if (type == tf_ascii)
-// 		return (0644);
-// 	return (0);
-// }
-
-// static void		print_info_d(const char *s1, long nb, t_client *cl,
-// t_server *sv)
-// {
-// 	if (!FT_CHECK(sv->options, sv_interactive))
-// 		return ;
-// 	printf("Client \x1B[33m%d\x1B[0m: %s %ld\n", cl->fd, s1, nb);
-// }
+static int	sv_stor_open_file(char *file, t_data *data)
+{
+	data->ffd = open(file, O_CREAT | O_TRUNC | O_RDWR, 0644);
+	if (data->ffd < 0)
+		return (ERR_OPEN);
+	return (IS_OK);
+}
 
 /*
 ** STOR
@@ -83,7 +60,23 @@
 
 int			sv_stor(char **cmds, t_client *cl)
 {
-	return (sv_response(cl, "502 %s unimplemented command", cmds[0]));
+	int		errnb;
+
+	cl->data.ffd = -1;
+	cl->data.function = sv_stor_exec;
+	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
+		return (sv_response(cl, "530 Please login with USER and PASS."));
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+		return (sv_response(cl, "421 Closing connection"));
+	if (!cmds[1] || !sv_validpathname(cmds[1]) || cmds[2])
+		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));
+	if (!cl->data.port && cl->data.pasv_fd < 0 && cl->data.socket < 0)
+		return (sv_response(cl, "425 Use PORT or PASV first"));
+	if ((errnb = sv_stor_open_file(cmds[1], &cl->data)) != IS_OK
+	|| (errnb = sv_new_pid(cmds, cl, NULL)) != IS_OK
+	|| (errnb = sv_response(cl, "125 Ready for transfert")) != IS_OK)
+		errnb = sv_response(cl, "451 Internal error (%s)", ft_get_error(errnb));
+	return (errnb);
 }
 
 /*

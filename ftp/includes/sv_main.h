@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 18:26:36 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 15:51:17 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ typedef struct		s_data
 	pid_t			pid;
 	char			*file;
 	ssize_t			fsize;
+	int				ffd;
 }					t_data;
 
 /*
@@ -304,6 +305,7 @@ int					sv_nlst(char **cmds, t_client *cl);
 int					sv_help(char **cmds, t_client *cl);
 int					sv_nlst_exec(char *opt, char **arg, t_client *cl);
 int					sv_retr_exec(char *opt, char **cmds, t_client *cl);
+int					sv_stor_exec(char *opt, char **cmds, t_client *cl);
 
 /*
 ** Special Commands

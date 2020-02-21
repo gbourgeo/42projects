@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 08:14:00 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 03:29:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 14:07:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static const char	*get_error_next(int errnb)
 const char			*ft_get_error(int errnb)
 {
 	static const char	*errors[] = {
-		"Coucou", "-- Help", "Missing parameter",
+		"Bye.", "-- Help", "Missing parameter",
 		"Wrong parameter", "Invalid parameter",
 		"parameter contains non digit characters",
 		"too much paramaters given", "getaddrinfo failed",
