@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 17:16:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:53:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ int				cl_get(char *buf, char **cmd, t_client *cl)
 		cl->server.filename = ft_strdup(cmd[1]);
 	else
 		cl->server.filename = ft_strdup(ft_strrchr(cmd[1], '/') + 1);
-	cl->precmd = cl_new_command("\\ls -ap", cl->ncu.clistwin, "212", "",
-	cl->precmd);
+	cl->precmd = cl_new_command("\\ls -ap", cl->ncu.clistwin,
+	(char *[]){ "212", "" }, cl->precmd);
 	return (errnb);
 }
 

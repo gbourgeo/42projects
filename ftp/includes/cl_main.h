@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 21:00:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:51:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ t_client *cl);
 int					cl_pre_command(t_cmd **cmds, t_server *sv, t_client *cl);
 t_cmd				*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl);
 t_cmd				*cl_new_command(const char *name, WINDOW *win,
-					char *precode, char *code, t_cmd *next);
+					char *codes[], t_cmd *next);
 
 t_command			*cl_commands(int getsize);
 int					cl_response(t_server *sv, t_client *cl);
