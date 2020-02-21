@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:17:26 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 01:25:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:16:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "cl_main.h"
 
 int				cl_get(char *buf, char **cmd, t_client *cl)
@@ -31,9 +32,12 @@ int				cl_get(char *buf, char **cmd, t_client *cl)
 		return (errnb);
 	cl->server.receive_data = 1;
 	cl->server.wait_response = 2;
-	cl->server.filename = ft_strdup(cmd[1]);
-	// cl->precmd = cl_new_command("\\ls -p", cl->ncu.clistwin, "212", "",
-	// cl->precmd);
+	if (!ft_strrchr(cmd[1], '/'))
+		cl->server.filename = ft_strdup(cmd[1]);
+	else
+		cl->server.filename = ft_strdup(ft_strrchr(cmd[1], '/') + 1);
+	cl->precmd = cl_new_command("\\ls -ap", cl->ncu.clistwin, "212", "",
+	cl->precmd);
 	return (errnb);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/11 16:24:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 16:20:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:16:34 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char *precode, char *code, t_cmd *next)
 int				cl_pre_command(t_cmd **cmds, t_server *sv, t_client *cl)
 {
 	*cmds = NULL;
-	if ((*cmds = cl_new_command("\\ls -p", cl->ncu.clistwin, "", "", *cmds))
+	if ((*cmds = cl_new_command("\\ls -ap", cl->ncu.clistwin, "", "", *cmds))
 	&& (*cmds = cl_new_command("NLST", cl->ncu.slistwin, "2", "22", *cmds)))
 	{
 		if (sv->pass

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/20 15:50:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 21:21:23 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:49:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,7 @@ static int		cl_history_check_duplicate(char *line, t_hist *hist)
 {
 	t_hist		*head;
 
-	while (hist->prev)
-		hist = hist->prev;
-	if ((head = hist->next))
+	if ((head = hist))
 		while (hist)
 		{
 			if (!ft_strcmp(line, hist->line))
@@ -65,12 +63,10 @@ static int		cl_history_check_duplicate(char *line, t_hist *hist)
 					hist->prev->next = hist->next;
 				if (hist->next)
 					hist->next->prev = hist->prev;
-				hist->prev = head->prev;
-				hist->next = head;
-				if (head->prev)
-					head->prev->next = hist;
-				if (head->next)
+				if ((hist->next = head->next))
 					head->next->prev = hist;
+				head->next = hist;
+				hist->prev = head;
 				return (0);
 			}
 			hist = hist->next;
@@ -85,10 +81,10 @@ t_hist			*cl_history_add(char *line, t_hist *hist)
 	int			count;
 
 	count = 1;
+	while (hist && hist->prev)
+		hist = hist->prev;
 	if (hist && cl_history_check_duplicate(line, hist))
 	{
-		while (hist->prev)
-			hist = hist->prev;
 		ft_strdel(&hist->line);
 		hist->line = ft_strdup(line);
 		ptr = hist;

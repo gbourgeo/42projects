@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:43 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 15:17:22 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:11:10 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ static int		cl_put_open_file(char *filepath, t_server *sv, t_env *env)
 		if ((sv->filefd = open(sv->filename, O_RDONLY)) < 0)
 			errnb = ERR_OPEN;
 	}
-wprintw(g_cl.ncu.chatwin, "file %s fd %d\n", sv->filename, sv->filefd);
-wrefresh(g_cl.ncu.chatwin);
 	ft_strdel(&sv->filename);
 	return (errnb);
 }
@@ -51,8 +49,8 @@ int				cl_put(char *buf, char **cmd, t_client *cl)
 		return (errnb);
 	cl->server.receive_data = 0;
 	cl->server.wait_response = 2;
-	// cl->precmd = cl_new_command("NLST", cl->ncu.slistwin, "2", "22",
-	// cl->precmd);
+	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin, "212", "22",
+	cl->precmd);
 	return (errnb);
 }
 

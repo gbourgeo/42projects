@@ -1,4 +1,3 @@
-put Makefile
-refresh
-\cat test/g/Makefile
-exit
+put auteur
+l
+pwd

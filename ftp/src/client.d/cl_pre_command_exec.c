@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/18 15:46:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 17:42:43 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/21 17:09:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static t_cmd	*handle_code(t_cmd *cmds, t_server *sv, t_client *cl)
 t_cmd			*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl)
 {
 	if (cmds == NULL)
-		return (NULL);
+		return (cmds);
 	if (cmds->precode)
 		cmds = handle_precode(cmds, sv, cl);
 	else if (cmds->code)
