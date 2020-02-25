@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 15:51:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 16:30:31 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,6 +340,9 @@ int					sv_regt_help(t_command *cmd, t_client *cl);
 int					sv_print_help(t_client *cl, t_command *cmd, char *args,
 					char **description);
 
+/*
+** Utils functions
+*/
 int					sv_validpathname(const char *s);
 int					sv_validnumber(char **s, int ssize);
 int					sv_connect_to(int *fd, t_client *cl);

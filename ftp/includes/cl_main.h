@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 17:51:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 17:51:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 
 enum
 {
-	cl_interactive = 0,
+	cl_verbose = 0,
 };
 
 /*
@@ -115,14 +115,15 @@ typedef struct		s_client
 	t_common		info;
 	t_sighandler	sig[NSIG];
 	int				options;
+	int				version;
 	char			*port;
 	char			*addr;
-	int				version;
 	t_ncu			ncu;
 	WINDOW			*printtowin;
 	t_server		server;
 	t_cmd			*precmd;
 	int				errnb[7];
+	int				verbose;
 	t_buff			rd;
 	t_buff			wr;
 	t_hist			*hist;
@@ -174,8 +175,7 @@ int					cl_server_recv_data(t_server *sv, t_client *cl);
 int					cl_server_recv(t_buff *ring, int fd, t_client *cl);
 int					cl_server_send_data(t_server *sv, t_client *cl);
 int					cl_server_send(t_buff *ring, int fd, t_client *cl);
-int					cl_server_write(const char *buf, int size, t_server *sv,
-t_client *cl);
+int					cl_server_write(const char buf[], t_server *sv, t_client *cl);
 
 int					cl_pre_command(t_cmd **cmds, t_server *sv, t_client *cl);
 t_cmd				*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl);

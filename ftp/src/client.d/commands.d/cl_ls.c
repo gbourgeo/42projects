@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 18:18:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 02:32:03 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 17:59:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int				cl_ls(char *buf, char **cmd, t_client *cl)
 		i++;
 	}
 	ft_strncat(cl->server.cmd, "\n", CMD_BUFF_SIZE);
-	if ((errnb = cl_server_write("PASV\n", 5, &cl->server, cl)) != IS_OK)
+	if ((errnb = cl_server_write("PASV\n", &cl->server, cl)) != IS_OK)
 		return (errnb);
 	cl->server.receive_data = 1;
 	cl->server.wait_response = 1;

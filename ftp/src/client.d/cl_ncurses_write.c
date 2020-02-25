@@ -6,10 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:05:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 01:13:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:49:43 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "common.h"
 #include "cl_main.h"
 
 static void		cl_get_response(char *stop, t_buff *ring, t_server *sv,
@@ -53,7 +54,7 @@ int				cl_ncurses_write(t_buff *ring, t_client *cl)
 				cl_get_response(ptr, ring, &cl->server, cl);
 				wprintw(cl->ncu.chatwin, "%s", cl->server.response);
 				wrefresh(cl->ncu.chatwin);
-			}
+			}	
 			if (ptr >= ring->buff + sizeof(ring->buff))
 				ptr = ring->buff;
 		}

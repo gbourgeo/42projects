@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 18:27:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:53:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,22 +169,18 @@ const char			*get_signal_name(int sig);
 void				print_signal_info(int sig, int interactive);
 int					ft_check_option(int option, int value);
 
-int					ft_init(void *p, int size, char **environ, char *prog);
-const char			*ft_get_error(int errnb);
+int					ft_check_path(char **path, char *pwd, char *home);
+void				ft_close(int *fd);
 int					ft_error(int errnb, t_common *info);
+char				*ft_get_command(char *cmd, char *paths, int n);
+const char			*ft_get_error(int errnb);
 char				*ft_getenv(char *search, char **envp);
+int					ft_init(void *p, int size, char **environ, char *prog);
+char				*ft_recreate_path(char *path);
 char				**ft_split_whitespaces(char *str);
 char				*ft_strcset(char *src, const char *charset);
 char				**ft_strsplit2(char const *s, char c);
-void				ft_close(int *fd);
-int					ftp_strcmp(const char *s1, const char *s2);
 char				*ft_ringbuffcpy(char *buff, int size, t_buff *ring);
-int					ft_check_path(char **path, char *pwd, char *home);
-char				*ft_recreate_path(char *path);
-
-char				*ft_strndup(const char *s1, int size);
-char				*ft_get_command(char *cmd, char *paths, int n);
-void				ft_putendn(int nb);
-void				ft_signals(void);
+int					ftp_strcmp(const char *s1, const char *s2);
 
 #endif

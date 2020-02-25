@@ -6,19 +6,19 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/01 21:08:30 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 19:20:18 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 16:32:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-int		cl_server_write(const char *buf, int len, t_server *sv, t_client *cl)
+int		cl_server_write(const char buf[], t_server *sv, t_client *cl)
 {
 	int		i;
 	int		errnb;
 
 	i = 0;
-	while (i < len)
+	while (buf[i])
 	{
 		*sv->wr.tail++ = buf[i++];
 		if (sv->wr.tail >= sv->wr.buff + sizeof(sv->wr.buff))

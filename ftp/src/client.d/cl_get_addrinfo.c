@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 23:31:35 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/05 17:20:21 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:22:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,21 +66,24 @@ int				cl_get_addrinfo(int *fd, char *addr, char *port, t_client *cl)
 	int			errnb;
 
 	*fd = -1;
-	wprintw(cl->ncu.chatwin, "Connection to ");
-	wattron(cl->ncu.chatwin, A_UNDERLINE);
-	wprintw(cl->ncu.chatwin, "%s", addr);
-	wattroff(cl->ncu.chatwin, A_UNDERLINE);
-	wprintw(cl->ncu.chatwin, " port ");
-	wattron(cl->ncu.chatwin, A_UNDERLINE);
-	wprintw(cl->ncu.chatwin, "%s", port);
-	wattroff(cl->ncu.chatwin, A_UNDERLINE);
-	if ((errnb = cl_connect_to(fd, addr, port, cl)) == IS_OK)
+	if (cl->verbose)
+	{
+		wprintw(cl->ncu.chatwin, "Connection to ");
+		wattron(cl->ncu.chatwin, A_UNDERLINE);
+		wprintw(cl->ncu.chatwin, "%s", addr);
+		wattroff(cl->ncu.chatwin, A_UNDERLINE);
+		wprintw(cl->ncu.chatwin, " port ");
+		wattron(cl->ncu.chatwin, A_UNDERLINE);
+		wprintw(cl->ncu.chatwin, "%s", port);
+		wattroff(cl->ncu.chatwin, A_UNDERLINE);
+	}
+	if ((errnb = cl_connect_to(fd, addr, port, cl)) == IS_OK && cl->verbose)
 	{
 		wattron(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
 		wprintw(cl->ncu.chatwin, " OK\n");
 		wattroff(cl->ncu.chatwin, COLOR_PAIR(CL_GREEN));
 	}
-	else
+	else if (cl->verbose)
 		wprintw(cl->ncu.chatwin, "\n");
 	wrefresh(cl->ncu.chatwin);
 	return (errnb);

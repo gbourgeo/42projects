@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/18 15:46:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 17:09:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:29:14 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ static t_cmd	*handle_precode(t_cmd *cmds, t_server *sv, t_client *cl)
 		ft_strdel(&cmds->precode);
 		if ((cl->printtowin = cmds->printtowin) != cl->ncu.chatwin)
 			wclear(cmds->printtowin);
-		(void)cl_client_commands(&cmds->wr, cl);
+		cl->verbose = FT_CHECK(cl->options, cl_verbose);
+		cl_client_commands(&cmds->wr, cl);
 	}
 	else if (is_valid_response(sv->response))
 	{

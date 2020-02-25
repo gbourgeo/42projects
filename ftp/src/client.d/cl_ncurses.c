@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/06 17:11:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 20:37:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:16:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int				cl_ncurses_init(t_client *cl)
 {
 	int			errnb;
 
-	if (FT_CHECK(cl->options, cl_interactive))
+	if (FT_CHECK(cl->options, cl_verbose))
 		ft_putstr("Initialising terminal... ");
 	cl->sig[SIGWINCH] = signal(SIGWINCH, cl_resize_window);
 	if ((cl->ncu.main = initscr()) == NULL)

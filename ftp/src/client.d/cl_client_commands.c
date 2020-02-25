@@ -6,43 +6,42 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 04:53:17 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 16:31:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cl_main.h"
 
-static int		cl_client_exec_cmd(char *buf, char **cmd, t_client *cl)
+static int		cl_client_exec_cmd(char **cmd, t_client *cl)
 {
 	t_command	*cmds;
 	long		i;
 
 	cmds = cl_commands(0);
 	i = 0;
-	if (*buf == '\\')
+	if (*cl->server.cmd == '\\')
 		return (cl_bslash(cmd, cl));
 	while (i < (long)cl_commands(1))
 	{
 		if (!ftp_strcmp(cmds[i].name, cmd[0]))
-			return (cmds[i].func(buf, cmd, cl));
+			return (cmds[i].func(cl->server.cmd, cmd, cl));
 		i++;
 	}
-	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
+	return (cl_server_write(cl->server.cmd, &cl->server, cl));
 }
 
 int				cl_client_commands(t_buff *ring, t_client *cl)
 {
-	char		buff[CMD_BUFF_SIZE + 1];
 	char		**cmd;
 	int			errnb;
 
-	ft_ringbuffcpy(buff, sizeof(buff), ring);
-	ft_strcat(buff, "\n");
-	if (!(cmd = ft_split_whitespaces(buff)))
+	ft_ringbuffcpy(cl->server.cmd, sizeof(cl->server.cmd) - 2, ring);
+	ft_strncat(cl->server.cmd, "\n", 2);
+	if (!(cmd = ft_split_whitespaces(cl->server.cmd)))
 		return (ERR_MALLOC);
 	errnb = IS_OK;
 	if (cmd[0] && cmd[0][0])
-		errnb = cl_client_exec_cmd(buff, cmd, cl);
+		errnb = cl_client_exec_cmd(cmd, cl);
 	ft_tabdel(&cmd);
 	ft_strclr(cl->server.response);
 	return (errnb);

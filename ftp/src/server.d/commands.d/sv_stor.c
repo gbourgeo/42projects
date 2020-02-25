@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 18:10:54 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 16:02:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:04:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int			sv_stor_exec(char *opt, char **cmds, t_client *cl)
 
 static int	sv_stor_open_file(char *file, t_data *data)
 {
-	data->ffd = open(file, O_CREAT | O_TRUNC | O_RDWR, 0644);
+	data->ffd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	if (data->ffd < 0)
 		return (ERR_OPEN);
 	return (IS_OK);

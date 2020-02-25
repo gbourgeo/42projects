@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:59:24 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/02 02:34:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:16:18 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int				cl_param_i(char **av, int *i, t_client *cl)
 {
 	(void)av;
 	(void)i;
-	cl->options |= (1 << cl_interactive);
+	cl->options |= (1 << cl_verbose);
 	return (IS_OK);
 }
 

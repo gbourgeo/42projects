@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/05 22:38:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/11 16:41:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:14:22 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 t_opt			*cl_params(int getsize)
 {
 	static t_opt	opt[] = {
-		{ 'i', NULL, NULL, "Interactive client.", cl_param_i },
+		{ 'v', NULL, NULL, "More verbose client.", cl_param_i },
 		{ 'h', "-help", NULL, "Print help and exit.", cl_param_h },
 	};
 

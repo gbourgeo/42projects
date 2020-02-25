@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/20 18:32:34 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/02/24 14:52:42 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -145,8 +145,8 @@ COM_C	= ft_init.c						\
 		ft_getenv.c						\
 		ft_recreate_path.c				\
 		ft_ringbuffcpy.c				\
-		ft_strsplit2.c					\
 		ft_strcset.c					\
+		ft_strsplit2.c					\
 		ftp_strcmp.c					\
 		signal_info.c					\
 

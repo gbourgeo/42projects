@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/13 08:44:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 17:59:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:24:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,12 @@ int					cl_client_loop(t_client *cl)
 	int				max;
 	int				ret;
 
+	cl->verbose = 1;
 	cl->errnb[0] = cl_get_userinfo(&cl->server, cl);
 	cl->errnb[1] = cl_get_addrinfo(&cl->server.fd_ctrl, cl->addr, cl->port, cl);
 	cl->errnb[2] = cl_client_init(cl);
 	cl->errnb[3] = cl_pre_command(&cl->precmd, &cl->server, cl);
+	cl->verbose = FT_CHECK(cl->options, cl_verbose);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 	while (check_errors(cl) == IS_OK)

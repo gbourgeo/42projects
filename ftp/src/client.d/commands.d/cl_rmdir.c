@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/06 19:15:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/21 17:54:53 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 18:00:04 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int				cl_rmdir(char *buf, char **cmd, t_client *cl)
 	ft_strncat(buf, "\n", CMD_BUFF_SIZE);
 	cl->precmd = cl_new_command("NLST", cl->ncu.slistwin,
 	(char *[]){ "2", "22" }, cl->precmd);
-	return (cl_server_write(buf, ft_strlen(buf), &cl->server, cl));
+	return (cl_server_write(buf, &cl->server, cl));
 }
 
 int				cl_rmdir_help(t_command *cmd, t_client *cl)

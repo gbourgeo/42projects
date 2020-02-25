@@ -1,3 +1,4 @@
-put auteur
-l
-pwd
+user g
+pass toto
+ls
+help

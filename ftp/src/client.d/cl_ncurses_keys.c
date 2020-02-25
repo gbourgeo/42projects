@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 22:09:20 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 21:12:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:33:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ int			cl_lf(t_buff *ring, t_client *cl)
 	{
 		ring->tail = ring->buff + ring->len;
 		*ring->tail++ = '\0';
+		cl->verbose = 1;
 		errnb = cl_client_commands(ring, cl);
+wprintw(cl->ncu.chatwin, "SV_CMD: %s", cl->server.cmd);wrefresh(cl->ncu.chatwin);
+		cl->verbose = FT_CHECK(cl->options, cl_verbose);
 		ring->head = ring->buff;
 		ring->tail = ring->buff;
 		ring->len = 0;

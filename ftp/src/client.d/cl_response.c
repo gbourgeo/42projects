@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 19:17:13 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 14:04:54 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 17:57:58 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ static int			cl_connect_back(t_server *sv, t_client *cl)
 	if (!(port = cl_addrcpy(addr, sv->response + 5, cl->version)))
 		errnb = ERR_MALLOC;
 	else if ((errnb = cl_get_addrinfo(&sv->fd_data, addr, port, cl)) == IS_OK)
-		errnb = cl_server_write(sv->cmd, ft_strlen(sv->cmd),
-		&cl->server, cl);
+		errnb = cl_server_write(sv->cmd, &cl->server, cl);
 	if (!cl->precmd)
 		ft_bzero(sv->response, sizeof(sv->response));
 	ft_strdel(&port);

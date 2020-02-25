@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/06/09 06:26:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/09 02:26:05 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/24 14:15:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,12 @@ int				cl_client_signals(t_client *cl)
 	int			i;
 
 	i = 0;
-	if (FT_CHECK(cl->options, cl_interactive))
+	if (FT_CHECK(cl->options, cl_verbose))
 		ft_putstr("Initializing signals... ");
 	while (i < NSIG)
 		cl->sig[i++] = SIG_ERR;
 	cl->sig[SIGINT] = signal(SIGINT, cl_sig_hdlr);
-	if (FT_CHECK(cl->options, cl_interactive))
+	if (FT_CHECK(cl->options, cl_verbose))
 		ft_putendl(FTP_GREEN"OK"FTP_RESET);
 	return (IS_OK);
 }
