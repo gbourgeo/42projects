@@ -34,7 +34,8 @@ SRC		= main.c					\
 		server_stats.c				\
 		shell.c						\
 		signal.c					\
-		stdlib.c
+		stdlib.c					\
+
 SRC_KEY	= keylogger_init.c	\
 		keylogger_loop.c	\
 		handlers.c			\
@@ -42,7 +43,8 @@ SRC_KEY	= keylogger_init.c	\
 		get_keyboard.c		\
 		get_keymaps.c		\
 		get_keys.c			\
-		get_keystate.c
+		get_keystate.c		\
+
 OBJ		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 OBJ		+= $(addprefix $(OBJ_DIR), $(SRC_KEY:.c=.o))
 DEP		= $(addprefix $(DEP_DIR), $(SRC:.c=.d))

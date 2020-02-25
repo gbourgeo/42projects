@@ -109,7 +109,8 @@ static int		compile_library(t_lib *lib, size_t size)
 		for (size_t i = 0; i < size; i++)
 			if (lib[i].status == 0)
 				files[j++] = lib[i].files;
-		files[j] = NULL;		execvp(files[0], files);
+		files[j] = NULL;
+		execvp(files[0], files);
 		free(files);
 		exit(1);
 	} else if (pid > 0) {

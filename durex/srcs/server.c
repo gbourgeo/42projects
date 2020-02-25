@@ -150,7 +150,7 @@ void				serverCommands(t_cl *client)
 			return cmds[i].func(client, cmds);
 		}
 	}
-	clientWrite("$> ", client);
+	clientWrite("Unknown command\n$> ", client);
 }
 
 void				serverReadClient(t_cl *client)

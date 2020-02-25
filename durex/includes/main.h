@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/15 02:49:13 by root              #+#    #+#             */
-/*   Updated: 2019/08/04 06:03:51 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/02/25 17:57:07 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 # include "durex.h"
 
-# define DUREX_USERS			"rduclos\ngbourgeo\n"
+# define DUREX_USERS			"gbourgeo\n"
 
 # define DUREX_BINARY_FILE		"/bin/Durex"
 

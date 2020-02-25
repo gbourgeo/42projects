@@ -23,6 +23,7 @@ Supprimer /etc/ld.so.preload a la fin de Durex.
 Le recreer a son execution.
 
 Analyser les paquets passant par pcap.
+Dependances: libpcap-dev
 
 paquets:
 nmap -sS OK

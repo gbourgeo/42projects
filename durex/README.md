@@ -88,6 +88,12 @@ int				install_library()
 ```
 * Recompile the binary
 
+### Dependencies
++ The only dependency is the libpcap package for packet capture:
+```sh
+$> sudo apt install libpcap-dev
+```
+
 ### Deleting
 + If you had previously executed the binary has root you must :
 	- Remove /etc/ld.so.preload
