@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 19:18:25 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 18:49:19 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:26:26 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,8 @@ int				sv_rmd(char **cmds, t_client *cl)
 	char	*path;
 	int		errnb;
 
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+		return (sv_response(cl, "421 Closing connection"));
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		return (sv_response(cl, "530 not logged in"));
 	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))

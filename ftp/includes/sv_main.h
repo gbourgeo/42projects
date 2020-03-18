@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 14:49:14 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/24 16:30:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:18:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,6 +232,7 @@ t_user				*sv_getuserbyname(t_user *users, const char *name);
 ** Client functions
 */
 
+char				*sv_client_home(const char *dir, t_user *us, t_server *sv);
 int					sv_client_init(t_client *cl, t_server *sv);
 int					sv_client_recv(t_client *cl);
 int					sv_client_send(t_client *cl);

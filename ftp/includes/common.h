@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/20 06:46:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/24 14:53:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 11:24:25 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 
 # ifdef __linux__
 #  define NSIG _NSIG
-# endif
-# ifndef MSG_NOSIGNAL
+# elif
+//# ifndef MSG_NOSIGNAL
 #  define MSG_NOSIGNAL 0
 # endif
 

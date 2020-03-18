@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/26 16:58:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/24 16:31:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/18 13:47:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ int				cl_client_commands(t_buff *ring, t_client *cl)
 
 	ft_ringbuffcpy(cl->server.cmd, sizeof(cl->server.cmd) - 2, ring);
 	ft_strncat(cl->server.cmd, "\n", 2);
+	wprintw(cl->ncu.chatwin, "> %s", cl->server.cmd);
+	wrefresh(cl->ncu.chatwin);
 	if (!(cmd = ft_split_whitespaces(cl->server.cmd)))
 		return (ERR_MALLOC);
 	errnb = IS_OK;

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/18 15:46:03 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/24 14:29:14 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/18 13:49:15 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ static t_cmd	*handle_precode(t_cmd *cmds, t_server *sv, t_client *cl)
 		ft_strdel(&cmds->precode);
 		if ((cl->printtowin = cmds->printtowin) != cl->ncu.chatwin)
 			wclear(cmds->printtowin);
-		cl->verbose = FT_CHECK(cl->options, cl_verbose);
 		cl_client_commands(&cmds->wr, cl);
 	}
 	else if (is_valid_response(sv->response))
@@ -43,18 +42,17 @@ static t_cmd	*handle_code(t_cmd *cmds, t_server *sv, t_client *cl)
 		ft_strclr(sv->response);
 		ft_strcpy(&cmds->code[0], &cmds->code[1]);
 	}
+
 	return (cmds);
 }
 
 t_cmd			*cl_pre_cmd_exec(t_cmd *cmds, t_server *sv, t_client *cl)
 {
 	if (cmds == NULL)
-		return (cmds);
+		return (NULL);
 	if (cmds->precode)
-		cmds = handle_precode(cmds, sv, cl);
-	else if (cmds->code)
-		cmds = handle_code(cmds, sv, cl);
-	else
-		return (cl_precmd_end(cmds, 0, cl));
-	return (cmds);
+		return (handle_precode(cmds, sv, cl));
+	if (cmds->code)
+		return (handle_code(cmds, sv, cl));
+	return (cl_precmd_end(cmds, 0, cl));
 }

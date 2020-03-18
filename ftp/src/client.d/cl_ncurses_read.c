@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/08 16:44:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 21:26:01 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 11:07:09 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@
 #include "cl_main.h"
 #include "cl_struct.h"
 
-#define FTP_BACKSPACE 127
 #ifdef __linux__
 # define FTP_BACKSPACE KEY_BACKSPACE
+#elif
+# define FTP_BACKSPACE 127
 #endif
 
 static int			cl_default(int ret, t_buff *ring, t_client *cl)

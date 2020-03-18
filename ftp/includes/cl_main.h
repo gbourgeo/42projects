@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/12 18:46:47 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/24 17:51:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 17:23:42 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,7 @@ int					cl_help_local(char *buf, char **cmd, t_client *cl);
 int					cl_ls(char *buf, char **cmd, t_client *cl);
 int					cl_mkdir(char *buf, char **cmd, t_client *cl);
 int					cl_nlst(char *buf, char **cmd, t_client *cl);
+int					cl_pass(char *buf, char **cmd, t_client *cl);
 int					cl_put(char *buf, char **cmd, t_client *cl);
 int					cl_pwd(char *buf, char **cmd, t_client *cl);
 int					cl_quit(char *buf, char **cmd, t_client *cl);
@@ -222,6 +223,7 @@ int					cl_help_print(t_command *cmd, char *args, char **descri,
 int					cl_ls_help(t_command *cmd, t_client *cl);
 int					cl_mkdir_help(t_command *cmd, t_client *cl);
 int					cl_nlst_help(t_command *cmd, t_client *cl);
+int					cl_pass_help(t_command *cmd, t_client *cl);
 int					cl_put_help(t_command *cmd, t_client *cl);
 int					cl_pwd_help(t_command *cmd, t_client *cl);
 int					cl_quit_help(t_command *cmd, t_client *cl);

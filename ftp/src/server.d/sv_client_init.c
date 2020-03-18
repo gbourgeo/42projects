@@ -6,24 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/24 15:00:11 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 21:29:44 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:28:52 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sv_main.h"
-
-static char		*sv_guest_home(t_user *us, t_server *sv)
-{
-	if (sv->options & (1 << sv_user_mode))
-		while (us)
-		{
-			if (!ft_strcmp(us->name, SV_GUEST_NAME))
-				return (us->home);
-			else
-				us = us->next;
-		}
-	return (sv->info.env.home);
-}
 
 int				sv_client_init(t_client *cl, t_server *sv)
 {
@@ -36,7 +23,7 @@ int				sv_client_init(t_client *cl, t_server *sv)
 	cl->rd.len = CMD_BUFF_SIZE;
 	cl->wr.head = cl->wr.buff;
 	cl->wr.tail = cl->wr.head;
-	cl->home = sv_guest_home(sv->users, sv);
+	cl->home = sv_client_home(SV_GUEST_NAME, sv->users, sv);
 	if (!(cl->pwd = ft_strdup("/"))
 	|| !(cl->oldpwd = ft_strdup("/")))
 		return (ERR_MALLOC);
@@ -47,5 +34,6 @@ int				sv_client_init(t_client *cl, t_server *sv)
 	cl->data.pasv_fd = -1;
 	cl->data.socket = -1;
 	cl->login.member = sv_getuserbyname(sv->users, SV_GUEST_NAME);
+	cl->login.logged = 0;
 	return (IS_OK);
 }

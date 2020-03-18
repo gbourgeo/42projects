@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 22:41:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/18 16:51:58 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:26:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ int					sv_type(char **cmds, t_client *cl)
 	t_type		*type;
 	int			errnb;
 
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+		return (sv_response(cl, "421 Closing connection"));
 	if (!cmds[1] || !cmds[1][0])
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_NB_PARAMS)));
 	errnb = ERR_INVALID_PARAM;

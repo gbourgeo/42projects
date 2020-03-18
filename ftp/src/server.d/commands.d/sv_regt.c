@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 02:10:06 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/25 20:54:33 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:24:45 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ int					sv_regt(char **cmds, t_client *cl)
 
 	sv = &g_serv;
 	users = sv->users;
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+		return (sv_response(cl, "421 Closing connection"));
 	if (!cmds[1] || !cmds[2] || !cmds[3] || !cmds[4])
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_NB_PARAMS)));
 	if (!sv_user_parse(&cmds[1], sv))

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 16:40:33 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/19 18:47:56 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:21:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ int				sv_mkd(char **cmds, t_client *cl)
 
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		return (sv_response(cl, "530 Please login with USER and PASS."));
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 		return (sv_response(cl, "421 Closing connection"));
 	if (!cmds[1] || !cmds[1][0] || !sv_validpathname(cmds[1]))
 		return (sv_response(cl, "501 %s", ft_get_error(ERR_INVALID_PARAM)));

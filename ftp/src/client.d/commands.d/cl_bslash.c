@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 19:28:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/24 14:27:29 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/18 13:42:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,16 @@ static void		cl_bslash_child(int fds[2], char **cmd, t_client *cl)
 	int			ret;
 	char		*path;
 
-	ret = ERR_MALLOC;
-	path = NULL;
+	ret = 127;
 	close(fds[0]);
 	dup2(fds[1], STDOUT_FILENO);
 	dup2(fds[1], STDERR_FILENO);
 	ft_strcpy(cmd[0], cmd[0] + 1);
 	if ((path = ft_get_command(cmd[0], cl->info.env.path, 0)))
 		ret = execve(path, cmd, NULL);
+	write(fds[1], "Unknown command: ", 19);
+	write(fds[1], cmd[0], ft_strlen(cmd[0]));
+	write(fds[1], "\n", 1);
 	close(fds[1]);
 	ft_strdel(&path);
 	ft_tabdel(&cmd);
@@ -60,8 +62,10 @@ static int		cl_bslash_father(int fd, int pid, t_client *cl)
 	int			status;
 
 	while ((ret = read(fd, buf, sizeof(buf))) > 0)
+	{
 		wprintw(cl->printtowin, "%.*s", ret, buf);
-	wrefresh(cl->printtowin);
+		wrefresh(cl->printtowin);
+	}
 	if (ret < 0)
 		return (ERR_READ);
 	if ((ret = wait4(pid, &status, 0, NULL)) < 0)

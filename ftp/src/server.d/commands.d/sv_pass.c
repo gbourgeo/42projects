@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 15:19:32 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/28 17:40:40 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:22:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,7 @@ int				sv_pass(char **cmds, t_client *cl)
 	t_user		*member;
 
 	sv = &g_serv;
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 		return (sv_response(cl, "421 Closing connection"));
 	if (!cl->login.user)
 		return (sv_response(cl, "503 Undefined USER"));
@@ -38,6 +37,7 @@ int				sv_pass(char **cmds, t_client *cl)
 		return (sv_response(cl, "530 Loggin incorrect"));
 	cl->login.logged = 1;
 	cl->login.member = member;
+	cl->home = sv_client_home(member->name, sv->users, sv);
 	return (sv_response(cl, "230 User %s logged in", member->name));
 }
 

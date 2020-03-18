@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/30 14:14:16 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/17 02:22:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 17:23:48 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ t_command				*cl_commands(int getsize)
 		{ "ls", "List files or directory", cl_ls_help, cl_ls, 0 },
 		{ "mkdir", "Create directory", cl_mkdir_help, cl_mkdir, 0 },
 		{ "nlst", "List files or directory", cl_nlst_help, cl_nlst, 0 },
+		{ "pass", "Sends password to server", cl_pass_help, cl_pass, 0 },
 		{ "put", "Put file to server", cl_put_help, cl_put, 0 },
 		{ "pwd", "Print working directory", cl_pwd_help, cl_pwd, 0 },
 		{ "quit", "Quit the server", cl_quit_help, cl_quit, 0 },

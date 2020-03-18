@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 18:30:08 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/29 19:40:04 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:23:21 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ static int		sv_port_check(char *cmd, t_client *cl, char ***info, int *err)
 	*err = IS_OK;
 	if (FT_CHECK(g_serv.options, sv_user_mode) && !cl->login.logged)
 		*err = sv_response(cl, "530 Please login with USER and PASS");
-	else if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
+	else if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
 		*err = sv_response(cl, "421 Closing connection");
 	else if (!cmd || !cmd[0])
 		*err = sv_response(cl, "500 Syntax error");

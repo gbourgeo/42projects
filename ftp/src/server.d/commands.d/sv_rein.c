@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 18:19:18 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/01/27 19:40:31 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 13:24:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@ int					sv_rein(char **cmds, t_client *cl)
 
 	if (cl->data.pid > 0)
 		return (sv_response(cl, "120 service not available yet"));
-	if (cl->errnb[0] != IS_OK || cl->errnb[1] != IS_OK
-	|| cl->errnb[2] != IS_OK || cl->errnb[3] != IS_OK)
-		return (sv_response(cl, "421 closing connection"));
+	if (!sv_check_err(cl->errnb, sizeof(cl->errnb) / sizeof(cl->errnb[0])))
+		return (sv_response(cl, "421 Closing connection"));
 	if (cmds[1])
 		return (sv_response(cl, "500 syntax error"));
 	if ((err = sv_client_init(cl, &g_serv)) != IS_OK)

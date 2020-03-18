@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/06/11 20:09:46 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/02/20 17:37:12 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/03/17 17:13:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ void			cl_ncurses_end(t_client *cl)
 		delwin(cl->ncu.textbox);
 	if (cl->ncu.textwin)
 		delwin(cl->ncu.textwin);
-	endwin();
+	if (cl->ncu.main)
+		endwin();
 	ft_memset(&cl->ncu, 0, sizeof(cl->ncu));
 }
 

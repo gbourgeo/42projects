@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/05/12 14:11:41 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/02/24 14:52:42 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/03/18 09:11:18 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,6 +60,7 @@ CLI_C += cl_bslash_cd.c					\
 		cl_ls.c							\
 		cl_mkdir.c						\
 		cl_nlst.c						\
+		cl_pass.c						\
 		cl_put.c						\
 		cl_pwd.c						\
 		cl_quit.c						\
@@ -89,6 +90,7 @@ SER_C	= sv_main.c						\
 		sv_server_accept.c				\
 		sv_server_close.c				\
 		sv_server_signals.c				\
+		sv_client_home.c				\
 		sv_client_init.c				\
 		sv_client_recv.c				\
 		sv_client_send.c				\

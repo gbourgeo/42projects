@@ -1,4 +1,4 @@
-user g
-pass toto
 ls
-help
+cd ..
+refresh
+\ls -ap
