@@ -3,72 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   all.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 13:59:36 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/09/25 19:48:06 by marvin           ###   ########.fr       */
+/*   Updated: 2020/03/28 16:29:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ALL_H
 # define ALL_H
 
-# include <sys/time.h>
 # include <pthread.h>
-# include <ifaddrs.h>
 # include <pcap/pcap.h>
 # include <netinet/in.h>
+# include <ifaddrs.h>
 # include <linux/if_packet.h>
 
-
-# define bool 				int
-# define true 				1
-# define false 				0
-# define DEFAULT_THREADS 	1
-# define MAX_PORTS_SCAN 	1024
-# define MAX_PORT_NUMBER	65535
-# define MAX_THREADS_NUMBER	250
-# define DEFAULT_TTL		64
-# define PACKET_SIZE 		1024
-
-# define AVAILABLE_OPTIONS  { "help",	"Print this help screen and return" },						\
-							{ "ports", 	"[1024 max] Ports to scan (eg: 1-10 or 1,2,3 or 1,5-15)" },	\
-							{ "ip", 	"Ip address to scan in dot format" },						\
-							{ "file", 	"File name containing IP addresses to scan" },				\
-							{ "speedup","[250 max] Number of parallel threads to use" },			\
-							{ "scan", 	"SYN/NULL/FIN/XMAS/ACK/UDP" },								\
-/*							{ "deep", 	"Scans all addresses from a given host" },					\
-							{ "src",	"Spoof the src address" },									\
-							{ "timeout","Wait time for host answer (seconds or ms)" },				\
-							{ "osscan",	"Scan the host single threaded for guessing the OS" },		\
-							{ "closed",	"Show closed ports too on display" },						\
-*/							{ NULL }
-
-enum 				options
-{
-	NM_HELP = 0,
-	NM_PORTS,
-	NM_IP,
-	NM_FILE,
-	NM_SPEEDUP,
-	NM_SCANS,
-	NM_DEEP,
-	NM_SRC,
-	NM_TIMEOUT,
-	NM_OSSCAN,
-	NM_CLOSED,
-	NM_OPTIONS_LEN,
-};
-
-enum 				scan_types
-{
-	NM_SYN	= 0x0001,
-	NM_NULL	= 0x0002,
-	NM_FIN	= 0x0004,
-	NM_XMAS	= 0x0008,
-	NM_ACK	= 0x0010,
-	NM_UDP 	= 0x0020,
-};
+# define DEFAULT_THREADS 		1
+# define NM_MAX_PORTS_SCAN 		1024
+# define MAX_THREADS_NUMBER		250
+# define SUPPORTED_SCANS		"SYN/NULL/FIN/XMAS/ACK/UDP"
+# define DEFAULT_PCAP_TIMEOUT	2000
+# define DEFAULT_TTL			64
+# define PACKET_SIZE 			1024
 
 /*
     96 bit (12 bytes) pseudo header needed for tcp header checksum calculation
@@ -84,23 +41,28 @@ struct pseudo_header
 };
 */
 
-typedef struct 			s_thread
-{
-	int 				nb;
-	int 				ports_nb;
-	int 				index;
-	pthread_t 			id;
-	void 				*global;
-}						t_thread;
-
 typedef struct 			s_addr
 {
 	char 				*name;
 	char 				hostaddr[255];
-	char				buff[PACKET_SIZE];
-	const char 			*error;
 	struct s_addr 		*next;
+	struct s_addr 		*prev;
 }						t_addr;
+
+typedef struct			s_data
+{
+	t_addr				*addr;
+	char				*scan;
+	int					port;
+}						t_data;
+
+typedef struct 			s_thread
+{
+	int 				nb;
+	int 				opes;
+	t_data				*data;
+	pthread_t 			id;
+}						t_thread;
 
 typedef struct 			s_pcap
 {
@@ -117,60 +79,60 @@ typedef struct 			s_pcap
 	int 				timeout;
 }						t_pcap;
 
-typedef struct			s_global
+typedef struct			s_parameters
 {
 	char 				*progname;
-	char				**flags;
-	int 				ports_nb;
-	int 				ports[MAX_PORTS_SCAN];
-	int 				scans_nb;
-	int 				scans_types;
-	char 				**scans; // need ?
-	int 				addresses_nb;
+	int 				*ports;
+	char				**scans;
 	t_addr 				*addresses;
-	int 				threads_nb;
 	t_thread			**threads;
-	struct timeval		start;
-	struct timeval 		end;
-	struct ifaddrs		interface;
-	int 				fd;
-	t_pcap 				pcap;
+	int 				ports_nb;
+	int					scans_nb;
+	int 				addresses_nb;
+	int 				threads_nb;
+	int					pcap_timeout;
+
+	char				*device;
+	time_t				start;
+	pcap_t				*handle;
+}						t_params;
+
+typedef struct			s_global
+{
+	pthread_mutex_t		id_lock;
+	int					recv_timeout;
+	char				*device;
+	t_data				*data;
 }						t_global;
 
 /*
 **  GLOBAL
 */
-t_global				globals;
+t_global					g_global;
 
 /*
 **	ERROR
 */
-void 					nmap_error(char *str, ...);
-
-/*
-**	PARAMETERS
-*/
-void					get_ports_parameters();
-void 					get_scans_parameters();
-void 					get_threads_parameters();
-void 					get_ip_parameters();
+void 					nmap_error(t_params *e, char *str, ...);
 
 /*
 **	OTHER
 */
-void 					get_hosts_addr();
-void 					get_interface();
-void 					ping_scan();
-void 					start_mapping();
+void					get_options(char **argv, t_params *e);
+void 					get_interface(t_params *e);
+void 					init_threads(t_params *e);
+int						init_socket(unsigned char protocol, int timeout);
+int						init_ipv4_hdr(char raw[], char *device, char *addr, unsigned char protocol);
+unsigned short			checksum(unsigned short *ptr, int nbytes);
+void					init_tcp_hdr(char raw[], int port, char *scan, char *device);
+int						get_id(void);
+void 					ping_scan(void);
 
 /*
 **	PCAP
 */
-bool 					init_pcap(int packet_size, int promisc, int timeout, const char *filter);
-bool 					launch_pcap(void (*handler)());
-
-
-void					free_resources();
+void 					init_pcap(t_params *e);
+void 					launch_pcap(void (*handler)());
 
 /*
 **	PACKETS
@@ -181,7 +143,10 @@ void					free_resources();
 /*
 **	CLEAN
 */
-void					free_resources();
+void					free_params(t_params *e);
+void					free_addresses(t_addr **addr);
+void					free_threads(t_thread **thr, int thr_nb);
+t_addr					*delete_address(t_addr *addr, t_addr **head);
 
 /*
 ** SYN = synchronization
