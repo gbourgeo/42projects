@@ -6,17 +6,15 @@
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/08/15 22:27:57 by gbourgeo          #+#    #+#             */
-/*   Updated: 2017/09/21 01:46:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2018/04/11 01:40:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include "libft.h"
-#include <unistd.h>
+#include "ft_base_printf.h"
 
-void			write_str(t_dt *data, const char *str, int len)
+void	write_str(t_dt *data, const char *str, int len)
 {
-	int			j;
+	int	j;
 
 	j = 0;
 	if (!str)
@@ -24,23 +22,21 @@ void			write_str(t_dt *data, const char *str, int len)
 	while (j < len)
 	{
 		data->buff[data->pos++] = str[j];
-		if (data->pos >= PRINTF_BUFF)
+		if (data->pos >= PRINTF_BUFF_SIZE)
 		{
-			data->ret += PRINTF_BUFF;
-			write(STDOUT_FILENO, data->buff, data->pos);
+			data->writeto(data);
 			data->pos = 0;
 		}
 		j++;
 	}
 }
 
-void			write_char(t_dt *data, unsigned char c)
+void	write_char(t_dt *data, unsigned char c)
 {
 	data->buff[data->pos++] = c;
-	if (data->pos >= PRINTF_BUFF)
+	if (data->pos >= PRINTF_BUFF_SIZE)
 	{
-		data->ret += PRINTF_BUFF;
-		write(STDOUT_FILENO, data->buff, data->pos);
+		data->writeto(data);
 		data->pos = 0;
 	}
 }

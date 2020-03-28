@@ -1,31 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tabdel.c                                        :+:      :+:    :+:   */
+/*   ft_vprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/07/10 01:16:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2019/10/30 20:47:00 by gbourgeo         ###   ########.fr       */
+/*   Created: 2019/07/17 13:15:26 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/07/17 13:21:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <unistd.h>
+#include "ft_vprintf.h"
 
-void			ft_tabdel(char ***table)
+void			ft_vprintf_write(t_dt *data)
 {
-	int			i;
-
-	i = 0;
-	if (table && *table)
-	{
-		while ((*table)[i])
-		{
-			free((*table)[i]);
-			(*table)[i] = NULL;
-			i++;
-		}
-		free(*table);
-		*table = NULL;
-	}
+	data->ret += write(data->fd, data->buff, data->pos);
 }

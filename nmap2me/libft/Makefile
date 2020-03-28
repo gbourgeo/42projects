@@ -1,19 +1,18 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/20 18:41:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2017/09/21 00:50:29 by gbourgeo         ###   ########.fr        #
+#    Updated: 2019/07/17 13:20:10 by gbourgeo         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME = libft.a
 
 SRC_DIR = srcs/
-
 SRC = ft_strlen.c ft_strdup.c ft_strcpy.c ft_strncpy.c ft_strcat.c \
 	ft_strncat.c ft_strlcat.c ft_strchr.c ft_strrchr.c ft_strstr.c \
 	ft_strnstr.c ft_strcmp.c ft_strncmp.c ft_atoi.c ft_isalpha.c ft_isalnum.c \
@@ -34,44 +33,55 @@ SRC = ft_strlen.c ft_strdup.c ft_strcpy.c ft_strncpy.c ft_strcat.c \
 	ft_freetab.c ft_iswhitespace.c ft_split_whitespaces.c ft_pow.c
 
 PRINTF_DIR = ft_printf/
-
-PRINTF_SRC = ft_atouc.c ft_itoa_base.c ft_printf.c ft_strtoupper.c pf_c.c	\
-	pf_di.c pf_o.c pf_p.c pf_percent.c pf_s.c pf_u.c pf_wchar.c pf_writes.c	\
-	pf_x.c
+PRINTF_SRC = ft_printf.c ft_printf_write.c
+PRINTF_BASE = ft_atouc.c ft_itoa_base.c ft_strtoupper.c pf_c.c	pf_x.c	\
+		pf_di.c pf_o.c pf_p.c pf_percent.c pf_s.c pf_u.c pf_wchar.c pf_writes.c	\
+		pf_routine.c
+FPRINTF_SRC = ft_fprintf.c ft_fprintf_write.c
+DPRINTF_SRC = ft_dprintf.c ft_dprintf_write.c
+SPRINTF_SRC = ft_sprintf.c ft_sprintf_write.c
+SNPRINTF_SRC = ft_snprintf.c ft_snprintf_write.c
+VPRINTF_SRC = ft_vprintf.c ft_vprintf_write.c
 
 OBJ_DIR = obj/
-
 OBJ_SRC	= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
-
 OBJ_PRINTF = $(addprefix $(OBJ_DIR), $(PRINTF_SRC:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(PRINTF_BASE:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(FPRINTF_SRC:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(DPRINTF_SRC:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(SPRINTF_SRC:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(SNPRINTF_SRC:.c=.o))
+OBJ_PRINTF += $(addprefix $(OBJ_DIR), $(VPRINTF_SRC:.c=.o))
 
 WWW	= gcc -Wall -Werror -Wextra
 
 INCLUDES = -I includes/
 
-.PHONY: all clean fclean re
-
 all: premade $(NAME)
 
 premade:
-	@echo Generating libft...
+	@if !(test -f $(NAME)) ; then echo -n "Generating $(NAME) "; fi
 	@mkdir -p $(OBJ_DIR)
 
 $(NAME): $(OBJ_SRC) $(OBJ_PRINTF)
-	ar rc $@ $^
+	@ar rc $@ $^
 	@ranlib $@
-	@echo CREATED: $(NAME)
+	@echo " Done!"
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c | premade
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	@echo -n .
 	@$(WWW) -o $@ -c $< $(INCLUDES)
 
-$(OBJ_DIR)%.o: $(PRINTF_DIR)%.c | premade
+$(OBJ_DIR)%.o: $(PRINTF_DIR)%.c
+	@echo -n .
 	@$(WWW) -o $@ -c $< $(INCLUDES)
 
 clean:
-	@if test -d $(OBJ_DIR) ; then rm -rf $(OBJ_DIR) ; echo Erased: LIBFT - Objects. ; fi
+	@if test -d $(OBJ_DIR) ; then rm -rf $(OBJ_DIR) ; echo Libft .o erased. ; fi
 
 fclean: clean
-	@if test -f $(NAME) ; then rm -f $(NAME) ; echo Erased: $(NAME) ; fi
+	@if test -f $(NAME) ; then rm -f $(NAME) ; echo libft $(NAME) erased. ; fi
 
 re: fclean all
+
+.PHONY: clean fclean re

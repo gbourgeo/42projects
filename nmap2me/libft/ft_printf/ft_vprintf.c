@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_vprintf.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:30:13 by root             ###   ########.fr       */
+/*   Created: 2019/07/17 13:05:53 by gbourgeo          #+#    #+#             */
+/*   Updated: 2019/07/17 13:18:50 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "libft.h"
-#include "ft_printf.h"
+#include "ft_vprintf.h"
 
-int				ft_printf(const char *restrict format, ...)
+int				ft_vprintf(const char *format, va_list ap)
 {
 	t_dt		data;
 	int			ret;
 
 	ft_memset(&data, 0, sizeof(data));
+	data.fd = STDOUT_FILENO;
 	data.tail = (char *)format;
-	data.writeto = ft_printf_write;
-	va_start(data.ap, format);
+	data.writeto = ft_vprintf_write;
+	va_copy(data.ap, ap);
 	ret = pf_routine(&data);
 	va_end(data.ap);
 	return (ret);

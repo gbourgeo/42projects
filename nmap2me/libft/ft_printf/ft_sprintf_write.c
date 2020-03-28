@@ -1,28 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_sprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:30:13 by root             ###   ########.fr       */
+/*   Created: 2018/09/21 08:33:35 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 08:33:38 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "ft_printf.h"
+#include "ft_sprintf.h"
 
-int				ft_printf(const char *restrict format, ...)
+void		ft_sprintf_write(t_dt *data)
 {
-	t_dt		data;
-	int			ret;
+	size_t	i;
+	size_t	j;
 
-	ft_memset(&data, 0, sizeof(data));
-	data.tail = (char *)format;
-	data.writeto = ft_printf_write;
-	va_start(data.ap, format);
-	ret = pf_routine(&data);
-	va_end(data.ap);
-	return (ret);
+	i = 0;
+	j = 0;
+	while (data->str[i])
+		i++;
+	while (j < data->pos)
+	{
+		data->str[i + j] = data->buff[j];
+		j++;
+	}
+	data->str[i + j] = '\0';
+	data->ret += j;
 }

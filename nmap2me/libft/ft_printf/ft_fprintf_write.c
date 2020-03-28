@@ -1,28 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_fprintf_write.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:30:13 by root             ###   ########.fr       */
+/*   Created: 2018/09/21 07:17:44 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 07:17:57 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "ft_printf.h"
+#include "ft_fprintf.h"
 
-int				ft_printf(const char *restrict format, ...)
+void		ft_fprintf_write(t_dt *data)
 {
-	t_dt		data;
-	int			ret;
+	void	*buf;
 
-	ft_memset(&data, 0, sizeof(data));
-	data.tail = (char *)format;
-	data.writeto = ft_printf_write;
-	va_start(data.ap, format);
-	ret = pf_routine(&data);
-	va_end(data.ap);
-	return (ret);
+	buf = data->buff;
+	data->ret += fwrite(buf, sizeof(*data->buff), data->pos, data->stream);
 }

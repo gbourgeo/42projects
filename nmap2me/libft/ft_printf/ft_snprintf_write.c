@@ -1,28 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_snprintf_write.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/07/05 02:08:51 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/04/11 02:30:13 by root             ###   ########.fr       */
+/*   Created: 2018/09/21 07:18:24 by gbourgeo          #+#    #+#             */
+/*   Updated: 2018/09/21 07:18:24 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "ft_printf.h"
+#include "ft_base_printf.h"
 
-int				ft_printf(const char *restrict format, ...)
+void		ft_snprintf_write(t_dt *data)
 {
-	t_dt		data;
-	int			ret;
+	size_t	i;
+	size_t	j;
 
-	ft_memset(&data, 0, sizeof(data));
-	data.tail = (char *)format;
-	data.writeto = ft_printf_write;
-	va_start(data.ap, format);
-	ret = pf_routine(&data);
-	va_end(data.ap);
-	return (ret);
+	i = 0;
+	j = 0;
+	if (data->str_size <= 1)
+		return ;
+	while (data->str[i])
+		i++;
+	while (j < data->pos && data->str_size > 1)
+	{
+		data->str[i + j] = data->buff[j];
+		j++;
+		data->str_size--;
+	}
+	data->str[i + j] = '\0';
+	data->ret += j;
 }
