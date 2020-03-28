@@ -1,53 +1,18 @@
-#include "all.h"
-#include "libft.h"
-#include <unistd.h>
-#include <stdarg.h>
 
-void 			nmap_error(char *str, ...)
+#include "all.h"
+#include "ft_printf.h"
+#include "ft_vprintf.h"
+#include <unistd.h>
+
+void 			nmap_error(t_params *e, char *str, ...)
 {
 	va_list		ap;
-	char 		*tail;
 
-	tail = str;
 	va_start(ap, 0);
-	while(*tail)
-	{
-		if (*tail == '%')
-		{
-			if (tail != str)
-				write(STDERR_FILENO, str, tail - str);
-			tail++;
-			if (*tail == 's') {
-				char *out = va_arg(ap, char*);
-				write(STDERR_FILENO, out, ft_strlen(out));
-			} else
-			if (*tail == 'd') {
-				int 	out = va_arg(ap, int);
-				char 	*conv = ft_itoa(out);
-				write(STDERR_FILENO, conv, ft_strlen(conv));
-				free(conv);
-			}
-			str = tail + 1;
-		}
-		tail++;
-	}
-	if (tail != str)
-		write(STDERR_FILENO, str, tail - str);
-	write(STDERR_FILENO, "\n", 1);
+	ft_printf("%s: ", e->progname);
+	ft_vprintf(str, ap);
+	write(1, "\n", 1);
 	va_end(ap);
-	if (globals.flags)
-		free(globals.flags);
-	while (globals.addresses) {
-		t_addr	*ptr = globals.addresses->next;
-		if (globals.addresses->name)
-			free(globals.addresses->name);
-		free(globals.addresses);
-		globals.addresses = ptr;
-	}
-	if (globals.threads) {
-		for (int i = 0; globals.threads[i]; i++)
-			free(globals.threads[i]);
-		free(globals.threads);
-	}
+	free_params(e);
 	exit(1);
 }
