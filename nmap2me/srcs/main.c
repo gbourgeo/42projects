@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 12:51:06 by frmarinh          #+#    #+#             */
-/*   Updated: 2020/03/28 16:29:25 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/04/15 18:33:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,10 @@ static void		print_start(t_params *e)
 {
 	char		tbuf[128];
 	struct tm	*local_time;
+	time_t		t;
 
-	time(&e->start);
-	local_time = localtime(&e->start);
+	time(&t);
+	local_time = localtime(&t);
 	strftime(tbuf, sizeof(tbuf), "%Y-%m-%d %H:%M %Z", local_time);
 	ft_printf("\nStarting %s at %s\n", e->progname, tbuf);
 }
@@ -34,7 +35,7 @@ static void 	print_info(t_params *e)
 	{
 		if (ptr != e->addresses)
 			ft_printf("\t\t\t");
-		ft_printf("%s (%s)\n", ptr->name, ptr->hostaddr);
+		ft_printf("%s\n", ptr->name);
 	}
 	ft_printf("No of Ports to scan   : %d\n", e->ports_nb);
 	ft_printf("Scan performed        : ");
@@ -47,6 +48,8 @@ static void 	print_info(t_params *e)
 
 static void		init_params(char *prog, t_params *e)
 {
+	char		errbuf[PCAP_ERRBUF_SIZE];
+
 	ft_bzero(e, sizeof(*e));
 	if ((e->progname = ft_strrchr(prog, '/')) == NULL)
 		e->progname = prog;
@@ -62,33 +65,34 @@ static void		init_params(char *prog, t_params *e)
 	e->threads_nb = 1;
 	if (!(e->threads = ft_memalloc(sizeof(*e->threads) * e->threads_nb)))
 		nmap_error(e, "Threads allocation failed.");
-	for (int i = 0; i < e->threads_nb; i++)
+	for (unsigned int i = 0; i < e->threads_nb; i++)
 	{
 		if (!(e->threads[i] = ft_memalloc(sizeof(**e->threads))))
 			nmap_error(e, "Thread %d allocation failed.", i);
 	}
 	e->pcap_timeout = DEFAULT_PCAP_TIMEOUT;
+	if (pcap_findalldevs(&e->interfaces, errbuf) != 0)
+		nmap_error(e, "%s.", errbuf);
+	pthread_mutex_init(&e->socket_lock, NULL);
 }
 
-static void		init_global(t_params *e)
+static void		init_data(t_params *e)
 {
-	int 		total;
 	t_addr		*addr;
 	int			scan;
 	int			port;
+	int			id;
 
 	/* Total number of operations to be performed (scans per port per addresses). */
-	total = e->addresses_nb * e->ports_nb * e->scans_nb;
-	pthread_mutex_init(&g_global.id_lock, NULL);
-	g_global.recv_timeout = e->pcap_timeout;
-	g_global.device = e->device;
-	g_global.data = ft_memalloc(total * sizeof(*g_global.data));
-	if (g_global.data == NULL)
+	e->total_operations = e->addresses_nb * e->ports_nb * e->scans_nb;
+	e->data = ft_memalloc(e->total_operations * sizeof(*e->data));
+	if (e->data == NULL)
 		nmap_error(e, "Global Data allocation failed.");
 	addr = e->addresses;
 	scan = 0;
 	port = 0;
-	for (int i = 0; i < total; i++)
+	id = 59000;
+	for (unsigned int i = 0; i < e->total_operations; i++)
 	{
 		if (i && i % e->ports_nb == 0)
 		{
@@ -101,9 +105,10 @@ static void		init_global(t_params *e)
 			scan = 0;
 			addr = addr->next;
 		}
-		g_global.data[i].addr = addr;
-		g_global.data[i].scan = e->scans[scan];
-		g_global.data[i].port = e->ports[port];
+		e->data[i].addr = addr;
+		e->data[i].scan = e->scans[scan];
+		e->data[i].port = e->ports[port];
+		e->data[i].id = id++;
 		++port;
 	}
 }
@@ -113,18 +118,25 @@ int				main(int argc, char **argv)
 	t_params	e;
 
 	(void)argc;
+	ft_memset(&g_global, 0, sizeof(g_global));
 	init_params(argv[0], &e);
 	print_start(&e);
 	get_options(argv, &e);
-	get_interface(&e);
 	if (!e.addresses)
 		ft_printf("WARNING: No targets were specified, so 0 hosts scanned.\n");
 	else
 	{
+		init_data(&e);
 		print_info(&e);
-		init_pcap(&e);
-		init_global(&e);
-		init_threads(&e);
+		for (t_addr *addr = e.addresses; addr; addr = addr->next)
+		{
+			if (!init_address_resolution(addr, &e))
+				continue ;
+			init_pcap(addr, &e);
+			init_threads(&e);
+			launch_pcap(&e);
+			scan_report(addr, &e);
+		}
 	}
 	free_params(&e);
 	return (0);

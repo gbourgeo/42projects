@@ -1,5 +1,4 @@
 
-#include "all.h"
 #include "options.h"
 #include "libft.h"
 
@@ -9,7 +8,7 @@ void			get_options(char **argv, t_params *e)
 	long		size;
 
 	opt = nmap_options(0);
-	while (*++argv)
+	while (*argv && *++argv)
 	{
 		size = (long)nmap_options(1);
 		while (size--)
@@ -22,6 +21,6 @@ void			get_options(char **argv, t_params *e)
 			}
 		}
 		if (size < 0)
-			nmap_error(e, "Illegal option `%s'", *argv);
+			nmap_error(e, "Illegal option `%s' %d", *argv, size);
 	}
 }

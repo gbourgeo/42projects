@@ -2,81 +2,84 @@
 #include "libft.h"
 #include "ft_printf.h"
 
+#include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <linux/tcp.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
 
 static void 	*routine_threads(void *ptr)
 {
 	t_thread			*thr;
 	t_data				*data;
-	char				raw[sizeof(struct ip) + sizeof(struct tcphdr)];
-	struct sockaddr_in	sin;
-	int					fd;
+	char				raw[sizeof(struct iphdr) + sizeof(struct tcphdr)];
+	struct sockaddr_in	dest;
 
-	if (ptr == NULL)
-		ft_printf("WARNING: Data from thread routine is NULL.\n");
-	else
+	thr = (t_thread *)ptr;
+	data = thr->data;
+	ft_memset(raw, 0, sizeof(raw));
+	ft_memset(&dest, 0, sizeof(dest));
+	for (int i = 0, ret; i < thr->opes; i++)
 	{
-		thr = (t_thread *)ptr;
-		data = thr->data;
-		if ((fd = init_socket(IPPROTO_TCP, g_global.recv_timeout)) < 0)
-			pthread_exit(NULL);
-		for (int i = 0; i < thr->opes; i++)
+		dest.sin_family = AF_INET;
+		dest.sin_port = htons(data[i].port);
+		dest.sin_addr.s_addr = inet_addr(data[i].addr->hostaddr);
+		init_ipv4_hdr(raw, &dest, IPPROTO_TCP, thr->addr);
+		init_tcp_hdr(raw, data + i);
+		pthread_mutex_lock(thr->lock);
+	ft_printf("Sent:\n");
+	for (unsigned int i = 0; i < sizeof(raw); i++)
+	{
+		ft_printf("%02x ", raw[i]);
+		if ((i + 1) % 16 == 0)
+			ft_printf("\n");
+	}
+	ft_printf("\n");
+		ret = sendto(thr->socket, raw, sizeof(raw), 0,
+			(struct sockaddr *)&dest, sizeof(dest));
+		pthread_mutex_unlock(thr->lock);
+		if (ret < 0)
 		{
-			if (i == 0 || data[i - 1].addr != data[i].addr)
-			{
-				if (!init_ipv4_hdr(raw, g_global.device, data[i].addr->hostaddr, IPPROTO_TCP))
-					break ;
-				ft_memset(&sin, 0, sizeof(sin));
-				sin.sin_family = AF_INET;
-				sin.sin_addr.s_addr = ((struct ip *)raw)->ip_dst.s_addr;
-			}
-			init_tcp_hdr(raw, data[i].port, data[i].scan, g_global.device);
-			sin.sin_port = htons(data[i].port);
-			int ret = sendto(fd, raw, sizeof(raw), 0, (struct sockaddr *)&sin, sizeof(struct sockaddr));
-			ft_printf("Thread %d sent %d bytes to %s on port %d from scan %s\n",
-			thr->nb, ret, data[i].addr->hostaddr, data[i].port, data[i].scan);
+			ft_printf("ERROR: Thread %d sending packet. %s\n", thr->thread_id);
+			break ;
 		}
-		close(fd);
 	}
 	pthread_exit(NULL);
 }
 
 void 			init_threads(t_params *e)
 {
-	t_thread	*ptr	= NULL;
-	/* Total number of operations to be performed (scans per port per addresses). */
-	int 		total	= e->addresses_nb * e->ports_nb * e->scans_nb;
+	t_thread		*ptr	= NULL;
 	/* Number of operations per thread. */
-	int 		opes	= total / e->threads_nb;
-	int 		index 	= 0;
-	int 		i 		= 0;
+	int				opes	= e->total_operations / e->threads_nb;
+	int				index	= 0;
+	unsigned int	i		= 0;
+	int				fd		= 0;
 
 	// gettimeofday(&e->start, NULL);
-	while (i < e->threads_nb && i < total)
+	if ((fd = init_socket(IPPROTO_RAW)) < 0)
+		nmap_error(e, "Can't open socket to send packets");
+	while (i < e->threads_nb && i < e->total_operations)
 	{
- 		/* Number of total operations to perform and threads can be unpaired */
- 		int ports_plus 	= (i < total % e->threads_nb) ? 1 : 0;
+		/* Number of total operations to perform and threads can be unpaired */
+		int ports_plus	= (i < e->total_operations % e->threads_nb) ? 1 : 0;
 
 		ptr = e->threads[i];
-		ptr->nb = i;
+		ptr->data = e->data + index;
+		ptr->socket = fd;
 		ptr->opes = opes + ports_plus;
-		ptr->data = g_global.data + index;
-		if (pthread_create(&ptr->id, NULL, routine_threads, ptr))
+		ptr->addr = e->pcap.addr;
+		ptr->lock = &e->socket_lock;
+		if (pthread_create(&ptr->thread_id, NULL, routine_threads, ptr))
 			ft_printf("WARNING: Thread %d creation failed.\n", i);
 		index += ptr->opes;
 		i++;
 	}
 	i = 0;
-	while (i < e->threads_nb && i < total) {
-		ptr = e->threads[i];
-		pthread_join(ptr->id, NULL);
-		i++;
-	}
-	ft_printf("All threads terminated.\n");
-	// if (init_pcap(100, 0, 0, ""))
+	while (i < e->threads_nb && i < e->total_operations)
 	{
-//		ping_scan();
+		pthread_join(e->threads[i]->thread_id, NULL);
+		i++;
 	}
 }

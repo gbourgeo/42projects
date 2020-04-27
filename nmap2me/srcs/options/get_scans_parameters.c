@@ -1,5 +1,4 @@
 
-#include "all.h"
 #include "options.h"
 #include "libft.h"
 
@@ -26,7 +25,7 @@ void 			get_scans_parameters(char *arg, t_params *e)
 	int		end;
 
 	if (arg == NULL)
-		nmap_error(e, "Missing parameter `--scan'.");
+		nmap_error(e, "Option scan: Missing parameter.");
 	head = arg;
 	end = 0;
 	for (int i = 0; e->scans[i]; i++)

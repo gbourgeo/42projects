@@ -1,5 +1,4 @@
 
-#include "all.h"
 #include "options.h"
 #include "libft.h"
 
@@ -15,7 +14,7 @@ static int		isvalidportparameter(char *port)
 
 static int 	isregisteredportnumber(int port, t_params *e)
 {
-	for (int i = 0; i < e->ports_nb; i++) {
+	for (unsigned int i = 0; i < e->ports_nb; i++) {
 		if (e->ports[i] == port)
 			return 1;
 	}
@@ -40,7 +39,7 @@ void			get_ports_parameters(char *ports, t_params *e)
 	
 	e->ports_nb = 0;
 	if (ports == NULL)
-		nmap_error(e, "Missing parameter `--port'.");
+		nmap_error(e, "Option port: Missing parameter.");
 	if (!isvalidportparameter(ports))
 		nmap_error(e, "Invalid port syntax: `%s'", ports);
 	while (*ports)

@@ -15,7 +15,7 @@ void			get_file_parameters(char *arg, t_params *e)
 	tmp = &e->addresses;
 	line = NULL;
 	if (arg == NULL)
-		nmap_error(e, "Missing parameter `--file'.");
+		nmap_error(e, "Option file: Missing parameter.");
 	fd = open(arg, O_RDONLY);
 	if (fd < 0)
 		nmap_error(e, "Can't open file: \"%s\"", arg);

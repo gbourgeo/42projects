@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/21 16:09:55 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/03/27 16:17:02 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/04/14 16:51:32 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ t_options		*nmap_options(int getsize);
 /*
 **	PARAMETERS
 */
+void			get_debug_parameters(char *arg, t_params *e);
 void			get_file_parameters(char *arg, t_params *e);
+void 			get_iflist_parameters(char *arg, t_params *e);
+void			get_interface_parameters(char *arg, t_params *e);
 void 			get_ip_parameters(char *arg, t_params *e);
 void			get_ports_parameters(char *arg, t_params *e);
 void 			get_scans_parameters(char *arg, t_params *e);

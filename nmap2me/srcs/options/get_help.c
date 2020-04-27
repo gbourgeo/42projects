@@ -1,4 +1,4 @@
-#include "all.h"
+
 #include "options.h"
 #include "ft_printf.h"
 

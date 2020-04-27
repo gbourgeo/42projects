@@ -3,30 +3,37 @@
 #include "libft.h"
 #include "ft_printf.h"
 
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netdb.h>
-#include <arpa/inet.h>
 
 t_addr			**get_new_addr(char *name, t_addr **tmp, t_params *e)
 {
-	struct hostent	*host;
-	struct in_addr	ip;
+	struct addrinfo		hints;
+	struct addrinfo		*res;
+	int					err;
 
-	host = gethostbyname(name);
-	ip.s_addr = (host) ? *((uint32_t *)host->h_addr_list[0]) : inet_addr(name);
-	if (ip.s_addr != INADDR_NONE)
-	{
-		*tmp = ft_memalloc(sizeof(**tmp));
-		if (*tmp != NULL)
-		{
-			(*tmp)->name = name;
-			ft_memcpy((*tmp)->hostaddr, inet_ntoa(ip), sizeof((*tmp)->hostaddr));
-			e->addresses_nb++;
-			return (&(*tmp)->next);
-		}
-		ft_printf("\"%s\" allocation failed.", name);
-	}
-	else
+	ft_memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_PASSIVE;
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	err = getaddrinfo(name, NULL, &hints, &res);
+	if (err)
+		gai_strerror(err);
+	else if (!res)
 		ft_printf("Failed to resolve \"%s\"\n", name);
+	else if (!(*tmp = ft_memalloc(sizeof(**tmp))))
+		ft_printf("\"%s\" allocation failed.", name);
+	else
+	{
+		(*tmp)->name = name;
+		(*tmp)->res = res;
+		e->addresses_nb++;
+		return (&(*tmp)->next);
+	}
+	freeaddrinfo(res);
+	ft_strdel((char **)tmp);
 	ft_strdel(&name);
 	return (tmp);
 }

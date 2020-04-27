@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 13:59:36 by frmarinh          #+#    #+#             */
-/*   Updated: 2020/03/28 16:29:16 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/04/17 08:11:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include <netinet/in.h>
 # include <ifaddrs.h>
 # include <linux/if_packet.h>
+# include <netdb.h>
+# include <netinet/ip.h>
+# include <linux/tcp.h>
+# include <net/if.h>
 
 # define DEFAULT_THREADS 		1
 # define NM_MAX_PORTS_SCAN 		1024
@@ -27,56 +31,63 @@
 # define DEFAULT_TTL			64
 # define PACKET_SIZE 			1024
 
-/*
-    96 bit (12 bytes) pseudo header needed for tcp header checksum calculation
-*/
-/*
-struct pseudo_header
-{
-    u_int32_t source_address;
-    u_int32_t dest_address;
-    u_int8_t placeholder;
-    u_int8_t protocol;
-    u_int16_t length;
-};
-*/
+# ifndef u_char
+#  define u_char		unsigned char
+# endif
+# ifndef u_int
+#  define u_int			unsigned int
+# endif
 
-typedef struct 			s_addr
+typedef struct			s_addr
 {
 	char 				*name;
-	char 				hostaddr[255];
+	struct addrinfo		*res;
+	char 				hostaddr[INET6_ADDRSTRLEN];
 	struct s_addr 		*next;
 	struct s_addr 		*prev;
 }						t_addr;
+
+typedef struct			s_response
+{
+	char				received;
+	char				open;
+	char				filtered;
+}						t_response;
 
 typedef struct			s_data
 {
 	t_addr				*addr;
 	char				*scan;
 	int					port;
+	int					id;
+	t_response			response;
 }						t_data;
 
 typedef struct 			s_thread
 {
-	int 				nb;
-	int 				opes;
+	pthread_t 			thread_id;
 	t_data				*data;
-	pthread_t 			id;
+	int					socket;
+	int 				opes;
+	struct sockaddr		*addr;
+	pthread_mutex_t		*lock;
 }						t_thread;
 
-typedef struct 			s_pcap
+typedef struct			s_ifaddr
 {
-	char 				*device;
-	pcap_t 				*handle;
-	bpf_u_int32 		net;
-	char 				netstr[INET_ADDRSTRLEN];
-	bpf_u_int32 		mask;
-	char 				maskstr[INET_ADDRSTRLEN];
-	struct bpf_program	fp;
-	struct sockaddr_ll 	mac;
-	struct sockaddr_in 	v4;
-	struct sockaddr_in6 v6;
-	int 				timeout;
+	char				*name;
+	char				ip[INET6_ADDRSTRLEN + 5];
+	char				type[16];
+	int					flag;
+	struct s_ifaddr		*next;
+}						t_ifaddr;
+
+typedef struct			s_pcap
+{
+	pcap_if_t			*ifs; // Interface used
+	struct sockaddr		*addr; // Interface AF_INET used
+	char				*device;
+	char				ip[INET6_ADDRSTRLEN];
 }						t_pcap;
 
 typedef struct			s_parameters
@@ -86,23 +97,25 @@ typedef struct			s_parameters
 	char				**scans;
 	t_addr 				*addresses;
 	t_thread			**threads;
-	int 				ports_nb;
-	int					scans_nb;
-	int 				addresses_nb;
-	int 				threads_nb;
-	int					pcap_timeout;
-
 	char				*device;
-	time_t				start;
-	pcap_t				*handle;
+	t_ifaddr			*ifaddrs;
+	unsigned int		ports_nb;
+	unsigned int		scans_nb;
+	unsigned int		addresses_nb;
+	unsigned int 		threads_nb;
+	int					pcap_timeout;
+	int					debug;
+	/* All system interfaces */
+	pcap_if_t			*interfaces;
+	t_pcap				pcap;
+	pthread_mutex_t		socket_lock;
+	t_data				*data;
+	unsigned int		total_operations;
 }						t_params;
 
 typedef struct			s_global
 {
-	pthread_mutex_t		id_lock;
-	int					recv_timeout;
-	char				*device;
-	t_data				*data;
+	pcap_t				*handle;
 }						t_global;
 
 /*
@@ -119,20 +132,23 @@ void 					nmap_error(t_params *e, char *str, ...);
 **	OTHER
 */
 void					get_options(char **argv, t_params *e);
-void 					get_interface(t_params *e);
+int						init_address_resolution(t_addr *addr, t_params *e);
 void 					init_threads(t_params *e);
-int						init_socket(unsigned char protocol, int timeout);
-int						init_ipv4_hdr(char raw[], char *device, char *addr, unsigned char protocol);
+int						init_socket(unsigned char protocol);
+void					init_ipv4_hdr(char raw[], struct sockaddr_in *to, u_int8_t protocol, struct sockaddr *addr);
 unsigned short			checksum(unsigned short *ptr, int nbytes);
-void					init_tcp_hdr(char raw[], int port, char *scan, char *device);
-int						get_id(void);
-void 					ping_scan(void);
+void					init_tcp_hdr(char raw[], t_data *data);
+t_data					*find_data(int protocol, int id, t_params *e);
+
+void		print_ip_hdr(struct iphdr *ip);
+void		print_tcp_hdr(struct tcphdr *tcp);
 
 /*
 **	PCAP
 */
-void 					init_pcap(t_params *e);
-void 					launch_pcap(void (*handler)());
+void 					init_pcap(t_addr *addr, t_params *e);
+void					launch_pcap(t_params *e);
+void					scan_report(t_addr *addr, t_params *e);
 
 /*
 **	PACKETS

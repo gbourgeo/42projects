@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/05/20 17:57:50 by frmarinh          #+#    #+#              #
-#    Updated: 2020/03/28 15:44:13 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/04/15 18:32:40 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,23 +20,25 @@ INCDIR_NMAP	= includes/
 LIBFT_DIR	= libft/
 
 SRCBASE_NMAP	= \
-		main.c						\
+		checksum.c					\
 		error.c						\
+		find.c						\
 		free.c						\
-		interface.c					\
-		pcap.c						\
+		init_hdr.c					\
+		main.c						\
+		pcap_init.c					\
+		pcap_launch.c				\
+		resolution.c				\
+		report.c					\
 		socket.c					\
 		threads.c					\
-		init_hdr.c					\
-		checksum.c					\
-		id.c						\
-#		packets_read.c				\
-		packets_make.c				\
-		ping_scan.c					\
 
 SRCDIR_NMAP_OPT = $(SRCDIR_NMAP)options/
 SRCBASE_NMAP_OPT	= \
+		get_debug_parameters.c		\
 		get_file_parameters.c		\
+		get_iflist_parameters.c		\
+		get_interface_parameters.c	\
 		get_ip_parameters.c			\
 		get_new_addr.c				\
 		get_options.c				\
@@ -56,7 +58,7 @@ DEPS_NMAP	+= $(addprefix $(DEPDIR_NMAP), $(SRCBASE_NMAP_OPT:.c=.d))
 CC			= gcc
 FLAGS		= -Wall -Werror -Wextra
 INCS		= -I $(LIBFT_DIR)$(INCDIR_NMAP) -I $(INCDIR_NMAP)
-LIBS		= -ggdb -lpthread -lpcap -L $(LIBFT_DIR) -lft
+LIBS		= -lpthread -lpcap -L $(LIBFT_DIR) -lft
 
 all: prepare $(NAME)
 
@@ -72,12 +74,12 @@ $(NAME): $(OBJS_NMAP)
 
 $(OBJDIR_NMAP)%.o: $(SRCDIR_NMAP)%.c
 $(OBJDIR_NMAP)%.o: $(SRCDIR_NMAP)%.c $(DEPDIR_NMAP)%.d
-	$(CC) -MT $@ -MMD -MP -MF $(DEPDIR_NMAP)$*.Td $(FLAGS_ERR) -o $@ -c $< $(INCS)
+	$(CC) -MT $@ -MMD -MP -MF $(DEPDIR_NMAP)$*.Td $(FLAGS) -o $@ -c $< $(INCS)
 	@mv -f $(DEPDIR_NMAP)$*.Td $(DEPDIR_NMAP)$*.d && touch $@
 
 $(OBJDIR_NMAP)%.o: $(SRCDIR_NMAP_OPT)%.c
 $(OBJDIR_NMAP)%.o: $(SRCDIR_NMAP_OPT)%.c $(DEPDIR_NMAP)%.d
-	$(CC) -MT $@ -MMD -MP -MF $(DEPDIR_NMAP)$*.Td $(FLAGS_ERR) -o $@ -c $< $(INCS)
+	$(CC) -MT $@ -MMD -MP -MF $(DEPDIR_NMAP)$*.Td $(FLAGS) -o $@ -c $< $(INCS)
 	@mv -f $(DEPDIR_NMAP)$*.Td $(DEPDIR_NMAP)$*.d && touch $@
 
 $(DEPDIR_NMAP)%.d: ;
