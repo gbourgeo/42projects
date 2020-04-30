@@ -25,6 +25,27 @@ static void		printable_flags(char type[], int flags)
 		ft_strcpy(type, "ethernet");
 }
 
+static int		get_mask(struct sockaddr *netmask)
+{
+	char		*addr;
+	int			mask;
+
+	mask = 0;
+	if (netmask->sa_family == AF_INET)
+	{
+		addr = (char *)&((struct sockaddr_in *)netmask)->sin_addr;
+		for (u_int i = 0; i < sizeof(struct in_addr); i++)
+			mask -= (addr[i] * 8);
+	}
+	else if (netmask->sa_family == AF_INET6)
+	{
+		addr = (char *)&((struct sockaddr_in6 *)netmask)->sin6_addr;
+		for (u_int i = 0; i < sizeof(struct in6_addr); i++)
+			mask -= (addr[i] * 8);
+	}
+	return (-mask);
+}
+
 static void		get_if_addrs(t_ifaddr **s, u_int bl[], t_params *e)
 {
 	pcap_if_t	*ptr;
@@ -74,10 +95,8 @@ static void		get_if_addrs(t_ifaddr **s, u_int bl[], t_params *e)
 				}
 				bl[0] = (ft_strlen(ptr->name) > bl[0]) ? ft_strlen(ptr->name) : bl[0];
 				printable_addr(addr->netmask->sa_family, addr->netmask, ip, sizeof(ip));
-				mask = 0;
-				for (unsigned long i = 0; i < sizeof(addr->netmask->sa_data); i++)
-					mask += (addr->netmask->sa_data[i] * ((addr->netmask->sa_family == AF_INET) ? 8 : 16));
 				printable_addr(addr->addr->sa_family, addr->addr, ip, sizeof(ip));
+				mask = get_mask(addr->netmask);
 				ft_sprintf((*front)->ip, "%s/%d", ip, -mask);
 				bl[1] = (ft_strlen(ip) > bl[1]) ? ft_strlen((*front)->ip) : bl[1];
 				printable_flags((*front)->type, ptr->flags);
@@ -110,42 +129,50 @@ static void		print_out(char *str, u_int len)
 
 static void print(pcap_if_t *all)
 {
+	char		ip[INET6_ADDRSTRLEN + 1];
+
 	ft_printf("AF_INET: %d, AF_INET6:%d\n", AF_INET, AF_INET6);
 	while (all)
 	{
 		ft_printf("%s %s %d:\n", all->name, all->description, all->flags);
 		for (pcap_addr_t *addr = all->addresses; addr; addr = addr->next)
 		{
-			ft_printf("\tAddr : %p ", addr->addr);
+			ft_printf("\tAddr : ");
 			if (addr->addr)
 			{
-				ft_printf("%d ", addr->addr->sa_family);
+				printable_addr(addr->addr->sa_family, addr->addr, ip, sizeof(ip));
+				ft_printf("%s (%d)\n\t", ip, addr->addr->sa_family);
 				for (u_int i = 0; i < sizeof(addr->addr->sa_data); i++)
 					ft_printf("%02X:", addr->addr->sa_data[i]);
 			}
 			ft_printf("\n");
-			ft_printf("\tBroad: %p ", addr->broadaddr);
+			printable_addr(addr->addr->sa_family, addr->addr, ip, sizeof(ip));
+			ft_printf("\tBroad: ");
 			if (addr->broadaddr)
 			{
-				ft_printf("%d ", addr->broadaddr->sa_family);
+				printable_addr(addr->broadaddr->sa_family, addr->broadaddr, ip, sizeof(ip));
+				ft_printf("%s (%d)\n\t", ip, addr->broadaddr->sa_family);
 				for (u_int i = 0; i < sizeof(addr->broadaddr->sa_data); i++)
 					ft_printf("%02X:", addr->broadaddr->sa_data[i]);
 			}
 			ft_printf("\n");
-			ft_printf("\tDest : %p ", addr->dstaddr);
+			ft_printf("\tDest : ");
 			if (addr->dstaddr)
 			{
-				ft_printf("%d ", addr->dstaddr->sa_family);
+				printable_addr(addr->dstaddr->sa_family, addr->dstaddr, ip, sizeof(ip));
+				ft_printf("%s (%d)\n\t", ip, addr->dstaddr->sa_family);
 				for (u_int i = 0; i < sizeof(addr->dstaddr->sa_data); i++)
 					ft_printf("%02X:", addr->dstaddr->sa_data[i]);
 			}
 			ft_printf("\n");
-			ft_printf("\tNet  : %p ", addr->netmask);
+			ft_printf("\tNet  : ");
 			if (addr->netmask)
 			{
-				ft_printf("%d ", addr->netmask->sa_family);
-				for (u_int i = 0; i < sizeof(addr->netmask->sa_data); i++)
-					ft_printf("%02X:", addr->netmask->sa_data[i]);
+				printable_addr(addr->netmask->sa_family, addr->netmask, ip, sizeof(ip));
+				ft_printf("%s (%d)\n\t", ip, addr->netmask->sa_family);
+				get_mask(addr->netmask);
+				// for (u_int i = 0; i < sizeof(addr->netmask->sa_data); i++)
+				// 	ft_printf("%02X:", addr->netmask->sa_data[i]);
 			}
 			ft_printf("\n");
 		}
@@ -154,16 +181,15 @@ static void print(pcap_if_t *all)
 	ft_printf("\n");
 }
 
-void			get_iflist_parameters(char *arg, t_params *e)
+char			**get_iflist_parameters(char **arg, t_params *e)
 {
 	t_ifaddr	*ptr;
 	u_int		bl[3];
 
-	(void)arg;
 	bl[0] = 4; // "DEV "
 	bl[1] = 8; // "IP/MASK "
 	bl[2] = 5; // "TYPE "
-print(e->interfaces);
+if (0) print(e->interfaces);
 	get_if_addrs(&e->ifaddrs, bl, e);
 	ptr = e->ifaddrs;
 	ft_printf("-------------------- INTERFACES --------------------\n");
@@ -188,4 +214,5 @@ print(e->interfaces);
 	ft_printf("\n");
 	free_params(e);
 	exit(0);
+	return (arg);
 }

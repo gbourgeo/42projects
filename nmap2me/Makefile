@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/05/20 17:57:50 by frmarinh          #+#    #+#              #
-#    Updated: 2020/04/15 18:32:40 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/04/30 12:04:11 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,20 +32,24 @@ SRCBASE_NMAP	= \
 		report.c					\
 		socket.c					\
 		threads.c					\
+		time.c						\
 
 SRCDIR_NMAP_OPT = $(SRCDIR_NMAP)options/
 SRCBASE_NMAP_OPT	= \
+		add_new_addr.c				\
+		del_new_addr.c				\
 		get_debug_parameters.c		\
 		get_file_parameters.c		\
 		get_iflist_parameters.c		\
 		get_interface_parameters.c	\
 		get_ip_parameters.c			\
-		get_new_addr.c				\
 		get_options.c				\
 		get_ports_parameters.c		\
+		get_retry_parameters.c		\
 		get_scans_parameters.c		\
 		get_timeout_parameters.c	\
 		get_threads_parameters.c	\
+		get_verbose_parameters.c	\
 		get_help.c					\
 		options.c					\
 

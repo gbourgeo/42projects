@@ -16,7 +16,7 @@ void			get_options(char **argv, t_params *e)
 			if (!ft_strcmp(*argv, opt[size].sname)
 				|| !ft_strcmp(*argv, opt[size].fname))
 			{
-				opt[size].handler(*++argv, e);
+				argv = opt[size].handler(argv, e);
 				break ;
 			}
 		}

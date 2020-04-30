@@ -2,10 +2,14 @@
 #include "options.h"
 #include "libft.h"
 
-void 			get_ip_parameters(char *arg, t_params *e)
+char 			**get_ip_parameters(char **arg, t_params *e)
 {
-	if (arg == NULL)
+	char		*value;
+
+	value = *++arg;
+	if (value == NULL)
 		nmap_error(e, "Option ip: Missing parameter.");
-	if (e->addresses_nb == 0)
-		get_new_addr(ft_strdup(arg), &e->addresses, e);
+	if (add_new_addr(ft_strdup(value), &e->addresses))
+		e->addresses_nb++;
+	return (arg);
 }

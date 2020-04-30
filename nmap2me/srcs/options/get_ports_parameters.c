@@ -32,12 +32,14 @@ static void		swap_min_max(int *left, int *right)
 	*right = swap;
 }
 
-void			get_ports_parameters(char *ports, t_params *e)
+char			**get_ports_parameters(char **arg, t_params *e)
 {
+	char	*ports;
 	int		left;
 	int		right;
 	
 	e->ports_nb = 0;
+	ports = *++arg;
 	if (ports == NULL)
 		nmap_error(e, "Option port: Missing parameter.");
 	if (!isvalidportparameter(ports))
@@ -76,4 +78,5 @@ void			get_ports_parameters(char *ports, t_params *e)
 		if (*ports)
 			ports++;
 	}
+	return (arg);
 }

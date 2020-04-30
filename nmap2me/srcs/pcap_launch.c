@@ -28,7 +28,7 @@ static const char		*get_prot(struct proto prot[], long size, short value)
 	return ("Unknown");
 }
 
-static void		print_eth_hdr(struct ethhdr *eth)
+/*static void		print_eth_hdr(struct ethhdr *eth)
 {
 	struct proto	prot[] = {
 		{ 0x0800, "IPv4"},
@@ -50,7 +50,7 @@ static void		print_eth_hdr(struct ethhdr *eth)
 		ether_ntoa((struct ether_addr *)eth->h_source),
 		get_prot(prot, sizeof(prot) / sizeof(prot[0]), value),
 		value);
-}
+}*/
 
 void		print_ip_hdr(struct iphdr *ip)
 {
@@ -97,7 +97,6 @@ void		print_ip_hdr(struct iphdr *ip)
 	inet_ntoa(*(struct in_addr *)&ip->saddr),
 	inet_ntoa(*(struct in_addr *)&ip->daddr)
 	);
-	// ft_printf("Protocol: %s\n", get_prot(prot, sizeof(prot) / sizeof(prot[0]), ip->protocol));
 }
 
 void		print_tcp_hdr(struct tcphdr *tcp)
@@ -125,7 +124,7 @@ void		print_tcp_hdr(struct tcphdr *tcp)
 	);
 }
 
-static void print_data_back(u_char *data, int len)
+/*static void print_data_back(u_char *data, int len)
 {
 	int i = 0;
 
@@ -162,12 +161,11 @@ static void print_data_back(u_char *data, int len)
 		y++;
 	}
 	write(1, "\n", 1);
-}
+}*/
 
 void			pcap_dump(unsigned char *user, const struct pcap_pkthdr *h,
 const unsigned char *bytes)
 {
-	// static int		count = 1;
 	t_params		*e;
 	struct ethhdr	*eth;
 	struct iphdr	*ip;
@@ -176,11 +174,11 @@ const unsigned char *bytes)
 	e = (t_params *)user;
 	eth = (struct ethhdr *)bytes; // link layer header
 	ip = (struct iphdr *)(bytes + sizeof(*eth));
-	if (0)
-	{
-		print_eth_hdr(eth);
-		print_ip_hdr(ip);
-	}
+	// if (0)
+	// {
+	// 	print_eth_hdr(eth);
+	// 	print_ip_hdr(ip);
+	// }
 	if (ip->protocol == IPPROTO_TCP)
 	{
 		struct tcphdr	*tcp_header;
@@ -192,85 +190,68 @@ const unsigned char *bytes)
 		data = find_data(IPPROTO_TCP, id_dst, e);
 		if (data)
 		{
-			// ft_printf("Found id %d for dst\n", id_dst);
-			print_tcp_hdr(tcp_header);
-			if (0)
-				print_data_back((u_char *)(tcp_header + 1), ntohs(ip->tot_len) - sizeof(struct iphdr) - sizeof(struct tcphdr));
+			// print_tcp_hdr(tcp_header);
+			// print_data_back((u_char *)(tcp_header + 1), ntohs(ip->tot_len) - sizeof(struct iphdr) - sizeof(struct tcphdr));
 			data->response.received = 1;
 			if (!ft_strcmp(data->scan, "SYN"))
 			{
 				if (tcp_header->syn)
 				{
+					if (e->verbose || e->debug)
+						ft_printf("Discovered open port %d/tcp on %s\n", data->port, data->addr->hostaddr);
 					data->response.open = 1;
 				}
 				else if (tcp_header->rst)
-					data->response.filtered = 1;
+				{
+					if (e->verbose || e->debug)
+						ft_printf("Discovered closed port %d/tcp on %s\n", data->port, data->addr->hostaddr);
+					data->response.filtered = 0;
+				}
 			}
+			ft_memcpy(data->response.raw, ip, sizeof(*ip) + sizeof(*tcp_header));
 		}
-		// t_queue *queue = find_queue(IPPROTO_TCP, id);
-		// if (queue) {
-		// 	if (!ft_strcmp(queue->scan, "SYN") && tcp_header->syn) {
-		// 		if (tcp_header->ack) {
-		// 			queue->open = true;
-		// 			queue->filtered = false;
-		// 		}
-		// 		else if (tcp_header->rst)
-		// 			queue->filtered = true;
-		// 	} else if (!ft_strcmp(queue->scan, "ACK") && tcp_header->rst) {
-		// 		queue->filtered = false;
-		// 	} else if (!ft_strcmp(queue->scan, "FIN") && tcp_header->rst) {
-		// 		queue->open = false;
-		// 	} else if (!ft_strcmp(queue->scan, "NULL") && tcp_header->rst && tcp_header->ack) {
-		// 		queue->open = false;
-		// 	} else if (!ft_strcmp(queue->scan, "XMAS") && tcp_header->rst && tcp_header->ack) {
-		// 		queue->open = false;
-		// 	}
-		// 	queue->done = true;
-		// }
 	}
-	// else if (ip->protocol == IPPROTO_ICMP)
-	// {
-	// 	struct ip		*ip_header;
+	else if (ip->protocol == IPPROTO_ICMP)
+	{
+		struct icmp		*icmp;
 
-	// 	ip_header = (struct ip *)((void*)ip);
-	// 	t_queue *queue = find_queue(IPPROTO_UDP, -1);
-	// 	if (queue) {
-	// 		queue->open = false;
-	// 		queue->filtered = false;
-	// 		queue->done = true;
-	// 	}
-	// }
-	// ft_printf("Packet: %d\n", count++);
+		icmp = (struct icmp *)(bytes + sizeof(*eth) + sizeof(*ip));
+		ft_printf("ICMP %p\n", icmp);
+	}
 }
-
-static void			stop_pcap(int sig)
-{
-	(void)sig;
-	pcap_breakloop(g_global.handle);
-}
-
-typedef void (*sighandler_t)(int);
 
 void				launch_pcap(t_params *e)
 {
-	int					ret;
-	int					nb;
-	sighandler_t		sig;
+	struct timeval tm;
+	unsigned long start;
+	unsigned long end;
+	int			ret;
 
+	gettimeofday(&tm, NULL);
+	start = tm.tv_sec * (int)1e6 + tm.tv_usec;
+	end = start;
 	ret = 0;
-	nb = 0;
-	sig = signal(SIGALRM, stop_pcap);
-	alarm((e->pcap_timeout / 1000) * 4);
-	while (1)
+	while (end - start < (unsigned long)(e->tcp_timeout * 1000 * e->retry))
 	{
 		ret = pcap_dispatch(g_global.handle, -1, pcap_dump, (u_char *)e);
 		if (ret == -1)
 			nmap_error(e, "ERROR: error reading packets from interface %s: %s",
 				e->pcap.device, pcap_geterr(g_global.handle));
-		if (ret == -2)
-			break ; // pcap_break_loop() called.
-		nb += ret;
+		gettimeofday(&tm, NULL);
+		end = tm.tv_sec * (int)1e6 + tm.tv_usec;
 	}
-	signal(SIGALRM, sig);
-	ft_printf("Packets read: %d\n", nb);
+	gettimeofday(&e->end_time, NULL);
+	e->packet_read += ret;
+	if (e->verbose || e->debug)
+	{
+		ft_printf("Completed");
+		for (int i = 0; e->scans[i]; i++)
+				ft_printf(" %s", e->scans[i]);
+		unsigned long ssec = e->start_time.tv_sec * (int)1e6 + e->start_time.tv_usec;
+		unsigned long esec = e->end_time.tv_sec * (int)1e6 + e->end_time.tv_usec;
+		printf(" Scan at %s, %.2fs elapsed (%d total ports)\n",
+			get_time("%H:%M", &e->end_time),
+			(double)(esec - ssec) / (int)1e6,
+			e->addresses_nb * e->ports_nb * e->scans_nb);
+	}
 }

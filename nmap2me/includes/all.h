@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/10 13:59:36 by frmarinh          #+#    #+#             */
-/*   Updated: 2020/04/17 08:11:46 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/04/30 12:16:27 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
 # define NM_MAX_PORTS_SCAN 		1024
 # define MAX_THREADS_NUMBER		250
 # define SUPPORTED_SCANS		"SYN/NULL/FIN/XMAS/ACK/UDP"
-# define DEFAULT_PCAP_TIMEOUT	2000
+# define DEFAULT_RETRY_NB		2
+# define DEFAULT_TCP_TIMEOUT	1000
 # define DEFAULT_TTL			64
 # define PACKET_SIZE 			1024
 
@@ -41,8 +42,10 @@
 typedef struct			s_addr
 {
 	char 				*name;
-	struct addrinfo		*res;
 	char 				hostaddr[INET6_ADDRSTRLEN];
+	struct addrinfo		*res;
+	struct addrinfo		*ptr;
+	int					addrnb;
 	struct s_addr 		*next;
 	struct s_addr 		*prev;
 }						t_addr;
@@ -52,6 +55,7 @@ typedef struct			s_response
 	char				received;
 	char				open;
 	char				filtered;
+	char				raw[128];
 }						t_response;
 
 typedef struct			s_data
@@ -71,6 +75,8 @@ typedef struct 			s_thread
 	int 				opes;
 	struct sockaddr		*addr;
 	pthread_mutex_t		*lock;
+	int					retry_nb;
+	int					retry_timeout;
 }						t_thread;
 
 typedef struct			s_ifaddr
@@ -103,7 +109,9 @@ typedef struct			s_parameters
 	unsigned int		scans_nb;
 	unsigned int		addresses_nb;
 	unsigned int 		threads_nb;
-	int					pcap_timeout;
+	int					retry;
+	int					tcp_timeout;
+	int					verbose;
 	int					debug;
 	/* All system interfaces */
 	pcap_if_t			*interfaces;
@@ -111,6 +119,10 @@ typedef struct			s_parameters
 	pthread_mutex_t		socket_lock;
 	t_data				*data;
 	unsigned int		total_operations;
+	/* Stats */
+	struct timeval		start_time;
+	struct timeval		end_time;
+	int					packet_read;
 }						t_params;
 
 typedef struct			s_global
@@ -119,9 +131,9 @@ typedef struct			s_global
 }						t_global;
 
 /*
-**  GLOBAL
+**	GLOBAL
 */
-t_global					g_global;
+t_global				g_global;
 
 /*
 **	ERROR
@@ -132,7 +144,9 @@ void 					nmap_error(t_params *e, char *str, ...);
 **	OTHER
 */
 void					get_options(char **argv, t_params *e);
-int						init_address_resolution(t_addr *addr, t_params *e);
+void					del_new_addr(t_addr **addr);
+const char				*get_time(const char *format, struct timeval *t);
+void					init_address_resolution(t_addr **addr, int debug);
 void 					init_threads(t_params *e);
 int						init_socket(unsigned char protocol);
 void					init_ipv4_hdr(char raw[], struct sockaddr_in *to, u_int8_t protocol, struct sockaddr *addr);

@@ -58,6 +58,11 @@ void	free_ifaddrs(t_ifaddr *addr)
 
 void	free_params(t_params *e)
 {
+	for (unsigned int i = 0; i < e->threads_nb && i < e->total_operations; i++)
+	{
+		if (e->threads[i]->thread_id > 0)
+			pthread_join(e->threads[i]->thread_id, NULL);
+	}
 	ft_strdel((char **)&e->ports);
 	ft_tabdel(&e->scans);
 	free_addresses(&e->addresses);

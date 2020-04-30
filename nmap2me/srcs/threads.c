@@ -9,6 +9,70 @@
 #include <errno.h>
 #include <string.h>
 
+#include <linux/if_ether.h>
+#include <netinet/ether.h>
+#include <signal.h>
+
+t_data		*my_data(int protocol, int id, int opes, t_data *data)
+{
+	int		i;
+
+	i = 0;
+	(void)protocol;
+	while (i < opes)
+	{
+		if (data[i].id == id)
+		{
+			return (data + i);
+		}
+		i++;
+	}
+	return (NULL);
+}
+void				p_dump(unsigned char *user, const struct pcap_pkthdr *h,
+const unsigned char *bytes)
+{
+	t_thread			*thr;
+	t_data				*data;
+	struct ethhdr	*eth;
+	struct iphdr	*ip;
+	
+	(void)h;
+	thr = (t_thread *)user;
+	data = thr->data;
+	eth = (struct ethhdr *)bytes; // link layer header
+	ip = (struct iphdr *)(bytes + sizeof(*eth));
+	if (ip->protocol == IPPROTO_TCP)
+	{
+		struct tcphdr	*tcp_header;
+		int				id_dst;
+
+		tcp_header = (struct tcphdr*)(bytes + sizeof(*eth) + sizeof(*ip));
+		id_dst = ntohs(tcp_header->dest);
+		data = my_data(IPPROTO_TCP, id_dst, thr->opes, data);
+		if (data)
+		{
+			data->response.received = 1;
+			if (!ft_strcmp(data->scan, "SYN"))
+			{
+				if (tcp_header->syn)
+				{
+					data->response.open = 1;
+				}
+				else if (tcp_header->rst)
+					data->response.filtered = 0;
+			}
+		}
+	}
+	else if (ip->protocol == IPPROTO_ICMP)
+	{
+		struct icmp		*icmp;
+
+		icmp = (struct icmp *)(bytes + sizeof(*eth) + sizeof(*ip));
+		ft_printf("ICMP %p\n", icmp);
+	}
+}
+
 static void 	*routine_threads(void *ptr)
 {
 	t_thread			*thr;
@@ -20,30 +84,31 @@ static void 	*routine_threads(void *ptr)
 	data = thr->data;
 	ft_memset(raw, 0, sizeof(raw));
 	ft_memset(&dest, 0, sizeof(dest));
-	for (int i = 0, ret; i < thr->opes; i++)
+	for (int loop = 0; loop < thr->retry_nb; loop++)
 	{
-		dest.sin_family = AF_INET;
-		dest.sin_port = htons(data[i].port);
-		dest.sin_addr.s_addr = inet_addr(data[i].addr->hostaddr);
-		init_ipv4_hdr(raw, &dest, IPPROTO_TCP, thr->addr);
-		init_tcp_hdr(raw, data + i);
-		pthread_mutex_lock(thr->lock);
-	ft_printf("Sent:\n");
-	for (unsigned int i = 0; i < sizeof(raw); i++)
-	{
-		ft_printf("%02x ", raw[i]);
-		if ((i + 1) % 16 == 0)
-			ft_printf("\n");
-	}
-	ft_printf("\n");
-		ret = sendto(thr->socket, raw, sizeof(raw), 0,
-			(struct sockaddr *)&dest, sizeof(dest));
-		pthread_mutex_unlock(thr->lock);
-		if (ret < 0)
+		for (int i = 0, ret; i < thr->opes; i++)
 		{
-			ft_printf("ERROR: Thread %d sending packet. %s\n", thr->thread_id);
-			break ;
+			if (data[i].response.received)
+				continue ;
+			dest.sin_family = AF_INET;
+			dest.sin_port = htons(data[i].port);
+			dest.sin_addr.s_addr = inet_addr(data[i].addr->hostaddr);
+			init_ipv4_hdr(raw, &dest, IPPROTO_TCP, thr->addr);
+			init_tcp_hdr(raw, data + i);
+			pthread_mutex_lock(thr->lock);
+		// ft_printf("Sending:\n");
+		// print_ip_hdr((struct iphdr *)raw);
+		// print_tcp_hdr((struct tcphdr *)(raw + sizeof(struct iphdr)));
+			ret = sendto(thr->socket, raw, sizeof(raw), 0,
+				(struct sockaddr *)&dest, sizeof(dest));
+			pthread_mutex_unlock(thr->lock);
+			if (ret < 0)
+			{
+				ft_printf("ERROR: Thread %d sending packet. %s\n", thr->thread_id);
+				break ;
+			}
 		}
+		usleep(thr->retry_timeout * 1000);
 	}
 	pthread_exit(NULL);
 }
@@ -71,15 +136,11 @@ void 			init_threads(t_params *e)
 		ptr->opes = opes + ports_plus;
 		ptr->addr = e->pcap.addr;
 		ptr->lock = &e->socket_lock;
+		ptr->retry_nb = e->retry;
+		ptr->retry_timeout = e->tcp_timeout;
 		if (pthread_create(&ptr->thread_id, NULL, routine_threads, ptr))
 			ft_printf("WARNING: Thread %d creation failed.\n", i);
 		index += ptr->opes;
-		i++;
-	}
-	i = 0;
-	while (i < e->threads_nb && i < e->total_operations)
-	{
-		pthread_join(e->threads[i]->thread_id, NULL);
 		i++;
 	}
 }

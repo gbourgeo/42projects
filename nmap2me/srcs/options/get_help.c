@@ -2,12 +2,11 @@
 #include "options.h"
 #include "ft_printf.h"
 
-void			print_help(char *arg, t_params *e)
+char			**get_help(char **arg, t_params *e)
 {
 	t_options	*opt;
 	long		i;
 
-	(void)arg;
 	opt = nmap_options(0);
 	i = (long)nmap_options(1);
 	ft_printf("Usage: %s [OPTIONS]...\n", e->progname);
@@ -20,4 +19,5 @@ void			print_help(char *arg, t_params *e)
 	}
 	free_params(e);
 	exit(0);
+	return (arg);
 }

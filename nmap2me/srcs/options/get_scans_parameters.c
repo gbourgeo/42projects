@@ -18,15 +18,15 @@ static int		findname(char *name, void *table, int jmp, long size)
 	return (0);
 }
 
-void 			get_scans_parameters(char *arg, t_params *e)
+char 			**get_scans_parameters(char **arg, t_params *e)
 {
 	char	*head;
 	char	*tail;
 	int		end;
 
-	if (arg == NULL)
+	head = *++arg;
+	if (head == NULL)
 		nmap_error(e, "Option scan: Missing parameter.");
-	head = arg;
 	end = 0;
 	for (int i = 0; e->scans[i]; i++)
 		ft_strdel(&e->scans[i]);
@@ -43,4 +43,5 @@ void 			get_scans_parameters(char *arg, t_params *e)
 		head = tail + 1;
 	}
 	e->scans_nb = ft_tablen(e->scans);
+	return (arg);
 }

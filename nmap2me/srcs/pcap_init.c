@@ -18,9 +18,9 @@ static int			islocalip(t_addr *addr, t_params *e)
 	char					ip[INET6_ADDRSTRLEN];
 	int						family;
 
-	if (addr->res->ai_family == AF_INET)
+	if (addr->ptr->ai_family == AF_INET)
 	{
-		sin = (struct sockaddr_in *)addr->res->ai_addr;
+		sin = (struct sockaddr_in *)addr->ptr->ai_addr;
 		/* If it is 0.0.0.0 or starts with 127 then it is probably localhost. */
 		if ((sin->sin_addr.s_addr & htonl(0xFF000000)) == htonl(0x7F000000))
 			return (1);
@@ -29,7 +29,7 @@ static int			islocalip(t_addr *addr, t_params *e)
 	}
 	else
 	{
-		sin6 = (struct sockaddr_in6 *)addr->res->ai_addr;
+		sin6 = (struct sockaddr_in6 *)addr->ptr->ai_addr;
 		/* If it is ::0 or ::1 then it is probably localhost. */
 		if (ft_memcmp(&(sin6->sin6_addr), "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 16) == 0)
 			return (1);
@@ -126,13 +126,13 @@ void				init_pcap(t_addr *addr, t_params *e)
 		net = 0;
 		mask = 0;
 	}
-	g_global.handle = pcap_open_live(dev, 4096, 1, 0/*e->pcap_timeout*/, errbuf);
+	g_global.handle = pcap_open_live(dev, 4096, 1, -1, errbuf);
 	if (g_global.handle == NULL)
 		nmap_error(e, "ERROR: Couldn't open device %s\n", errbuf);
 	ft_sprintf(filter_exp,
 		"dst host %s and (icmp or ((tcp or udp or sctp) and (src host %s)))",
 		e->pcap.ip,
-		e->addresses->hostaddr
+		addr->hostaddr
 	);
 	if (e->debug)
 		ft_printf("Packet capture filter (device %s): %s\n", dev, filter_exp);
