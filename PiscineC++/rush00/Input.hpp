@@ -1,42 +1,36 @@
 #ifndef INPUT_HPP
  #define INPUT_HPP
 
- #include "main.hpp"
+class Input
+{
+public:
+	/*
+	* Constructor / Destructor
+	*/
+	Input(void);
+	Input(Input const &ref);
+	~Input(void);
 
- class Input: public Logger {
+	/*
+	* Overload
+	*/
+	Input & operator=(Input const &ref);
 
-     public:
+	/*
+	* Getters
+	*/
+	int		getLastKey(void) const;
 
-        /**
-         * Constructor / Destructor
-         */
-        Input(void);
-        Input(std::string logFileName);
-        Input(Input const &ref);
-        ~Input(void);
+	/*
+	* Setters
+	*/
+	void	setLastKey(int c);
 
-        /**
-         * Overload
-         */
-        Input    &operator=(Input const &ref);
-
-        /**
-         * Getters
-         */
-        int             getLastKey(void) const;
-
-        /**
-         * Setters
-         */
-        void            setLastKey(int c);
-
-    private:
-
-        /**
-         * Attributes
-         */
-        int             lastKey;
-
- };
+private:
+	/*
+	* Attributes
+	*/
+	int		lastKey;
+};
 
 #endif

@@ -1,14 +1,14 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   Weapon.hpp                                         :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/10/06 14:58:43 by gbourgeo          #+#    #+#             //
-//   Updated: 2018/10/06 20:03:47 by gbourgeo         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Weapon.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/06 14:58:43 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/04 20:31:46 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef WEAPON_HPP
 # define WEAPON_HPP
@@ -25,18 +25,12 @@ public:
 	~Weapon();
 	Weapon & operator=(Weapon const & rhs);
 
-	double		getShootRate() const;
-	double		getBulletSpeed() const;
-	char		getBulletName() const;
-	int			getBulletDamage() const;
-	timeval		getLastShot() const;
-	void		setLastShot();
 	bool		canShoot() const;
-
 	Bullet		*shoot(int x, int y, bool direction);
 
 protected:
 	Weapon();
+	void		setLastShot();
 
 	double		_shootRate;
 	double		_bulletSpeed;

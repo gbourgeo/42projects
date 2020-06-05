@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   GameBoard.hpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/06/05 14:13:33 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 14:13:37 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef GAMEBOARD_HPP
 # define GAMEBOARD_HPP
 
@@ -6,21 +18,16 @@
 class GameBoard
 {
 public:
-	GameBoard(int score, int lives);
+	GameBoard();
 	GameBoard(GameBoard const & src);
 	~GameBoard();
 	GameBoard & operator=(GameBoard const & rhs);
 
-	int		getScore() const;
 	time_t	getTiming() const;
-	int		getLives() const;
 	void	gameStart();
 	
 private:
-	GameBoard();
-	int		_score;
 	time_t	_timing;
-	int		_lives;
 };
 
 #endif

@@ -1,19 +1,19 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   Weapon.cpp                                         :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/10/06 14:58:29 by gbourgeo          #+#    #+#             //
-//   Updated: 2018/10/07 03:13:01 by gbourgeo         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Weapon.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/06 14:58:29 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/04 22:22:48 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "Weapon.hpp"
 
 Weapon::Weapon():
-	_shootRate(0), _bulletSpeed(0), _bulletName(0), _bulletDamage(0)
+	_shootRate(0.0), _bulletSpeed(0.0), _bulletName('\0'), _bulletDamage(0)
 {
 	this->setLastShot();
 }
@@ -39,60 +39,37 @@ Weapon & Weapon::operator=(Weapon const & rhs)
 {
 	if (this != &rhs)
 	{
-		this->_shootRate = rhs.getShootRate();
-		this->_bulletSpeed = rhs.getBulletSpeed();
-		this->_bulletName = rhs.getBulletName();
-		this->_bulletDamage = rhs.getBulletDamage();
-		this->_lastShot = rhs.getLastShot();
+		this->_shootRate = rhs._shootRate;
+		this->_bulletSpeed = rhs._bulletSpeed;
+		this->_bulletName = rhs._bulletName;
+		this->_bulletDamage = rhs._bulletDamage;
+		this->_lastShot = rhs._lastShot;
 	}
 	return *this;
 }
 
-double Weapon::getShootRate() const
-{
-	return this->_shootRate;
-}
-
-double Weapon::getBulletSpeed() const
-{
-	return this->_bulletSpeed;
-}
-
-char Weapon::getBulletName() const
-{
-	return this->_bulletName;
-}
-
-int Weapon::getBulletDamage() const
-{
-	return this->_bulletDamage;
-}
-
+#include "Logger.hpp"
 bool Weapon::canShoot(void) const {
 	timeval current;
+
 	gettimeofday(&current, NULL);
-	timeval last = this->getLastShot();
-
-    int diff = (((current.tv_sec - last.tv_sec) * 1000000) +
-            (current.tv_usec - last.tv_usec))/1000;
-
-	return diff > (this->getShootRate() * 1000) ? true : false;
+	unsigned long diff = current.tv_sec * 1000000
+		- this->_lastShot.tv_sec * 1000000
+		+ current.tv_usec
+		- this->_lastShot.tv_usec;
+	return diff > (1000000.0 * this->_shootRate) ? true : false;
 }
 
 Bullet *Weapon::shoot(int x, int y, bool direction)
 {
 	this->setLastShot();
-	return new Bullet(this->_bulletName, x, y, this->_bulletSpeed, this->_bulletDamage, direction);
-	
-}
-
-timeval Weapon::getLastShot() const
-{
-	return this->_lastShot;
+	return new Bullet(this->_bulletName,
+		x, y,
+		this->_bulletSpeed,
+		this->_bulletDamage,
+		direction);
 }
 
 void	Weapon::setLastShot(void) {
-	timeval now;
-	gettimeofday(&now, NULL);
-	this->_lastShot = now;
+	gettimeofday(&this->_lastShot, NULL);
 }

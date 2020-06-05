@@ -1,24 +1,27 @@
 #include "Player.hpp"
 
 Player::Player():
-	AEntities()
+	AEntities(), _score(0)
 {}
 
-Player::Player(char name, int life, int x, int y, double speed, bool direction):
-	AEntities(name, life, x, y, speed, direction)
+Player::Player(char name, int life, int retry, int x, int y, double speed, bool direction):
+	AEntities(name, life, retry, x, y, speed, direction), _score(0)
 {}
-
-Player::Player(Player const & src)
-{
-	*this = src;
-}
 
 Player::~Player()
 {}
 
+Player::Player(Player const & src): AEntities(src)
+{
+	*this = src;
+}
+
 Player & Player::operator=(Player const & rhs)
 {
-	(void)rhs;
+	if (this != &rhs)
+	{
+		this->_score = rhs._score;
+	}
 	return *this;
 }
 
@@ -27,4 +30,9 @@ Bullet *Player::shoot()
 	if (this->_weapon)
 		return this->_weapon->shoot(this->_x, this->_y - 1, true);
 	return 0;
+}
+
+unsigned int Player::getScore() const
+{
+	return this->_score;
 }

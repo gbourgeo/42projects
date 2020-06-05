@@ -1,22 +1,19 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   Movable.hpp                                        :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/10/06 18:19:27 by gbourgeo          #+#    #+#             //
-//   Updated: 2018/10/07 20:46:40 by gbourgeo         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Movable.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/06 18:19:27 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 15:44:12 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef MOVABLE_HPP
 # define MOVABLE_HPP
 
-//#include "main.hpp"
-//#include "Logger.hpp"
 #include <sys/time.h>
-#include <iostream>
 
 class Movable
 {
@@ -32,7 +29,6 @@ public:
 	timeval	getLastMove() const;
 	void	move(int x, int y);
 	void	updatePosition(void);
-	void	ratioUpdate(int diff);
 	void	updateLastMove(void);
 
 protected:
@@ -42,6 +38,8 @@ protected:
 	int		_y;
 	double	_speed;
 	bool	_direction;
+	int		_xSave;
+	int		_ySave;
 	timeval	_lastMove;
 };
 

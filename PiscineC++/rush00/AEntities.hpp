@@ -1,32 +1,35 @@
 #ifndef AENTITIES_HPP
 # define AENTITIES_HPP
 
-//#include "main.hpp"
-#include "Movable.hpp"
-#include "Weapon.hpp"
-#include "Bullet.hpp"
+# include "Movable.hpp"
+# include "Weapon.hpp"
+# include "Bullet.hpp"
 
 class AEntities: public Movable
 {
 public:
-	AEntities(char name, int life, int x, int y, double speed, bool direction);
+	AEntities(char name, int life, int retry, int x, int y, double speed, bool direction);
 	AEntities(AEntities const & src);
 	virtual ~AEntities() = 0;
 	AEntities & operator=(AEntities const & rhs);
 
-	char		getName() const;
-	int			getLife() const;
-	Weapon		*getWeapon() const;
-	void		equip(Weapon *weapon);
+	char				getName() const;
+	int					getLife() const;
+	int					getRetry() const;
+	// Weapon				*getWeapon() const;
+	void				equip(Weapon *weapon);
 	virtual Bullet		*shoot() = 0;
-	void		takeDamage(int value);
+	void				takeDamage(int value);
+	void				deathAnimation();
 
 protected:
 	AEntities();
+	void				modifyPosition(int x, int y);
 
 	char		_name;
 	int			_life;
-	bool		_bdirection;
+	int			_lifeSave;
+	int			_retry;
 	Weapon		*_weapon;
 };
 

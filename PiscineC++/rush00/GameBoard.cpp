@@ -1,11 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   GameBoard.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/06/05 14:13:35 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 14:52:33 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "GameBoard.hpp"
 
 GameBoard::GameBoard():
-	_score(0), _timing(0), _lives(0)
-{}
-
-GameBoard::GameBoard(int score, int lives):
-	_score(score), _timing(time(0)), _lives(lives)
+	_timing(0)
 {}
 
 GameBoard::GameBoard(GameBoard const & src)
@@ -20,26 +28,14 @@ GameBoard & GameBoard::operator=(GameBoard const & rhs)
 {
 	if (this != &rhs)
 	{
-		this->_score = rhs.getScore();
 		this->_timing = rhs.getTiming();
-		this->_lives = rhs.getLives();
 	}
 	return *this;
-}
-
-int GameBoard::getScore() const
-{
-	return this->_score;
 }
 
 time_t GameBoard::getTiming() const
 {
 	return this->_timing;
-}
-
-int GameBoard::getLives() const
-{
-	return this->_lives;
 }
 
 void GameBoard::gameStart()

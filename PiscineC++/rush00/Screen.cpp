@@ -1,17 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Screen.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/06/03 16:16:11 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/03 16:16:38 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Screen.hpp"
 #include "main.hpp"
 
 Screen::Screen(int height, int width): height(height), width(width) {
-    initscr();
+	initscr();
 	cbreak();
 	noecho();
 	curs_set(0);
-    this->window = newwin(HEIGHT,WIDTH,0,0);
+	this->window = newwin(HEIGHT,WIDTH,0,0);
 	keypad(this->window, true);
-    nodelay(this->window, true);
+	nodelay(this->window, true);
 }
 
 Screen::~Screen(void) {
-    endwin();
+	endwin();
 }
 
 Screen::Screen(Screen const &ref) {

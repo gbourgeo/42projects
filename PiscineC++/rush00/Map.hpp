@@ -1,47 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Input.cpp                                          :+:      :+:    :+:   */
+/*   Map.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/03 16:26:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/03 16:28:16 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/06/05 14:16:37 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 14:20:40 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Input.hpp"
+#ifndef MAP_HPP
+ #define MAP_HPP
 
-/*
-* Constructor / Destructor
-*/
-Input::Input(void)
-{}
+# include <sys/time.h>
+# include "Screen.hpp"
+# include "GameBoard.hpp"
+# include "PlayerHandler.hpp"
 
-Input::Input(Input const &ref)
+#define HEIGHT		50
+#define WIDTH		80
+
+typedef struct		s_map_border
 {
-	if (this != &ref) {
-		this->setLastKey(ref.getLastKey());
-	}
-}
+	const char		*line;
+	int				len;
+}					t_border;
 
-Input::~Input(void) {}
+void				printBorder(Screen & screen);
+void				printScore(Screen & screen, GameBoard & gameboard, PlayerHandler & players);
 
-/*
-* Getters
-*/
-
-int			Input::getLastKey(void) const {
-	return this->lastKey;
-}
-
-/*
-* Setters
-*/
-
-void		Input::setLastKey(int c) {
-	this->lastKey = c;
-}
-
-
-
+#endif

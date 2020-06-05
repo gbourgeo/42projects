@@ -1,35 +1,41 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Logger.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/06/03 12:37:16 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 15:21:21 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LOGGER_HPP
  #define LOGGER_HPP
 
-#define CONSOLE "console"
-#define FILE "file"
+# include <string>
+# include <fstream>
 
-class Logger {
-
+class Logger
+{
 public:
 	Logger(std::string filename);
 	~Logger(void);
 
-	void 			log(std::string const & dest, std::string const & message);
-	void 			log(std::string const & dest, std::string const & message, int value);
+	void			log(const char *format, ...);
 
 	std::string		getFilename(void) const;
-	void			setFilename(std::string name);
 
-protected:
-
-	// Method
-	std::string		formatLogDate(void);
-	std::string 	makeLogEntry(std::string);
-	std::string		makeKeyLog(int keyValue);
 
 private:
-
-	void 			logToConsole(std::string);
-	void 			logToFile(std::string);
+	Logger();
+	std::string		formatLogDate(void);
 
 	// Property
-	std::string		filename;
+	std::ofstream	_myfile;
+	std::string		_filename;
 };
+
+static Logger			logger("default.log");
 
 #endif

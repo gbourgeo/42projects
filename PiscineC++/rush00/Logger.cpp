@@ -1,121 +1,102 @@
-#include "main.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Logger.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/06/03 16:28:57 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 15:21:31 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-typedef void (Logger::*t_loggerFunctions)(std::string logEntry);
+#include "Logger.hpp"
 
-Logger::Logger(std::string filename): filename(filename) {}
+Logger::Logger()
+{}
 
-Logger::~Logger(void) {}
-
-std::string		Logger::getFilename(void) const {
-	return this->filename;
+Logger::Logger(std::string filename)
+{
+	this->_filename = filename;
+	if (this->_myfile.is_open() == false)
+		this->_myfile.open(this->_filename, std::ios::app | std::ios::out);
 }
 
-void			Logger::setFilename(std::string filename) {
-	this->filename = filename;
+Logger::~Logger(void)
+{
+	if (this->_myfile.is_open() == true)
+		this->_myfile.close();
 }
 
-std::string 		Logger::formatLogDate(void) {
-    time_t 			rawtime;
-  	struct tm 		*timeinfo;
-
-  	char *buffer = new char [20];
-
-  	time (&rawtime);
-  	timeinfo = localtime (&rawtime);
-
-  	strftime (buffer,80,"[%Y_%m_%d_%H%M]",timeinfo);
-
-  	return std::string(buffer);
+std::string		Logger::getFilename(void) const
+{
+	return this->_filename;
 }
 
-std::string			Logger::makeLogEntry(std::string entry) {
-    if (!entry.empty()) {
-		return this->formatLogDate().append(entry) + "\n";
-	} else {
-		return NULL;
+std::string			Logger::formatLogDate(void) {
+	time_t			rawtime;
+	struct tm		*timeinfo;
+	char			buffer[80];
+
+	time (&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime (buffer, 80, "[%d-%m-%Y %H:%M:%S] ", timeinfo);
+	return std::string(buffer);
+}
+
+void				Logger::log(const char *format, ...)
+{
+	va_list		va;
+	int			i, j;
+	std::string	buf;
+
+	va_start(va, format);
+	i = j = 0;
+	buf.clear();
+	while (format[i])
+	{
+		if (format[i] == '%')
+		{
+			buf.append(format + j, i - j);
+			i++;
+			if (format[i] == 'd')
+			{
+				int ret = va_arg(va, int);
+				buf += std::to_string(ret);
+			}
+			else if (format[i] == 'l')
+			{
+				unsigned long ret = va_arg(va, unsigned long);
+				buf += std::to_string(ret);
+			}
+			else if (format[i] == 'b')
+			{
+				double ret = va_arg(va, double);
+				buf += std::to_string(ret);
+			}
+			else if (format[i] == 's')
+			{
+				char *ret = va_arg(va, char *);
+				if (ret)
+					buf.append(ret);
+				else
+					buf.append("(null)");
+			}
+			else if (format[i] == 'p')
+			{
+				unsigned long ret = va_arg(va, unsigned long);
+				buf.append("0x");
+				buf += std::to_string(ret);
+			}
+			else
+				buf.append("%");
+			j = i + 1;
+		}
+		i++;
 	}
-}
-
-std::string			Logger::makeKeyLog(int keyValue) {
-	std::stringstream 	ss;
-	std::string			*ptr;
-
-	ss << " New Key Value -> ";
-	switch (keyValue) {
-		case (KEY_UP) : {	
-			ptr = new std::string("Key Up");
-			break;
-		}
-		case (KEY_DOWN) : {
-			ptr = new std::string("Key Down");
-			break;
-		}
-		case (KEY_LEFT) : {
-			ptr = new std::string("Key Left");
-			break;
-		}
-		case (KEY_RIGHT) : {
-			ptr = new std::string("Key Right");
-			break;
-		}
-		case 27 : {
-			ptr = new std::string("Escape");
-			break;
-		}
-		default: ptr = new std::string(std::to_string(keyValue));
-	};
-
-	ss << *ptr;
-	delete ptr;
-	return ss.str();
-}
-
-void				Logger::log(std::string const & dest, std::string const & message) {
-
-	if (!dest.empty() && !message.empty()) {
-		t_loggerFunctions	logFuncs[2] = {&Logger::logToConsole, &Logger::logToFile};
-		std::string			funcName[2] = {CONSOLE, FILE};
-
-		for (int i = 0; i < 2; i++) {
-			if (dest == funcName[i]) {
-				(*this.*logFuncs[i])(message);
-			}
-		}
-	};
-}
-
-void				Logger::log(std::string const & dest, std::string const & message, int value) {
-
-	std::stringstream	ss;
-
-	ss << message;
-	ss << std::to_string(value);
-
-	if (!dest.empty() && !message.empty()) {
-		t_loggerFunctions	logFuncs[2] = {&Logger::logToConsole, &Logger::logToFile};
-		std::string			funcName[2] = {CONSOLE, FILE};
-
-		for (int i = 0; i < 2; i++) {
-			if (dest == funcName[i]) {
-				(*this.*logFuncs[i])(ss.str());
-			}
-		}
-	};
-}
-
-void				Logger::logToConsole(std::string logEntry) {
-	std::cout << this->makeLogEntry(logEntry);
-}
-
-void 				Logger::logToFile(std::string logEntry) {
-
-	std::ofstream 	myfile;
-
-	myfile.open (this->filename, std::ios::app | std::ios::out);
-	if (myfile.is_open()) {
-	  	myfile << this->makeLogEntry(logEntry);
-	  	myfile.close();
-  	} else {
-  		std::cout << "Something went wrong at the opening" << std::endl;
-  	}
+	buf.append(format + j, i - j);
+	this->_myfile << this->formatLogDate() << buf;
+	this->_myfile.flush();
+	buf.clear();
+	va_end(va);
 }

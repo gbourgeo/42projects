@@ -1,19 +1,22 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   Bullet.hpp                                         :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2018/10/06 16:36:35 by gbourgeo          #+#    #+#             //
-//   Updated: 2018/10/06 20:01:11 by gbourgeo         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Bullet.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/06 16:36:35 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/06/05 13:41:58 by gbourgeo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef BULLET_HPP
 # define BULLET_HPP
 
-#include "Movable.hpp"
+# include "Movable.hpp"
+
+class PlayerHandler;
+class EnnemyHandler;
 
 class Bullet: public Movable
 {
@@ -24,11 +27,13 @@ public:
 	~Bullet();
 	Bullet & operator=(Bullet const & rhs);
 
-	// Simple check -> (y <= 1)
-	bool	isArrived() const;
+	// Check if Bullet get out of MAP
+	bool	isOut() const;
+	bool	touched(PlayerHandler & p) const;
+	bool	touched(EnnemyHandler & e) const;
 
 	char	getName() const;
-	int		getDamage() const;
+	// int		getDamage() const;
 	
 protected:
 	char	_name;
