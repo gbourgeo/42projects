@@ -16,7 +16,7 @@ public:
 	char				getName() const;
 	int					getLife() const;
 	int					getRetry() const;
-	// Weapon				*getWeapon() const;
+	void				addScore(int score);
 	void				equip(Weapon *weapon);
 	virtual Bullet		*shoot() = 0;
 	void				takeDamage(int value);
@@ -26,11 +26,12 @@ protected:
 	AEntities();
 	void				modifyPosition(int x, int y);
 
-	char		_name;
-	int			_life;
-	int			_lifeSave;
-	int			_retry;
-	Weapon		*_weapon;
+	char			_name;
+	int				_life;
+	int				_lifeSave;
+	int				_retry;
+	unsigned int	_score;
+	Weapon			*_weapon;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/05 12:41:15 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 16:19:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 15:31:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,4 +122,16 @@ void		PlayerHandler::routine(Screen & screen)
 			"%c",
 			ptr->player->getName());
 	}
+}
+
+void		PlayerHandler::reset()
+{
+	for (t_player *ptr = this->_players; ptr; ptr = this->_players)
+	{
+		this->_players = ptr->next;
+		delete ptr->player;
+		delete ptr;
+	}
+	this->_players = nullptr;
+	this->_nbPlayers = 0;
 }

@@ -18,8 +18,6 @@ public:
 
 private:
 	Player();
-
-	unsigned int	_score;
 };
 
 #endif

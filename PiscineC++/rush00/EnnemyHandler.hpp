@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/03 10:51:27 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 14:07:28 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 15:11:13 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ public:
 	Ennemy		*getEnnemy(unsigned int id);
 	void		shoot(BulletHandler & shots);
 	void		routine(Screen & screen);
+	void		reset();
 
 private:
 	void		delEnnemy(t_ennemy *ennemy);

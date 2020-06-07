@@ -1,11 +1,11 @@
 #include "Player.hpp"
 
 Player::Player():
-	AEntities(), _score(0)
+	AEntities()
 {}
 
 Player::Player(char name, int life, int retry, int x, int y, double speed, bool direction):
-	AEntities(name, life, retry, x, y, speed, direction), _score(0)
+	AEntities(name, life, retry, x, y, speed, direction)
 {}
 
 Player::~Player()

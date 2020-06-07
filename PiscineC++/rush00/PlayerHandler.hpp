@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/05 12:41:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 13:48:41 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 15:12:29 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ public:
 	void			addPlayer(Player player);
 	Player			* getPlayer(unsigned int id);
 	void			routine(Screen & screen);
+	void			reset();
 
 private:
 	void			delPlayer(t_player *player);

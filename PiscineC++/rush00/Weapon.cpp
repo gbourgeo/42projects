@@ -6,14 +6,14 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/06 14:58:29 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/04 22:22:48 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 14:11:47 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Weapon.hpp"
 
 Weapon::Weapon():
-	_shootRate(0.0), _bulletSpeed(0.0), _bulletName('\0'), _bulletDamage(0)
+	_shootRate(0.0), _bulletSpeed(0.0), _bulletName('\0'), _bulletDamage(0), _owner(nullptr)
 {
 	this->setLastShot();
 }
@@ -22,7 +22,8 @@ Weapon::Weapon(double shootRate, double bulletSpeed, char bulletName, int bullet
 	_shootRate(shootRate),
 	_bulletSpeed(bulletSpeed),
 	_bulletName(bulletName),
-	_bulletDamage(bulletDamage)
+	_bulletDamage(bulletDamage),
+	_owner(nullptr)
 {
 	this->setLastShot();
 }
@@ -44,11 +45,16 @@ Weapon & Weapon::operator=(Weapon const & rhs)
 		this->_bulletName = rhs._bulletName;
 		this->_bulletDamage = rhs._bulletDamage;
 		this->_lastShot = rhs._lastShot;
+		this->_owner = rhs._owner; // ???
 	}
 	return *this;
 }
 
-#include "Logger.hpp"
+void Weapon::setOwner(AEntities *owner)
+{
+	this->_owner = owner;
+}
+
 bool Weapon::canShoot(void) const {
 	timeval current;
 
@@ -67,6 +73,7 @@ Bullet *Weapon::shoot(int x, int y, bool direction)
 		x, y,
 		this->_bulletSpeed,
 		this->_bulletDamage,
+		this->_owner,
 		direction);
 }
 

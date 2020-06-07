@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/02 13:43:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 13:42:55 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 15:29:46 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ public:
 
 	void		addShot(Bullet *b);
 	void		moveShots(Screen & screen, PlayerHandler & p, EnnemyHandler & e);
+	void		reset();
 
 private:
 	void		updateShots(PlayerHandler & p, EnnemyHandler & e);

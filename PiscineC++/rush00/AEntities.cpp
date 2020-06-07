@@ -6,18 +6,29 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/05 13:24:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 16:24:50 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 14:59:23 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "AEntities.hpp"
 
 AEntities::AEntities():
-	Movable(), _name('\0'), _life(0), _lifeSave(0), _retry(0), _weapon(0)
+	Movable(),
+	_name('\0'),
+	_life(0),
+	_lifeSave(0),
+	_retry(0),
+	_score(0),
+	_weapon(nullptr)
 {}
 
 AEntities::AEntities(char name, int life, int retry, int x, int y, double speed, bool direction):
-	Movable(x, y, speed, direction), _name(name), _life(life), _lifeSave(life), _retry(retry), _weapon(nullptr)
+	Movable(x, y, speed, direction), _name(name),
+	_life(life),
+	_lifeSave(life),
+	_retry(retry),
+	_score(0),
+	_weapon(nullptr)
 {}
 
 AEntities::~AEntities()
@@ -39,6 +50,7 @@ AEntities & AEntities::operator=(AEntities const & rhs)
 		this->_life = rhs._life;
 		this->_lifeSave = rhs._lifeSave;
 		this->_retry = rhs._retry;
+		this->_score = rhs._score;
 		this->_weapon = nullptr;
 		if (rhs._weapon)
 			this->_weapon = new Weapon(*rhs._weapon);
@@ -61,16 +73,17 @@ int AEntities::getRetry() const
 	return this->_retry;
 }
 
-// Weapon *AEntities::getWeapon() const
-// {
-// 	return this->_weapon;
-// }
-
+void AEntities::addScore(int score)
+{
+	this->_score += score;
+}
 void AEntities::equip(Weapon *weapon)
 {
 	if (this->_weapon != nullptr)
 		delete this->_weapon;
 	this->_weapon = weapon;
+	if (this->_weapon)
+		this->_weapon->setOwner(this);
 }
 
 void AEntities::takeDamage(int value)

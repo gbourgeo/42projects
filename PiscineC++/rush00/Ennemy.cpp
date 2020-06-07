@@ -11,7 +11,7 @@ Ennemy::Ennemy(char name, int life, int retry, int x, int y, double speed, bool 
 Ennemy::~Ennemy()
 {}
 
-Ennemy::Ennemy(Ennemy const & src)
+Ennemy::Ennemy(Ennemy const & src): AEntities(src)
 {
 	*this = src;
 }

@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/02 13:45:41 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 15:37:45 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 15:30:37 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,4 +111,15 @@ void BulletHandler::updateShots(PlayerHandler & p, EnnemyHandler & e)
 		{
 			ptr = ptr->next;
 		}
+}
+
+void		BulletHandler::reset()
+{
+	for (t_shot *ptr = this->_shots; ptr; ptr = this->_shots)
+	{
+		this->_shots = ptr->next;
+		delete ptr->shot;
+		delete ptr;
+	}
+	this->_shots = nullptr;
 }

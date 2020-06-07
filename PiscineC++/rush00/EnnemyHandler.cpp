@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/03 10:53:52 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/06/05 16:21:15 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/06/07 15:32:00 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ double speed, Weapon weapon)
 	t_ennemy	*E = nullptr;
 	int			x, z;
 
-	z = (WIDTH - 2) / (nb + 1);
+	z = (WIDTH - 0) / (nb + 1);
 	x = 0;
 	for (int i = 0; i < nb; i++) {
 		x += z;
@@ -134,4 +134,16 @@ void		EnnemyHandler::routine(Screen & screen)
 			"%c",
 			ptr->ennemy->getName());
 	}
+}
+
+void		EnnemyHandler::reset()
+{
+	for (t_ennemy *ptr = this->_list; ptr; ptr = this->_list)
+	{
+		this->_list = ptr->next;
+		delete ptr->ennemy;
+		delete ptr;
+	}
+	this->_list = nullptr;
+	this->_nbEnnemies = 0;
 }
