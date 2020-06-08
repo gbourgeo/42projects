@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sys/types.h>
-#include <sys/sysctl.h>
+#include <sys/sysctl.h> // OSX
+#include <stdint.h> // uint32_t type
 #include "CpuInfo.hpp"
 
 CpuInfo::CpuInfo()
@@ -89,10 +90,13 @@ void CpuInfo::display()
 		store = 0;
 		len = name[i].type;
 		if (len == sizeof(str)) {
+#ifdef __APPLE__
 			if (!sysctlbyname(name[i].one, &str, &len, nullptr, 0))
 				std::cout << name[i].two << ": " << str << std::endl;
 		} else if (!sysctlbyname(name[i].one, &store, &len, nullptr, 0)) 
 			std::cout << name[i].two << ": " << std::to_string(store) << std::endl;
+#endif
+		}
 	}
 }
 

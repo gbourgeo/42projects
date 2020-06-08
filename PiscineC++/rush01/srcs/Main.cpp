@@ -4,9 +4,9 @@
 
 static int usage(const char *prog)
 {
-	std::cerr << "Usage:\t" << prog << " ["OPT_TERM" "OPT_GRAPH"] [module path]" << std::endl;
-	std::cerr << "\t"OPT_TERM"\t\tTerminal view." << std::endl;
-	std::cerr << "\t"OPT_GRAPH"\t\tGraphical view." << std::endl;
+	std::cerr << "Usage:\t" << prog << " [" << OPT_TERM << " " << OPT_GRAPH << "] [module path]" << std::endl;
+	std::cerr << "\t" << OPT_TERM << "\t\tTerminal view." << std::endl;
+	std::cerr << "\t" << OPT_GRAPH << "\t\tGraphical view." << std::endl;
 	std::cerr << "\t[module path]\tAbsolute path of modules." << std::endl;
 	return 1;
 }

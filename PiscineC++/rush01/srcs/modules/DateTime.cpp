@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstring>
+#include <malloc.h>
 #include "DateTime.hpp"
 
 DateTime::DateTime()
@@ -14,7 +16,11 @@ DateTime::DateTime(DateTime const & src)
 
 DateTime & DateTime::operator=(DateTime const & rhs)
 {
-	if (this != &rhs) {}
+	if (this != &rhs) {
+		this->_t = rhs._t;
+		this->_local = rhs._local;
+		std::memcpy(this->_date, rhs._date, sizeof(this->_date));
+	}
 	return *this;
 }
 
@@ -26,7 +32,8 @@ void DateTime::display()
 	std::cout << "DATE | TIME" << std::endl;
 	std::cout << "___________" << std::endl;
 	std::cout << _date << std::endl;
-	free(_local);
+	// if (_local != nullptr)
+	// 	free(_local);
 }
 
 extern "C"

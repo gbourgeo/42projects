@@ -1,7 +1,9 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#include <mach/mach_host.h>
+#ifdef __APPLE__
+# include <mach/mach_host.h>
+#endif
 #include "RamInfo.hpp"
 
 RamInfo::RamInfo()
@@ -37,6 +39,7 @@ std::string RamInfo::displayBytes(int64_t data) const
 	return std::string(std::to_string(data / (size / 1000)) + " " + *(ptr - 1) + "o");
 }
 
+#ifdef __APPLE__
 void RamInfo::display()
 {
 	struct s_name		names[] = { { "hw.memsize"  , "RAM total", sizeof(int64_t)} };
@@ -76,6 +79,12 @@ void RamInfo::display()
 			std::cout << names[i].two << ": " << displayBytes(data) << " (" << std::to_string(data) << " bytes)" << std::endl;
 	}
 }
+#else
+void RamInfo::display()
+{
+	std::cout << "LINUX !" << std::endl;
+}
+#endif
 
 extern "C"
 {

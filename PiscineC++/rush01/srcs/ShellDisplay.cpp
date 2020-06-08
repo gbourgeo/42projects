@@ -1,6 +1,7 @@
 #include <iostream>
 #include <dirent.h>
 #include <dlfcn.h>
+#include <signal.h>
 #include "ShellDisplay.hpp"
 
 ShellDisplay::ShellDisplay()
