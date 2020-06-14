@@ -19,6 +19,16 @@ OsInfo & OsInfo::operator=(OsInfo const & rhs)
 	return *this;
 }
 
+std::string		OsInfo::getTitle() const
+{
+	return std::string("OS INFO");
+}
+
+std::string		OsInfo::getContent() const
+{
+	return std::string("");
+}
+
 void OsInfo::display()
 {
 	std::cout << "OS INFO" << std::endl;

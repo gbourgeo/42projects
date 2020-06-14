@@ -18,7 +18,9 @@ public:
 	CpuInfo(CpuInfo const & src);
 	CpuInfo & operator=(CpuInfo const & rhs);
 
-	void display();
+	std::string		getTitle() const;
+	std::string		getContent() const;
+	void			display();
 
 private:
 };

@@ -5,6 +5,12 @@
 # include <map>
 # include "IMonitorModule.hpp"
 
+typedef struct	s_module
+{
+	void			*modulePtr;
+	IMonitorModule	*moduleClss;
+}				t_module;
+
 class ModuleHandler
 {
 public:
@@ -13,7 +19,11 @@ public:
 	ModuleHandler(ModuleHandler const & src);
 	ModuleHandler & operator=(ModuleHandler const & rhs);
 
-	void		loadModules(std::string const &, std::map<int, void *> &, std::map<int, IMonitorModule *> &);
+	void			loadModules(std::string const &);
+	IMonitorModule	*getModule(unsigned long idx) const;
+
+private:
+	std::map<int, t_module>			_modules;
 };
 
 #endif

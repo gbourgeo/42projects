@@ -11,7 +11,10 @@ public:
 	GraphDisplay(GraphDisplay const & src);
 	GraphDisplay & operator=(GraphDisplay const & rhs);
 
-	void			init();
+	int				init();
+	void			quit();
+	void			*getWindow() const;
+	void			affModule();
 
 private:
 };

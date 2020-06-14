@@ -13,7 +13,9 @@ public:
 	HostName(HostName const & src);
 	HostName & operator=(HostName const & rhs);
 
-	void display();
+	std::string		getTitle() const;
+	std::string		getContent() const;
+	void			display();
 
 private:
 	char	_hostname[_SC_HOST_NAME_MAX];

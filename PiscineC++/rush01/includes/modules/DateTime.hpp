@@ -12,7 +12,9 @@ public:
 	DateTime(DateTime const & src);
 	DateTime & operator=(DateTime const & rhs);
 
-	void display();
+	std::string		getTitle() const;
+	std::string		getContent() const;
+	void			display();
 
 private:
 	time_t		_t;

@@ -19,7 +19,9 @@ public:
 	RamInfo(RamInfo const & src);
 	RamInfo & operator=(RamInfo const & rhs);
 
-	void display();
+	std::string		getTitle() const;
+	std::string		getContent() const;
+	void			display();
 
 private:
     std::string displayBytes(int64_t) const;

@@ -17,7 +17,21 @@ GraphDisplay & GraphDisplay::operator=(GraphDisplay const & rhs)
 	return *this;
 }
 
-void GraphDisplay::init()
+int GraphDisplay::init()
 {
 	/* load graphical display */
+	return (0);
 }
+
+void GraphDisplay::quit()
+{
+	/* unload graphical display */
+}
+
+void *GraphDisplay::getWindow() const
+{
+	return nullptr;
+}
+
+void GraphDisplay::affModule()
+{}

@@ -20,6 +20,16 @@ HostName & HostName::operator=(HostName const & rhs)
 	return *this;
 }
 
+std::string		HostName::getTitle() const
+{
+	return std::string("HOSTNAME | USERNAME");
+}
+
+std::string		HostName::getContent() const
+{
+	return std::string("");
+}
+
 void HostName::display()
 {
 	std::cout << "HOSTNAME | USERNAME" << std::endl;

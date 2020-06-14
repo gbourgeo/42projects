@@ -12,7 +12,9 @@ public:
 	OsInfo(OsInfo const & src);
 	OsInfo & operator=(OsInfo const & rhs);
 
-	void display();
+	std::string		getTitle() const;
+	std::string		getContent() const;
+	void			display();
 
 private:
 	struct utsname	_os;

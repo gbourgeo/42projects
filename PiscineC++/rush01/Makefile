@@ -24,7 +24,7 @@ OBJ_2	= $(addprefix $(OBJ_D2), $(MOD:.cpp=.o))
 LIB_O	= $(addprefix $(LIB_D), $(MOD:.cpp=.so))
 
 INC_D	= includes/
-INC		= -I $(INC_D)
+INC		= -I $(INC_D) -I $(INC_D)modules
 
 CC		= clang++
 CC11	= -std=c++11

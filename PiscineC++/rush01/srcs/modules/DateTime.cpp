@@ -24,6 +24,16 @@ DateTime & DateTime::operator=(DateTime const & rhs)
 	return *this;
 }
 
+std::string DateTime::getTitle() const
+{
+	return std::string("DATE | TIME");
+}
+
+std::string DateTime::getContent() const
+{
+	return std::string("");
+}
+
 void DateTime::display()
 {
 	time(&_t);

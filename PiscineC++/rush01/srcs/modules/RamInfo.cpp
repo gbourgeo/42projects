@@ -23,6 +23,16 @@ RamInfo & RamInfo::operator=(RamInfo const & rhs)
 	return *this;
 }
 
+std::string RamInfo::getTitle() const
+{
+	return std::string("RAM INFO");
+}
+
+std::string RamInfo::getContent() const
+{
+	return std::string("");
+}
+
 std::string RamInfo::displayBytes(int64_t data) const
 {
 	const char	*name = "oKGT";

@@ -22,6 +22,16 @@ CpuInfo & CpuInfo::operator=(CpuInfo const & rhs)
 	return *this;
 }
 
+std::string		CpuInfo::getTitle() const
+{
+	return std::string("CPU INFO");
+}
+
+std::string		CpuInfo::getContent() const
+{
+	return std::string("");
+}
+
 void CpuInfo::display()
 {
 	char			str[256];

@@ -4,9 +4,9 @@ une methode qui recupere les modules au runtime.
 
 Pour creer un module:
 fichier .cpp dans srcs/modules/
-fichier .hpp dans includes/
+fichier .hpp dans includes/ et includes/modules/
 Makefile -> .cpp dans directive LIB =
-Suivre l'inerface des modules.
+Suivre l'interface des modules.
 
 TODO:
 
