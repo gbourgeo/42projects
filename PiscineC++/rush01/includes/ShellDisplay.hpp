@@ -25,19 +25,21 @@ typedef struct	s_win
 class ShellDisplay: public AMonitorDisplay
 {
 public:
-	ShellDisplay();
+	ShellDisplay(std::string const & modulePath);
 	~ShellDisplay();
 	ShellDisplay(ShellDisplay const & src);
 	ShellDisplay & operator=(ShellDisplay const & rhs);
 
-	int				init();
+	void			start() const;
+
+	int				initTerminalNcurses();
 	void			quit();
-	void			loadModules(std::string const & modulePath);
-	int				affModules() const;
-	int				getLineMaxHeigth(int line) const;
+	int				loadModules();
 
 private:
+	ShellDisplay();
 	void			addWindow(const char * name, t_win &win);
+	int				getLineMaxHeigth(int line) const;
 	static void		_resizeHandler(int sig);
 
 	std::map<std::string, t_win>	_wins;

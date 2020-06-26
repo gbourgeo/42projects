@@ -6,10 +6,57 @@
 ModuleHandler::ModuleHandler()
 {}
 
+ModuleHandler::ModuleHandler(std::string const & modulePath)
+{
+	DIR				*dir;
+	struct dirent	*ent;
+	t_module		mod;
+
+	if (modulePath.empty() == true)
+		return ;
+	dir = opendir(modulePath.c_str());
+	if (dir == nullptr) {
+		return ;
+	}
+	while ((ent = readdir(dir)) != nullptr)
+	{
+		std::string		file(modulePath + std::string("/") + std::string(ent->d_name));
+
+		if (file.find(".so") == std::string::npos)
+			continue ;
+		mod.modulePtr = dlopen(file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+		if (mod.modulePtr == nullptr) {
+			continue ;
+		}
+		// reset errors
+		dlerror();
+		void *createFunc = dlsym(mod.modulePtr, "createModule");
+		if (createFunc == nullptr) {
+			dlclose(mod.modulePtr);
+			continue ;
+		}
+		void *deleteFunc = dlsym(mod.modulePtr, "deleteModule");
+		if (deleteFunc == nullptr) {
+			dlclose(mod.modulePtr);
+			continue ;
+		}
+		void *newModule = ((void* (*)())(createFunc))();
+		if (newModule == nullptr) {
+			continue ;
+		}
+		mod.moduleClss = reinterpret_cast<AMonitorModule *>(newModule);
+		mod.deleteFunc = deleteFunc;
+		this->_modules.insert(std::pair<std::string, t_module>(file, mod));
+	}
+	closedir(dir);
+	this->_modulesPath = modulePath;
+}
+
 ModuleHandler::~ModuleHandler()
 {
 	std::map<std::string, t_module>::iterator	it;
 
+	this->_modulesPath.clear();
 	for (it = _modules.begin(); it != _modules.end(); it++)
 	{
 		if (it->second.deleteFunc) {
@@ -32,61 +79,9 @@ ModuleHandler & ModuleHandler::operator=(ModuleHandler const & rhs)
 	return *this;
 }
 
-#include<fstream>
-
-void ModuleHandler::loadModules(std::string const & path)
+std::string		ModuleHandler::getModulePath() const
 {
-	DIR				*dir;
-	struct dirent	*ent;
-	t_module		mod;
-
-	if (path.empty() == true)
-		return ;
-std::ofstream f(".logs", std::ios_base::trunc | std::ios::out);
-	dir = opendir(path.c_str());
-	if (dir == nullptr) {
-f << "Error opening " << path << "." << std::endl;
-		return ;
-	}
-	while ((ent = readdir(dir)) != nullptr)
-	{
-		std::string		file(path + std::string("/") + std::string(ent->d_name));
-
-		if (file.find(".so") == std::string::npos)
-			continue ;
-		f << "file: " << file << " opened:\n\t";
-		mod.modulePtr = dlopen(file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
-		if (mod.modulePtr == nullptr) {
-			f << "dlopen: " << dlerror() << std::endl;
-			continue ;
-		}
-		// reset errors
-		dlerror();
-		void *createFunc = dlsym(mod.modulePtr, "createModule");
-		if (createFunc == nullptr) {
-			f << "dlsym: createModule function not found." <<  std::endl;
-			dlclose(mod.modulePtr);
-			continue ;
-		}
-		void *deleteFunc = dlsym(mod.modulePtr, "deleteModule");
-		if (deleteFunc == nullptr) {
-			f << "dlsym: deleteModule function not found." <<  std::endl;
-			dlclose(mod.modulePtr);
-			continue ;
-		}
-		void *newModule = ((void* (*)())(createFunc))();
-		if (newModule == nullptr) {
-			f << "ERROR: can't allocate new module." << std::endl;
-			continue ;
-		}
-		f << "OK" << std::endl;
-		mod.moduleClss = reinterpret_cast<AMonitorModule *>(newModule);
-		mod.deleteFunc = deleteFunc;
-		this->_modules.insert(std::pair<std::string, t_module>(file, mod));
-	}
-f.close();
-	closedir(dir);
-	this->_modulesPath = path;
+	return this->_modulesPath;
 }
 
 AMonitorModule *ModuleHandler::getModule(size_t idx) const

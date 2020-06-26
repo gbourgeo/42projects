@@ -6,17 +6,15 @@
 class GraphDisplay: public AMonitorDisplay
 {
 public:
-	GraphDisplay();
+	GraphDisplay(std::string const & modulePath);
 	~GraphDisplay();
 	GraphDisplay(GraphDisplay const & src);
 	GraphDisplay & operator=(GraphDisplay const & rhs);
 
-	int				init();
-	void			quit();
-	void			*getWindow() const;
-	int				affModules() const;
+	void			start() const;
 
 private:
+	GraphDisplay();
 };
 
 #endif

@@ -88,19 +88,12 @@ int		main(int ac, char **av)
 	if (!get_args(av, opts, optsSize, &args))
 		return (1);
 	if (args.view == (1 << 0))
-		display = new ShellDisplay();
+		display = new ShellDisplay(args.libpath);
 	else if (args.view == (1 << 1))
-		display = new GraphDisplay();
+		display = new GraphDisplay(args.libpath);
 	if (!display)
 		return (2);
-	if (!display->init())
-		return (3);
-	display->loadModules(args.libpath);
-	while (1)
-	{
-		if (!display->affModules())
-			break ;
-	}
+	display->start();
 	delete display;
 	return 0;
 }

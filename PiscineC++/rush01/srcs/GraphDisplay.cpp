@@ -3,6 +3,13 @@
 GraphDisplay::GraphDisplay()
 {}
 
+GraphDisplay::GraphDisplay(std::string const & modulePath)
+{
+	this->_moduleHandler = new ModuleHandler(modulePath);
+	if (this->_moduleHandler == nullptr)
+		return ;
+}
+
 GraphDisplay::~GraphDisplay()
 {}
 
@@ -17,23 +24,6 @@ GraphDisplay & GraphDisplay::operator=(GraphDisplay const & rhs)
 	return *this;
 }
 
-int GraphDisplay::init()
+void GraphDisplay::start() const
 {
-	/* load graphical display */
-	return (0);
-}
-
-void GraphDisplay::quit()
-{
-	/* unload graphical display */
-}
-
-void *GraphDisplay::getWindow() const
-{
-	return nullptr;
-}
-
-int GraphDisplay::affModules() const
-{
-	return (1);
 }

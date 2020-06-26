@@ -7,19 +7,19 @@
 class AMonitorDisplay: public IMonitorDisplay
 {
 public:
-	AMonitorDisplay();
+	AMonitorDisplay(std::string const & modulePath);
 	~AMonitorDisplay();
 	AMonitorDisplay(AMonitorDisplay const & src);
 	AMonitorDisplay & operator=(AMonitorDisplay const & rhs);
 
-	virtual int				init() = 0;
-	virtual void			quit() = 0;
-	virtual void			loadModules(std::string const & modulePath);
-	virtual AMonitorModule	*getModule(size_t idx) const;
-	virtual int				affModules() const = 0;
+	virtual void		start() const = 0;
 
 protected:
-	ModuleHandler					_moduleHandler;
+	AMonitorDisplay();
+	std::string			getModulePath() const;
+	AMonitorModule		*getModule(size_t idx) const;
+
+	ModuleHandler		*_moduleHandler;
 };
 
 #endif

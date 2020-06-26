@@ -16,18 +16,20 @@ typedef struct	s_module
 class ModuleHandler
 {
 public:
-	ModuleHandler();
+	ModuleHandler(std::string const & modulePath);
 	~ModuleHandler();
 	ModuleHandler(ModuleHandler const & src);
 	ModuleHandler & operator=(ModuleHandler const & rhs);
 
-	void			loadModules(std::string const &);
+	std::string		getModulePath() const;
 	AMonitorModule	*getModule(size_t) const;
 	int				getSize(void) const;
 
 private:
-	std::map<std::string, t_module>	_modules;
+	ModuleHandler();
+
 	std::string						_modulesPath;
+	std::map<std::string, t_module>	_modules;
 };
 
 #endif
