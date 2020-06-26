@@ -4,46 +4,63 @@
 #include "DateTime.hpp"
 
 DateTime::DateTime()
-{}
+{
+	this->_title = "DATE | TIME";
+	DateTime::loadContent();
+}
 
 DateTime::~DateTime()
 {}
 
-DateTime::DateTime(DateTime const & src)
+DateTime::DateTime(DateTime const & src): AMonitorModule(src)
 {
 	*this = src;
 }
 
 DateTime & DateTime::operator=(DateTime const & rhs)
 {
-	if (this != &rhs) {
-		this->_t = rhs._t;
-		this->_local = rhs._local;
-		std::memcpy(this->_date, rhs._date, sizeof(this->_date));
-	}
+	if (this != &rhs)
+	{}
 	return *this;
 }
 
-std::string DateTime::getTitle() const
+void			DateTime::loadContent()
 {
-	return std::string("DATE | TIME");
+	time_t		t;
+	struct tm	*local;
+	char		date[256];
+
+	time(&t);
+	local = localtime(&t);
+	strftime(date, sizeof(date) - 1, "%a %d %b %G\n%T", local);
+	this->_content = std::string(date);
+
+	this->_minWidth = std::strlen(this->_title);
+	if (this->_content.length() > this->_minWidth)
+		this->_minWidth = this->_content.length();
+
+	this->_minHeigth = 2;
 }
 
-std::string DateTime::getContent() const
+std::string		 DateTime::getContent()
 {
-	return std::string("");
+	DateTime::loadContent();
+	return this->_content;
 }
 
-void DateTime::display()
+const char *	DateTime::getTitle() const
 {
-	time(&_t);
-	_local = localtime(&_t);
-	strftime(_date, sizeof(_date), "%a %d %b %G | %T", _local);
-	std::cout << "DATE | TIME" << std::endl;
-	std::cout << "___________" << std::endl;
-	std::cout << _date << std::endl;
-	// if (_local != nullptr)
-	// 	free(_local);
+	return this->_title;
+}
+
+int			DateTime::getMinWidth() const
+{
+	return this->_minWidth;
+}
+
+int			DateTime::getMinHeigth() const
+{
+	return this->_minHeigth;
 }
 
 extern "C"

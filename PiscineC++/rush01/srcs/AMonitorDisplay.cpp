@@ -5,8 +5,7 @@ AMonitorDisplay::AMonitorDisplay()
 {}
 
 AMonitorDisplay::~AMonitorDisplay()
-{
-}
+{}
 
 AMonitorDisplay::AMonitorDisplay(AMonitorDisplay const & src)
 {
@@ -21,10 +20,10 @@ AMonitorDisplay & AMonitorDisplay::operator=(AMonitorDisplay const & rhs)
 
 void AMonitorDisplay::loadModules(std::string const & path)
 {
-	_moduleHandler.loadModules(path);
+	this->_moduleHandler.loadModules(path);
 }
 
-IMonitorModule *AMonitorDisplay::getModule(unsigned long idx) const
+AMonitorModule *AMonitorDisplay::getModule(size_t idx) const
 {
 	return this->_moduleHandler.getModule(idx);
 }

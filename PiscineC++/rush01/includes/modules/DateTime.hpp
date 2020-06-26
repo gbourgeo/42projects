@@ -1,10 +1,11 @@
 #ifndef DATETIME_HPP
 # define DATETIME_HPP
 
-# include <ctime>
-# include "IMonitorModule.hpp"
+# include "AMonitorModule.hpp"
 
-class DateTime: public IMonitorModule
+# include <ctime>
+
+class DateTime: public AMonitorModule
 {
 public:
 	DateTime();
@@ -12,14 +13,13 @@ public:
 	DateTime(DateTime const & src);
 	DateTime & operator=(DateTime const & rhs);
 
-	std::string		getTitle() const;
-	std::string		getContent() const;
-	void			display();
+	const char *		getTitle() const;
+	std::string			getContent();
+	int					getMinWidth() const;
+	int					getMinHeigth() const;
 
 private:
-	time_t		_t;
-	struct tm	*_local;
-	char		_date[256];	
+	void				loadContent();
 };
 
 #endif

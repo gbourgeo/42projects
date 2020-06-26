@@ -1,10 +1,11 @@
 #ifndef OSINFO_HPP
 # define OSINFO_HPP
 
-# include <sys/utsname.h>
-# include "IMonitorModule.hpp"
+# include "AMonitorModule.hpp"
 
-class OsInfo: public IMonitorModule
+# include <sys/utsname.h>
+
+class OsInfo: public AMonitorModule
 {
 public:
 	OsInfo();
@@ -12,11 +13,14 @@ public:
 	OsInfo(OsInfo const & src);
 	OsInfo & operator=(OsInfo const & rhs);
 
-	std::string		getTitle() const;
-	std::string		getContent() const;
-	void			display();
+	const char *		getTitle() const;
+	std::string			getContent();
+	int					getMinWidth() const;
+	int					getMinHeigth() const;
 
 private:
+	void				loadContent();
+
 	struct utsname	_os;
 };
 

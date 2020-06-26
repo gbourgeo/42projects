@@ -3,20 +3,23 @@
 
 # include "AMonitorDisplay.hpp"
 
-
 # include <ncurses.h>
 # include <curses.h>
 # include <unistd.h>
+# include <map>
 
 # define MAINWINSTR		"MainWin"
 # define STATUSBARSTR	"StatusBar"
 
 typedef struct	s_win
 {
-	WINDOW		*win;
-	WINDOW		*box;
-	int			width;
-	int			heigth;
+	WINDOW			*box;
+	int				width;
+	int				heigth;
+	WINDOW			*win;
+	int				posX;
+	int				posY;
+	AMonitorModule	*module;
 }				t_win;
 
 class ShellDisplay: public AMonitorDisplay
@@ -30,12 +33,11 @@ public:
 	int				init();
 	void			quit();
 	void			loadModules(std::string const & modulePath);
-	WINDOW			*getWindow(const char *name) const;
-	void			affModule();
+	int				affModules() const;
+	int				getLineMaxHeigth(int line) const;
 
 private:
 	void			addWindow(const char * name, t_win &win);
-	void			addWindow(std::string name, t_win &win);
 	static void		_resizeHandler(int sig);
 
 	std::map<std::string, t_win>	_wins;

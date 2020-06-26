@@ -14,7 +14,7 @@ public:
 	int				init();
 	void			quit();
 	void			*getWindow() const;
-	void			affModule();
+	int				affModules() const;
 
 private:
 };

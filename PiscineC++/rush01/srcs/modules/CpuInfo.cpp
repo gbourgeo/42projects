@@ -2,15 +2,19 @@
 #include <sys/types.h>
 #include <sys/sysctl.h> // OSX
 #include <stdint.h> // uint32_t type
+#include <cstring> // strlen
 #include "CpuInfo.hpp"
 
 CpuInfo::CpuInfo()
-{}
+{
+	this->_title = "CPU INFO";
+	CpuInfo::loadContent();
+}
 
 CpuInfo::~CpuInfo()
 {}
 
-CpuInfo::CpuInfo(CpuInfo const & src)
+CpuInfo::CpuInfo(CpuInfo const & src): AMonitorModule(src)
 {
 	*this = src;
 }
@@ -22,17 +26,36 @@ CpuInfo & CpuInfo::operator=(CpuInfo const & rhs)
 	return *this;
 }
 
-std::string		CpuInfo::getTitle() const
+const char *		CpuInfo::getTitle() const
 {
-	return std::string("CPU INFO");
+	return this->_title;
 }
 
-std::string		CpuInfo::getContent() const
+void				CpuInfo::loadContent()
 {
-	return std::string("");
+	this->_content.clear();
+	this->_minWidth = std::strlen(this->_title);
+	this->_minHeigth = 1;
 }
 
-void CpuInfo::display()
+std::string			CpuInfo::getContent()
+{
+	CpuInfo::loadContent();
+	return this->_content;
+}
+
+int			CpuInfo::getMinWidth() const
+{
+	return this->_minWidth;
+}
+
+int			CpuInfo::getMinHeigth() const
+{
+	return this->_minHeigth;
+}
+
+#ifdef __APPLE__
+void			CpuInfo::getContent()
 {
 	char			str[256];
 	struct s_name	name[] = { { "hw.activecpu"                     , "Active CPU            ", sizeof(int32_t) },
@@ -100,15 +123,14 @@ void CpuInfo::display()
 		store = 0;
 		len = name[i].type;
 		if (len == sizeof(str)) {
-#ifdef __APPLE__
 			if (!sysctlbyname(name[i].one, &str, &len, nullptr, 0))
 				std::cout << name[i].two << ": " << str << std::endl;
 		} else if (!sysctlbyname(name[i].one, &store, &len, nullptr, 0)) 
 			std::cout << name[i].two << ": " << std::to_string(store) << std::endl;
-#endif
 		}
 	}
 }
+#endif
 
 extern "C"
 {

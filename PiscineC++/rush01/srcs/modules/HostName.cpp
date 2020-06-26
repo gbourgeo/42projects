@@ -1,41 +1,76 @@
 #include <iostream>
+#include <cstring>
 #include "HostName.hpp"
 
 HostName::HostName()
 {
-	gethostname(_hostname, _SC_HOST_NAME_MAX);
-	getlogin_r(_username, _SC_LOGIN_NAME_MAX);
+	this->_title = "HOSTNAME | USERNAME";
+	HostName::loadContent();
 }
 
 HostName::~HostName()
 {}
 
-HostName::HostName(HostName const & src)
+HostName::HostName(HostName const & src): AMonitorModule(src)
 {
 	*this = src;
 }
 
 HostName & HostName::operator=(HostName const & rhs)
 {
+	if (this != &rhs)
+	{}
 	return *this;
 }
 
-std::string		HostName::getTitle() const
+void			HostName::loadContent()
 {
-	return std::string("HOSTNAME | USERNAME");
+	char			_hostname[_SC_HOST_NAME_MAX];
+	char			_username[_SC_LOGIN_NAME_MAX];
+
+	gethostname(_hostname, _SC_HOST_NAME_MAX);
+	getlogin_r(_username, _SC_LOGIN_NAME_MAX);
+
+	this->_content = std::string(_hostname)
+		+ std::string("\n")
+		+ std::string(_username);
+
+	this->_minWidth = std::strlen(this->_title);
+	if (std::strlen(_hostname) > this->_minWidth)
+		this->_minWidth = std::strlen(_hostname);
+	if (std::strlen(_username) > this->_minWidth)
+		this->_minWidth = std::strlen(_username);
+
+	this->_minHeigth = 2;
 }
 
-std::string		HostName::getContent() const
+std::string		HostName::getContent()
 {
-	return std::string("");
+	HostName::loadContent();
+	return this->_content;
 }
 
-void HostName::display()
+const char *	HostName::getTitle() const
 {
-	std::cout << "HOSTNAME | USERNAME" << std::endl;
-	std::cout << "___________________" << std::endl;
-	std::cout << _hostname << " | " << _username << std::endl;
+	return this->_title;
 }
+
+int			HostName::getMinWidth() const
+{
+	return this->_minWidth;
+}
+
+int			HostName::getMinHeigth() const
+{
+	return this->_minHeigth;
+}
+
+// void HostName::display()
+// {
+// 	std::cout << "HOSTNAME | USERNAME" << std::endl;
+// 	std::cout << "___________________" << std::endl;
+// 	std::cout << _hostname << " | " << _username << std::endl;
+// }
 
 extern "C"
 {

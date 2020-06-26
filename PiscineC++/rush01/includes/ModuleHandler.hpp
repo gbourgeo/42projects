@@ -1,14 +1,16 @@
 #ifndef MODULEHANDLER_HPP
 # define MODULEHANDLER_HPP
 
+# include "AMonitorModule.hpp"
+
 # include <string>
 # include <map>
-# include "IMonitorModule.hpp"
 
 typedef struct	s_module
 {
 	void			*modulePtr;
-	IMonitorModule	*moduleClss;
+	AMonitorModule	*moduleClss;
+	void			*deleteFunc;
 }				t_module;
 
 class ModuleHandler
@@ -20,10 +22,12 @@ public:
 	ModuleHandler & operator=(ModuleHandler const & rhs);
 
 	void			loadModules(std::string const &);
-	IMonitorModule	*getModule(unsigned long idx) const;
+	AMonitorModule	*getModule(size_t) const;
+	int				getSize(void) const;
 
 private:
-	std::map<int, t_module>			_modules;
+	std::map<std::string, t_module>	_modules;
+	std::string						_modulesPath;
 };
 
 #endif

@@ -33,5 +33,7 @@ void *GraphDisplay::getWindow() const
 	return nullptr;
 }
 
-void GraphDisplay::affModule()
-{}
+int GraphDisplay::affModules() const
+{
+	return (1);
+}

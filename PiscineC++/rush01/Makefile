@@ -14,6 +14,7 @@ MOD		= HostName.cpp		\
 		DateTime.cpp		\
 		CpuInfo.cpp			\
 		RamInfo.cpp			\
+		AMonitorModule.cpp	\
 
 LIB_D	= libs/
 

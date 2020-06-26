@@ -98,10 +98,8 @@ int		main(int ac, char **av)
 	display->loadModules(args.libpath);
 	while (1)
 	{
-		int ch = wgetch(reinterpret_cast<ShellDisplay *>(display)->getWindow(MAINWINSTR));
-		if (ch == 27)
+		if (!display->affModules())
 			break ;
-		display->affModule();
 	}
 	delete display;
 	return 0;

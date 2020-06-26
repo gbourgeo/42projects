@@ -1,16 +1,9 @@
 #ifndef CPUINFO_HPP
 # define CPUINFO_HPP
 
-# include "IMonitorModule.hpp"
+# include "AMonitorModule.hpp"
 
-struct 			s_name
-{
-	const char 	*one;
-	const char 	*two;
-	int			type;
-};
-
-class CpuInfo: public IMonitorModule
+class CpuInfo: public AMonitorModule
 {
 public:
 	CpuInfo();
@@ -18,11 +11,13 @@ public:
 	CpuInfo(CpuInfo const & src);
 	CpuInfo & operator=(CpuInfo const & rhs);
 
-	std::string		getTitle() const;
-	std::string		getContent() const;
-	void			display();
+	const char *		getTitle() const;
+	std::string			getContent();
+	int					getMinWidth() const;
+	int					getMinHeigth() const;
 
 private:
+	void				loadContent();
 };
 
 #endif

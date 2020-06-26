@@ -1,11 +1,12 @@
 #ifndef HOSTNAME_HPP
 # define HOSTNAME_HPP
 
-# include <unistd.h>
-# include <limits.h>
-# include "IMonitorModule.hpp"
+# include "AMonitorModule.hpp"
 
-class HostName: public IMonitorModule
+# include <limits.h>
+# include <unistd.h>
+
+class HostName: public AMonitorModule
 {
 public:
 	HostName();
@@ -13,13 +14,13 @@ public:
 	HostName(HostName const & src);
 	HostName & operator=(HostName const & rhs);
 
-	std::string		getTitle() const;
-	std::string		getContent() const;
-	void			display();
+	const char *		getTitle() const;
+	std::string			getContent();
+	int					getMinWidth() const;
+	int					getMinHeigth() const;
 
 private:
-	char	_hostname[_SC_HOST_NAME_MAX];
-	char	_username[_SC_LOGIN_NAME_MAX];
+	void				loadContent();
 };
 
 #endif
