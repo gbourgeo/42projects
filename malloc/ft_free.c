@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_free.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/08/18 23:52:31 by gbourgeo          #+#    #+#             */
-/*   Updated: 2016/05/10 02:28:26 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/07/04 06:44:12 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void			ft_free_large(void *ptr)
 {
 	t_zone			*tmp;
 
-	tmp = mem_list.large;
+	tmp = g_mem_list.large;
 	while (tmp)
 	{
 		if (tmp->data == ptr)
@@ -48,7 +48,7 @@ static void			ft_free_large(void *ptr)
 			if (tmp->prev != NULL)
 				tmp->prev->next = tmp->next;
 			else
-				mem_list.large = tmp->next;
+				g_mem_list.large = tmp->next;
 			if (munmap(tmp->data, tmp->size) == -1)
 				ft_putstr("free: munmap() error. Region->data not freed\n");
 			if (munmap(tmp, sizeof(*tmp)) == -1)
@@ -63,9 +63,9 @@ void				free(void *ptr)
 {
 	if (ptr == NULL)
 		return ;
-	if (ft_free_zone(ptr, mem_list.tiny, TINY))
+	if (ft_free_zone(ptr, g_mem_list.tiny, TINY))
 		return ;
-	if (ft_free_zone(ptr, mem_list.small, SMALL))
+	if (ft_free_zone(ptr, g_mem_list.small, SMALL))
 		return ;
 	ft_free_large(ptr);
 }
