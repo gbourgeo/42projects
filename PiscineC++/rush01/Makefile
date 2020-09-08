@@ -1,14 +1,16 @@
 
 NAME	= ft_gkrellm
 
-SRC_D	= srcs/
+SRC_DIR	= srcs/
 SRC		= Main.cpp			\
-		ShellDisplay.cpp	\
-		GraphDisplay.cpp	\
+
+DIS_DIR	= $(SRC_DIR)displays/
+DIS		= ShellDisplay.cpp	\
 		ModuleHandler.cpp	\
 		AMonitorDisplay.cpp	\
+#		GraphDisplay.cpp	\
 
-MOD_D	= $(SRC_D)modules/
+MOD_DIR	= $(SRC_DIR)modules/
 MOD		= HostName.cpp		\
 		OsInfo.cpp			\
 		DateTime.cpp		\
@@ -16,49 +18,58 @@ MOD		= HostName.cpp		\
 		RamInfo.cpp			\
 		AMonitorModule.cpp	\
 
-LIB_D	= libs/
+OBJ_DIR		= objs/
+OBJ			= $(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))
+OBJ_DIS_DIR	= $(OBJ_DIR)displays/
+OBJ			+= $(addprefix $(OBJ_DIS_DIR), $(DIS:.cpp=.o))
+OBJ_MOD_DIR	= $(OBJ_DIR)modules/
+OBJ			+= $(addprefix $(OBJ_MOD_DIR), $(MOD:.cpp=.o))
 
-OBJ_D	= objs/
-OBJ		= $(addprefix $(OBJ_D), $(SRC:.cpp=.o))
-OBJ_D2	= $(OBJ_D)modules/
-OBJ_2	= $(addprefix $(OBJ_D2), $(MOD:.cpp=.o))
-LIB_O	= $(addprefix $(LIB_D), $(MOD:.cpp=.so))
+# Create specific directory for the modules .so library
+LIB_DIR		= libs/
+OBJ_LIB		= $(addprefix $(LIB_DIR), $(MOD:.cpp=.so))
 
-INC_D	= includes/
-INC		= -I $(INC_D) -I $(INC_D)modules
+INC_DIR		= includes/
+INCLUDES	= -I $(INC_DIR) -I $(INC_DIR)displays -I $(INC_DIR)displays/Qt -I $(INC_DIR)modules
 
 CC		= clang++
 CC11	= -std=c++11
 FLAGS	= -Wall -Werror -Wextra
 
-all: $(OBJ_D) $(OBJ_D2) $(LIB_D) $(OBJ_2) $(LIB_O) $(NAME)
+all: $(OBJ_DIR) $(OBJ_DIS_DIR) $(OBJ_MOD_DIR) $(LIB_DIR) $(OBJ) $(OBJ_LIB) $(NAME)
 
-$(OBJ_D):
+$(OBJ_DIR):
 	@mkdir -p $@
 
-$(OBJ_D2):
+$(OBJ_DIS_DIR): $(OBJ_DIR)
 	@mkdir -p $@
 
-$(LIB_D):
+$(OBJ_MOD_DIR): $(OBJ_DIR)
+	@mkdir -p $@
+
+$(LIB_DIR):
 	mkdir -p $@
 
 $(NAME): $(OBJ)
 	$(CC) -o $@ $^ -lncurses -ldl
 
-$(OBJ_D)%.o: $(SRC_D)%.cpp
-	$(CC) $(CC11) $(FLAGS) -c -o $@ $< $(INC)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
+	$(CC) $(CC11) $(FLAGS) -c -o $@ $< $(INCLUDES)
 
-$(OBJ_D2)%.o: $(MOD_D)%.cpp
-	$(CC) $(CC11) -fPIC -c -o $@ $< $(INC)
+$(OBJ_DIS_DIR)%.o: $(DIS_DIR)%.cpp
+	$(CC) $(CC11) $(FLAGS) -c -o $@ $< $(INCLUDES)
 
-$(LIB_D)%.so: $(OBJ_D2)%.o
+$(OBJ_MOD_DIR)%.o: $(MOD_DIR)%.cpp
+	$(CC) $(CC11) -fPIC -c -o $@ $< $(INCLUDES)
+
+$(LIB_D)%.so: $(OBJ_LIB)%.o
 	$(CC) $(CC11) -shared -W1,-soname,$@ -o $@ $^ -lc
 
 clean:
-	/bin/rm -rf $(OBJ_D)
+	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
-	/bin/rm -rf $(LIB_D)
+	/bin/rm -rf $(LIB_DIR)
 	/bin/rm -f $(NAME)
 
 re: fclean all
